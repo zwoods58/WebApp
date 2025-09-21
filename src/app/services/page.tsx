@@ -1,3 +1,5 @@
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Services from '@/components/Services'
 import Pricing from '@/components/Pricing'
 import Process from '@/components/Process'
@@ -5,9 +7,13 @@ import Process from '@/components/Process'
 export default function ServicesPage() {
   return (
     <>
-      <Services />
-      <Pricing />
-      <Process />
+      <Header />
+      <main className="flex-1">
+        <Services />
+        <Pricing />
+        <Process />
+      </main>
+      <Footer />
     </>
   )
 }
