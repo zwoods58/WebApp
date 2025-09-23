@@ -1,10 +1,10 @@
-import PremiumAdminDashboard from '@/components/PremiumAdminDashboard'
+import SimplifiedAdminDashboard from '@/components/SimplifiedAdminDashboard'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function AdminPage() {
   return (
     <ProtectedRoute>
-      <PremiumAdminDashboard />
+      <SimplifiedAdminDashboard />
     </ProtectedRoute>
   )
 }

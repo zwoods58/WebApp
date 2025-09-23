@@ -19,7 +19,7 @@ const caseStudies = [
     technologies: ['React', 'Node.js', 'PostgreSQL', 'Stripe', 'AWS'],
     image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
     testimonial: {
-      text: 'WebApp Solutions transformed our business completely. The new platform is fast, reliable, and our customers love it.',
+      text: 'AtarWeb transformed our business completely. The new platform is fast, reliable, and our customers love it.',
       author: 'Sarah Williams',
       role: 'CEO, TechStart Inc.'
     }

@@ -3,16 +3,17 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import ConditionalLayout from '@/components/ConditionalLayout'
+import Chatbot from '@/components/Chatbot'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'WebApp Solutions - Professional Web Development Services',
+  title: 'AtarWeb - Professional Web Development Services',
   description: 'Transform your business with custom web applications. Professional development services including React, Next.js, and full-stack solutions.',
   keywords: 'web development, custom web applications, React, Next.js, full-stack development, business solutions',
-  authors: [{ name: 'WebApp Solutions' }],
+  authors: [{ name: 'AtarWeb' }],
   openGraph: {
-    title: 'WebApp Solutions - Professional Web Development Services',
+    title: 'AtarWeb - Professional Web Development Services',
     description: 'Transform your business with custom web applications. Professional development services including React, Next.js, and full-stack solutions.',
     type: 'website',
     locale: 'en_US',
@@ -31,6 +32,7 @@ export default function RootLayout({
           <ConditionalLayout>
             {children}
           </ConditionalLayout>
+          <Chatbot />
         </AuthProvider>
       </body>
     </html>

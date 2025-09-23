@@ -1,6 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { ExternalLink, Github, ArrowRight } from 'lucide-react'
+import { ExternalLink, Github, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone } from 'lucide-react'
 
 const caseStudies = [
   {
@@ -14,50 +16,242 @@ const caseStudies = [
       users: '+10K',
       performance: '99.9%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    slug: 'ecommerce-platform',
+    demoUrl: '/demo/ecommerce',
+    // Enhanced details for popup
+    detailedDescription: 'This e-commerce platform was our first major internal project, born from our team\'s curiosity about how online shopping actually works. We started with just a simple product catalog, but as we learned more about web development, we kept adding features - user accounts, shopping carts, payment processing. Each new challenge taught us something new, and we realized we were building something that could actually be useful. This project became the foundation for everything we learned about full-stack development.',
+    features: [
+      'Advanced inventory management with real-time stock tracking',
+      'Secure payment processing with multiple gateway support',
+      'Customer analytics dashboard with purchase insights',
+      'Mobile-responsive design for all devices',
+      'Admin panel for order and inventory management',
+      'Email marketing integration and automated notifications'
+    ],
+    learningChallenges: [
+      'Understanding complex payment processing workflows',
+      'Learning how to handle high-traffic scenarios',
+      'Mastering mobile-first responsive design principles',
+      'Implementing security best practices for e-commerce'
+    ],
+    technicalSolutions: [
+      'Built scalable microservices architecture',
+      'Implemented Redis caching for performance',
+      'Created responsive design with mobile-first approach',
+      'Integrated multiple payment gateways with fraud protection'
+    ],
+    timeline: '12 weeks',
+    team: '4 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Homepage Dashboard',
+        description: 'Modern e-commerce homepage with featured products and quick access to categories',
+        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Product carousel', 'Category navigation', 'Search functionality', 'User account access']
+      },
+      {
+        id: 2,
+        title: 'Product Catalog',
+        description: 'Comprehensive product listing with filtering, sorting, and detailed product views',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Advanced filtering', 'Product comparison', 'Wishlist functionality', 'Quick view modal']
+      },
+      {
+        id: 3,
+        title: 'Shopping Cart',
+        description: 'Streamlined checkout process with secure payment processing and order management',
+        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Guest checkout', 'Multiple payment options', 'Order summary', 'Shipping calculator']
+      },
+      {
+        id: 4,
+        title: 'Admin Dashboard',
+        description: 'Comprehensive admin panel for managing products, orders, and customer data',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Order management', 'Inventory tracking', 'Customer analytics', 'Sales reports']
+      },
+      {
+        id: 5,
+        title: 'Mobile App',
+        description: 'Mobile-optimized shopping experience with touch-friendly interface',
+        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Touch navigation', 'Mobile payments', 'Push notifications', 'Offline browsing']
+      }
+    ]
   },
   {
     id: 2,
     title: 'SaaS Dashboard',
-    description: 'A comprehensive dashboard for managing business operations with real-time analytics and reporting features.',
+    description: 'A comprehensive SaaS analytics dashboard with real-time data visualization, user management, and business intelligence.',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2015&q=80',
-    technologies: ['Next.js', 'TypeScript', 'Supabase', 'Chart.js'],
+    technologies: ['React', 'D3.js', 'Node.js', 'MongoDB'],
     results: {
       efficiency: '+200%',
       users: '+5K',
       performance: '98.5%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    slug: 'saas-dashboard',
+    demoUrl: '/demo/saas-dashboard',
+    // Enhanced details for popup
+    detailedDescription: 'After building the e-commerce platform, we became fascinated with data visualization and analytics. We wanted to understand how businesses track their performance and make data-driven decisions. This dashboard project started as a simple chart library experiment but evolved into a comprehensive analytics platform. It taught us everything about real-time data processing, complex visualizations, and how to make data accessible to non-technical users.',
+    features: [
+      'Real-time data visualization with 20+ chart types',
+      'Interactive dashboards with drag-and-drop customization',
+      'Advanced filtering and data segmentation',
+      'Automated report generation and scheduling',
+      'User role management and permissions',
+      'API integration with 50+ popular services'
+    ],
+    learningChallenges: [
+      'Mastering complex data visualization libraries',
+      'Understanding real-time data processing workflows',
+      'Learning how to make complex data user-friendly',
+      'Implementing responsive design for data-heavy interfaces'
+    ],
+    technicalSolutions: [
+      'Built with React and D3.js for advanced visualizations',
+      'Implemented WebSocket connections for real-time updates',
+      'Created intuitive drag-and-drop dashboard builder',
+      'Developed comprehensive API integration system'
+    ],
+    timeline: '10 weeks',
+    team: '4 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Dashboard Overview',
+        description: 'Comprehensive dashboard with real-time analytics and business intelligence',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Real-time metrics', 'Interactive charts', 'Custom widgets', 'Data filtering']
+      },
+      {
+        id: 2,
+        title: 'Analytics Charts',
+        description: 'Advanced data visualization with multiple chart types and interactive features',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Line charts', 'Bar graphs', 'Pie charts', 'Heat maps']
+      },
+      {
+        id: 3,
+        title: 'User Management',
+        description: 'Comprehensive user management system with role-based access control',
+        image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['User roles', 'Permissions', 'Activity logs', 'Team management']
+      },
+      {
+        id: 4,
+        title: 'Mobile Dashboard',
+        description: 'Mobile-optimized dashboard for on-the-go analytics and monitoring',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Touch-friendly charts', 'Swipe navigation', 'Push notifications', 'Offline mode']
+      }
+    ]
   },
   {
     id: 3,
     title: 'Mobile Banking App',
-    description: 'A secure mobile banking application with biometric authentication and real-time transaction monitoring.',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-    technologies: ['React Native', 'Node.js', 'MongoDB', 'AWS'],
+    description: 'A secure mobile banking application with biometric authentication, real-time transactions, and comprehensive financial management.',
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80',
+    technologies: ['React Native', 'Node.js', 'PostgreSQL', 'Redis'],
     results: {
       security: '100%',
       users: '+25K',
       performance: '99.8%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    slug: 'mobile-banking',
+    demoUrl: '/demo/mobile-banking',
+    // Enhanced details for popup
+    detailedDescription: 'The mobile banking app was our most ambitious project yet. After mastering web development with the previous projects, we wanted to tackle mobile development and learn about financial technology. This project taught us about security, compliance, and the unique challenges of handling sensitive financial data. We learned about biometric authentication, encryption, and how to build trust in a digital financial product.',
+    features: [
+      'Biometric authentication (fingerprint, face ID)',
+      'Real-time transaction processing and notifications',
+      'Multi-account management (checking, savings, credit)',
+      'Bill payment and money transfer capabilities',
+      'Investment tracking and portfolio management',
+      'Budgeting tools and spending analytics'
+    ],
+    learningChallenges: [
+      'Understanding financial security and compliance requirements',
+      'Learning mobile development with React Native',
+      'Mastering biometric authentication implementation',
+      'Implementing end-to-end encryption for sensitive data'
+    ],
+    technicalSolutions: [
+      'Built cross-platform app with React Native',
+      'Implemented biometric authentication with secure storage',
+      'Created real-time transaction processing system',
+      'Developed comprehensive security and encryption protocols'
+    ],
+    timeline: '16 weeks',
+    team: '5 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Login Screen',
+        description: 'Secure login with biometric authentication and multi-factor verification',
+        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Biometric login', 'PIN verification', 'Face ID support', 'Secure storage']
+      },
+      {
+        id: 2,
+        title: 'Account Overview',
+        description: 'Comprehensive account dashboard with real-time balance and transaction history',
+        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Account balances', 'Recent transactions', 'Quick actions', 'Notifications']
+      },
+      {
+        id: 3,
+        title: 'Transfer Money',
+        description: 'Secure money transfer with contact integration and QR code scanning',
+        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Contact integration', 'QR code scanning', 'Scheduled payments', 'Transaction limits']
+      },
+      {
+        id: 4,
+        title: 'Investment Portfolio',
+        description: 'Investment tracking and portfolio management with real-time market data',
+        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'mobile',
+        features: ['Portfolio overview', 'Market data', 'Investment tracking', 'Performance charts']
+      }
+    ]
   },
   {
     id: 4,
     title: 'Project Management Tool',
     description: 'A collaborative project management platform with team communication, task tracking, and deadline management.',
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023e02a71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2339&q=80',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
     technologies: ['Vue.js', 'Express.js', 'PostgreSQL', 'Socket.io'],
     results: {
       productivity: '+180%',
       teams: '+500',
       performance: '99.2%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    demoUrl: '/demo/project-management'
   },
   {
     id: 5,
@@ -70,22 +264,39 @@ const caseStudies = [
       users: '+15K',
       performance: '97.8%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    demoUrl: '/demo/real-estate'
   },
   {
     id: 6,
     title: 'Healthcare Management System',
     description: 'A HIPAA-compliant healthcare management system with patient records, appointment scheduling, and billing.',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
     technologies: ['React', 'Django', 'PostgreSQL', 'Redis'],
     results: {
       compliance: '100%',
       patients: '+50K',
       performance: '99.5%'
     },
-    liveUrl: '#',
-    githubUrl: '#'
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    demoUrl: '/demo/healthcare'
+  },
+  {
+    id: 7,
+    title: 'Big Easy Chicken Co.',
+    description: 'A vibrant New Orleans-style restaurant website with online ordering, menu management, and authentic southern charm.',
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+    technologies: ['Next.js', 'React', 'Tailwind CSS', 'TypeScript'],
+    results: {
+      orders: '+2.5K',
+      customers: '+1.2K',
+      satisfaction: '98.7%'
+    },
+    liveUrl: '/admin',
+    githubUrl: 'https://github.com/atarweb',
+    demoUrl: '/demo/restaurant'
   }
 ]
 
@@ -94,17 +305,20 @@ export default function Portfolio() {
     <section className="section-padding bg-secondary-50">
       <div className="container-max">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
+          <h2 className="text-4xl font-bold text-secondary-900 mb-4">
             Our Portfolio
           </h2>
           <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
-            Explore our successful projects and see how we've helped businesses transform their digital presence.
+            Explore our collection of innovative projects that showcase our expertise in modern web development and digital solutions.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {caseStudies.map((project) => (
-            <div key={project.id} className="card group hover:shadow-xl transition-all duration-300 overflow-hidden">
+            <div 
+              key={project.id} 
+              className="card group hover:shadow-xl transition-all duration-300 overflow-hidden"
+            >
               <div className="relative overflow-hidden">
                 <Image
                   src={project.image}
@@ -113,20 +327,6 @@ export default function Portfolio() {
                   height={250}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-4">
-                  <a
-                    href={project.liveUrl}
-                    className="p-2 bg-white rounded-full hover:bg-primary-600 hover:text-white transition-colors duration-200"
-                  >
-                    <ExternalLink className="h-5 w-5" />
-                  </a>
-                  <a
-                    href={project.githubUrl}
-                    className="p-2 bg-white rounded-full hover:bg-primary-600 hover:text-white transition-colors duration-200"
-                  >
-                    <Github className="h-5 w-5" />
-                  </a>
-                </div>
               </div>
 
               <div className="p-6 space-y-4">
@@ -143,32 +343,39 @@ export default function Portfolio() {
                   {project.technologies.map((tech, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full"
+                      className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-xs font-medium"
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-secondary-200">
-                  {Object.entries(project.results).map(([key, value], index) => (
-                    <div key={index} className="text-center">
-                      <div className="text-lg font-bold text-primary-600">{value}</div>
-                      <div className="text-xs text-secondary-500 capitalize">{key}</div>
-                    </div>
-                  ))}
+                <div className="flex justify-between items-center pt-4">
+                  <div className="flex space-x-4 text-sm text-secondary-600">
+                    {Object.entries(project.results).map(([key, value], index) => (
+                      <div key={index} className="text-center">
+                        <div className="font-semibold text-primary-600">{value}</div>
+                        <div className="text-xs capitalize">{key}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <Link 
+                    href={project.demoUrl || `/projects/${project.slug}`}
+                    className="btn-primary w-full text-center inline-flex items-center justify-center"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Live Demo
+                  </Link>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <Link href="/portfolio" className="btn-primary inline-flex items-center">
-            View All Projects
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-        </div>
       </div>
     </section>
   )

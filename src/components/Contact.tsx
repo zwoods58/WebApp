@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react'
+import { Mail, Send, CheckCircle } from 'lucide-react'
 import { submitProjectRequest } from '@/lib/project-requests'
 import { notifyNewProjectRequest } from '@/lib/notifications'
 
@@ -9,40 +9,28 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    details: 'hello@webappsolutions.com',
-    description: 'Send us an email anytime'
-  },
-  {
-    icon: Phone,
-    title: 'Call Us',
-    details: '+1 (555) 123-4567',
-    description: 'Mon-Fri from 9am to 6pm'
-  },
-  {
-    icon: MapPin,
-    title: 'Visit Us',
-    details: 'San Francisco, CA',
-    description: 'Come say hello at our office'
+    details: 'support@atarweb.com',
+    description: 'Available 7am-5pm PST, Monday-Friday'
   }
 ]
 
 const projectTypes = [
-  'Custom Web Application',
-  'E-commerce Platform',
+  'Business Website',
+  'E-commerce Store',
   'Mobile App',
-  'API Development',
-  'Database Design',
-  'UI/UX Design',
+  'Web Application',
+  'Landing Page',
+  'Blog/Content Site',
   'Maintenance & Support',
   'Other'
 ]
 
 const budgetRanges = [
-  'Under $10,000',
-  '$10,000 - $25,000',
-  '$25,000 - $50,000',
-  '$50,000 - $100,000',
-  'Over $100,000'
+  'Under $1,000',
+  '$1,000 - $2,500',
+  '$2,500 - $5,000',
+  '$5,000 - $10,000',
+  'Over $10,000'
 ]
 
 const timelineOptions = [
@@ -58,7 +46,6 @@ export default function Contact() {
     name: '',
     email: '',
     company: '',
-    phone: '',
     projectType: '',
     budget: '',
     timeline: '',
@@ -102,7 +89,6 @@ export default function Contact() {
             name: '',
             email: '',
             company: '',
-            phone: '',
             projectType: '',
             budget: '',
             timeline: '',
@@ -243,35 +229,19 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="company" className="block text-sm font-medium text-secondary-700 mb-2">
-                      Company Name
-                    </label>
-                    <input
-                      type="text"
-                      id="company"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      className="input-field"
-                      placeholder="Your company name"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-secondary-700 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="input-field"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
+                <div>
+                  <label htmlFor="company" className="block text-sm font-medium text-secondary-700 mb-2">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    className="input-field"
+                    placeholder="Your company name"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

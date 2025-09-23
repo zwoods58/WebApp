@@ -1,143 +1,129 @@
-import { Award, Users, Clock, Target, CheckCircle } from 'lucide-react'
-
-const stats = [
-  { icon: Award, value: '50+', label: 'Projects Completed' },
-  { icon: Users, value: '100+', label: 'Happy Clients' },
-  { icon: Clock, value: '5+', label: 'Years Experience' },
-  { icon: Target, value: '100%', label: 'Success Rate' }
-]
+import { Heart, Target, Code, Shield } from 'lucide-react'
 
 const values = [
   {
-    title: 'Quality First',
-    description: 'We never compromise on quality. Every line of code is written with precision and attention to detail.'
+    icon: Heart,
+    title: 'Passion-Driven Excellence',
+    description: 'We genuinely love what we do. Every project is approached with enthusiasm and a commitment to creating something exceptional that we can be proud of.',
+    color: 'from-red-500 to-pink-600'
   },
   {
-    title: 'Client-Centric',
-    description: 'Your success is our success. We work closely with you to understand your vision and bring it to life.'
+    icon: Target,
+    title: 'Results-Focused',
+    description: 'We measure success by the impact we create. Every decision is made with your business goals in mind, ensuring our solutions drive real value.',
+    color: 'from-blue-500 to-cyan-600'
   },
   {
-    title: 'Innovation',
-    description: 'We stay ahead of the curve with the latest technologies and best practices in web development.'
+    icon: Code,
+    title: 'Technical Integrity',
+    description: 'We write clean, maintainable code that stands the test of time. Our solutions are built to scale and adapt as your business grows.',
+    color: 'from-green-500 to-emerald-600'
   },
   {
-    title: 'Transparency',
-    description: 'Clear communication and regular updates keep you informed throughout the entire development process.'
+    icon: Shield,
+    title: 'Reliable Partnership',
+    description: 'We believe in long-term relationships. Our commitment extends beyond project delivery to ongoing support and continuous improvement.',
+    color: 'from-purple-500 to-indigo-600'
   }
 ]
 
-const team = [
+const mission = {
+  title: 'Our Mission',
+  description: 'To provide professional websites that maintain budget-friendly pricing and fast turnaround times, with a laser focus on empowering small to medium companies to compete in the digital marketplace.',
+  impact: 'We believe that every small business owner should have the opportunity to establish a powerful digital presence without breaking the bank or waiting months for results. Your success is our success.'
+}
+
+const approach = [
   {
-    name: 'John Smith',
-    role: 'Lead Developer',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    step: '01',
+    title: 'Deep Understanding',
+    description: 'We start by immersing ourselves in your business context, challenges, and goals to ensure our solutions align perfectly with your needs.'
   },
   {
-    name: 'Sarah Johnson',
-    role: 'UI/UX Designer',
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    step: '02',
+    title: 'Strategic Planning',
+    description: 'Every project begins with a comprehensive strategy that balances technical excellence with business objectives and user experience.'
   },
   {
-    name: 'Mike Chen',
-    role: 'Backend Developer',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    step: '03',
+    title: 'Collaborative Development',
+    description: 'We work as an extension of your team, maintaining transparent communication and involving you in key decisions throughout the process.'
   },
   {
-    name: 'Emily Davis',
-    role: 'Project Manager',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+    step: '04',
+    title: 'Continuous Optimization',
+    description: 'Our relationship doesn\'t end at launch. We provide ongoing support and optimization to ensure your solution continues to deliver value.'
   }
 ]
+
 
 export default function About() {
   return (
     <section className="section-padding bg-white">
       <div className="container-max">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-            About WebApp Solutions
+        <div className="text-center mb-20">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">
+            About AtarWeb
           </h2>
-          <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
-            We are a team of passionate developers and designers dedicated to creating exceptional web applications that drive business growth.
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            We are independent developers who came together with a shared vision: to empower everyday business owners 
+            with the digital tools they need to thrive in today's world. Born from the belief that every entrepreneur 
+            deserves access to professional web solutions, we've built a collective that transforms small dreams into 
+            big digital footprints.
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <stat.icon className="h-8 w-8 text-primary-600" />
-              </div>
-              <div className="text-3xl font-bold text-secondary-900 mb-2">{stat.value}</div>
-              <div className="text-secondary-600">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Story Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
-          <div>
-            <h3 className="text-2xl font-bold text-secondary-900 mb-6">Our Story</h3>
-            <div className="space-y-4 text-secondary-600">
-              <p>
-                Founded in 2019, WebApp Solutions started as a small team of developers with a big vision: to create web applications that not only meet business requirements but exceed expectations.
-              </p>
-              <p>
-                Over the years, we've grown into a full-service web development agency, helping businesses of all sizes transform their digital presence. Our commitment to quality, innovation, and client satisfaction has made us a trusted partner for companies worldwide.
-              </p>
-              <p>
-                Today, we continue to push the boundaries of what's possible in web development, using cutting-edge technologies and best practices to deliver solutions that drive real business results.
-              </p>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="aspect-w-16 aspect-h-12 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-2xl overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Our team working"
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Mission Section */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl p-12 mb-20">
+          <div className="text-center max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold text-gray-900 mb-6">{mission.title}</h3>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              {mission.description}
+            </p>
+            <p className="text-base text-gray-600 italic">
+              {mission.impact}
+            </p>
           </div>
         </div>
 
-        {/* Values */}
-        <div className="mb-16">
-          <h3 className="text-2xl font-bold text-secondary-900 text-center mb-12">Our Values</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <div key={index} className="text-center">
-                <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="h-6 w-6 text-white" />
+        {/* Values Section */}
+        <div className="mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Values</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {values.map((value, index) => {
+              const IconComponent = value.icon
+              return (
+                <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${value.color} rounded-2xl flex items-center justify-center mb-6`}>
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4">{value.title}</h4>
+                  <p className="text-gray-600 leading-relaxed">{value.description}</p>
                 </div>
-                <h4 className="text-lg font-semibold text-secondary-900 mb-2">{value.title}</h4>
-                <p className="text-secondary-600 text-sm">{value.description}</p>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Our Approach Section */}
+        <div className="mb-20">
+          <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Approach</h3>
+          <div className="space-y-8">
+            {approach.map((step, index) => (
+              <div key={index} className="flex items-start gap-6">
+                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-lg">
+                  {step.step}
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xl font-semibold text-gray-900 mb-3">{step.title}</h4>
+                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Team */}
-        <div>
-          <h3 className="text-2xl font-bold text-secondary-900 text-center mb-12">Meet Our Team</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h4 className="font-semibold text-secondary-900 mb-1">{member.name}</h4>
-                <p className="text-sm text-secondary-600">{member.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   )

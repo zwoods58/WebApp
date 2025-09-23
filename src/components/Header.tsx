@@ -25,7 +25,7 @@ export default function Header() {
               <Code className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-secondary-900">
-              WebApp Solutions
+              AtarWeb
             </span>
           </Link>
 

@@ -11,9 +11,11 @@ interface ConditionalLayoutProps {
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname()
   const isAdminPage = pathname?.startsWith('/admin')
+  const isProjectPage = pathname?.startsWith('/projects')
+  const isDemoPage = pathname?.startsWith('/demo')
 
-  // Don't render header and footer for admin pages
-  if (isAdminPage) {
+  // Don't render header and footer for admin, project, or demo pages
+  if (isAdminPage || isProjectPage || isDemoPage) {
     return <>{children}</>
   }
 

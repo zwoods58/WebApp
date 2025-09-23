@@ -58,6 +58,11 @@ import SearchFilter from './SearchFilter'
 import BulkOperations from './BulkOperations'
 import EmailComposer from './EmailComposer'
 import FileManager from './FileManager'
+import AnalyticsDashboard from './AnalyticsDashboard'
+import PDFReportGenerator from './PDFReportGenerator'
+import DynamicDataService from '@/lib/dynamic-data-service'
+import CalendarService, { CalendarEvent, CalendarStats } from '@/lib/calendar-service'
+import CommunicationsService, { Communication, CommunicationStats } from '@/lib/communications-service'
 
 interface ProjectRequest {
   id: string
@@ -67,6 +72,22 @@ interface ProjectRequest {
   project_type: string
   status: string
   created_at: string
+}
+
+interface Consultation {
+  id: string
+  name: string
+  email: string
+  company: string | null
+  projectType: string
+  budget: string
+  timeline: string
+  preferredDate: string
+  preferredTime: string
+  message: string
+  status: string
+  createdAt: string
+  hasFileUpload: boolean
 }
 
 interface Client {
@@ -125,8 +146,22 @@ export default function PremiumAdminDashboard() {
   const [files, setFiles] = useState<File[]>([])
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [consultations, setConsultations] = useState<Consultation[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+
+  // Fetch consultations
+  const fetchConsultations = async () => {
+    try {
+      const response = await fetch('/api/consultations')
+      const data = await response.json()
+      if (data.success) {
+        setConsultations(data.consultations)
+      }
+    } catch (error) {
+      console.error('Error fetching consultations:', error)
+    }
+  }
   
   // New state for additional features
   const [adminUsers, setAdminUsers] = useState<any[]>([])
@@ -153,6 +188,7 @@ export default function PremiumAdminDashboard() {
   const [filters, setFilters] = useState<Record<string, any>>({})
   const [filteredData, setFilteredData] = useState({
     projectRequests: [] as ProjectRequest[],
+    consultations: [] as Consultation[],
     clients: [] as Client[],
     projects: [] as Project[]
   })
@@ -160,6 +196,26 @@ export default function PremiumAdminDashboard() {
   // Bulk Operations states
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [bulkActionLoading, setBulkActionLoading] = useState(false)
+
+  // PDF Report Generator state
+  const [pdfReportOpen, setPdfReportOpen] = useState(false)
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [calendarStats, setCalendarStats] = useState<CalendarStats>({
+    thisWeek: 0,
+    completed: 0,
+    upcoming: 0,
+    overdue: 0
+  })
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [communications, setCommunications] = useState<Communication[]>([])
+  const [communicationStats, setCommunicationStats] = useState<CommunicationStats>({
+    totalMessages: 0,
+    emails: 0,
+    calls: 0,
+    meetings: 0,
+    pending: 0,
+    completed: 0
+  })
 
   // Email Composer states
   const [emailComposer, setEmailComposer] = useState<{
@@ -187,7 +243,11 @@ export default function PremiumAdminDashboard() {
         invoicesData,
         usersData,
         healthData,
-        statsData
+        statsData,
+        calendarEventsData,
+        calendarStatsData,
+        communicationsData,
+        communicationStatsData
       ] = await Promise.all([
         ProjectRequestService.getAll().catch((err) => {
           console.error('Error loading project requests:', err)
@@ -224,6 +284,22 @@ export default function PremiumAdminDashboard() {
         SystemMonitoringService.getSystemStats().catch((err) => {
           console.error('Error loading system stats:', err)
           return null
+        }),
+        CalendarService.getAllEvents().catch((err) => {
+          console.error('Error loading calendar events:', err)
+          return []
+        }),
+        CalendarService.getCalendarStats().catch((err) => {
+          console.error('Error loading calendar stats:', err)
+          return { thisWeek: 0, completed: 0, upcoming: 0, overdue: 0 }
+        }),
+        CommunicationsService.getAllCommunications().catch((err) => {
+          console.error('Error loading communications:', err)
+          return []
+        }),
+        CommunicationsService.getCommunicationStats().catch((err) => {
+          console.error('Error loading communication stats:', err)
+          return { totalMessages: 0, emails: 0, calls: 0, meetings: 0, pending: 0, completed: 0 }
         })
       ])
 
@@ -236,10 +312,15 @@ export default function PremiumAdminDashboard() {
       setAdminUsers(usersData)
       setSystemHealth(healthData)
       setSystemStats(statsData)
+      setCalendarEvents(calendarEventsData)
+      setCalendarStats(calendarStatsData)
+      setCommunications(communicationsData)
+      setCommunicationStats(communicationStatsData)
       
       // Initialize filtered data
       setFilteredData({
         projectRequests: projectRequestsData,
+        consultations: consultations,
         clients: clientsData,
         projects: projectsData
       })
@@ -264,6 +345,41 @@ export default function PremiumAdminDashboard() {
     setRefreshing(false)
   }
 
+  const handleGenerateCalendarEvents = async () => {
+    try {
+      await CalendarService.generateEventsFromProjects()
+      // Reload calendar data
+      const [events, stats] = await Promise.all([
+        CalendarService.getAllEvents(),
+        CalendarService.getCalendarStats()
+      ])
+      setCalendarEvents(events)
+      setCalendarStats(stats)
+      alert('Calendar events generated successfully!')
+    } catch (error) {
+      console.error('Error generating calendar events:', error)
+      alert('Error generating calendar events. Check console for details.')
+    }
+  }
+
+  const handleGenerateCommunications = async () => {
+    try {
+      await CommunicationsService.generateCommunicationsFromActivities()
+      // Reload communications data
+      const [comms, stats] = await Promise.all([
+        CommunicationsService.getAllCommunications(),
+        CommunicationsService.getCommunicationStats()
+      ])
+      setCommunications(comms)
+      setCommunicationStats(stats)
+      alert('Communications generated successfully!')
+    } catch (error) {
+      console.error('Error generating communications:', error)
+      alert('Error generating communications. Check console for details.')
+    }
+  }
+
+
   // Search and Filter functions
   const filterData = (data: any[], query: string, filters: Record<string, any>, type: string) => {
     let filtered = [...data]
@@ -273,6 +389,8 @@ export default function PremiumAdminDashboard() {
       filtered = filtered.filter(item => {
         const searchFields = type === 'projectRequest' 
           ? ['name', 'email', 'company', 'project_type', 'description']
+          : type === 'consultation'
+          ? ['name', 'email', 'company', 'projectType', 'message']
           : type === 'client'
           ? ['name', 'email', 'company', 'status']
           : ['title', 'description', 'status']
@@ -296,9 +414,13 @@ export default function PremiumAdminDashboard() {
           } else if (key === 'timeline') {
             return item.timeline === value
           } else if (key === 'date_from') {
-            return new Date(item.created_at) >= new Date(value)
+            return new Date(item.created_at || item.createdAt) >= new Date(value)
           } else if (key === 'date_to') {
-            return new Date(item.created_at) <= new Date(value)
+            return new Date(item.created_at || item.createdAt) <= new Date(value)
+          } else if (key === 'projectType') {
+            return item.projectType === value
+          } else if (key === 'hasFileUpload') {
+            return item.hasFileUpload === (value === 'true')
           }
           return true
         })
@@ -312,6 +434,7 @@ export default function PremiumAdminDashboard() {
     setSearchQuery(query)
     const filtered = {
       projectRequests: filterData(projectRequests, query, filters, 'projectRequest'),
+      consultations: filterData(consultations, query, filters, 'consultation'),
       clients: filterData(clients, query, filters, 'client'),
       projects: filterData(projects, query, filters, 'project')
     }
@@ -322,6 +445,7 @@ export default function PremiumAdminDashboard() {
     setFilters(newFilters)
     const filtered = {
       projectRequests: filterData(projectRequests, searchQuery, newFilters, 'projectRequest'),
+      consultations: filterData(consultations, searchQuery, newFilters, 'consultation'),
       clients: filterData(clients, searchQuery, newFilters, 'client'),
       projects: filterData(projects, searchQuery, newFilters, 'project')
     }
@@ -584,6 +708,7 @@ export default function PremiumAdminDashboard() {
     const initializeData = async () => {
       setLoading(true)
       await loadData()
+      await fetchConsultations()
       setLoading(false)
     }
     
@@ -594,7 +719,8 @@ export default function PremiumAdminDashboard() {
       const stats = [
         { label: 'Total Clients', value: clients.length, icon: Users, color: 'text-blue-600', bgColor: 'bg-blue-50' },
         { label: 'Active Projects', value: projects.filter(p => p.status === 'in_progress').length, icon: Briefcase, color: 'text-green-600', bgColor: 'bg-green-50' },
-        { label: 'New Requests', value: projectRequests.filter(r => r.status === 'new').length, icon: MessageSquare, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+        { label: 'New Requests', value: projectRequests.filter(r => r.status === 'new').length + consultations.filter(c => c.status === 'pending').length, icon: MessageSquare, color: 'text-orange-600', bgColor: 'bg-orange-50' },
+        { label: 'Consultations', value: consultations.length, icon: MessageSquare, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
         { label: 'Unread Notifications', value: notifications.filter(n => n.status === 'unread').length, icon: Bell, color: 'text-purple-600', bgColor: 'bg-purple-50' },
         { label: 'Total Revenue', value: `$${invoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}`, icon: DollarSign, color: 'text-green-600', bgColor: 'bg-green-50' },
         { label: 'Files Uploaded', value: files.length, icon: FileText, color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
@@ -609,13 +735,7 @@ export default function PremiumAdminDashboard() {
   const navigation = [
     { name: 'Overview', icon: Home, tab: 'overview', current: activeTab === 'overview' },
     { name: 'Project Requests', icon: MessageSquare, tab: 'requests', current: activeTab === 'requests' },
-    { name: 'Clients', icon: Users, tab: 'clients', current: activeTab === 'clients' },
-    { name: 'Projects', icon: Briefcase, tab: 'projects', current: activeTab === 'projects' },
-    { name: 'Calendar', icon: Calendar, tab: 'calendar', current: activeTab === 'calendar' },
-    { name: 'Files', icon: FolderOpen, tab: 'files', current: activeTab === 'files' },
-    { name: 'Invoices', icon: CreditCard, tab: 'invoices', current: activeTab === 'invoices' },
-    { name: 'Communications', icon: MessageCircle, tab: 'communications', current: activeTab === 'communications' },
-    { name: 'Analytics', icon: TrendingUp, tab: 'analytics', current: activeTab === 'analytics' },
+    { name: 'Analytics/Invoice', icon: TrendingUp, tab: 'analytics', current: activeTab === 'analytics' },
     { name: 'Settings', icon: Settings, tab: 'settings', current: activeTab === 'settings' }
   ]
 
@@ -797,10 +917,10 @@ export default function PremiumAdminDashboard() {
 
                 {/* Stats - Analytics section below header */}
                 <div className="mb-20">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                     {stats.map((stat, index) => (
                       <div key={index} className="group relative bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-gray-200 overflow-hidden">
-                        <div className="p-4">
+                        <div className="p-6">
                           {/* Header with icon and label */}
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
@@ -808,7 +928,7 @@ export default function PremiumAdminDashboard() {
                                 <div className={`p-2 rounded-lg ${stat.bgColor} shadow-sm group-hover:shadow-md transition-all duration-300`}>
                                   <stat.icon className={`h-5 w-5 ${stat.color}`} />
                                 </div>
-                                <div className="ml-2">
+                                <div className="ml-3">
                                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{stat.label}</p>
                                   <div className="flex items-center">
                                     <div className="w-1 h-1 bg-emerald-500 rounded-full mr-1 animate-pulse"></div>
@@ -820,11 +940,11 @@ export default function PremiumAdminDashboard() {
                           </div>
                           
                           {/* Main value */}
-                          <div className="mb-4">
+                          <div className="mb-5">
                             <p className="text-2xl font-black text-gray-900 mb-1 tracking-tight">{stat.value}</p>
                             <div className="flex items-center text-xs text-gray-600">
                               <span className="font-semibold text-emerald-600">+12%</span>
-                              <span className="ml-1 text-gray-500">vs last month</span>
+                              <span className="ml-2 text-gray-500">vs last month</span>
                             </div>
                           </div>
                           
@@ -935,7 +1055,9 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-orange-600">New Requests</p>
-                        <p className="text-2xl font-bold text-orange-900">{projectRequests.filter(r => r.status === 'new').length}</p>
+                        <p className="text-2xl font-bold text-orange-900">
+                          {projectRequests.filter(r => r.status === 'new').length + consultations.filter(c => c.status === 'pending').length}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -995,7 +1117,7 @@ export default function PremiumAdminDashboard() {
                 {/* Bulk Operations */}
                 <BulkOperations
                   selectedItems={selectedItems}
-                  totalItems={filteredData.projectRequests.length}
+                  totalItems={filteredData.projectRequests.length + filteredData.consultations.length}
                   onSelectAll={handleSelectAll}
                   onClearSelection={handleClearSelection}
                   onBulkAction={handleBulkAction}
@@ -1005,7 +1127,7 @@ export default function PremiumAdminDashboard() {
                 {/* Table */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                   <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">All Project Requests</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">All Project Requests & Consultations</h3>
                     <p className="text-sm text-gray-600">Click on any request to view full details and manage the client relationship</p>
                   </div>
                   <div className="overflow-x-auto">
@@ -1021,6 +1143,7 @@ export default function PremiumAdminDashboard() {
                             />
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project Type</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -1029,8 +1152,9 @@ export default function PremiumAdminDashboard() {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
+                        {/* Project Requests */}
                         {filteredData.projectRequests.map((request) => (
-                          <tr key={request.id} className="hover:bg-gray-50">
+                          <tr key={`pr-${request.id}`} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <input
                                 type="checkbox"
@@ -1044,6 +1168,11 @@ export default function PremiumAdminDashboard() {
                                 <div className="text-sm font-medium text-gray-900">{request.name}</div>
                                 <div className="text-sm text-gray-500">{request.email}</div>
                               </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                Project Request
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.project_type}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{request.company || 'N/A'}</td>
@@ -1059,27 +1188,87 @@ export default function PremiumAdminDashboard() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {new Date(request.created_at).toLocaleDateString()}
                             </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                  <div className="flex space-x-2">
-                                    <button className="text-blue-600 hover:text-blue-900" title="View Details">
-                                      <Eye className="h-4 w-4" />
-                                    </button>
-                                    <button 
-                                      onClick={() => handleEdit('projectRequest', request)}
-                                      className="text-green-600 hover:text-green-900" 
-                                      title="Edit Request"
-                                    >
-                                      <Edit className="h-4 w-4" />
-                                    </button>
-                                    <button 
-                                      onClick={() => handleDelete('projectRequest', request.id)}
-                                      className="text-red-600 hover:text-red-900" 
-                                      title="Delete Request"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </button>
-                                  </div>
-                                </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex space-x-2">
+                                <button className="text-blue-600 hover:text-blue-900" title="View Details">
+                                  <Eye className="h-4 w-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleEdit('projectRequest', request)}
+                                  className="text-green-600 hover:text-green-900" 
+                                  title="Edit Request"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDelete('projectRequest', request.id)}
+                                  className="text-red-600 hover:text-red-900" 
+                                  title="Delete Request"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        
+                        {/* Consultations */}
+                        {filteredData.consultations.map((consultation) => (
+                          <tr key={`cons-${consultation.id}`} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={selectedItems.includes(consultation.id)}
+                                onChange={(e) => handleSelectItem(consultation.id, e.target.checked)}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">{consultation.name}</div>
+                                <div className="text-sm text-gray-500">{consultation.email}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                                Consultation
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{consultation.projectType}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{consultation.company || 'N/A'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                consultation.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                                consultation.status === 'contacted' ? 'bg-blue-100 text-blue-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {consultation.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(consultation.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex space-x-2">
+                                <button className="text-blue-600 hover:text-blue-900" title="View Details">
+                                  <Eye className="h-4 w-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleEdit('consultation', consultation)}
+                                  className="text-green-600 hover:text-green-900" 
+                                  title="Edit Consultation"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDelete('consultation', consultation.id)}
+                                  className="text-red-600 hover:text-red-900" 
+                                  title="Delete Consultation"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -1088,7 +1277,7 @@ export default function PremiumAdminDashboard() {
                 </div>
 
                 {/* Empty State */}
-                {filteredData.projectRequests.length === 0 && (
+                {filteredData.projectRequests.length === 0 && filteredData.consultations.length === 0 && (
                   <div className="text-center py-12">
                     <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                       <MessageSquare className="h-12 w-12 text-gray-400" />
@@ -1556,6 +1745,36 @@ export default function PremiumAdminDashboard() {
               </div>
             )}
 
+            {/* Project Management Tab */}
+            {activeTab === 'project-management' && (
+              <div className="p-6 lg:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 lg:mb-8 gap-4">
+                  <div>
+                    <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Project Management</h2>
+                    <p className="text-gray-600 mt-2">Manage client projects, payments, and project lifecycle</p>
+                  </div>
+                </div>
+                
+                {/* Project Management Component */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="text-center py-12">
+                    <CreditCard className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Project Management Dashboard</h3>
+                    <p className="text-gray-600 mb-6">
+                      Access the full project management interface to handle client projects, payments, and project lifecycle.
+                    </p>
+                    <a
+                      href="/admin/projects"
+                      className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <CreditCard className="h-5 w-5 mr-2" />
+                      Open Project Management
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Calendar Tab */}
             {activeTab === 'calendar' && (
               <div className="p-6 lg:p-8">
@@ -1569,6 +1788,13 @@ export default function PremiumAdminDashboard() {
                       <Calendar className="h-4 w-4 mr-2" />
                       Today
                     </button>
+                    <button 
+                      onClick={handleGenerateCalendarEvents}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Generate Events
+                    </button>
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Event
@@ -1577,7 +1803,7 @@ export default function PremiumAdminDashboard() {
                 </div>
 
                 {/* Calendar Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
                     <div className="flex items-center">
                       <div className="p-3 bg-blue-500 rounded-lg">
@@ -1585,7 +1811,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-blue-600">This Week</p>
-                        <p className="text-2xl font-bold text-blue-900">5</p>
+                        <p className="text-2xl font-bold text-blue-900">{calendarStats.thisWeek}</p>
                       </div>
                     </div>
                   </div>
@@ -1596,7 +1822,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-green-600">Completed</p>
-                        <p className="text-2xl font-bold text-green-900">12</p>
+                        <p className="text-2xl font-bold text-green-900">{calendarStats.completed}</p>
                       </div>
                     </div>
                   </div>
@@ -1607,7 +1833,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-yellow-600">Upcoming</p>
-                        <p className="text-2xl font-bold text-yellow-900">8</p>
+                        <p className="text-2xl font-bold text-yellow-900">{calendarStats.upcoming}</p>
                       </div>
                     </div>
                   </div>
@@ -1618,7 +1844,18 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-red-600">Overdue</p>
-                        <p className="text-2xl font-bold text-red-900">2</p>
+                        <p className="text-2xl font-bold text-red-900">{calendarStats.overdue}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-indigo-500 rounded-lg">
+                        <MessageSquare className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-indigo-600">Consultations</p>
+                        <p className="text-2xl font-bold text-indigo-900">{consultations.length}</p>
                       </div>
                     </div>
                   </div>
@@ -1627,7 +1864,9 @@ export default function PremiumAdminDashboard() {
                 {/* Calendar View */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                   <div className="p-6 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">January 2024</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </h3>
                   </div>
                   <div className="p-6">
                     <div className="grid grid-cols-7 gap-4 mb-4">
@@ -1638,18 +1877,92 @@ export default function PremiumAdminDashboard() {
                       ))}
                     </div>
                     <div className="grid grid-cols-7 gap-4">
-                      {Array.from({length: 31}, (_, i) => i + 1).map(day => (
-                        <div key={day} className={`h-20 border border-gray-200 rounded-lg p-2 ${
-                          day === 15 ? 'bg-blue-50 border-blue-300' : 
-                          day === 22 ? 'bg-green-50 border-green-300' : 
-                          day === 28 ? 'bg-red-50 border-red-300' : 'hover:bg-gray-50'
-                        }`}>
-                          <div className="text-sm font-medium text-gray-900">{day}</div>
-                          {day === 15 && <div className="text-xs text-blue-600 mt-1">Project Due</div>}
-                          {day === 22 && <div className="text-xs text-green-600 mt-1">Client Meeting</div>}
-                          {day === 28 && <div className="text-xs text-red-600 mt-1">Deadline</div>}
-                        </div>
-                      ))}
+                      {(() => {
+                        const year = currentMonth.getFullYear()
+                        const month = currentMonth.getMonth()
+                        const firstDay = new Date(year, month, 1)
+                        const lastDay = new Date(year, month + 1, 0)
+                        const daysInMonth = lastDay.getDate()
+                        const startingDayOfWeek = firstDay.getDay()
+                        
+                        // Get events for this month
+                        const monthEvents = calendarEvents.filter(event => {
+                          const eventDate = new Date(event.date)
+                          return eventDate.getMonth() === month && eventDate.getFullYear() === year
+                        })
+                        
+                        // Add consultation events
+                        const consultationEvents = consultations.map(consultation => ({
+                          id: `cons-${consultation.id}`,
+                          title: `Consultation - ${consultation.name}`,
+                          date: consultation.preferredDate,
+                          type: 'consultation',
+                          time: consultation.preferredTime,
+                          status: consultation.status
+                        }))
+                        
+                        const allMonthEvents = [...monthEvents, ...consultationEvents.filter(event => {
+                          const eventDate = new Date(event.date)
+                          return eventDate.getMonth() === month && eventDate.getFullYear() === year
+                        })]
+                        
+                        // Create calendar cells
+                        const cells = []
+                        
+                        // Add empty cells for days before the first day of the month
+                        for (let i = 0; i < startingDayOfWeek; i++) {
+                          cells.push(
+                            <div key={`empty-${i}`} className="h-20 border border-gray-200 rounded-lg p-2"></div>
+                          )
+                        }
+                        
+                        // Add days of the month
+                        for (let day = 1; day <= daysInMonth; day++) {
+                          const dayEvents = allMonthEvents.filter(event => {
+                            const eventDate = new Date(event.date)
+                            return eventDate.getDate() === day
+                          })
+                          
+                          const isToday = new Date().toDateString() === new Date(year, month, day).toDateString()
+                          
+                          cells.push(
+                            <div 
+                              key={day} 
+                              className={`h-20 border border-gray-200 rounded-lg p-2 cursor-pointer transition-colors ${
+                                isToday ? 'bg-blue-50 border-blue-300' : 
+                                dayEvents.length > 0 ? 'bg-gray-50 border-gray-300' : 'hover:bg-gray-50'
+                              }`}
+                            >
+                              <div className={`text-sm font-medium ${isToday ? 'text-blue-900' : 'text-gray-900'}`}>
+                                {day}
+                              </div>
+                              {dayEvents.slice(0, 2).map((event, index) => (
+                                <div 
+                                  key={index}
+                                  className={`text-xs mt-1 truncate ${
+                                    event.type === 'consultation' ? 'text-indigo-600' :
+                                    event.color === 'blue' ? 'text-blue-600' :
+                                    event.color === 'green' ? 'text-green-600' :
+                                    event.color === 'red' ? 'text-red-600' :
+                                    event.color === 'yellow' ? 'text-yellow-600' :
+                                    event.color === 'orange' ? 'text-orange-600' :
+                                    event.color === 'purple' ? 'text-purple-600' : 'text-gray-600'
+                                  }`}
+                                >
+                                  {event.title}
+                                </div>
+                              ))}
+                              {dayEvents.length > 2 && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  +{dayEvents.length - 2} more
+                                </div>
+                              )}
+                            </div>
+                          )
+                        }
+                        
+                        return cells
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -1658,28 +1971,60 @@ export default function PremiumAdminDashboard() {
                 <div className="mt-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h3>
                   <div className="space-y-4">
-                    {[
-                      { title: 'Project Alpha Review', date: 'Jan 15, 2024', type: 'deadline', color: 'blue' },
-                      { title: 'Client Meeting - Beta Project', date: 'Jan 18, 2024', type: 'meeting', color: 'green' },
-                      { title: 'Sprint Planning', date: 'Jan 22, 2024', type: 'planning', color: 'purple' },
-                      { title: 'Project Gamma Delivery', date: 'Jan 28, 2024', type: 'delivery', color: 'red' }
-                    ].map((event, index) => (
+                    {/* Regular Calendar Events */}
+                    {calendarEvents.slice(0, 10).map((event, index) => (
                       <div key={index} className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
                         <div className={`w-3 h-3 rounded-full mr-4 ${
                           event.color === 'blue' ? 'bg-blue-500' :
                           event.color === 'green' ? 'bg-green-500' :
-                          event.color === 'purple' ? 'bg-purple-500' : 'bg-red-500'
+                          event.color === 'purple' ? 'bg-purple-500' :
+                          event.color === 'red' ? 'bg-red-500' :
+                          event.color === 'yellow' ? 'bg-yellow-500' :
+                          event.color === 'orange' ? 'bg-orange-500' : 'bg-gray-500'
                         }`}></div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{event.title}</h4>
-                          <p className="text-sm text-gray-600">{event.date}</p>
+                          <p className="text-sm text-gray-600">{new Date(event.date).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          })}</p>
                         </div>
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                           event.color === 'blue' ? 'bg-blue-100 text-blue-800' :
                           event.color === 'green' ? 'bg-green-100 text-green-800' :
-                          event.color === 'purple' ? 'bg-purple-100 text-purple-800' : 'bg-red-100 text-red-800'
+                          event.color === 'purple' ? 'bg-purple-100 text-purple-800' :
+                          event.color === 'red' ? 'bg-red-100 text-red-800' :
+                          event.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                          event.color === 'orange' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800'
                         }`}>
                           {event.type}
+                        </span>
+                      </div>
+                    ))}
+                    
+                    {/* Consultation Events */}
+                    {consultations.slice(0, 5).map((consultation, index) => (
+                      <div key={`cons-${consultation.id}`} className="flex items-center p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                        <div className="w-3 h-3 rounded-full mr-4 bg-indigo-500"></div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">Consultation - {consultation.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {new Date(consultation.preferredDate).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              year: 'numeric' 
+                            })} at {consultation.preferredTime}
+                          </p>
+                          <p className="text-xs text-gray-500">{consultation.projectType}</p>
+                        </div>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          consultation.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                          consultation.status === 'contacted' ? 'bg-blue-100 text-blue-800' :
+                          consultation.status === 'scheduled' ? 'bg-green-100 text-green-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {consultation.status}
                         </span>
                       </div>
                     ))}
@@ -1828,14 +2173,23 @@ export default function PremiumAdminDashboard() {
                     <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Communications</h2>
                     <p className="text-gray-600 mt-2">Track all client communications, emails, and meetings</p>
                   </div>
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Communication
-                  </button>
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={handleGenerateCommunications}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Generate Communications
+                    </button>
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Communication
+                    </button>
+                  </div>
                 </div>
 
                 {/* Communication Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                   <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
                     <div className="flex items-center">
                       <div className="p-3 bg-blue-500 rounded-lg">
@@ -1843,7 +2197,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-blue-600">Total Messages</p>
-                        <p className="text-2xl font-bold text-blue-900">24</p>
+                        <p className="text-2xl font-bold text-blue-900">{communicationStats.totalMessages}</p>
                       </div>
                     </div>
                   </div>
@@ -1854,7 +2208,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-green-600">Emails</p>
-                        <p className="text-2xl font-bold text-green-900">18</p>
+                        <p className="text-2xl font-bold text-green-900">{communicationStats.emails}</p>
                       </div>
                     </div>
                   </div>
@@ -1865,7 +2219,7 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-purple-600">Calls</p>
-                        <p className="text-2xl font-bold text-purple-900">6</p>
+                        <p className="text-2xl font-bold text-purple-900">{communicationStats.calls}</p>
                       </div>
                     </div>
                   </div>
@@ -1876,7 +2230,18 @@ export default function PremiumAdminDashboard() {
                       </div>
                       <div className="ml-4">
                         <p className="text-sm font-medium text-yellow-600">Meetings</p>
-                        <p className="text-2xl font-bold text-yellow-900">4</p>
+                        <p className="text-2xl font-bold text-yellow-900">{communicationStats.meetings}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+                    <div className="flex items-center">
+                      <div className="p-3 bg-indigo-500 rounded-lg">
+                        <MessageSquare className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-indigo-600">Consultations</p>
+                        <p className="text-2xl font-bold text-indigo-900">{consultations.length}</p>
                       </div>
                     </div>
                   </div>
@@ -1884,12 +2249,8 @@ export default function PremiumAdminDashboard() {
 
                 {/* Recent Communications */}
                 <div className="space-y-4">
-                  {[
-                    { type: 'email', client: 'Acme Inc.', subject: 'Project Update', time: '2 hours ago', status: 'sent' },
-                    { type: 'call', client: 'Globex Corp.', subject: 'Requirements Discussion', time: '1 day ago', status: 'completed' },
-                    { type: 'meeting', client: 'Soylent Corp.', subject: 'Design Review', time: '2 days ago', status: 'scheduled' },
-                    { type: 'email', client: 'New Client', subject: 'Welcome Message', time: '3 days ago', status: 'sent' }
-                  ].map((comm, index) => (
+                  {/* Regular Communications */}
+                  {communications.slice(0, 10).map((comm, index) => (
                     <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start">
@@ -1903,16 +2264,54 @@ export default function PremiumAdminDashboard() {
                           </div>
                           <div>
                             <h4 className="font-medium text-gray-900">{comm.subject}</h4>
-                            <p className="text-sm text-gray-600">with {comm.client}</p>
-                            <p className="text-xs text-gray-500 mt-1">{comm.time}</p>
+                            <p className="text-sm text-gray-600">{comm.recipient_email || 'No recipient'}</p>
+                            <p className="text-xs text-gray-500 mt-1">{new Date(comm.created_at).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                             comm.status === 'sent' ? 'bg-green-100 text-green-800' :
-                            comm.status === 'completed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                            comm.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                            comm.status === 'scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                            comm.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                            comm.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                           }`}>
                             {comm.status}
+                          </span>
+                          <button className="text-gray-400 hover:text-gray-600">
+                            <Eye className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Consultation Requests */}
+                  {consultations.slice(0, 5).map((consultation, index) => (
+                    <div key={`cons-${consultation.id}`} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start">
+                          <div className="p-3 rounded-lg mr-4 bg-indigo-100">
+                            <MessageSquare className="h-5 w-5 text-indigo-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Consultation Request - {consultation.projectType}</h4>
+                            <p className="text-sm text-gray-600">{consultation.name} ({consultation.email})</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {consultation.company && `${consultation.company} • `}
+                              Preferred: {consultation.preferredDate} at {consultation.preferredTime}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{new Date(consultation.createdAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            consultation.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                            consultation.status === 'contacted' ? 'bg-blue-100 text-blue-800' :
+                            consultation.status === 'scheduled' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {consultation.status}
                           </span>
                           <button className="text-gray-400 hover:text-gray-600">
                             <Eye className="h-4 w-4" />
@@ -1928,117 +2327,7 @@ export default function PremiumAdminDashboard() {
             {/* Analytics Tab */}
             {activeTab === 'analytics' && (
               <div className="p-6 lg:p-8">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 lg:mb-8 gap-4">
-                  <div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">Analytics</h2>
-                    <p className="text-gray-600 mt-2">Track website performance, user behavior, and business metrics</p>
-                  </div>
-                  <div className="flex space-x-3">
-                    <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Last 30 Days
-                    </button>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Export Report
-                    </button>
-                  </div>
-                </div>
-
-                {/* Analytics Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-                    <div className="flex items-center">
-                      <div className="p-3 bg-blue-500 rounded-lg">
-                        <TrendingUp className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-blue-600">Website Visitors</p>
-                        <p className="text-2xl font-bold text-blue-900">2,847</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-                    <div className="flex items-center">
-                      <div className="p-3 bg-green-500 rounded-lg">
-                        <MessageSquare className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-green-600">Contact Forms</p>
-                        <p className="text-2xl font-bold text-green-900">23</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-                    <div className="flex items-center">
-                      <div className="p-3 bg-purple-500 rounded-lg">
-                        <DollarSign className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-purple-600">Conversion Rate</p>
-                        <p className="text-2xl font-bold text-purple-900">8.1%</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl p-6 border border-yellow-200">
-                    <div className="flex items-center">
-                      <div className="p-3 bg-yellow-500 rounded-lg">
-                        <Clock className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="ml-4">
-                        <p className="text-sm font-medium text-yellow-600">Avg. Session</p>
-                        <p className="text-2xl font-bold text-yellow-900">3:24</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Charts Placeholder */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Traffic Overview</h3>
-                    <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                      <div className="text-center">
-                        <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-500">Chart will be displayed here</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Conversion Funnel</h3>
-                    <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                      <div className="text-center">
-                        <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-500">Chart will be displayed here</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Top Pages */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Pages</h3>
-                  <div className="space-y-4">
-                    {[
-                      { page: '/', views: 1247, bounce: '45%' },
-                      { page: '/services', views: 892, bounce: '38%' },
-                      { page: '/portfolio', views: 654, bounce: '52%' },
-                      { page: '/about', views: 423, bounce: '41%' },
-                      { page: '/contact', views: 312, bounce: '28%' }
-                    ].map((page, index) => (
-                      <div key={index} className="flex items-center justify-between py-2">
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                          <span className="font-medium text-gray-900">{page.page}</span>
-                        </div>
-                        <div className="flex items-center space-x-6">
-                          <span className="text-sm text-gray-600">{page.views} views</span>
-                          <span className="text-sm text-gray-600">{page.bounce} bounce</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <AnalyticsDashboard onGenerateReport={() => setPdfReportOpen(true)} />
               </div>
             )}
 
@@ -2451,6 +2740,77 @@ export default function PremiumAdminDashboard() {
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Recent Consultations */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Recent Consultations</h3>
+                    <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                      {consultations.length} Total
+                    </span>
+                  </div>
+                  
+                  {consultations.length > 0 ? (
+                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Time</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {consultations.slice(0, 5).map((consultation) => (
+                              <tr key={consultation.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
+                                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                      <User className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div className="ml-4">
+                                      <div className="text-sm font-medium text-gray-900">{consultation.name}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{consultation.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{consultation.company || 'N/A'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {consultation.preferredDate && consultation.preferredTime 
+                                    ? new Date(`${consultation.preferredDate}T${consultation.preferredTime}`).toLocaleString()
+                                    : 'Not specified'
+                                  }
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                    consultation.status === 'pending' 
+                                      ? 'bg-yellow-100 text-yellow-800' 
+                                      : 'bg-green-100 text-green-800'
+                                  }`}>
+                                    {consultation.status}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {new Date(consultation.createdAt).toLocaleDateString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-gray-50 rounded-xl">
+                      <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No consultations yet</h3>
+                      <p className="text-gray-500">Consultation requests will appear here when clients submit them.</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* System Statistics */}
@@ -2885,6 +3245,12 @@ export default function PremiumAdminDashboard() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* PDF Report Generator */}
+      <PDFReportGenerator
+        isOpen={pdfReportOpen}
+        onClose={() => setPdfReportOpen(false)}
+      />
     </div>
   )
 }

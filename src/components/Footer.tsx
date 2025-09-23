@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Code, Mail, Phone, MapPin, Github, Linkedin, Twitter } from 'lucide-react'
+import { Code, Mail } from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -14,22 +14,11 @@ export default function Footer() {
               <div className="bg-primary-600 p-2 rounded-lg">
                 <Code className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold">WebApp Solutions</span>
+              <span className="text-xl font-bold">AtarWeb</span>
             </div>
             <p className="text-secondary-300 text-sm leading-relaxed">
               Professional web development services that transform your business ideas into powerful digital solutions.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-secondary-400 hover:text-white transition-colors duration-200">
-                <Github className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-secondary-400 hover:text-white transition-colors duration-200">
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-secondary-400 hover:text-white transition-colors duration-200">
-                <Twitter className="h-5 w-5" />
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -87,15 +76,11 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400" />
-                <span className="text-secondary-300">hello@webappsolutions.com</span>
+                <span className="text-secondary-300">support@atarweb.com</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-primary-400" />
-                <span className="text-secondary-300">+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-5 w-5 text-primary-400" />
-                <span className="text-secondary-300">San Francisco, CA</span>
+              <div className="text-secondary-300 text-sm">
+                Available 7am-5pm PST<br />
+                Monday-Friday
               </div>
             </div>
           </div>
@@ -104,7 +89,7 @@ export default function Footer() {
         <div className="border-t border-secondary-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-secondary-400 text-sm">
-              © {currentYear} WebApp Solutions. All rights reserved.
+              © {currentYear} AtarWeb. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/privacy" className="text-secondary-400 hover:text-white text-sm transition-colors duration-200">

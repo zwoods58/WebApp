@@ -24,7 +24,7 @@ const pricingPlans = [
       'Advanced features',
       'Database design',
       'API development',
-      '6 months support',
+      '12 months support',
       'Advanced analytics',
       'Performance optimization',
       'Security audit'

@@ -10,7 +10,7 @@ const testimonials = [
     company: 'TechStart Inc.',
     role: 'CEO',
     image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-    content: 'WebApp Solutions transformed our business with their exceptional e-commerce platform. The team\'s attention to detail and commitment to quality is unmatched. Our sales increased by 150% in just 6 months.',
+    content: 'AtarWeb transformed our business with their exceptional e-commerce platform. The team\'s attention to detail and commitment to quality is unmatched. Our sales increased by 150% in just 6 months.',
     rating: 5
   },
   {
@@ -28,7 +28,7 @@ const testimonials = [
     company: 'HealthCare Plus',
     role: 'Operations Director',
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-    content: 'Working with WebApp Solutions was a game-changer for our healthcare management system. They understood our compliance requirements and delivered a secure, scalable solution that our team loves to use.',
+    content: 'Working with AtarWeb was a game-changer for our healthcare management system. They understood our compliance requirements and delivered a secure, scalable solution that our team loves to use.',
     rating: 5
   },
   {
