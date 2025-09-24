@@ -460,8 +460,8 @@ export default function Portfolio() {
                 />
               </div>
 
-              <div className="p-6 space-y-4">
-                <div>
+              <div className="p-6">
+                <div className="mb-4">
                   <h3 className="text-xl font-semibold text-secondary-900 mb-2">
                     {project.title}
                   </h3>
@@ -470,7 +470,7 @@ export default function Portfolio() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech, index) => (
                     <span
                       key={index}
@@ -481,7 +481,7 @@ export default function Portfolio() {
                   ))}
                 </div>
 
-                <div className="flex justify-between items-center pt-4">
+                <div className="flex justify-between items-center mb-4">
                   <div className="flex space-x-4 text-sm text-secondary-600">
                     {Object.entries(project.results).map(([key, value], index) => (
                       <div key={index} className="text-center">
@@ -491,11 +491,11 @@ export default function Portfolio() {
                     ))}
                   </div>
                 </div>
-
-                <div className="pt-4">
-                  <div className="w-full bg-red-500 text-white font-bold py-4 px-8 rounded-lg text-center text-lg">
-                    TEST BUTTON - {project.title}
-                  </div>
+              </div>
+              
+              <div className="px-6 pb-6">
+                <div className="w-full bg-red-500 text-white font-bold py-4 px-8 rounded-lg text-center text-lg">
+                  TEST BUTTON - {project.title}
                 </div>
               </div>
             </div>
