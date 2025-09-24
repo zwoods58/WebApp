@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, CreditCard, CheckCircle, AlertCircle } from 'lucide-react'
-import StripePaymentButton from './StripePaymentButton'
+import { X, CreditCard, CheckCircle, AlertCircle, Mail } from 'lucide-react'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -117,16 +116,23 @@ export default function PaymentModal({ isOpen, onClose, consultationData }: Paym
             </div>
           )}
 
-          {/* Payment Form */}
-          <StripePaymentButton
-            amount={consultationData.totalAmount}
-            consultationId={consultationData.id}
-            clientEmail={consultationData.email}
-            clientName={consultationData.name}
-            serviceType={consultationData.serviceType}
-            onSuccess={handlePaymentSuccess}
-            onError={handlePaymentError}
-          />
+          {/* Manual Payment Information */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <Mail className="w-6 h-6 text-blue-600" />
+              <h3 className="font-semibold text-blue-900">Payment Information</h3>
+            </div>
+            <p className="text-blue-700 mb-4">
+              We will send you a payment link via email after your consultation is confirmed.
+            </p>
+            <div className="bg-white border border-blue-200 rounded-lg p-4">
+              <h4 className="font-medium text-blue-900 mb-2">Total Amount:</h4>
+              <p className="text-2xl font-bold text-blue-600">${consultationData.totalAmount}</p>
+            </div>
+            <p className="text-sm text-blue-600 mt-4">
+              You will receive payment instructions via email at <strong>{consultationData.email}</strong>
+            </p>
+          </div>
         </div>
       </div>
     </div>

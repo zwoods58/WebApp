@@ -148,34 +148,27 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess }: Consul
         submitData.append('uploadedFile', formData.uploadedFile)
       }
 
-      console.log('Submitting consultation with data:', {
-        name: formData.name,
-        email: formData.email,
-        preferredDate: formData.preferredDate,
-        preferredTime: formData.preferredTime
-      })
+      console.log('Submitting consultation request...')
 
       // Submit consultation request
       const response = await fetch('/api/consultation/submit', {
         method: 'POST',
         body: submitData
+        // Don't set Content-Type - let FormData set it automatically with boundary
       })
 
       console.log('Response status:', response.status)
       
           if (response.ok) {
             const result = await response.json()
-            console.log('Consultation submitted successfully:', result)
-            console.log('Setting success state...')
+            console.log('Consultation submitted successfully!')
             setIsSuccess(true)
             setTimeout(() => {
-              console.log('Calling onSuccess and onClose...')
               onSuccess(result.consultation)
               onClose()
             }, 2000)
           } else {
             const errorData = await response.json()
-            console.error('API Error:', errorData)
             throw new Error(errorData.error || 'Failed to submit consultation request')
           }
     } catch (error) {

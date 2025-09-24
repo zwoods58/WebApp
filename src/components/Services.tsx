@@ -1,10 +1,9 @@
 'use client'
 
-import { Code, Smartphone, ArrowRight, CheckCircle, X, DollarSign, Plus, Building2, FileText, CreditCard } from 'lucide-react'
+import { Code, Smartphone, ArrowRight, CheckCircle, X, DollarSign, Plus, Building2, FileText } from 'lucide-react'
 import { useState } from 'react'
 import QuoteConfirmationModal from './QuoteConfirmationModal'
 import ConsultationModal from './ConsultationModal'
-import PaymentModal from './PaymentModal'
 
 interface AddOn {
   name: string
@@ -90,7 +89,6 @@ export default function Services() {
   const [selectedAddOns, setSelectedAddOns] = useState<Record<string, boolean>>({})
   const [showQuoteModal, setShowQuoteModal] = useState(false)
   const [showConsultationModal, setShowConsultationModal] = useState(false)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [consultationData, setConsultationData] = useState<any>(null)
 
   const toggleAddOn = (serviceIndex: number, addOnIndex: number) => {
@@ -124,18 +122,9 @@ export default function Services() {
   const handleConsultationSuccess = (consultation: any) => {
     setConsultationData(consultation)
     setShowConsultationModal(false)
-    setShowPaymentModal(true)
-  }
-
-  const handlePaymentSuccess = () => {
-    setShowPaymentModal(false)
+    // Reset form after successful submission
     setSelectedService(null)
     setSelectedAddOns({})
-    setConsultationData(null)
-  }
-
-  const handlePaymentClose = () => {
-    setShowPaymentModal(false)
     setConsultationData(null)
   }
 
@@ -397,22 +386,6 @@ export default function Services() {
         onSuccess={handleConsultationSuccess}
       />
 
-      {/* Payment Modal */}
-      {consultationData && selectedService && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={handlePaymentClose}
-          consultationData={{
-            id: consultationData.id,
-            name: consultationData.name,
-            email: consultationData.email,
-            company: consultationData.company,
-            projectDetails: consultationData.projectDetails,
-            serviceType: selectedService.title,
-            totalAmount: calculateTotal(selectedService)
-          }}
-        />
-      )}
     </section>
   )
 }
