@@ -493,13 +493,9 @@ export default function Portfolio() {
                 </div>
 
                 <div className="pt-4">
-                  <Link 
-                    href={project.demoUrl || '#'}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-8 rounded-lg text-center inline-flex items-center justify-center text-lg"
-                  >
-                    <ExternalLink className="h-5 w-5 mr-2" />
-                    LIVE DEMO - {project.title}
-                  </Link>
+                  <div className="w-full bg-red-500 text-white font-bold py-4 px-8 rounded-lg text-center text-lg">
+                    TEST BUTTON - {project.title}
+                  </div>
                 </div>
               </div>
             </div>
