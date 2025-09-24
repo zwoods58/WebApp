@@ -1941,12 +1941,12 @@ export default function PremiumAdminDashboard() {
                                   key={index}
                                   className={`text-xs mt-1 truncate ${
                                     event.type === 'consultation' ? 'text-indigo-600' :
-                                    event.color === 'blue' ? 'text-blue-600' :
-                                    event.color === 'green' ? 'text-green-600' :
-                                    event.color === 'red' ? 'text-red-600' :
-                                    event.color === 'yellow' ? 'text-yellow-600' :
-                                    event.color === 'orange' ? 'text-orange-600' :
-                                    event.color === 'purple' ? 'text-purple-600' : 'text-gray-600'
+                                    (event as any).color === 'blue' ? 'text-blue-600' :
+                                    (event as any).color === 'green' ? 'text-green-600' :
+                                    (event as any).color === 'red' ? 'text-red-600' :
+                                    (event as any).color === 'yellow' ? 'text-yellow-600' :
+                                    (event as any).color === 'orange' ? 'text-orange-600' :
+                                    (event as any).color === 'purple' ? 'text-purple-600' : 'text-gray-600'
                                   }`}
                                 >
                                   {event.title}

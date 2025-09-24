@@ -61,7 +61,7 @@ function PaymentForm({ amount, consultationId, clientEmail, clientName, serviceT
       }
 
       // Confirm payment
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      const result = await stripe.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
@@ -69,13 +69,13 @@ function PaymentForm({ amount, consultationId, clientEmail, clientName, serviceT
         },
       })
 
-      if (error) {
+      if (result.error) {
         setPaymentStatus('failed')
-        setErrorMessage(error.message || 'Payment failed')
-        onError(error.message || 'Payment failed')
-      } else if (paymentIntent.status === 'succeeded') {
+        setErrorMessage(result.error.message || 'Payment failed')
+        onError(result.error.message || 'Payment failed')
+      } else if ('paymentIntent' in result && (result.paymentIntent as any)?.status === 'succeeded') {
         setPaymentStatus('succeeded')
-        onSuccess(paymentIntent.id)
+        onSuccess((result.paymentIntent as any).id)
       }
     } catch (error) {
       console.error('Payment error:', error)

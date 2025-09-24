@@ -13,8 +13,45 @@ interface StripeProviderProps {
 }
 
 export default function StripeProvider({ children, clientSecret }: StripeProviderProps) {
-  const options = {
+  const options: any = clientSecret ? {
     clientSecret,
+    appearance: {
+      theme: 'stripe' as const,
+      variables: {
+        colorPrimary: '#6366f1',
+        colorBackground: '#ffffff',
+        colorText: '#1f2937',
+        colorDanger: '#ef4444',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        spacingUnit: '4px',
+        borderRadius: '8px',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid #d1d5db',
+          borderRadius: '8px',
+          padding: '12px',
+          fontSize: '16px',
+          '&:focus': {
+            borderColor: '#6366f1',
+            boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.1)',
+          },
+        },
+        '.Label': {
+          fontSize: '14px',
+          fontWeight: '500',
+          color: '#374151',
+          marginBottom: '6px',
+        },
+        '.Error': {
+          color: '#ef4444',
+          fontSize: '14px',
+          marginTop: '4px',
+        },
+      },
+    },
+  } : {
+    mode: 'payment' as const,
     appearance: {
       theme: 'stripe' as const,
       variables: {

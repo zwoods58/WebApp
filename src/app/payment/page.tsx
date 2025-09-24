@@ -9,10 +9,10 @@ import StripePaymentButton from '@/components/StripePaymentButton'
 export default function PaymentPage() {
   const searchParams = useSearchParams()
   const consultationId = searchParams.get('consultationId')
-  const paymentType = searchParams.get('type') || 'deposit' // 'deposit' or 'final'
-  const [consultation, setConsultation] = useState(null)
+  const paymentType = (searchParams.get('type') || 'deposit') as 'deposit' | 'final'
+  const [consultation, setConsultation] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (consultationId) {

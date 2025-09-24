@@ -9,9 +9,9 @@ export default function SimplePaymentPage() {
   const searchParams = useSearchParams()
   const consultationId = searchParams.get('consultationId')
   const paymentType = searchParams.get('type') || 'deposit'
-  const [consultation, setConsultation] = useState(null)
+  const [consultation, setConsultation] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
   const [checkoutUrl, setCheckoutUrl] = useState(null)
   const [creatingCheckout, setCreatingCheckout] = useState(false)
 

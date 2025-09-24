@@ -180,7 +180,7 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess }: Consul
           }
     } catch (error) {
       console.error('Error submitting consultation:', error)
-      alert(`Failed to submit consultation request: ${error.message}`)
+      alert(`Failed to submit consultation request: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsSubmitting(false)
     }
