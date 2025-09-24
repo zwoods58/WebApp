@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { 
   Calendar, 
   Users, 
+  User,
   CheckSquare, 
   MessageSquare, 
   BarChart3, 
