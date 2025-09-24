@@ -1,19 +1,11 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
-import { createClient } from '@supabase/supabase-js'
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
-// Initialize Supabase client function
-function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  )
-}
 
 // Rate limiting storage
 const rateLimitStore = new Map()
@@ -84,36 +76,9 @@ export async function POST(req) {
       )
     }
 
-    // Store project request in Supabase
-    const supabase = getSupabaseClient()
-    const { data: storedProject, error: dbError } = await supabase
-      .from('project_requests')
-      .insert([
-        {
-          name: projectData.name,
-          email: projectData.email,
-          phone: projectData.phone,
-          company: projectData.company,
-          project_type: projectData.projectType,
-          budget: projectData.budget,
-          timeline: projectData.timeline,
-          description: projectData.description,
-          requirements: projectData.requirements,
-          status: 'new'
-        }
-      ])
-      .select()
-      .single()
-
-    if (dbError) {
-      console.error('Database error:', dbError)
-      return NextResponse.json(
-        { error: 'Failed to store project request' },
-        { status: 500 }
-      )
-    }
-
-    console.log('Stored project request successfully:', storedProject.id)
+    // Generate a simple project ID
+    const projectId = `PROJ-${Date.now().toString().slice(-6)}`
+    console.log('Generated project ID:', projectId)
 
     // Send email to admin using SendGrid
     console.log('Starting email sending process...')
@@ -190,11 +155,11 @@ export async function POST(req) {
     }
 
     // Return success response
-    return NextResponse.json({
-      success: true,
-      message: 'Project request submitted successfully',
-      projectId: storedProject.id
-    })
+        return NextResponse.json({
+          success: true,
+          message: 'Project request submitted successfully',
+          projectId: projectId
+        })
 
   } catch (error) {
     console.error('Project request submission error:', error)

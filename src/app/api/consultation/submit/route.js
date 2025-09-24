@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 import jsPDF from 'jspdf'
-import { addConsultation } from '../../../../lib/consultations-supabase-storage'
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -115,19 +114,9 @@ export async function POST(req) {
       timeZoneName: 'short'
     })
 
-        // Store consultation data first
-        const storedConsultation = await addConsultation({
-          name: consultationData.name,
-          email: consultationData.email,
-          phone: consultationData.phone,
-          company: consultationData.company,
-          projectDetails: consultationData.projectDetails,
-          preferredDate: consultationData.preferredDate,
-          preferredTime: consultationData.preferredTime,
-          hasFileUpload: !!consultationData.uploadedFile
-        })
-
-    console.log('Stored consultation successfully:', storedConsultation.id)
+        // Generate a simple consultation ID
+        const consultationId = `CONS-${Date.now().toString().slice(-6)}`
+        console.log('Generated consultation ID:', consultationId)
 
     // Generate PDF for email attachment
     console.log('Generating PDF...')
@@ -137,7 +126,7 @@ export async function POST(req) {
       day: 'numeric'
     })
     
-    const quoteNumber = (storedConsultation.id || `CONS-${Date.now().toString().slice(-6)}`).substring(0, 8)
+        const quoteNumber = consultationId.substring(0, 8)
     
     // Create PDF using jsPDF directly
     const pdf = new jsPDF()
@@ -147,12 +136,12 @@ export async function POST(req) {
     pdf.text('AtarWeb Professional Quote', 50, 30)
     pdf.text(`Quote #: ${quoteNumber}`, 50, 50)
     pdf.text(`Date: ${currentDate}`, 50, 70)
-    pdf.text(`Client: ${storedConsultation.name}`, 50, 90)
-    pdf.text(`Email: ${storedConsultation.email}`, 50, 110)
-    pdf.text(`Company: ${storedConsultation.company || 'Not provided'}`, 50, 130)
+    pdf.text(`Client: ${consultationData.name}`, 50, 90)
+    pdf.text(`Email: ${consultationData.email}`, 50, 110)
+    pdf.text(`Company: ${consultationData.company || 'Not provided'}`, 50, 130)
     pdf.text(`Preferred Time: ${formattedDateTime}`, 50, 150)
     pdf.text('Project Details:', 50, 170)
-    pdf.text(storedConsultation.projectDetails || 'No details provided', 50, 190)
+    pdf.text(consultationData.projectDetails || 'No details provided', 50, 190)
     
     console.log('PDF generated successfully')
     
@@ -192,7 +181,7 @@ export async function POST(req) {
           attachments: [
             {
               content: pdfBuffer.toString('base64'),
-              filename: `AtarWeb-Quote-${storedConsultation.id.substring(0, 8)}.pdf`,
+                  filename: `AtarWeb-Quote-${consultationId.substring(0, 8)}.pdf`,
               type: 'application/pdf',
               disposition: 'attachment'
             }
@@ -225,7 +214,7 @@ export async function POST(req) {
           attachments: [
             {
               content: pdfBuffer.toString('base64'),
-              filename: `AtarWeb-Quote-${storedConsultation.id.substring(0, 8)}.pdf`,
+                  filename: `AtarWeb-Quote-${consultationId.substring(0, 8)}.pdf`,
               type: 'application/pdf',
               disposition: 'attachment'
             }
@@ -248,11 +237,11 @@ export async function POST(req) {
     }
 
     // Return success response
-    return NextResponse.json({
-      success: true,
-      message: 'Consultation request submitted successfully',
-      consultationId: storedConsultation.id
-    })
+        return NextResponse.json({
+          success: true,
+          message: 'Consultation request submitted successfully',
+          consultationId: consultationId
+        })
 
   } catch (error) {
     console.error('Consultation submission error:', error)
