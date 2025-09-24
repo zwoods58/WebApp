@@ -640,13 +640,9 @@ export default function HealthcareDemo() {
             >
               <div className="flex items-center space-x-4 mb-4">
                 <div className="relative">
-                  <Image
-                    src={patient.avatar}
-                    alt={patient.name}
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                  />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
                   <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(patient.status)}`}></div>
                 </div>
                 <div>

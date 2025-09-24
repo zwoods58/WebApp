@@ -663,13 +663,9 @@ export default function ProjectManagementDemo() {
             >
               <div className="flex items-center space-x-4 mb-4">
                 <div className="relative">
-                  <Image
-                    src={member.avatar}
-                    alt={member.name}
-                    width={50}
-                    height={50}
-                    className="rounded-full"
-                  />
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
                   <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
                     member.status === 'online' ? 'bg-green-500' :
                     member.status === 'away' ? 'bg-yellow-500' :
