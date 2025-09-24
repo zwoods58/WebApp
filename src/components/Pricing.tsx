@@ -100,15 +100,6 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <button
-                className={`w-full py-3 px-6 rounded-lg font-medium transition-colors duration-200 ${
-                  plan.popular
-                    ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                    : 'bg-secondary-100 hover:bg-secondary-200 text-secondary-900'
-                }`}
-              >
-                Get Started
-              </button>
             </div>
           ))}
         </div>
