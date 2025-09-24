@@ -227,7 +227,7 @@ export class NotificationService {
         </div>
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 14px;">
           <p>This email was sent from AtarWeb Solutions admin dashboard.</p>
-          <p>If you have any questions, please contact us at support@atarweb.com</p>
+          <p>If you have any questions, please contact us at admin@atarweb.com</p>
         </div>
       </div>
     `

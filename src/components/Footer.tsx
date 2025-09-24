@@ -76,7 +76,7 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400" />
-                <span className="text-secondary-300">support@atarweb.com</span>
+                <span className="text-secondary-300">admin@atarweb.com</span>
               </div>
               <div className="text-secondary-300 text-sm">
                 Available 7am-5pm PST<br />

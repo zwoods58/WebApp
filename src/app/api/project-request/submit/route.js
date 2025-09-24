@@ -164,7 +164,7 @@ export async function POST(req) {
                 <p><strong>Company:</strong> ${projectData.company || 'Not provided'}</p>
                 <p><strong>Phone:</strong> ${projectData.phone || 'Not provided'}</p>
               </div>
-              <p>If you have any immediate questions, please don't hesitate to contact us at <a href="mailto:support@atarweb.com">support@atarweb.com</a>.</p>
+              <p>If you have any immediate questions, please don't hesitate to contact us at <a href="mailto:admin@atarweb.com">admin@atarweb.com</a>.</p>
               <p>We look forward to working with you!</p>
               <p>Best regards,<br>The AtarWeb Team</p>
             </div>

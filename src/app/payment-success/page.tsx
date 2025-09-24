@@ -175,7 +175,7 @@ export default function PaymentSuccessPage() {
             Questions about your payment or project?
           </p>
           <p className="text-blue-600 font-semibold">
-            Email us at support@atarweb.com
+            Email us at admin@atarweb.com
           </p>
         </div>
       </div>

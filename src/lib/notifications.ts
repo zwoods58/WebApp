@@ -259,7 +259,7 @@ export async function notifyNewProjectRequest(projectRequest: {
     await sendEmailNotification(
       projectRequest.email,
       'Project Request Received - AtarWeb',
-      `Dear ${projectRequest.name},\n\nThank you for your project request for ${projectRequest.project_type}.\n\nWe have received your request and will review it carefully. Our team will contact you within 24 hours to discuss your project requirements and next steps.\n\nIf you have any immediate questions, please don't hesitate to contact us at support@atarweb.com.\n\nBest regards,\nThe AtarWeb Team`
+      `Dear ${projectRequest.name},\n\nThank you for your project request for ${projectRequest.project_type}.\n\nWe have received your request and will review it carefully. Our team will contact you within 24 hours to discuss your project requirements and next steps.\n\nIf you have any immediate questions, please don't hesitate to contact us at admin@atarweb.com.\n\nBest regards,\nThe AtarWeb Team`
     )
 
     return {

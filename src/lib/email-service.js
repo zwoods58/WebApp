@@ -22,7 +22,7 @@ export const sendDepositInvoiceEmail = async (consultation) => {
         email: 'noreply@atarweb.com',
         name: 'AtarWeb'
       },
-      replyTo: 'support@atarweb.com',
+      replyTo: 'admin@atarweb.com',
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
@@ -53,7 +53,7 @@ export const sendFinalInvoiceEmail = async (consultation) => {
         email: 'noreply@atarweb.com',
         name: 'AtarWeb'
       },
-      replyTo: 'support@atarweb.com',
+      replyTo: 'admin@atarweb.com',
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,

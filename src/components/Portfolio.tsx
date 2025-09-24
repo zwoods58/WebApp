@@ -165,81 +165,6 @@ const caseStudies = [
   },
   {
     id: 3,
-    title: 'Mobile Banking App',
-    description: 'A secure mobile banking application with biometric authentication, real-time transactions, and comprehensive financial management.',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2126&q=80',
-    technologies: ['React Native', 'Node.js', 'PostgreSQL', 'Redis'],
-    results: {
-      security: '100%',
-      users: '+25K',
-      performance: '99.8%'
-    },
-    liveUrl: '/admin',
-    githubUrl: 'https://github.com/atarweb',
-    slug: 'mobile-banking',
-    demoUrl: '/demo/mobile-banking',
-    // Enhanced details for popup
-    detailedDescription: 'The mobile banking app was our most ambitious project yet. After mastering web development with the previous projects, we wanted to tackle mobile development and learn about financial technology. This project taught us about security, compliance, and the unique challenges of handling sensitive financial data. We learned about biometric authentication, encryption, and how to build trust in a digital financial product.',
-    features: [
-      'Biometric authentication (fingerprint, face ID)',
-      'Real-time transaction processing and notifications',
-      'Multi-account management (checking, savings, credit)',
-      'Bill payment and money transfer capabilities',
-      'Investment tracking and portfolio management',
-      'Budgeting tools and spending analytics'
-    ],
-    learningChallenges: [
-      'Understanding financial security and compliance requirements',
-      'Learning mobile development with React Native',
-      'Mastering biometric authentication implementation',
-      'Implementing end-to-end encryption for sensitive data'
-    ],
-    technicalSolutions: [
-      'Built cross-platform app with React Native',
-      'Implemented biometric authentication with secure storage',
-      'Created real-time transaction processing system',
-      'Developed comprehensive security and encryption protocols'
-    ],
-    timeline: '16 weeks',
-    team: '5 developers',
-    projectType: 'Internal Learning Project',
-    slideshow: [
-      {
-        id: 1,
-        title: 'Login Screen',
-        description: 'Secure login with biometric authentication and multi-factor verification',
-        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Biometric login', 'PIN verification', 'Face ID support', 'Secure storage']
-      },
-      {
-        id: 2,
-        title: 'Account Overview',
-        description: 'Comprehensive account dashboard with real-time balance and transaction history',
-        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Account balances', 'Recent transactions', 'Quick actions', 'Notifications']
-      },
-      {
-        id: 3,
-        title: 'Transfer Money',
-        description: 'Secure money transfer with contact integration and QR code scanning',
-        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Contact integration', 'QR code scanning', 'Scheduled payments', 'Transaction limits']
-      },
-      {
-        id: 4,
-        title: 'Investment Portfolio',
-        description: 'Investment tracking and portfolio management with real-time market data',
-        image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Portfolio overview', 'Market data', 'Investment tracking', 'Performance charts']
-      }
-    ]
-  },
-  {
-    id: 4,
     title: 'Project Management Tool',
     description: 'A collaborative project management platform with team communication, task tracking, and deadline management.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
@@ -254,7 +179,7 @@ const caseStudies = [
     demoUrl: '/demo/project-management'
   },
   {
-    id: 5,
+    id: 4,
     title: 'Real Estate Platform',
     description: 'A comprehensive real estate platform with property listings, virtual tours, and mortgage calculators.',
     image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2273&q=80',
@@ -269,7 +194,7 @@ const caseStudies = [
     demoUrl: '/demo/real-estate'
   },
   {
-    id: 6,
+    id: 5,
     title: 'Healthcare Management System',
     description: 'A HIPAA-compliant healthcare management system with patient records, appointment scheduling, and billing.',
     image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
@@ -284,7 +209,7 @@ const caseStudies = [
     demoUrl: '/demo/healthcare'
   },
   {
-    id: 7,
+    id: 6,
     title: 'Big Easy Chicken Co.',
     description: 'A vibrant New Orleans-style restaurant website with online ordering, menu management, and authentic southern charm.',
     image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',

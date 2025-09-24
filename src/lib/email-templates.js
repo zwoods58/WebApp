@@ -68,7 +68,7 @@ export const depositInvoiceEmail = (consultation) => {
               </ol>
             </div>
             
-            <p>If you have any questions, feel free to reach out to us at <a href="mailto:support@atarweb.com">support@atarweb.com</a></p>
+            <p>If you have any questions, feel free to reach out to us at <a href="mailto:admin@atarweb.com">admin@atarweb.com</a></p>
           </div>
           
           <div class="footer">
@@ -104,7 +104,7 @@ export const depositInvoiceEmail = (consultation) => {
       3. You'll receive regular updates on progress
       4. Final invoice sent upon completion
       
-      If you have any questions, contact us at support@atarweb.com
+      If you have any questions, contact us at admin@atarweb.com
       
       Best regards,
       AtarWeb Team
@@ -186,7 +186,7 @@ export const finalInvoiceEmail = (consultation) => {
             
             <p>Once payment is received, we'll send you all project files and schedule your handover session.</p>
             
-            <p>Thank you for choosing AtarWeb! If you have any questions, contact us at <a href="mailto:support@atarweb.com">support@atarweb.com</a></p>
+            <p>Thank you for choosing AtarWeb! If you have any questions, contact us at <a href="mailto:admin@atarweb.com">admin@atarweb.com</a></p>
           </div>
           
           <div class="footer">

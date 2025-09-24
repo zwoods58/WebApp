@@ -37,7 +37,7 @@ const websiteContent = {
     'Reliable Partnership - We believe in long-term relationships'
   ],
   mission: 'To democratize high-quality web development by making professional-grade solutions accessible to businesses of all sizes',
-  contact: 'For questions we cannot answer, please contact us at support@atarweb.com'
+  contact: 'For questions we cannot answer, please contact us at admin@atarweb.com'
 }
 
 const predefinedQuestions = [
@@ -110,7 +110,7 @@ export default function Chatbot() {
     }
     
     // Default response for unrecognized questions
-    return `I understand you're asking about "${userMessage}". While I can help with general questions about our services, pricing, timeline, and process, for more specific inquiries, please contact us at support@atarweb.com and our team will get back to you within 24 hours.`
+    return `I understand you're asking about "${userMessage}". While I can help with general questions about our services, pricing, timeline, and process, for more specific inquiries, please contact us at admin@atarweb.com and our team will get back to you within 24 hours.`
   }
 
   const handleSendMessage = () => {
