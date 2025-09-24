@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ExternalLink, Github, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone } from 'lucide-react'
+import { ExternalLink, Github, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone, X } from 'lucide-react'
+import { useState } from 'react'
 
 const caseStudies = [
   {
@@ -167,7 +168,7 @@ const caseStudies = [
     id: 3,
     title: 'Project Management Tool',
     description: 'A collaborative project management platform with team communication, task tracking, and deadline management.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
     technologies: ['Vue.js', 'Express.js', 'PostgreSQL', 'Socket.io'],
     results: {
       productivity: '+180%',
@@ -176,7 +177,58 @@ const caseStudies = [
     },
     liveUrl: '/admin',
     githubUrl: 'https://github.com/atarweb',
-    demoUrl: '/demo/project-management'
+    demoUrl: '/demo/project-management',
+    // Enhanced details for popup
+    detailedDescription: 'This project management tool was developed to streamline team collaboration and task organization. We focused on creating an intuitive interface that allows teams to track progress, manage deadlines, and communicate effectively. The challenge was integrating real-time updates and ensuring data consistency across multiple users, which led us to explore WebSocket technologies and robust backend solutions.',
+    features: [
+      'Task creation and assignment with due dates',
+      'Real-time team communication and file sharing',
+      'Gantt charts and Kanban boards for project visualization',
+      'User roles and permissions management',
+      'Automated notifications for task updates and deadlines',
+      'Integration with calendar and email services'
+    ],
+    learningChallenges: [
+      'Implementing real-time data synchronization',
+      'Designing flexible task management workflows',
+      'Ensuring data integrity in a collaborative environment',
+      'Optimizing performance for complex project views'
+    ],
+    technicalSolutions: [
+      'Utilized Vue.js for a dynamic front-end',
+      'Integrated Socket.io for real-time communication',
+      'Developed a RESTful API with Express.js',
+      'Used PostgreSQL for structured data storage'
+    ],
+    timeline: '14 weeks',
+    team: '4 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Project Dashboard',
+        description: 'Centralized view of all projects, tasks, and team activities',
+        image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Project summaries', 'Task lists', 'Activity feed', 'Quick access to features']
+      },
+      {
+        id: 2,
+        title: 'Task Management',
+        description: 'Detailed task views with subtasks, comments, and file attachments',
+        image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Subtasks', 'Comments', 'File attachments', 'Due dates']
+      },
+      {
+        id: 3,
+        title: 'Team Collaboration',
+        description: 'Real-time chat and discussion forums for team communication',
+        image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Group chat', 'Direct messages', 'Discussion threads', 'Notifications']
+      }
+    ]
   },
   {
     id: 4,
@@ -191,7 +243,58 @@ const caseStudies = [
     },
     liveUrl: '/admin',
     githubUrl: 'https://github.com/atarweb',
-    demoUrl: '/demo/real-estate'
+    demoUrl: '/demo/real-estate',
+    // Enhanced details for popup
+    detailedDescription: 'Our real estate platform was designed to simplify property search and management. We integrated advanced mapping features and robust search filters to provide users with a seamless experience. A key learning was optimizing image loading and virtual tour performance to ensure a smooth user experience, even with high-resolution media.',
+    features: [
+      'Advanced property search and filtering options',
+      'Interactive maps with property listings',
+      'Virtual tour integration for immersive viewing',
+      'Mortgage calculator and financial tools',
+      'Agent and client dashboards for management',
+      'Email alerts for new listings and price changes'
+    ],
+    learningChallenges: [
+      'Integrating complex mapping APIs and optimizing performance',
+      'Handling large volumes of property data and images',
+      'Ensuring data security for sensitive user information',
+      'Developing a scalable architecture for future growth'
+    ],
+    technicalSolutions: [
+      'Built with Angular for a dynamic front-end',
+      'Developed a robust backend with NestJS',
+      'Utilized MySQL for relational data storage',
+      'Integrated Google Maps API for interactive property maps'
+    ],
+    timeline: '18 weeks',
+    team: '5 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Property Search',
+        description: 'Intuitive search interface with advanced filters and map integration',
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Map view', 'List view', 'Filter options', 'Saved searches']
+      },
+      {
+        id: 2,
+        title: 'Property Details',
+        description: 'Comprehensive property details with high-resolution images and virtual tours',
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Image gallery', 'Virtual tour', 'Property description', 'Agent contact']
+      },
+      {
+        id: 3,
+        title: 'Agent Dashboard',
+        description: 'Dashboard for agents to manage listings, leads, and appointments',
+        image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Listing management', 'Lead tracking', 'Appointment scheduling', 'Performance reports']
+      }
+    ]
   },
   {
     id: 5,
@@ -206,7 +309,58 @@ const caseStudies = [
     },
     liveUrl: '/admin',
     githubUrl: 'https://github.com/atarweb',
-    demoUrl: '/demo/healthcare'
+    demoUrl: '/demo/healthcare',
+    // Enhanced details for popup
+    detailedDescription: 'Developing a HIPAA-compliant healthcare management system was a significant undertaking. Our focus was on data security, privacy, and creating a user-friendly interface for medical professionals. We learned extensively about regulatory requirements and implemented robust encryption and access control measures to protect sensitive patient information. This project honed our skills in building secure and reliable systems for critical applications.',
+    features: [
+      'Secure patient record management with access control',
+      'Appointment scheduling and calendar integration',
+      'Medical billing and insurance claim processing',
+      'Telemedicine integration for virtual consultations',
+      'Prescription management and e-prescribing',
+      'Reporting and analytics for clinic performance'
+    ],
+    learningChallenges: [
+      'Understanding and implementing HIPAA compliance requirements',
+      'Ensuring data privacy and security for sensitive health information',
+      'Integrating with various medical devices and systems',
+      'Designing a user-friendly interface for complex medical workflows'
+    ],
+    technicalSolutions: [
+      'Built with React for a dynamic front-end',
+      'Developed a secure backend with Django REST Framework',
+      'Utilized PostgreSQL for robust data storage',
+      'Implemented advanced encryption and access control protocols'
+    ],
+    timeline: '20 weeks',
+    team: '6 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Patient Dashboard',
+        description: 'Comprehensive patient overview with medical history, appointments, and billing',
+        image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Patient demographics', 'Medical history', 'Appointment schedule', 'Billing summary']
+      },
+      {
+        id: 2,
+        title: 'Appointment Scheduling',
+        description: 'Intuitive calendar for scheduling and managing patient appointments',
+        image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Calendar view', 'Appointment booking', 'Reminders', 'Telemedicine links']
+      },
+      {
+        id: 3,
+        title: 'Medical Billing',
+        description: 'Streamlined billing and insurance claim processing',
+        image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Invoice generation', 'Insurance claims', 'Payment tracking', 'Reporting']
+      }
+    ]
   },
   {
     id: 6,
@@ -221,11 +375,86 @@ const caseStudies = [
     },
     liveUrl: '/admin',
     githubUrl: 'https://github.com/atarweb',
-    demoUrl: '/demo/restaurant'
+    demoUrl: '/demo/restaurant',
+    // Enhanced details for popup
+    detailedDescription: 'Big Easy Chicken Co. was a passion project to explore dynamic and visually rich web design for the food industry. We aimed to capture the vibrant spirit of New Orleans with a unique aesthetic and seamless online ordering. This project taught us about integrating complex ordering systems, managing real-time menu updates, and creating an engaging user experience that reflects a strong brand identity.',
+    features: [
+      'Online ordering system with customizable menu items',
+      'Secure payment gateway integration',
+      'User accounts for order history and preferences',
+      'Restaurant hours and real-time status updates',
+      'Delivery and pickup options with estimated times',
+      'Promotional banners and special offers management'
+    ],
+    learningChallenges: [
+      'Designing a highly interactive and visually engaging UI',
+      'Implementing a robust and flexible online ordering system',
+      'Integrating third-party payment and delivery services',
+      'Optimizing performance for image-heavy pages'
+    ],
+    technicalSolutions: [
+      'Built with Next.js for server-side rendering and performance',
+      'Utilized React for dynamic UI components',
+      'Styled with Tailwind CSS for rapid and consistent design',
+      'Implemented TypeScript for enhanced code quality and maintainability'
+    ],
+    timeline: '8 weeks',
+    team: '3 developers',
+    projectType: 'Internal Learning Project',
+    slideshow: [
+      {
+        id: 1,
+        title: 'Homepage',
+        description: 'Vibrant and engaging homepage with clear calls to action and featured dishes',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Hero section', 'Featured menu items', 'Online ordering CTA', 'Customer testimonials']
+      },
+      {
+        id: 2,
+        title: 'Menu Page',
+        description: 'Interactive menu with categories, descriptions, and pricing',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Categorized menu', 'Item details', 'Customization options', 'Add to cart']
+      },
+      {
+        id: 3,
+        title: 'Checkout Process',
+        description: 'Streamlined and secure checkout flow with delivery/pickup options',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+        device: 'desktop',
+        features: ['Order summary', 'Delivery/pickup selection', 'Payment options', 'Order confirmation']
+      }
+    ]
   }
 ]
 
 export default function Portfolio() {
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const openModal = (project: any) => {
+    setSelectedProject(project)
+    setCurrentSlide(0)
+  }
+
+  const closeModal = () => {
+    setSelectedProject(null)
+  }
+
+  const nextSlide = () => {
+    if (selectedProject && selectedProject.slideshow) {
+      setCurrentSlide((prev) => (prev + 1) % selectedProject.slideshow.length)
+    }
+  }
+
+  const prevSlide = () => {
+    if (selectedProject && selectedProject.slideshow) {
+      setCurrentSlide((prev) => (prev - 1 + selectedProject.slideshow.length) % selectedProject.slideshow.length)
+    }
+  }
+
   return (
     <section className="section-padding bg-secondary-50">
       <div className="container-max">
@@ -242,7 +471,8 @@ export default function Portfolio() {
           {caseStudies.map((project) => (
             <div 
               key={project.id} 
-              className="card group hover:shadow-xl transition-all duration-300 overflow-hidden"
+              className="card group hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+              onClick={() => openModal(project)}
             >
               <div className="relative overflow-hidden">
                 <Image
@@ -252,6 +482,11 @@ export default function Portfolio() {
                   height={250}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="bg-white text-gray-900 px-4 py-2 rounded-full font-semibold">
+                    View Details
+                  </span>
+                </div>
               </div>
 
               <div className="p-6 space-y-4">
@@ -286,20 +521,127 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                <div className="pt-4">
-                  <Link 
-                    href={project.demoUrl || `/projects/${project.slug}`}
+                <div className="pt-4 space-y-2">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openModal(project)
+                    }}
                     className="btn-primary w-full text-center inline-flex items-center justify-center"
-                    target="_blank"
-                    rel="noopener noreferrer"
                   >
-                    View Live Demo
-                  </Link>
+                    View Project Details
+                  </button>
+                  {project.demoUrl && (
+                    <Link 
+                      href={project.demoUrl}
+                      className="btn-outline w-full text-center inline-flex items-center justify-center"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Live Demo
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Project Detail Modal */}
+        {selectedProject && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-75 flex items-center justify-center p-4">
+            <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-auto p-6 max-h-[90vh] overflow-y-auto">
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 z-10"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedProject.title}</h2>
+                <p className="text-gray-700 mb-6">{selectedProject.detailedDescription}</p>
+              </div>
+
+              {selectedProject.slideshow && selectedProject.slideshow.length > 0 && (
+                <div className="relative mb-6">
+                  <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
+                    <Image
+                      src={selectedProject.slideshow[currentSlide].image}
+                      alt={selectedProject.slideshow[currentSlide].title}
+                      width={800}
+                      height={400}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  {selectedProject.slideshow.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevSlide}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+                      >
+                        &#10094;
+                      </button>
+                      <button
+                        onClick={nextSlide}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+                      >
+                        &#10095;
+                      </button>
+                    </>
+                  )}
+                  <div className="text-center mt-2 text-sm text-gray-600">
+                    {selectedProject.slideshow[currentSlide].title} - {selectedProject.slideshow[currentSlide].description}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Key Features</h3>
+                  <ul className="list-disc list-inside space-y-2 text-gray-700">
+                    {selectedProject.features.map((feature: string, index: number) => (
+                      <li key={index}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Learning & Challenges</h3>
+                  <ul className="list-disc list-inside space-y-2 text-gray-700">
+                    {selectedProject.learningChallenges.map((challenge: string, index: number) => (
+                      <li key={index}>{challenge}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4 justify-center">
+                {selectedProject.demoUrl && (
+                  <Link
+                    href={selectedProject.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition-colors flex items-center"
+                  >
+                    <ExternalLink className="h-5 w-5 mr-2" /> Live Demo
+                  </Link>
+                )}
+                {selectedProject.githubUrl && (
+                  <Link
+                    href={selectedProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-900 transition-colors flex items-center"
+                  >
+                    <Github className="h-5 w-5 mr-2" /> GitHub Repo
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </section>
