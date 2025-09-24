@@ -297,13 +297,9 @@ export default function SaasDashboardDemo() {
                   {recentActivities.map((activity) => (
                     <div key={activity.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors">
                       <div className="relative">
-                        <Image
-                          src={activity.avatar}
-                          alt={activity.user}
-                          width={40}
-                          height={40}
-                          className="rounded-full"
-                        />
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                          <User className="h-5 w-5 text-white" />
+                        </div>
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                       </div>
                       <div className="flex-1">
@@ -407,13 +403,9 @@ export default function SaasDashboardDemo() {
               {teamMembers.map((member) => (
                 <div key={member.id} className="bg-white rounded-3xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 text-center">
                   <div className="relative inline-block mb-4">
-                    <Image
-                      src={member.avatar}
-                      alt={member.name}
-                      width={80}
-                      height={80}
-                      className="rounded-full"
-                    />
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                      <User className="h-10 w-10 text-white" />
+                    </div>
                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 border-2 border-white rounded-full ${
                       member.status === 'online' ? 'bg-green-500' :
                       member.status === 'away' ? 'bg-yellow-500' : 'bg-gray-400'
