@@ -496,7 +496,7 @@ export default function Portfolio() {
                   {project.demoUrl && (
                     <Link 
                       href={project.demoUrl}
-                      className="btn-primary w-full text-center inline-flex items-center justify-center"
+                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-center inline-flex items-center justify-center"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
