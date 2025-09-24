@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ExternalLink, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone } from 'lucide-react'
+import { ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone } from 'lucide-react'
 
 const caseStudies = [
   {
@@ -492,19 +492,6 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                <div className="pt-4">
-                  {project.demoUrl && (
-                    <Link 
-                      href={project.demoUrl}
-                      className="btn-primary w-full text-center inline-flex items-center justify-center"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Live Demo
-                    </Link>
-                  )}
-                </div>
               </div>
             </div>
           ))}
