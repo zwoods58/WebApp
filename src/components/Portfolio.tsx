@@ -438,6 +438,7 @@ export default function Portfolio() {
           <h2 className="text-4xl font-bold text-secondary-900 mb-4">
             Our Portfolio
           </h2>
+          {/* Force deployment */}
           <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
             Explore our collection of innovative projects that showcase our expertise in modern web development and digital solutions.
           </p>
