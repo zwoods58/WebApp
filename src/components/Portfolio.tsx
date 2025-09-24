@@ -436,11 +436,14 @@ export default function Portfolio() {
       <div className="container-max">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-secondary-900 mb-4">
-            Our Portfolio
+            Our Portfolio - UPDATED
           </h2>
           <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
             Explore our collection of innovative projects that showcase our expertise in modern web development and digital solutions.
           </p>
+          <div className="bg-red-500 text-white p-4 rounded-lg mt-4">
+            <strong>DEBUG: This text should be visible if changes are working!</strong>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
