@@ -44,6 +44,7 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     company: '',
     projectType: '',
     budget: '',
@@ -100,6 +101,7 @@ export default function Contact() {
           setFormData({
             name: '',
             email: '',
+            phone: '',
             company: '',
             projectType: '',
             budget: '',
