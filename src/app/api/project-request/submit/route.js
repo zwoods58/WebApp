@@ -7,11 +7,14 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 }
 
-// Initialize Supabase
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+// Initialize Supabase only if environment variables are available
+let supabase = null
+if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+}
 
 // Rate limiting storage
 const rateLimitStore = new Map()
@@ -83,6 +86,13 @@ export async function POST(req) {
     }
 
     // Store project request in Supabase
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please contact support.' },
+        { status: 500 }
+      )
+    }
+    
     const { data: storedProject, error: dbError } = await supabase
       .from('project_requests')
       .insert([

@@ -4,12 +4,19 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-// Create Supabase client
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Create Supabase client only if environment variables are available
+let supabase = null
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey)
+}
 
 // Add a new consultation
 export async function addConsultation(consultationData) {
   try {
+    if (!supabase) {
+      throw new Error('Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.')
+    }
+    
     const { data, error } = await supabase
       .from('project_requests')
       .insert([
@@ -55,6 +62,10 @@ export async function addConsultation(consultationData) {
 // Get all consultations
 export async function getConsultations() {
   try {
+    if (!supabase) {
+      throw new Error('Supabase not configured. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.')
+    }
+    
     const { data, error } = await supabase
       .from('project_requests')
       .select('*')
