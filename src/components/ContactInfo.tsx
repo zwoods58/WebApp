@@ -19,7 +19,7 @@ const contactMethods = [
     icon: MessageCircle,
     title: 'Live Chat',
     description: 'Chat with us in real-time for immediate assistance',
-    details: 'Available 9 AM - 6 PM PST',
+    details: 'Available 9 AM - 6 PM CT',
     action: '#'
   },
   {
@@ -32,8 +32,8 @@ const contactMethods = [
 ]
 
 const officeHours = [
-  { day: 'Monday - Friday', hours: '9:00 AM - 6:00 PM PST' },
-  { day: 'Saturday', hours: '10:00 AM - 4:00 PM PST' },
+  { day: 'Monday - Friday', hours: '9:00 AM - 6:00 PM CT' },
+  { day: 'Saturday', hours: '10:00 AM - 4:00 PM CT' },
   { day: 'Sunday', hours: 'Closed' }
 ]
 

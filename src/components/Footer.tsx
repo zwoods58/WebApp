@@ -73,7 +73,7 @@ export default function Footer() {
                 <span className="text-secondary-300">admin@atarweb.com</span>
               </div>
               <div className="text-secondary-300 text-sm">
-                Available 7am-5pm PST<br />
+                Available 7am-5pm CT<br />
                 Monday-Friday
               </div>
             </div>

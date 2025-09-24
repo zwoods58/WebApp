@@ -9,7 +9,7 @@ const contactInfo = [
     icon: Mail,
     title: 'Email Us',
     details: 'admin@atarweb.com',
-    description: 'Available 7am-5pm PST, Monday-Friday'
+    description: 'Available 7am-5pm CT, Monday-Friday'
   }
 ]
 
