@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Search, ShoppingCart, Heart, User, Menu, X, Star, Filter, SortAsc, ChevronDown, Plus, Minus, Check, Truck, Shield, Award, Zap, SlidersHorizontal } from 'lucide-react'
+import { Search, ShoppingCart, Heart, User, Menu, X, Star, Filter, SortAsc, ChevronDown, Plus, Minus, Check, Truck, Shield, Award, Zap, SlidersHorizontal } from 'lucide-react'
 
 const products = [
   {
@@ -242,10 +242,6 @@ export default function EcommerceDemo() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-8">
-              <Link href="/portfolio" className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
-                <ArrowLeft className="h-5 w-5" />
-                <span className="font-medium">Back to Portfolio</span>
-              </Link>
               <div className="hidden md:block">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   TechStore Pro
@@ -482,9 +478,16 @@ export default function EcommerceDemo() {
                 className="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* Product Header */}
-                <div className="relative p-6 bg-gradient-to-br from-gray-50 to-gray-100">
-                  <div className="flex justify-between items-start mb-4">
+                {/* Product Image */}
+                <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    unoptimized
+                  />
+                  <div className="absolute top-4 left-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                       product.badge === 'Best Seller' ? 'bg-red-500 text-white' :
                       product.badge === 'New' ? 'bg-green-500 text-white' :
@@ -494,25 +497,26 @@ export default function EcommerceDemo() {
                     }`}>
                       {product.badge}
                     </span>
-                    <button
-                      onClick={() => toggleWishlist(product.id)}
-                      className={`p-2 rounded-full transition-all duration-300 ${
-                        wishlist.includes(product.id)
-                          ? 'bg-red-500 text-white'
-                          : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
-                      }`}
-                    >
-                      <Heart className={`h-5 w-5 ${wishlist.includes(product.id) ? 'fill-current' : ''}`} />
-                    </button>
                   </div>
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h3>
-                    <p className="text-gray-600 text-sm">{product.brand}</p>
-                  </div>
+                  <button
+                    onClick={() => toggleWishlist(product.id)}
+                    className={`absolute top-4 right-4 p-2 rounded-full transition-all duration-300 ${
+                      wishlist.includes(product.id)
+                        ? 'bg-red-500 text-white'
+                        : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
+                    }`}
+                  >
+                    <Heart className={`h-5 w-5 ${wishlist.includes(product.id) ? 'fill-current' : ''}`} />
+                  </button>
                 </div>
 
                 {/* Product Info */}
                 <div className="p-6">
+                  <div className="mb-3">
+                    <h3 className="text-xl font-bold text-gray-800 mb-1">{product.name}</h3>
+                    <p className="text-gray-600 text-sm">{product.brand}</p>
+                  </div>
+                  
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-yellow-400 fill-current" />
