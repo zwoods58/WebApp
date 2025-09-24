@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { Mail, Send, CheckCircle } from 'lucide-react'
-import { submitProjectRequest } from '@/lib/project-requests'
-import { notifyNewProjectRequest } from '@/lib/notifications'
+// Removed client-side imports - now using server-side API
 
 const contactInfo = [
   {
@@ -68,18 +67,31 @@ export default function Contact() {
     setIsSubmitting(true)
     
     try {
-      // Submit project request to database
-      const result = await submitProjectRequest(formData)
+      // Create FormData for API submission
+      const submitData = new FormData()
+      submitData.append('name', formData.name)
+      submitData.append('email', formData.email)
+      submitData.append('phone', formData.phone)
+      submitData.append('company', formData.company)
+      submitData.append('projectType', formData.projectType)
+      submitData.append('budget', formData.budget)
+      submitData.append('timeline', formData.timeline)
+      submitData.append('description', formData.description)
+      submitData.append('requirements', formData.requirements)
+
+      console.log('Submitting project request...')
+
+      // Submit to server-side API
+      const response = await fetch('/api/project-request/submit', {
+        method: 'POST',
+        body: submitData
+      })
+
+      console.log('Response status:', response.status)
       
-      if (result.success) {
-        // Send notification
-        await notifyNewProjectRequest({
-          id: result.id!,
-          name: formData.name,
-          email: formData.email,
-          project_type: formData.projectType
-        })
-        
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Project request submitted successfully!')
         setIsSubmitted(true)
         
         // Reset form after 3 seconds
@@ -97,12 +109,12 @@ export default function Contact() {
           })
         }, 3000)
       } else {
-        console.error('Error submitting project request:', result.error)
-        // Handle error (you could show an error message)
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to submit project request')
       }
     } catch (error) {
-      console.error('Error submitting form:', error)
-      // Handle error
+      console.error('Error submitting project request:', error)
+      alert(`Failed to submit project request: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsSubmitting(false)
     }
