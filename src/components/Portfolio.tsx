@@ -493,15 +493,13 @@ export default function Portfolio() {
                 </div>
 
                 <div className="pt-4">
-                  {project.demoUrl && (
-                    <Link 
-                      href={project.demoUrl}
-                      className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-center inline-flex items-center justify-center"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Live Demo
-                    </Link>
-                  )}
+                  <Link 
+                    href={project.demoUrl || '#'}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-center inline-flex items-center justify-center"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Live Demo
+                  </Link>
                 </div>
               </div>
             </div>
