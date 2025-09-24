@@ -4,12 +4,15 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-// Create Supabase client
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Create Supabase client function
+function getSupabaseClient() {
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 // Add a new consultation
 export async function addConsultation(consultationData) {
   try {
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('project_requests')
       .insert([
@@ -55,6 +58,7 @@ export async function addConsultation(consultationData) {
 // Get all consultations
 export async function getConsultations() {
   try {
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('project_requests')
       .select('*')
