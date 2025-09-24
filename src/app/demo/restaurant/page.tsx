@@ -242,6 +242,8 @@ export default function RestaurantDemo() {
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [orderConfirmed, setOrderConfirmed] = useState(false)
   const [orderNumber, setOrderNumber] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
+  const [showFavorites, setShowFavorites] = useState(false)
 
   const filteredItems = menuItems.filter(item => {
     const matchesCategory = item.category === selectedCategory
@@ -381,10 +383,16 @@ export default function RestaurantDemo() {
               >
                 <MapPin className="h-6 w-6" />
               </button>
-              <button className="p-3 text-white hover:text-yellow-300 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110">
+              <button 
+                onClick={() => setShowSearch(true)}
+                className="p-3 text-white hover:text-yellow-300 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
+              >
                 <Search className="h-6 w-6" />
               </button>
-              <button className="p-3 text-white hover:text-yellow-300 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110">
+              <button 
+                onClick={() => setShowFavorites(true)}
+                className="p-3 text-white hover:text-yellow-300 hover:bg-white/20 rounded-full transition-all duration-300 transform hover:scale-110"
+              >
                 <Heart className="h-6 w-6" />
               </button>
               {isLoggedIn ? (
@@ -999,6 +1007,94 @@ export default function RestaurantDemo() {
               >
                 CONTINUE SHOPPING
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Modal */}
+      {showSearch && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowSearch(false)}></div>
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border-4 border-yellow-400">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-black text-gray-900 transform -skew-x-12" style={{ 
+                  fontFamily: 'serif',
+                  letterSpacing: '2px',
+                  textShadow: '2px 2px 0px #ff6b35'
+                }}>
+                  SEARCH MENU
+                </h3>
+                <button
+                  onClick={() => setShowSearch(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Search for dishes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-yellow-500 focus:outline-none text-lg"
+                />
+                <div className="max-h-64 overflow-y-auto space-y-2">
+                  {menuItems.filter(item => 
+                    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.description.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).map((item) => (
+                    <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <h4 className="font-bold text-gray-900">{item.name}</h4>
+                      <p className="text-sm text-gray-600">{item.description}</p>
+                      <p className="text-lg font-bold text-red-600">${item.price}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Favorites Modal */}
+      {showFavorites && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowFavorites(false)}></div>
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border-4 border-yellow-400">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-black text-gray-900 transform -skew-x-12" style={{ 
+                  fontFamily: 'serif',
+                  letterSpacing: '2px',
+                  textShadow: '2px 2px 0px #ff6b35'
+                }}>
+                  FAVORITES
+                </h3>
+                <button
+                  onClick={() => setShowFavorites(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                {favorites.length === 0 ? (
+                  <p className="text-center text-gray-600 py-8">No favorites yet! Add some dishes to your favorites.</p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {menuItems.filter(item => favorites.includes(item.id)).map((item) => (
+                      <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <h4 className="font-bold text-gray-900">{item.name}</h4>
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <p className="text-lg font-bold text-red-600">${item.price}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

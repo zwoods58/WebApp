@@ -124,16 +124,42 @@ export default function RealEstateDemo() {
               <h1 className="text-2xl font-bold text-gray-900">PropertyHub</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-900 hover:text-blue-600 font-medium">Buy</a>
-              <a href="#" className="text-gray-500 hover:text-blue-600">Rent</a>
-              <a href="#" className="text-gray-500 hover:text-blue-600">Sell</a>
-              <a href="#" className="text-gray-500 hover:text-blue-600">Agents</a>
+              <button 
+                onClick={() => setActiveTab('listings')}
+                className={`${activeTab === 'listings' ? 'text-gray-900' : 'text-gray-500'} hover:text-blue-600 font-medium transition-colors`}
+              >
+                Buy
+              </button>
+              <button 
+                onClick={() => setActiveTab('rentals')}
+                className={`${activeTab === 'rentals' ? 'text-gray-900' : 'text-gray-500'} hover:text-blue-600 transition-colors`}
+              >
+                Rent
+              </button>
+              <button 
+                onClick={() => setActiveTab('sell')}
+                className={`${activeTab === 'sell' ? 'text-gray-900' : 'text-gray-500'} hover:text-blue-600 transition-colors`}
+              >
+                Sell
+              </button>
+              <button 
+                onClick={() => setActiveTab('agents')}
+                className={`${activeTab === 'agents' ? 'text-gray-900' : 'text-gray-500'} hover:text-blue-600 transition-colors`}
+              >
+                Agents
+              </button>
             </nav>
             <div className="flex items-center space-x-4">
-              <button className="text-gray-500 hover:text-gray-700">
+              <button 
+                onClick={() => alert('Favorites feature coming soon!')}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
                 <Heart className="h-6 w-6" />
               </button>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              <button 
+                onClick={() => alert('Sign in feature coming soon!')}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Sign In
               </button>
             </div>

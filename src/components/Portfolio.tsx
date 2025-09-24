@@ -481,6 +481,7 @@ export default function Portfolio() {
                   width={400}
                   height={250}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="bg-white text-gray-900 px-4 py-2 rounded-full font-semibold">
@@ -574,6 +575,7 @@ export default function Portfolio() {
                       width={800}
                       height={400}
                       className="w-full h-full object-contain"
+                      unoptimized
                     />
                   </div>
                   {selectedProject.slideshow.length > 1 && (
