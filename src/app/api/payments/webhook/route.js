@@ -35,7 +35,7 @@ export async function POST(req) {
           })
 
           console.log('Final payment completed via checkout:', {
-            consultationId,
+            consultationId: intentConsultationId,
             clientName,
             amount: session.amount_total / 100,
             sessionId: session.id
@@ -50,7 +50,7 @@ export async function POST(req) {
           })
 
           console.log('Deposit payment completed via checkout:', {
-            consultationId,
+            consultationId: intentConsultationId,
             clientName,
             amount: session.amount_total / 100,
             sessionId: session.id
@@ -60,11 +60,11 @@ export async function POST(req) {
 
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object
-        const { consultationId, clientEmail, clientName, serviceType, totalAmount, depositAmount, remainingAmount, type } = paymentIntent.metadata
+        const { consultationId: intentConsultationId, clientEmail: intentClientEmail, clientName: intentClientName, serviceType, totalAmount, depositAmount, remainingAmount, type } = paymentIntent.metadata
 
         if (type === 'final_payment') {
           // Final payment - mark as fully paid
-          const updatedConsultation = updateConsultation(consultationId, {
+          const updatedConsultation = updateConsultation(intentConsultationId, {
             status: 'fully_paid',
             paymentIntentId: paymentIntent.id,
             paymentStatus: 'fully_paid',
@@ -72,14 +72,14 @@ export async function POST(req) {
           })
 
           console.log('Final payment succeeded:', {
-            consultationId,
+            consultationId: intentConsultationId,
             clientName,
             amount: paymentIntent.amount,
             paymentIntentId: paymentIntent.id
           })
         } else {
           // Deposit payment - mark as deposit paid
-          const updatedConsultation = updateConsultation(consultationId, {
+          const updatedConsultation = updateConsultation(intentConsultationId, {
             status: 'paid_deposit',
             paymentIntentId: paymentIntent.id,
             depositAmount: parseInt(depositAmount),
@@ -90,7 +90,7 @@ export async function POST(req) {
           })
 
           console.log('Deposit payment succeeded:', {
-            consultationId,
+            consultationId: intentConsultationId,
             clientName,
             amount: depositAmount,
             paymentIntentId: paymentIntent.id
