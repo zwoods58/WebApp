@@ -2,8 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ExternalLink, Github, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone, X } from 'lucide-react'
-import { useState } from 'react'
+import { ExternalLink, ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone } from 'lucide-react'
 
 const caseStudies = [
   {
@@ -431,29 +430,6 @@ const caseStudies = [
 ]
 
 export default function Portfolio() {
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [currentSlide, setCurrentSlide] = useState(0)
-
-  const openModal = (project: any) => {
-    setSelectedProject(project)
-    setCurrentSlide(0)
-  }
-
-  const closeModal = () => {
-    setSelectedProject(null)
-  }
-
-  const nextSlide = () => {
-    if (selectedProject && selectedProject.slideshow) {
-      setCurrentSlide((prev) => (prev + 1) % selectedProject.slideshow.length)
-    }
-  }
-
-  const prevSlide = () => {
-    if (selectedProject && selectedProject.slideshow) {
-      setCurrentSlide((prev) => (prev - 1 + selectedProject.slideshow.length) % selectedProject.slideshow.length)
-    }
-  }
 
   return (
     <section className="section-padding bg-secondary-50">
@@ -523,7 +499,6 @@ export default function Portfolio() {
                       className="btn-primary w-full text-center inline-flex items-center justify-center"
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Live Demo
@@ -535,100 +510,6 @@ export default function Portfolio() {
           ))}
         </div>
 
-        {/* Project Detail Modal */}
-        {selectedProject && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-75 flex items-center justify-center p-4">
-            <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full mx-auto p-6 max-h-[90vh] overflow-y-auto">
-              <button
-                onClick={closeModal}
-                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 z-10"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedProject.title}</h2>
-                <p className="text-gray-700 mb-6">{selectedProject.detailedDescription}</p>
-              </div>
-
-              {selectedProject.slideshow && selectedProject.slideshow.length > 0 && (
-                <div className="relative mb-6">
-                  <div className="w-full h-96 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
-                    <Image
-                      src={selectedProject.slideshow[currentSlide].image}
-                      alt={selectedProject.slideshow[currentSlide].title}
-                      width={800}
-                      height={400}
-                      className="w-full h-full object-contain"
-                      unoptimized
-                    />
-                  </div>
-                  {selectedProject.slideshow.length > 1 && (
-                    <>
-                      <button
-                        onClick={prevSlide}
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-                      >
-                        &#10094;
-                      </button>
-                      <button
-                        onClick={nextSlide}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
-                      >
-                        &#10095;
-                      </button>
-                    </>
-                  )}
-                  <div className="text-center mt-2 text-sm text-gray-600">
-                    {selectedProject.slideshow[currentSlide].title} - {selectedProject.slideshow[currentSlide].description}
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Key Features</h3>
-                  <ul className="list-disc list-inside space-y-2 text-gray-700">
-                    {selectedProject.features.map((feature: string, index: number) => (
-                      <li key={index}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Learning & Challenges</h3>
-                  <ul className="list-disc list-inside space-y-2 text-gray-700">
-                    {selectedProject.learningChallenges.map((challenge: string, index: number) => (
-                      <li key={index}>{challenge}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4 justify-center">
-                {selectedProject.demoUrl && (
-                  <Link
-                    href={selectedProject.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition-colors flex items-center"
-                  >
-                    <ExternalLink className="h-5 w-5 mr-2" /> Live Demo
-                  </Link>
-                )}
-                {selectedProject.githubUrl && (
-                  <Link
-                    href={selectedProject.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-900 transition-colors flex items-center"
-                  >
-                    <Github className="h-5 w-5 mr-2" /> GitHub Repo
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
     </section>
