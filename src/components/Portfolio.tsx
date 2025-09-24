@@ -522,20 +522,11 @@ export default function Portfolio() {
                   </div>
                 </div>
 
-                <div className="pt-4 space-y-2">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      openModal(project)
-                    }}
-                    className="btn-primary w-full text-center inline-flex items-center justify-center"
-                  >
-                    View Project Details
-                  </button>
+                <div className="pt-4">
                   {project.demoUrl && (
                     <Link 
                       href={project.demoUrl}
-                      className="btn-outline w-full text-center inline-flex items-center justify-center"
+                      className="btn-primary w-full text-center inline-flex items-center justify-center"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
