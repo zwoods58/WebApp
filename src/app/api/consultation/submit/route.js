@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 import jsPDF from 'jspdf'
-const { addConsultation } = require('../../../../lib/consultations-storage')
+import { addConsultation } from '../../../../lib/consultations-supabase-storage'
 
 // Initialize SendGrid
 if (process.env.SENDGRID_API_KEY) {
@@ -115,17 +115,17 @@ export async function POST(req) {
       timeZoneName: 'short'
     })
 
-    // Store consultation data first
-    const storedConsultation = addConsultation({
-      name: consultationData.name,
-      email: consultationData.email,
-      phone: consultationData.phone,
-      company: consultationData.company,
-      projectDetails: consultationData.projectDetails,
-      preferredDate: consultationData.preferredDate,
-      preferredTime: consultationData.preferredTime,
-      hasFileUpload: !!consultationData.uploadedFile
-    })
+        // Store consultation data first
+        const storedConsultation = await addConsultation({
+          name: consultationData.name,
+          email: consultationData.email,
+          phone: consultationData.phone,
+          company: consultationData.company,
+          projectDetails: consultationData.projectDetails,
+          preferredDate: consultationData.preferredDate,
+          preferredTime: consultationData.preferredTime,
+          hasFileUpload: !!consultationData.uploadedFile
+        })
 
     console.log('Stored consultation successfully:', storedConsultation.id)
 
