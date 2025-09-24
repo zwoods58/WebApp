@@ -272,11 +272,9 @@ export default function RealEstateDemo() {
               {properties.map((property) => (
                 <div key={property.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative">
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-48 object-cover"
-                    />
+                    <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center">
+                      <Home className="h-16 w-16 text-blue-600" />
+                    </div>
                     <button
                       onClick={() => toggleFavorite(property.id)}
                       className={`absolute top-3 right-3 p-2 rounded-full ${
@@ -380,11 +378,9 @@ export default function RealEstateDemo() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.filter(property => favorites.has(property.id)).map((property) => (
                   <div key={property.id} className="bg-white rounded-lg shadow overflow-hidden">
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      className="w-full h-48 object-cover"
-                    />
+                    <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center">
+                      <Home className="h-16 w-16 text-blue-600" />
+                    </div>
                     <div className="p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">{property.title}</h3>
                       <p className="text-2xl font-bold text-gray-900 mb-2">{formatPrice(property.price)}</p>

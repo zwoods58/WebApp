@@ -515,48 +515,46 @@ export default function RestaurantDemo() {
                 className="group bg-white rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-4 hover:-skew-x-6 overflow-hidden border-4 border-yellow-200 hover:border-red-400"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* Item Image */}
-                <div className="relative h-64 overflow-hidden">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 flex space-x-2">
-                    {item.popular && (
-                      <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-black animate-pulse border-2 border-white transform -skew-x-12">
-                        🔥 POPULAR
-                      </span>
-                    )}
-                    {item.spicy && (
-                      <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-black border-2 border-white transform -skew-x-12">
-                        🌶️ SPICY
-                      </span>
-                    )}
+                {/* Item Header */}
+                <div className="relative p-6 bg-gradient-to-br from-yellow-50 to-orange-100">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex space-x-2">
+                      {item.popular && (
+                        <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-black animate-pulse border-2 border-white transform -skew-x-12">
+                          🔥 POPULAR
+                        </span>
+                      )}
+                      {item.spicy && (
+                        <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-black border-2 border-white transform -skew-x-12">
+                          🌶️ SPICY
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => toggleFavorite(item.id)}
+                      className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                        favorites.includes(item.id)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
+                      }`}
+                    >
+                      <Heart className={`h-6 w-6 ${favorites.includes(item.id) ? 'fill-current' : ''}`} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => toggleFavorite(item.id)}
-                    className={`absolute top-4 right-4 p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
-                      favorites.includes(item.id)
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white/80 text-gray-600 hover:bg-red-500 hover:text-white'
-                    }`}
-                  >
-                    <Heart className={`h-6 w-6 ${favorites.includes(item.id) ? 'fill-current' : ''}`} />
-                  </button>
+                  <div className="text-center">
+                    <h3 className="text-2xl font-black text-gray-800 mb-2 transform -skew-x-12" style={{ 
+                      fontFamily: 'serif',
+                      letterSpacing: '1px',
+                      textShadow: '1px 1px 0px #ff6b35'
+                    }}>
+                      {item.name}
+                    </h3>
+                  </div>
                 </div>
 
                 {/* Item Info */}
                 <div className="p-8">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-3xl font-black text-gray-900 transform -skew-x-12" style={{ 
-                      fontFamily: 'serif',
-                      letterSpacing: '2px',
-                      textShadow: '2px 2px 0px #ff6b35'
-                    }}>
-                      {item.name}
-                    </h3>
                     <div className="flex items-center space-x-2">
                       <Star className="h-6 w-6 text-yellow-400 fill-current" />
                       <span className="font-black text-gray-700 text-xl">{item.rating}</span>
@@ -658,13 +656,9 @@ export default function RestaurantDemo() {
                 <div className="space-y-4">
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl border-4 border-yellow-200">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        width={60}
-                        height={60}
-                        className="rounded-xl object-cover"
-                      />
+                      <div className="w-15 h-15 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                        <span className="text-white font-black text-lg">🍗</span>
+                      </div>
                       <div className="flex-1">
                         <h4 className="font-black text-gray-900 text-lg">{item.name}</h4>
                         <p className="text-sm text-gray-600 font-bold">{item.size}</p>
