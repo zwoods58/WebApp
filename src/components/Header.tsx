@@ -44,7 +44,7 @@ export default function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/contact" className="btn-primary">
+            <Link href="/services" className="btn-primary">
               Get Started
             </Link>
           </div>
@@ -77,7 +77,7 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                href="/contact"
+                href="/services"
                 className="btn-primary w-full text-center mt-4"
                 onClick={() => setIsMenuOpen(false)}
               >
