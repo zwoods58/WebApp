@@ -188,9 +188,28 @@ export async function sendEmailNotification(
       throw new Error(notificationResult.error)
     }
 
-    // Here you would integrate with your email service (SendGrid, Resend, etc.)
-    // For now, we'll just log it
-    console.log('Email notification:', { to, subject, message })
+    // Send email via SendGrid
+    if (process.env.SENDGRID_API_KEY) {
+      const sgMail = require('@sendgrid/mail')
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+      await sgMail.send({
+        to: to,
+        from: process.env.SENDGRID_FROM_EMAIL || 'admin@atarweb.com',
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">${subject}</h2>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p style="white-space: pre-line;">${message}</p>
+            </div>
+            <p style="color: #64748b;">This is an automated notification from AtarWeb.</p>
+          </div>
+        `
+      })
+    } else {
+      console.log('SendGrid not configured, logging email:', { to, subject, message })
+    }
 
     return {
       success: true
@@ -229,11 +248,18 @@ export async function notifyNewProjectRequest(projectRequest: {
       throw new Error(result.error)
     }
 
-    // Also send email notification
+    // Send email notification to admin
     await sendEmailNotification(
-      'admin@atarweb.com', // Replace with your admin email
+      'admin@atarweb.com',
       'New Project Request - AtarWeb',
       `A new project request has been submitted:\n\nName: ${projectRequest.name}\nEmail: ${projectRequest.email}\nProject Type: ${projectRequest.project_type}\n\nPlease review it in the admin dashboard.`
+    )
+
+    // Send confirmation email to client
+    await sendEmailNotification(
+      projectRequest.email,
+      'Project Request Received - AtarWeb',
+      `Dear ${projectRequest.name},\n\nThank you for your project request for ${projectRequest.project_type}.\n\nWe have received your request and will review it carefully. Our team will contact you within 24 hours to discuss your project requirements and next steps.\n\nIf you have any immediate questions, please don't hesitate to contact us at support@atarweb.com.\n\nBest regards,\nThe AtarWeb Team`
     )
 
     return {
