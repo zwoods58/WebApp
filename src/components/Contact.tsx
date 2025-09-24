@@ -20,7 +20,6 @@ const projectTypes = [
   'Web Application',
   'Landing Page',
   'Blog/Content Site',
-  'Maintenance & Support',
   'Other'
 ]
 

@@ -2,48 +2,56 @@ import { Check, Star } from 'lucide-react'
 
 const pricingPlans = [
   {
-    name: 'Starter',
-    price: '$5,000',
-    description: 'Perfect for small businesses and startups',
+    name: 'Web Development',
+    price: '$600',
+    description: 'Custom websites and web applications',
     features: [
-      'Custom web application',
-      'Responsive design',
-      'Basic SEO optimization',
-      '3 months support',
-      'Source code included',
-      'Basic analytics'
+      'Custom website design & development',
+      'Mobile-responsive layout',
+      'Contact forms & basic functionality',
+      'SEO optimization',
+      'Fast loading performance',
+      'Basic content management',
+      'SSL certificate setup',
+      'Domain & hosting setup',
+      'Basic analytics integration',
+      '12 months free support'
     ],
     popular: false
   },
   {
-    name: 'Professional',
-    price: '$15,000',
-    description: 'Ideal for growing businesses',
+    name: 'Mobile Applications',
+    price: '$650',
+    description: 'Cross-platform mobile apps',
     features: [
-      'Everything in Starter',
-      'Advanced features',
-      'Database design',
-      'API development',
-      '12 months support',
-      'Advanced analytics',
-      'Performance optimization',
-      'Security audit'
+      'Cross-platform mobile app development',
+      'iOS & Android compatibility',
+      'Custom UI/UX design',
+      'Basic app functionality',
+      'User authentication system',
+      'Push notifications',
+      'App store optimization',
+      'Basic analytics',
+      '12 months free support',
+      'Source code included'
     ],
     popular: true
   },
   {
-    name: 'Enterprise',
-    price: '$35,000',
-    description: 'For large-scale applications',
+    name: 'Custom Solutions',
+    price: 'Contact Us',
+    description: 'Tailored solutions for complex needs',
     features: [
-      'Everything in Professional',
-      'Custom integrations',
-      'Scalable architecture',
-      'Advanced security',
-      '12 months support',
+      'Custom web applications',
+      'Advanced integrations',
+      'Database design',
+      'API development',
+      'Advanced security features',
+      'Custom training',
+      'Priority support',
       'Dedicated project manager',
-      'Training sessions',
-      'Priority support'
+      'White-label solutions',
+      '24/7 support available'
     ],
     popular: false
   }

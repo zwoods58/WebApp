@@ -61,12 +61,6 @@ export default function Footer() {
               <li>
                 <span className="text-secondary-300">API Development</span>
               </li>
-              <li>
-                <span className="text-secondary-300">Database Design</span>
-              </li>
-              <li>
-                <span className="text-secondary-300">Maintenance & Support</span>
-              </li>
             </ul>
           </div>
 

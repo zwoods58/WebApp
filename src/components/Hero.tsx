@@ -11,7 +11,6 @@ export default function Hero() {
     'Custom Web Applications',
     'E-commerce Solutions', 
     'API Development',
-    'Database Design',
     'Mobile-First Design'
   ]
 
