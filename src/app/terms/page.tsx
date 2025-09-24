@@ -29,13 +29,19 @@ export default function TermsOfService() {
                 AtarWeb provides professional web development services including but not limited to:
               </p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>Custom website design and development</li>
-                <li>Mobile application development</li>
-                <li>E-commerce solutions</li>
+                <li>Custom website design and development (starting at $600)</li>
+                <li>Mobile application development (starting at $650)</li>
+                <li>E-commerce integration and solutions</li>
                 <li>API development and integration</li>
-                <li>Website maintenance and support</li>
-                <li>SEO optimization services</li>
+                <li>SEO optimization and performance tuning</li>
+                <li>Domain and hosting setup</li>
+                <li>SSL certificate setup</li>
+                <li>Basic analytics integration</li>
+                <li>12 months free support for all projects</li>
               </ul>
+              <p className="text-gray-700 mb-4">
+                We serve various industries including E-commerce, Healthcare, Education, Real Estate, Restaurants, Professional Services, Non-Profit, and Technology sectors.
+              </p>
             </section>
 
             <section className="mb-8">
@@ -50,13 +56,13 @@ export default function TermsOfService() {
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-2">3.2 Payment Terms</h3>
                   <p className="text-gray-700">
-                    Payment terms will be specified in your project agreement. Generally, we require a deposit before work begins, with the remaining balance due upon project completion. All prices are in USD unless otherwise specified.
+                    Payment terms will be specified in your project agreement. Our base services start at $600 for web development and $650 for mobile applications, with add-on services ranging from $50-$75. We require a deposit before work begins, with the remaining balance due upon project completion. All prices are in USD unless otherwise specified.
                   </p>
                 </div>
                 <div>
                   <h3 className="text-xl font-medium text-gray-900 mb-2">3.3 Timeline</h3>
                   <p className="text-gray-700">
-                    Project timelines are estimates based on the scope of work and client responsiveness. Delays in client feedback or content provision may extend project timelines accordingly.
+                    Our standard project timeline is 21 days for most web development and mobile application projects. Project timelines are estimates based on the scope of work and client responsiveness. Delays in client feedback or content provision may extend project timelines accordingly.
                   </p>
                 </div>
               </div>
