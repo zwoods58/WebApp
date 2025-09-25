@@ -40,22 +40,6 @@ const products = [
   },
   {
     id: 3,
-    name: 'Peak Design Everyday Backpack 30L',
-    price: 289.99,
-    originalPrice: 329.99,
-    rating: 4.7,
-    reviews: 1234,
-    image: 'https://images.unsplash.com/photo-1553062407-98e64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-    category: 'Accessories',
-    inStock: true,
-    badge: 'Premium',
-    description: 'Professional camera backpack with modular organization system',
-    features: ['Weatherproof', 'Modular dividers', 'Laptop compartment', 'Lifetime warranty'],
-    brand: 'Peak Design',
-    shipping: 'Free 2-day shipping'
-  },
-  {
-    id: 4,
     name: 'Logitech MX Master 3S Mouse',
     price: 99.99,
     originalPrice: 119.99,
@@ -71,7 +55,7 @@ const products = [
     shipping: 'Free 2-day shipping'
   },
   {
-    id: 5,
+    id: 4,
     name: 'Herman Miller Aeron Chair',
     price: 1299.99,
     originalPrice: 1499.99,
@@ -87,7 +71,7 @@ const products = [
     shipping: 'Free 2-day shipping'
   },
   {
-    id: 6,
+    id: 5,
     name: 'Keychron K8 Pro Wireless Keyboard',
     price: 89.99,
     originalPrice: 109.99,
@@ -103,7 +87,7 @@ const products = [
     shipping: 'Free 2-day shipping'
   },
   {
-    id: 7,
+    id: 6,
     name: 'Dell XPS 13 Laptop',
     price: 1299.99,
     originalPrice: 1499.99,
@@ -119,7 +103,7 @@ const products = [
     shipping: 'Free 2-day shipping'
   },
   {
-    id: 8,
+    id: 7,
     name: 'Samsung 4K Monitor 32"',
     price: 599.99,
     originalPrice: 699.99,
@@ -138,7 +122,7 @@ const products = [
 
 const categories = ['All', 'Electronics', 'Gaming', 'Accessories', 'Computers', 'Furniture', 'Fashion']
 
-const brands = ['All', 'Sony', 'Apple', 'Peak Design', 'Logitech', 'Herman Miller', 'Keychron', 'Dell', 'Samsung']
+const brands = ['All', 'Sony', 'Apple', 'Logitech', 'Herman Miller', 'Keychron', 'Dell', 'Samsung']
 
 const sortOptions = [
   { value: 'featured', label: 'Featured' },
