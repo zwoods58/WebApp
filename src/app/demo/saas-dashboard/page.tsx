@@ -77,7 +77,7 @@ const recentActivities = [
 
 const projects = [
   { id: 1, name: 'Website Redesign', status: 'In Progress', progress: 75, team: 4, deadline: 'Dec 15, 2024', priority: 'high', budget: '$15,000', spent: '$11,250' },
-  { id: 2, name: 'Mobile App Launch', status: 'Planning', progress: 30, team: 6, deadline: 'Jan 20, 2025', priority: 'medium', budget: '$25,000', spent: '$7,500' },
+  { id: 2, name: 'E-commerce Integration', status: 'Planning', progress: 30, team: 6, deadline: 'Jan 20, 2025', priority: 'medium', budget: '$25,000', spent: '$7,500' },
   { id: 3, name: 'API Integration', status: 'Completed', progress: 100, team: 3, deadline: 'Nov 30, 2024', priority: 'low', budget: '$8,000', spent: '$8,000' },
   { id: 4, name: 'Database Migration', status: 'In Progress', progress: 60, team: 2, deadline: 'Dec 10, 2024', priority: 'high', budget: '$12,000', spent: '$7,200' }
 ]

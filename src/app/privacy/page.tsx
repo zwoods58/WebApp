@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">3. How We Use Your Information</h2>
               <p className="text-gray-700 mb-4">We use the information we collect for the following purposes:</p>
               <ul className="list-disc list-inside text-gray-700 mb-4 space-y-2">
-                <li>To provide and deliver our web development and mobile application services</li>
+                <li>To provide and deliver our web development services</li>
                 <li>To communicate with you about your projects and our services</li>
                 <li>To process payments and manage billing</li>
                 <li>To improve our website and services</li>

@@ -34,7 +34,7 @@ export async function seedSampleData() {
         email: `client${i}@example.com`,
         company: `Company ${i}`,
         phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-        project_type: ['Web App', 'E-commerce', 'Mobile App', 'API Development'][Math.floor(Math.random() * 4)],
+        project_type: ['Web App', 'E-commerce', 'API Development'][Math.floor(Math.random() * 3)],
         budget: ['$5,000 - $10,000', '$10,000 - $25,000', '$25,000 - $50,000', '$50,000+'][Math.floor(Math.random() * 4)],
         timeline: ['1-3 months', '3-6 months', '6-12 months', '12+ months'][Math.floor(Math.random() * 4)],
         description: `Project description for client ${i}`,

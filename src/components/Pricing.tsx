@@ -20,24 +20,6 @@ const pricingPlans = [
     popular: false
   },
   {
-    name: 'Mobile Applications',
-    price: '$650',
-    description: 'Cross-platform mobile apps',
-    features: [
-      'Cross-platform mobile app development',
-      'iOS & Android compatibility',
-      'Custom UI/UX design',
-      'Basic app functionality',
-      'User authentication system',
-      'Push notifications',
-      'App store optimization',
-      'Basic analytics',
-      '12 months free support',
-      'Source code included'
-    ],
-    popular: true
-  },
-  {
     name: 'Custom Solutions',
     price: 'Contact Us',
     description: 'Tailored solutions for complex needs',

@@ -37,7 +37,7 @@ const testimonials = [
     company: 'RetailMax',
     role: 'Founder',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
-    content: 'The mobile app they developed for our retail business has been a huge success. Our customers love the user experience, and we\'ve seen a significant increase in mobile sales.',
+    content: 'The e-commerce website they developed for our retail business has been a huge success. Our customers love the user experience, and we\'ve seen a significant increase in online sales.',
     rating: 5
   },
   {

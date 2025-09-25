@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle, Star, Users, Clock, Shield, Smartphone, ExternalLink } from 'lucide-react'
+import { ArrowRight, CheckCircle, Star, Users, Clock, Shield, ExternalLink } from 'lucide-react'
 
 const caseStudies = [
   {
@@ -77,14 +77,6 @@ const caseStudies = [
         image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
         device: 'desktop',
         features: ['Order management', 'Inventory tracking', 'Customer analytics', 'Sales reports']
-      },
-      {
-        id: 5,
-        title: 'Mobile App',
-        description: 'Mobile-optimized shopping experience with touch-friendly interface',
-        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Touch navigation', 'Mobile payments', 'Push notifications', 'Offline browsing']
       }
     ]
   },
@@ -152,14 +144,6 @@ const caseStudies = [
         image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
         device: 'desktop',
         features: ['User roles', 'Permissions', 'Activity logs', 'Team management']
-      },
-      {
-        id: 4,
-        title: 'Mobile Dashboard',
-        description: 'Mobile-optimized dashboard for on-the-go analytics and monitoring',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        device: 'mobile',
-        features: ['Touch-friendly charts', 'Swipe navigation', 'Push notifications', 'Offline mode']
       }
     ]
   },

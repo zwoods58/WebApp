@@ -1,6 +1,6 @@
 'use client'
 
-import { Smartphone, Globe, Zap } from 'lucide-react'
+import { Globe, Zap } from 'lucide-react'
 
 const services = [
   {
@@ -8,12 +8,6 @@ const services = [
     title: 'Web Development',
     description: 'Custom websites and web applications built with modern technologies for optimal performance and user experience.',
     features: ['Responsive Design', 'SEO Optimized', 'Fast Loading', 'Mobile-First']
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobile Applications',
-    description: 'Native and cross-platform mobile apps that deliver seamless experiences across all devices.',
-    features: ['iOS & Android', 'Cross-Platform', 'App Store Ready', 'Push Notifications']
   }
 ]
 

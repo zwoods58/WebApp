@@ -16,7 +16,6 @@ const contactInfo = [
 const projectTypes = [
   'Business Website',
   'E-commerce Store',
-  'Mobile App',
   'Web Application',
   'Landing Page',
   'Blog/Content Site',

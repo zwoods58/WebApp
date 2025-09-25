@@ -1,6 +1,6 @@
 'use client'
 
-import { Code, Smartphone, ArrowRight, CheckCircle, X, DollarSign, Plus, Building2, FileText } from 'lucide-react'
+import { Code, ArrowRight, CheckCircle, X, DollarSign, Plus, Building2, FileText } from 'lucide-react'
 import { useState } from 'react'
 import QuoteConfirmationModal from './QuoteConfirmationModal'
 import ConsultationModal from './ConsultationModal'
@@ -52,35 +52,6 @@ const services: Service[] = [
       { name: 'API Integration', price: 60 }
     ],
     industries: ['E-commerce', 'Healthcare', 'Education', 'Real Estate', 'Restaurants', 'Professional Services', 'Non-Profit', 'Technology']
-  },
-  {
-    icon: Smartphone,
-    title: 'Mobile Applications',
-    description: 'Native and cross-platform mobile apps that deliver seamless experiences across all devices.',
-    features: ['iOS & Android Development', 'Cross-Platform Solutions', 'App Store Optimization', 'Push Notifications'],
-    gradient: 'from-green-500 to-emerald-500',
-    bgGradient: 'from-green-50 to-emerald-50',
-    basePrice: 650,
-    baseFeatures: [
-      'Cross-platform mobile app development',
-      'iOS & Android compatibility',
-      'Custom UI/UX design',
-      'Basic app functionality',
-      'User authentication system',
-      'Data storage & management',
-      'App store submission',
-      'Basic testing & quality assurance',
-      'Performance optimization',
-      '12 months free support'
-    ],
-    addOns: [
-      { name: 'Backend API Development', price: 75 },
-      { name: 'Push Notifications', price: 50 },
-      { name: 'Social Media Integration', price: 60 },
-      { name: 'Payment Processing', price: 75 },
-      { name: 'Offline Functionality', price: 60 }
-    ],
-    industries: ['Healthcare', 'Fitness', 'Food Delivery', 'E-commerce', 'Banking', 'Education', 'Travel', 'Entertainment']
   }
 ]
 

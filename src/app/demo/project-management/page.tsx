@@ -95,7 +95,7 @@ const projects = [
   },
   { 
     id: 2, 
-    name: 'Mobile Banking App', 
+    name: 'E-commerce Platform', 
     progress: 45, 
     status: 'In Progress', 
     team: 8, 
@@ -103,10 +103,10 @@ const projects = [
     priority: 'Critical',
     budget: 75000,
     spent: 28000,
-    client: 'FinanceFirst Bank',
+    client: 'RetailMax',
     color: 'blue',
-    description: 'Secure mobile banking application with biometric authentication and real-time transactions',
-    tags: ['Mobile', 'Security', 'Fintech', 'iOS', 'Android'],
+    description: 'Comprehensive e-commerce platform with advanced inventory management and payment processing',
+    tags: ['E-commerce', 'Web', 'Payment', 'Inventory'],
     startDate: '2024-11-01',
     estimatedHours: 1200,
     completedHours: 540
@@ -168,7 +168,7 @@ const tasks = [
   { 
     id: 2, 
     title: 'Set up development environment', 
-    project: 'Mobile Banking App', 
+    project: 'E-commerce Platform', 
     assignee: 'Mike Chen', 
     due: 'Dec 12, 2024', 
     priority: 'Medium', 
@@ -284,7 +284,7 @@ const metrics = [
 
 const recentActivities = [
   { id: 1, user: 'Sarah Johnson', action: 'completed task "Design user interface mockups"', time: '2 hours ago', type: 'task' },
-  { id: 2, user: 'Mike Chen', action: 'added comment to "Mobile Banking App" project', time: '4 hours ago', type: 'comment' },
+  { id: 2, user: 'Mike Chen', action: 'added comment to "E-commerce Platform" project', time: '4 hours ago', type: 'comment' },
   { id: 3, user: 'Emma Wilson', action: 'created new task "Test payment processing"', time: '6 hours ago', type: 'task' },
   { id: 4, user: 'David Kim', action: 'updated project timeline for "E-Commerce Platform"', time: '1 day ago', type: 'project' },
   { id: 5, user: 'Alex Rodriguez', action: 'uploaded files to "Cloud Migration Project"', time: '2 days ago', type: 'file' }
@@ -294,7 +294,7 @@ const notifications = [
   { id: 1, title: 'Project Deadline Approaching', message: 'E-Commerce Platform Redesign due in 3 days', time: '1 hour ago', type: 'deadline', read: false },
   { id: 2, title: 'Task Completed', message: 'Sarah Johnson completed "Design user interface mockups"', time: '2 hours ago', type: 'task', read: false },
   { id: 3, title: 'New Team Member', message: 'Welcome Lisa Park to the team!', time: '1 day ago', type: 'team', read: true },
-  { id: 4, title: 'Budget Alert', message: 'Mobile Banking App project is 80% through budget', time: '2 days ago', type: 'budget', read: true }
+  { id: 4, title: 'Budget Alert', message: 'E-commerce Platform project is 80% through budget', time: '2 days ago', type: 'budget', read: true }
 ]
 
 export default function ProjectManagementDemo() {
