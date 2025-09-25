@@ -552,6 +552,17 @@ export default function RestaurantDemo() {
                   </div>
                 </div>
 
+                {/* Food Image */}
+                <div className="relative h-48 bg-gradient-to-br from-yellow-50 to-orange-100 overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    unoptimized
+                  />
+                </div>
+
                 {/* Item Info */}
                 <div className="p-8">
                   <div className="flex items-center justify-between mb-4">
