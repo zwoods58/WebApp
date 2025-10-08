@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(SALES)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  leads     Lead[]
+  calls     Call[]
+  tasks     Task[]
+  deals     Deal[]
+  
+  @@map("users")
+}
+
+model Lead {
+  id          String      @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  company     String?
+  title       String?
+  source      String?
+  status      LeadStatus  @default(NEW)
+  score       Int         @default(0)
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calls       Call[]
+  deals       Deal[]
+  
+  @@map("leads")
+}
+
+model Call {
+  id          String      @id @default(cuid())
+  phoneNumber String
+  outcome     CallOutcome
+  duration    Int?        // in seconds
+  notes       String?
+  callTime    DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  
+  // Relations
+  leadId      String?
+  lead        Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("calls")
+}
+
+model Deal {
+  id          String      @id @default(cuid())
+  title       String
+  value       Float
+  stage       DealStage   @default(PROSPECTING)
+  probability Int         @default(0) // 0-100
+  closeDate   DateTime?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  leadId      String?
+  lead        Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("deals")
+}
+
+model Task {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  completed   Boolean     @default(false)
+  dueDate     DateTime?
+  priority    Priority    @default(MEDIUM)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("tasks")
+}
+
+enum Role {
+  ADMIN
+  SALES
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum CallOutcome {
+  ANSWERED
+  NO_ANSWER
+  BUSY
+  VOICEMAIL
+  WRONG_NUMBER
+  NOT_INTERESTED
+  INTERESTED
+  CALLBACK_REQUESTED
+}
+
+enum DealStage {
+  PROSPECTING
+  QUALIFYING
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
