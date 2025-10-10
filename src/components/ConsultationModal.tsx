@@ -184,12 +184,18 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
           } else {
             let errorMessage = 'Failed to submit consultation request'
             try {
-              const errorData = await response.json()
+              // Clone the response to read it safely
+              const responseClone = response.clone()
+              const errorData = await responseClone.json()
               errorMessage = errorData.error || errorMessage
             } catch (jsonError) {
-              // If response is not JSON, get the text
-              const errorText = await response.text()
-              errorMessage = errorText || `Server error: ${response.status} ${response.statusText}`
+              // If response is not JSON, get the text from the original response
+              try {
+                const errorText = await response.text()
+                errorMessage = errorText || `Server error: ${response.status} ${response.statusText}`
+              } catch (textError) {
+                errorMessage = `Server error: ${response.status} ${response.statusText}`
+              }
             }
             throw new Error(errorMessage)
           }
