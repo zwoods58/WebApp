@@ -127,6 +127,7 @@ export default function QuoteConfirmationModal({
       const selectedServices = Array.from(selectedAdditionalServices)
       submitData.append('additionalServices', JSON.stringify(selectedServices))
       submitData.append('totalPrice', calculateTotal().toString())
+      submitData.append('currency', currency)
 
       // Submit consultation request
       const response = await fetch('/api/consultation/submit', {
@@ -233,11 +234,16 @@ export default function QuoteConfirmationModal({
   const dateOptions = generateDateOptions()
 
   const timeSlots = [
-    { value: '7am-9am', label: '7:00 AM - 9:00 AM CT' },
-    { value: '9am-11am', label: '9:00 AM - 11:00 AM CT' },
-    { value: '11am-1pm', label: '11:00 AM - 1:00 PM CT' },
-    { value: '1pm-3pm', label: '1:00 PM - 3:00 PM CT' },
-    { value: '3pm-5pm', label: '3:00 PM - 5:00 PM CT' },
+    { value: '7am', label: '7:00 AM CT' },
+    { value: '8am', label: '8:00 AM CT' },
+    { value: '9am', label: '9:00 AM CT' },
+    { value: '10am', label: '10:00 AM CT' },
+    { value: '11am', label: '11:00 AM CT' },
+    { value: '1pm', label: '1:00 PM CT' },
+    { value: '2pm', label: '2:00 PM CT' },
+    { value: '3pm', label: '3:00 PM CT' },
+    { value: '4pm', label: '4:00 PM CT' },
+    { value: '5pm', label: '5:00 PM CT' },
     { value: 'flexible', label: 'I\'m flexible' }
   ]
 

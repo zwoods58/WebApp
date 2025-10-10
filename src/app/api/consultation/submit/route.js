@@ -254,6 +254,7 @@ export async function POST(req) {
         let selectedAddOns = []
         let selectedAdditionalServices = []
         let totalPrice = 0
+        let currency = 'USD'
         
         try {
           if (consultationData.selectedAddOns) {
@@ -265,8 +266,33 @@ export async function POST(req) {
           if (consultationData.totalPrice) {
             totalPrice = parseFloat(consultationData.totalPrice)
           }
+          if (consultationData.currency) {
+            currency = consultationData.currency
+          }
         } catch (e) {
           console.log('Error parsing JSON data:', e)
+        }
+
+        // Currency conversion helper
+        const convertPrice = (usdPrice, targetCurrency) => {
+          if (targetCurrency === 'KSH') {
+            return Math.round(usdPrice * 130) // Approximate USD to KSH rate
+          }
+          if (targetCurrency === 'ZAR') {
+            return Math.round(usdPrice * 18) // Approximate USD to ZAR rate
+          }
+          return usdPrice
+        }
+
+        const getCurrencySymbol = (targetCurrency) => {
+          if (targetCurrency === 'KSH') return 'KSh'
+          if (targetCurrency === 'ZAR') return 'R'
+          return '$'
+        }
+
+        const formatPrice = (price, targetCurrency) => {
+          const convertedPrice = convertPrice(price, targetCurrency)
+          return `${getCurrencySymbol(targetCurrency)}${convertedPrice.toLocaleString()}`
         }
 
         adminEmailResult = await sgMail.send({
@@ -286,7 +312,10 @@ export async function POST(req) {
                   <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
                   <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
                 </div>
-                <p><strong>Preferred Consultation Time:</strong> ${formattedDateTime}</p>
+                <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 15px;">
+                  <p style="margin: 0; font-size: 16px;"><strong>Preferred Consultation Time:</strong> ${formattedDateTime}</p>
+                  <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Please confirm this time slot with the client before scheduling.</p>
+                </div>
               </div>
 
               <!-- Project Details -->
@@ -297,27 +326,34 @@ export async function POST(req) {
 
               <!-- Quote Details -->
               <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-                <h3 style="color: #f59e0b; margin-bottom: 20px;">Quote Details</h3>
+                <h3 style="color: #f59e0b; margin-bottom: 20px;">Quote Details ${currency !== 'USD' ? `(${currency})` : ''}</h3>
                 
                 <!-- Base Service -->
                 ${consultationData.serviceType ? `
-                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-                  <h4 style="color: #374151; margin-bottom: 10px;">Base Service</h4>
-                  <p><strong>Service:</strong> ${consultationData.serviceType}</p>
-                  <p><strong>Tier:</strong> ${consultationData.serviceTier}</p>
-                  <p><strong>Price:</strong> $${consultationData.servicePrice}</p>
-                  <p><strong>Description:</strong> ${consultationData.serviceDescription}</p>
+                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Base Service Package</h4>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <p style="margin: 5px 0;"><strong>Service:</strong> ${consultationData.serviceType}</p>
+                    <p style="margin: 5px 0;"><strong>Tier:</strong> ${consultationData.serviceTier}</p>
+                  </div>
+                  <p style="margin: 5px 0 10px 0;"><strong>Description:</strong> ${consultationData.serviceDescription}</p>
+                  <div style="background: #f3f4f6; padding: 10px; border-radius: 4px; text-align: center;">
+                    <span style="font-size: 18px; font-weight: bold; color: #2563eb;">${formatPrice(parseFloat(consultationData.servicePrice), currency)}</span>
+                  </div>
                 </div>
                 ` : ''}
 
                 <!-- Selected Add-ons -->
                 ${selectedAddOns.length > 0 ? `
-                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-                  <h4 style="color: #374151; margin-bottom: 10px;">Selected Add-ons</h4>
+                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Selected Add-on Services</h4>
                   ${selectedAddOns.map(addon => `
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                      <span>${addon.name}</span>
-                      <span><strong>$${addon.price}</strong></span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                      <div>
+                        <span style="font-weight: 500; color: #374151;">${addon.name}</span>
+                        ${addon.description ? `<br><span style="font-size: 14px; color: #6b7280;">${addon.description}</span>` : ''}
+                      </div>
+                      <span style="font-weight: bold; color: #2563eb; font-size: 16px;">${formatPrice(addon.price, currency)}</span>
                     </div>
                   `).join('')}
                 </div>
@@ -325,14 +361,16 @@ export async function POST(req) {
 
                 <!-- Additional Services -->
                 ${selectedAdditionalServices.length > 0 ? `
-                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-                  <h4 style="color: #374151; margin-bottom: 10px;">Additional Services</h4>
+                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Additional Services Selected</h4>
                   ${selectedAdditionalServices.map(serviceId => {
-                    // This would need to be populated with actual service data
                     return `
-                      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                        <span>Service ID: ${serviceId}</span>
-                        <span><strong>Price TBD</strong></span>
+                      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                        <div>
+                          <span style="font-weight: 500; color: #374151;">Service ID: ${serviceId}</span>
+                          <br><span style="font-size: 14px; color: #6b7280;">Additional service selected by client</span>
+                        </div>
+                        <span style="font-weight: bold; color: #2563eb; font-size: 16px;">Price TBD</span>
                       </div>
                     `
                   }).join('')}
@@ -340,8 +378,10 @@ export async function POST(req) {
                 ` : ''}
 
                 <!-- Total -->
-                <div style="background: #2563eb; color: white; padding: 15px; border-radius: 4px; text-align: center;">
-                  <h4 style="margin: 0; font-size: 18px;">Total Quote: $${totalPrice.toFixed(2)}</h4>
+                <div style="background: #2563eb; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-top: 20px;">
+                  <h4 style="margin: 0 0 10px 0; font-size: 18px;">Total Quote Amount</h4>
+                  <div style="font-size: 24px; font-weight: bold;">${formatPrice(totalPrice, currency)}</div>
+                  ${currency !== 'USD' ? `<div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Approximate USD: $${totalPrice.toFixed(2)}</div>` : ''}
                 </div>
               </div>
 
