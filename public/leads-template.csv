@@ -1,0 +1,6 @@
+firstName,lastName,email,phone,company,title,source,status,score,notes
+John,Doe,john@example.com,+1-555-123-4567,Acme Corp,CEO,Website,NEW,85,Interested in web development
+Jane,Smith,jane@company.com,+1-555-987-6543,Tech Solutions,CTO,Referral,CONTACTED,92,Follow up next week
+Mike,Johnson,mike@business.com,+1-555-456-7890,Business Inc,Manager,Cold Call,QUALIFIED,78,Budget approved
+Sarah,Brown,sarah@corp.net,+1-555-321-0987,Global Corp,Director,LinkedIn,PROPOSAL,95,Sent proposal for SEO
+David,Lee,david@startup.io,+1-555-654-3210,Innovate Startup,Founder,Event,CLOSED_WON,98,Signed contract for PWA

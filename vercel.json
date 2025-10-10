@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "functions": {
+    "src/app/api/consultation/submit/route.js": {
+      "maxDuration": 30,
+      "maxRequestBodySize": "10mb"
+    }
+  },
+  "regions": ["iad1"]
+}
