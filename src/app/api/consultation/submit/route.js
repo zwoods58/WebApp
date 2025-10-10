@@ -302,118 +302,58 @@ export async function POST(req) {
           to: 'admin@atarwebb.com',
           from: SENDGRID_FROM_EMAIL,
           subject: 'New Consultation Request - AtarWebb',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-              <h2 style="color: #2563eb; text-align: center; margin-bottom: 30px;">New Consultation Request - AtarWebb</h2>
-              
-              <!-- Client Information -->
-              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
-                <h3 style="color: #2563eb; margin-bottom: 20px;">Client Information</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                  <p><strong>Name:</strong> ${consultationData.name}</p>
-                  <p><strong>Email:</strong> ${consultationData.email}</p>
-                  <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
-                  <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
-                </div>
-                <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 15px;">
-                  <p style="margin: 0; font-size: 16px;"><strong>Preferred Consultation Time:</strong> ${formattedDateTime}</p>
-                  <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;">Please confirm this time slot with the client before scheduling.</p>
-                </div>
-              </div>
+          text: `NEW CONSULTATION REQUEST - ATARWEBB
+=====================================
 
-              <!-- Project Details -->
-              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
-                <h3 style="color: #10b981; margin-bottom: 15px;">Project Details</h3>
-                <p style="background: white; padding: 15px; border-radius: 4px; line-height: 1.6;">${consultationData.projectDetails || 'No details provided'}</p>
-              </div>
+CLIENT INFORMATION:
+------------------
+Name: ${consultationData.name}
+Email: ${consultationData.email}
+Phone: ${consultationData.phone || 'Not provided'}
+Company: ${consultationData.company || 'Not provided'}
+Preferred Time: ${formattedDateTime}
 
-              <!-- Quote Details -->
-              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-                <h3 style="color: #f59e0b; margin-bottom: 20px;">Quote Details ${currency !== 'USD' ? `(${currency})` : ''}</h3>
-                
-                <!-- Base Service -->
-                ${consultationData.serviceType ? `
-                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
-                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Base Service Package</h4>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <p style="margin: 5px 0;"><strong>Service:</strong> ${consultationData.serviceType}</p>
-                    <p style="margin: 5px 0;"><strong>Tier:</strong> ${consultationData.serviceTier}</p>
-                  </div>
-                  <p style="margin: 5px 0 10px 0;"><strong>Description:</strong> ${consultationData.serviceDescription}</p>
-                  <div style="background: #f3f4f6; padding: 10px; border-radius: 4px; text-align: center;">
-                    <span style="font-size: 18px; font-weight: bold; color: #2563eb;">${formatPrice(parseFloat(consultationData.servicePrice), currency)}</span>
-                  </div>
-                </div>
-                ` : ''}
+PROJECT DETAILS:
+---------------
+${consultationData.projectDetails || 'No details provided'}
 
-                <!-- Selected Add-ons -->
-                ${selectedAddOns.length > 0 ? `
-                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
-                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Selected Add-on Services</h4>
-                  ${selectedAddOns.map(addon => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                      <div>
-                        <span style="font-weight: 500; color: #374151;">${addon.name}</span>
-                        ${addon.description ? `<br><span style="font-size: 14px; color: #6b7280;">${addon.description}</span>` : ''}
-                      </div>
-                      <span style="font-weight: bold; color: #2563eb; font-size: 16px;">${formatPrice(addon.price, currency)}</span>
-                    </div>
-                  `).join('')}
-                </div>
-                ` : ''}
+QUOTE DETAILS:
+-------------
+Base Service: ${consultationData.serviceType || 'Not specified'}
+Tier: ${consultationData.serviceTier || 'Not specified'}
+Description: ${consultationData.serviceDescription || 'Custom service package'}
+Price: ${formatPrice(parseFloat(consultationData.servicePrice || 0), currency)}
 
-                <!-- Additional Services -->
-                ${selectedAdditionalServices.length > 0 ? `
-                <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
-                  <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Additional Services Selected</h4>
-                  ${selectedAdditionalServices.map(serviceId => {
-                    // Map service IDs to actual service names (you may need to adjust this based on your service data)
-                    const serviceNames = {
-                      'logo-design': 'Logo Design',
-                      'domain-registration': 'Domain Registration', 
-                      'hosting': 'Hosting Service',
-                      'email-service': 'Email Service',
-                      'seo-optimization': 'SEO Optimization',
-                      'social-media-setup': 'Social Media Setup',
-                      'analytics-setup': 'Analytics Setup',
-                      'automation-workflow': 'Automation Workflow'
-                    }
-                    const serviceName = serviceNames[serviceId] || `Service: ${serviceId}`
-                    return `
-                      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                        <div>
-                          <span style="font-weight: 500; color: #374151;">${serviceName}</span>
-                          <br><span style="font-size: 14px; color: #6b7280;">Additional service selected by client</span>
-                        </div>
-                        <span style="font-weight: bold; color: #2563eb; font-size: 16px;">Contact for Pricing</span>
-                      </div>
-                    `
-                  }).join('')}
-                </div>
-                ` : ''}
+${selectedAddOns.length > 0 ? `Selected Add-ons:
+${selectedAddOns.map(addon => `- ${addon.name}: ${formatPrice(addon.price, currency)}`).join('\n')}
 
-                <!-- Total -->
-                <div style="background: #2563eb; color: white; padding: 20px; border-radius: 4px; text-align: center; margin-top: 20px;">
-                  <h4 style="margin: 0 0 10px 0; font-size: 18px;">Total Quote Amount</h4>
-                  <div style="font-size: 24px; font-weight: bold;">${formatPrice(totalPrice, currency)}</div>
-                  ${currency !== 'USD' ? `<div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">Approximate USD: $${totalPrice.toFixed(2)}</div>` : ''}
-                </div>
-              </div>
+` : ''}${selectedAdditionalServices.length > 0 ? `Additional Services:
+${selectedAdditionalServices.map(serviceId => {
+  const serviceNames = {
+    'logo-design': 'Logo Design',
+    'domain-registration': 'Domain Registration', 
+    'hosting': 'Hosting Service',
+    'email-service': 'Email Service',
+    'seo-optimization': 'SEO Optimization',
+    'social-media-setup': 'Social Media Setup',
+    'analytics-setup': 'Analytics Setup',
+    'automation-workflow': 'Automation Workflow'
+  }
+  const serviceName = serviceNames[serviceId] || `Service: ${serviceId}`
+  return `- ${serviceName}: Contact for Pricing`
+}).join('\n')}
 
-              <!-- Action Required -->
-              <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
-                <h3 style="color: #92400e; margin-bottom: 10px;">Action Required</h3>
-                <p style="color: #92400e; margin: 0;">Please contact the client to confirm the consultation time and discuss the project details.</p>
-              </div>
+` : ''}TOTAL QUOTE: ${formatPrice(totalPrice, currency)}
+${currency !== 'USD' ? `Approximate USD: $${totalPrice.toFixed(2)}
 
-              <p style="color: #64748b; text-align: center; margin-top: 30px;">
-                <strong>Consultation ID:</strong> ${consultationId}<br>
-                <strong>Submitted:</strong> ${new Date().toLocaleString()}
-              </p>
-            </div>
-          `,
+` : ''}ACTION REQUIRED:
+---------------
+Please contact the client to confirm the consultation time and discuss project details.
+
+Consultation ID: ${consultationId}
+Submitted: ${new Date().toLocaleString()}`,
           attachments: []
-         }).then(() => {
+        }).then(() => {
            console.log('Admin email sent successfully')
            return { success: true }
          }).catch(error => {
