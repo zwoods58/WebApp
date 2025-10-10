@@ -250,41 +250,114 @@ export async function POST(req) {
       console.log('API Key (first 10 chars):', SENDGRID_API_KEY.substring(0, 10) + '...')
       
       try {
+        // Parse additional services and add-ons
+        let selectedAddOns = []
+        let selectedAdditionalServices = []
+        let totalPrice = 0
+        
+        try {
+          if (consultationData.selectedAddOns) {
+            selectedAddOns = JSON.parse(consultationData.selectedAddOns)
+          }
+          if (consultationData.additionalServices) {
+            selectedAdditionalServices = JSON.parse(consultationData.additionalServices)
+          }
+          if (consultationData.totalPrice) {
+            totalPrice = parseFloat(consultationData.totalPrice)
+          }
+        } catch (e) {
+          console.log('Error parsing JSON data:', e)
+        }
+
         adminEmailResult = await sgMail.send({
           to: 'admin@atarwebb.com',
           from: SENDGRID_FROM_EMAIL,
           subject: 'New Consultation Request - AtarWebb',
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #2563eb;">New Consultation Request - AtarWebb</h2>
-              <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Name:</strong> ${consultationData.name}</p>
-                <p><strong>Email:</strong> ${consultationData.email}</p>
-                <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
-                <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
-                <p><strong>Preferred Time:</strong> ${formattedDateTime}</p>
-                ${consultationData.serviceType ? `
-                <p><strong>Selected Service:</strong> ${consultationData.serviceType}</p>
-                <p><strong>Service Tier:</strong> ${consultationData.serviceTier}</p>
-                <p><strong>Service Price:</strong> $${consultationData.servicePrice}</p>
-                <p><strong>Service Description:</strong> ${consultationData.serviceDescription}</p>
-                ` : ''}
-                <p><strong>Project Details:</strong></p>
-                <p style="background: white; padding: 10px; border-radius: 4px; border-left: 4px solid #2563eb;">${consultationData.projectDetails || 'No details provided'}</p>
-                <p><strong>File Uploaded:</strong> ${consultationData.uploadedFile ? 'Yes' : 'No'}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+              <h2 style="color: #2563eb; text-align: center; margin-bottom: 30px;">New Consultation Request - AtarWebb</h2>
+              
+              <!-- Client Information -->
+              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
+                <h3 style="color: #2563eb; margin-bottom: 20px;">Client Information</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <p><strong>Name:</strong> ${consultationData.name}</p>
+                  <p><strong>Email:</strong> ${consultationData.email}</p>
+                  <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
+                  <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
+                </div>
+                <p><strong>Preferred Consultation Time:</strong> ${formattedDateTime}</p>
               </div>
-              <p style="color: #64748b;">Please contact the client to confirm the consultation time.</p>
-              <p style="color: #64748b; margin-top: 20px;"><strong>Quote PDF:</strong> ${pdfBuffer ? 'See attached quote document for client details.' : 'No PDF attached (file too large for email).'}</p>
+
+              <!-- Project Details -->
+              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+                <h3 style="color: #10b981; margin-bottom: 15px;">Project Details</h3>
+                <p style="background: white; padding: 15px; border-radius: 4px; line-height: 1.6;">${consultationData.projectDetails || 'No details provided'}</p>
+              </div>
+
+              <!-- Quote Details -->
+              <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <h3 style="color: #f59e0b; margin-bottom: 20px;">Quote Details</h3>
+                
+                <!-- Base Service -->
+                ${consultationData.serviceType ? `
+                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                  <h4 style="color: #374151; margin-bottom: 10px;">Base Service</h4>
+                  <p><strong>Service:</strong> ${consultationData.serviceType}</p>
+                  <p><strong>Tier:</strong> ${consultationData.serviceTier}</p>
+                  <p><strong>Price:</strong> $${consultationData.servicePrice}</p>
+                  <p><strong>Description:</strong> ${consultationData.serviceDescription}</p>
+                </div>
+                ` : ''}
+
+                <!-- Selected Add-ons -->
+                ${selectedAddOns.length > 0 ? `
+                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                  <h4 style="color: #374151; margin-bottom: 10px;">Selected Add-ons</h4>
+                  ${selectedAddOns.map(addon => `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                      <span>${addon.name}</span>
+                      <span><strong>$${addon.price}</strong></span>
+                    </div>
+                  `).join('')}
+                </div>
+                ` : ''}
+
+                <!-- Additional Services -->
+                ${selectedAdditionalServices.length > 0 ? `
+                <div style="background: white; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                  <h4 style="color: #374151; margin-bottom: 10px;">Additional Services</h4>
+                  ${selectedAdditionalServices.map(serviceId => {
+                    // This would need to be populated with actual service data
+                    return `
+                      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                        <span>Service ID: ${serviceId}</span>
+                        <span><strong>Price TBD</strong></span>
+                      </div>
+                    `
+                  }).join('')}
+                </div>
+                ` : ''}
+
+                <!-- Total -->
+                <div style="background: #2563eb; color: white; padding: 15px; border-radius: 4px; text-align: center;">
+                  <h4 style="margin: 0; font-size: 18px;">Total Quote: $${totalPrice.toFixed(2)}</h4>
+                </div>
+              </div>
+
+              <!-- Action Required -->
+              <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                <h3 style="color: #92400e; margin-bottom: 10px;">Action Required</h3>
+                <p style="color: #92400e; margin: 0;">Please contact the client to confirm the consultation time and discuss the project details.</p>
+              </div>
+
+              <p style="color: #64748b; text-align: center; margin-top: 30px;">
+                <strong>Consultation ID:</strong> ${consultationId}<br>
+                <strong>Submitted:</strong> ${new Date().toLocaleString()}
+              </p>
             </div>
           `,
-          attachments: pdfBuffer ? [
-            {
-              content: pdfBuffer.toString('base64'),
-              filename: consultationData.uploadedFile ? consultationData.uploadedFile.name : `AtarWebb-Quote-${consultationId.substring(0, 8)}.pdf`,
-              type: 'application/pdf',
-              disposition: 'attachment'
-            }
-          ] : []
+          attachments: []
          }).then(() => {
            console.log('Admin email sent successfully')
            return { success: true }
@@ -315,20 +388,13 @@ export async function POST(req) {
                 <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
                 <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
               </div>
-              <p>${pdfBuffer ? 'Please find attached your personalized quote for the services discussed.' : 'Note: Your uploaded file was too large for email attachment. We have received your consultation request and will contact you soon.'}</p>
+              <p>We have received your consultation request and will contact you soon to confirm the details and prepare for our discussion.</p>
               <p>If you have any questions or need to reschedule, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
               <p>We look forward to working with you!</p>
               <p>Best regards,<br>The AtarWebb Team</p>
             </div>
           `,
-          attachments: pdfBuffer ? [
-            {
-              content: pdfBuffer.toString('base64'),
-              filename: consultationData.uploadedFile ? consultationData.uploadedFile.name : `AtarWebb-Quote-${consultationId.substring(0, 8)}.pdf`,
-              type: 'application/pdf',
-              disposition: 'attachment'
-            }
-          ] : []
+          attachments: []
          }).then(() => {
            console.log('Client email sent successfully')
            return { success: true }

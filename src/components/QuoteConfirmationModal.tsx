@@ -233,9 +233,11 @@ export default function QuoteConfirmationModal({
   const dateOptions = generateDateOptions()
 
   const timeSlots = [
-    { value: 'morning', label: 'Morning (9 AM - 12 PM)' },
-    { value: 'afternoon', label: 'Afternoon (12 PM - 5 PM)' },
-    { value: 'evening', label: 'Evening (5 PM - 8 PM)' },
+    { value: '7am-9am', label: '7:00 AM - 9:00 AM CT' },
+    { value: '9am-11am', label: '9:00 AM - 11:00 AM CT' },
+    { value: '11am-1pm', label: '11:00 AM - 1:00 PM CT' },
+    { value: '1pm-3pm', label: '1:00 PM - 3:00 PM CT' },
+    { value: '3pm-5pm', label: '3:00 PM - 5:00 PM CT' },
     { value: 'flexible', label: 'I\'m flexible' }
   ]
 
