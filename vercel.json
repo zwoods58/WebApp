@@ -8,11 +8,5 @@
       "memory": 1024
     }
   },
-  "regions": ["iad1"],
-  "rewrites": [
-    {
-      "source": "/api/consultation/submit",
-      "destination": "/api/consultation/submit-edge"
-    }
-  ]
+  "regions": ["iad1"]
 }

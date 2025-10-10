@@ -155,10 +155,10 @@ export async function POST(req) {
       )
     }
 
-    // Validate file size (max 8.5MB to accommodate larger files)
-    if (consultationData.uploadedFile && consultationData.uploadedFile.size > 8.5 * 1024 * 1024) {
+    // Validate file size (max 4MB due to Vercel limits)
+    if (consultationData.uploadedFile && consultationData.uploadedFile.size > 4 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'File size too large. Please upload a file smaller than 8.5MB.' },
+        { error: 'File size too large. Please upload a file smaller than 4MB. For larger files, please email us directly at admin@atarwebb.com.' },
         { status: 413 }
       )
     }

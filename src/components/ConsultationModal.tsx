@@ -384,6 +384,12 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
                   />
                   <p className="text-sm text-gray-500 mt-1">
                     Upload the quote PDF you received to help us prepare for your consultation.
+                    <br />
+                    <span className="text-amber-600 font-medium">Maximum file size: 4MB</span>
+                    <br />
+                    <span className="text-sm text-gray-400">
+                      For larger files, please email us directly at admin@atarwebb.com
+                    </span>
                   </p>
                 </div>
 
