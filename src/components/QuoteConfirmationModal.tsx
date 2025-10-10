@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Download, Calendar, CheckCircle, FileText, Mail, Globe, Phone, Palette, Database, Monitor, Zap, Workflow, User, MessageSquare, Clock, Upload } from 'lucide-react'
+import { X, Download, Calendar, CheckCircle, FileText, Mail, Globe, Phone, Palette, Database, Monitor, Zap, Workflow, User, MessageSquare, Clock } from 'lucide-react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
@@ -60,14 +60,15 @@ export default function QuoteConfirmationModal({
     company: '',
     projectDetails: '',
     preferredDate: '',
-    preferredTime: '',
-    uploadedFile: null as File | null
+    preferredTime: ''
   })
 
   // Reset add-ons when modal opens
   useEffect(() => {
     if (isOpen) {
       setSelectedAddOns(service.addOns.map(addon => ({ ...addon, selected: false })))
+      setSelectedAdditionalServices(new Set())
+      setShowAddMoreServices(false)
       setCurrentStep(1)
       setIsSuccess(false)
       setConsultationData({
@@ -77,8 +78,7 @@ export default function QuoteConfirmationModal({
         company: '',
         projectDetails: '',
         preferredDate: '',
-        preferredTime: '',
-        uploadedFile: null
+        preferredTime: ''
       })
     }
   }, [isOpen, service.addOns])
@@ -88,10 +88,6 @@ export default function QuoteConfirmationModal({
     setConsultationData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null
-    setConsultationData(prev => ({ ...prev, uploadedFile: file }))
-  }
 
   const handleContinue = () => {
     setCurrentStep(2)
@@ -131,10 +127,6 @@ export default function QuoteConfirmationModal({
       const selectedServices = Array.from(selectedAdditionalServices)
       submitData.append('additionalServices', JSON.stringify(selectedServices))
       submitData.append('totalPrice', calculateTotal().toString())
-      
-      if (consultationData.uploadedFile) {
-        submitData.append('uploadedFile', consultationData.uploadedFile)
-      }
 
       // Submit consultation request
       const response = await fetch('/api/consultation/submit', {
@@ -215,15 +207,30 @@ export default function QuoteConfirmationModal({
     return '$'
   }
 
-  // Date and time options for consultation
-  const dateOptions = [
-    { value: 'asap', label: 'As soon as possible' },
-    { value: 'this-week', label: 'This week' },
-    { value: 'next-week', label: 'Next week' },
-    { value: 'this-month', label: 'This month' },
-    { value: 'next-month', label: 'Next month' },
-    { value: 'flexible', label: 'I\'m flexible' }
-  ]
+  // Generate specific date options for the next 30 days
+  const generateDateOptions = () => {
+    const options = []
+    const today = new Date()
+    
+    for (let i = 1; i <= 30; i++) {
+      const date = new Date(today)
+      date.setDate(today.getDate() + i)
+      
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' })
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' })
+      const day = date.getDate()
+      const year = date.getFullYear()
+      
+      options.push({
+        value: date.toISOString().split('T')[0],
+        label: `${dayName}, ${monthName} ${day}, ${year}`
+      })
+    }
+    
+    return options
+  }
+
+  const dateOptions = generateDateOptions()
 
   const timeSlots = [
     { value: 'morning', label: 'Morning (9 AM - 12 PM)' },
@@ -701,11 +708,11 @@ export default function QuoteConfirmationModal({
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white bg-opacity-20">
                   <FileText className="h-6 w-6 text-white" />
-                </div>
-                <div>
+              </div>
+              <div>
                   <h3 className="text-xl font-semibold text-white">
                     {currentStep === 1 ? 'Thank You for Choosing AtarWebb!' : 'Schedule Your Consultation'}
                   </h3>
@@ -715,14 +722,14 @@ export default function QuoteConfirmationModal({
                       : 'Fill out the form below to schedule your consultation and submit your request.'
                     }
                   </p>
-                </div>
               </div>
-              <button
-                onClick={onClose}
+            </div>
+            <button
+              onClick={onClose}
                 className="rounded-full p-2 text-white hover:bg-white hover:bg-opacity-20 transition-colors"
-              >
+            >
                 <X className="h-6 w-6" />
-              </button>
+            </button>
             </div>
           </div>
 
@@ -734,7 +741,7 @@ export default function QuoteConfirmationModal({
                   currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
                 }`}>
                   1
-                </div>
+              </div>
                 <span className="font-medium">Quote Review</span>
               </div>
               <div className={`w-8 h-0.5 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
@@ -747,7 +754,7 @@ export default function QuoteConfirmationModal({
                 <span className="font-medium">Schedule Consultation</span>
               </div>
             </div>
-          </div>
+            </div>
 
           {/* Content */}
           <div className="px-6 py-6">
@@ -758,8 +765,8 @@ export default function QuoteConfirmationModal({
                 {/* Service Details */}
                 <div className="mb-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4">Customize Your Package</h4>
-                  
-                  {/* Base Service */}
+              
+              {/* Base Service */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
                     <div className="flex justify-between items-start">
                       <div>
@@ -770,9 +777,9 @@ export default function QuoteConfirmationModal({
                         <span className="text-lg font-semibold text-gray-900">{getCurrencySymbol()}{convertPrice(service.basePrice).toLocaleString()}</span>
                       </div>
                     </div>
-                  </div>
+              </div>
 
-                  {/* Add-ons */}
+              {/* Add-ons */}
                   {service.addOns && service.addOns.length > 0 && (
                     <div className="mb-6">
                       <h5 className="font-medium text-gray-900 mb-3">Available Add-ons (Optional)</h5>
@@ -780,74 +787,74 @@ export default function QuoteConfirmationModal({
                         {selectedAddOns.map((addon, index) => (
                           <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
                             <div className="flex items-center space-x-3">
-                              <input
-                                type="checkbox"
+                        <input
+                          type="checkbox"
                                 id={`addon-${index}`}
                                 checked={addon.selected}
-                                onChange={() => toggleAddOn(index)}
+                          onChange={() => toggleAddOn(index)}
                                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                              />
+                        />
                               <label htmlFor={`addon-${index}`} className="flex-1 cursor-pointer">
                                 <div className="font-medium text-gray-900">{addon.name}</div>
                                 <div className="text-sm text-gray-600">Optional add-on service</div>
-                              </label>
+                      </label>
                             </div>
                             <div className="text-right">
                               <span className="font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(addon.price).toLocaleString()}</span>
                             </div>
-                          </div>
-                        ))}
-                      </div>
                     </div>
+                  ))}
+                </div>
+              </div>
                   )}
 
                   {/* Additional Services */}
-                  {additionalServices.length > 0 && (
+              {additionalServices.length > 0 && (
                     <div className="mb-6">
-                      <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-3">
                         <h5 className="font-medium text-gray-900">Add More Services</h5>
-                        <button
-                          onClick={() => setShowAddMoreServices(!showAddMoreServices)}
-                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
+                    <button
+                      onClick={() => setShowAddMoreServices(!showAddMoreServices)}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
                           {showAddMoreServices ? 'Hide Services' : 'Show Services'}
-                        </button>
-                      </div>
-                      
-                      {showAddMoreServices && (
+                    </button>
+                  </div>
+                  
+                  {showAddMoreServices && (
                         <div className="space-y-3 max-h-64 overflow-y-auto">
-                          {additionalServices.map((service) => (
+                      {additionalServices.map((service) => (
                             <div key={service.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
                               <div className="flex-1">
                                 <div className="font-medium text-gray-900">{service.name}</div>
                                 <div className="text-sm text-gray-600">{service.description}</div>
                                 <div className="text-xs text-blue-600 font-medium">{service.category}</div>
-                              </div>
-                              <div className="flex items-center space-x-2">
+                          </div>
+                          <div className="flex items-center space-x-2">
                                 <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
-                                <button
-                                  onClick={() => toggleAdditionalService(service.id)}
-                                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                    selectedAdditionalServices.has(service.id)
-                                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                      : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                  }`}
-                                >
-                                  {selectedAdditionalServices.has(service.id) ? 'Remove' : 'Add'}
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                            <button
+                              onClick={() => toggleAdditionalService(service.id)}
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedAdditionalServices.has(service.id)
+                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                              }`}
+                            >
+                              {selectedAdditionalServices.has(service.id) ? 'Remove' : 'Add'}
+                            </button>
+                          </div>
                         </div>
-                      )}
+                      ))}
                     </div>
                   )}
+                </div>
+              )}
 
-                  {/* Selected Additional Services */}
-                  {selectedAdditionalServices.size > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
+              {/* Selected Additional Services */}
+              {selectedAdditionalServices.size > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
                       <h5 className="font-medium text-gray-900 mb-3">Selected Additional Services</h5>
-                      <div className="space-y-2">
+                  <div className="space-y-2">
                         {Array.from(selectedAdditionalServices).map(serviceId => {
                           const service = additionalServices.find(s => s.id === serviceId)
                           return service ? (
@@ -857,18 +864,18 @@ export default function QuoteConfirmationModal({
                             </div>
                           ) : null
                         })}
-                      </div>
-                    </div>
-                  )}
+                  </div>
+                </div>
+              )}
 
-                  {/* Total */}
+              {/* Total */}
                   <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold text-gray-900">Total</span>
                       <span className="text-2xl font-bold text-blue-600">{getCurrencySymbol()}{convertPrice(calculateTotal()).toLocaleString()}</span>
                     </div>
-                  </div>
                 </div>
+              </div>
 
                 {/* Action Button */}
                 <div className="flex justify-end">
@@ -956,7 +963,7 @@ export default function QuoteConfirmationModal({
                           />
                         </div>
                       </div>
-                    </div>
+            </div>
 
                     {/* Project Details */}
                     <div className="mb-8">
@@ -1024,32 +1031,10 @@ export default function QuoteConfirmationModal({
                       </p>
                     </div>
 
-                    {/* File Upload */}
-                    <div className="mb-8">
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Quote PDF (Optional)
-                      </label>
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleFileUpload}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Upload the quote PDF you received to help us prepare for your consultation.
-                        <br />
-                        <span className="text-amber-600 font-medium">Maximum file size: 10MB</span>
-                        <br />
-                        <span className="text-sm text-gray-400">
-                          For larger files, please email us directly at admin@atarwebb.com
-                        </span>
-                      </p>
-                    </div>
 
                     {/* Action Buttons */}
                     <div className="flex space-x-4">
-                      <button
+              <button
                         type="button"
                         onClick={handleBack}
                         className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
@@ -1065,18 +1050,18 @@ export default function QuoteConfirmationModal({
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                             <span>Submitting Request...</span>
-                          </>
-                        ) : (
-                          <>
+                  </>
+                ) : (
+                  <>
                             <CheckCircle className="h-4 w-4" />
                             <span>Submit Request & Download PDF</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                  </>
+                )}
+              </button>
+            </div>
                   </form>
                 )}
-              </div>
+                </div>
             )}
           </div>
         </div>
