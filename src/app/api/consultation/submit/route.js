@@ -190,10 +190,19 @@ export async function POST(req) {
     // Use uploaded PDF file if available, otherwise generate a simple consultation PDF
     let pdfBuffer
     if (consultationData.uploadedFile) {
-      // Return the exact uploaded PDF file without any modifications
-      const arrayBuffer = await consultationData.uploadedFile.arrayBuffer()
-      pdfBuffer = Buffer.from(arrayBuffer)
-      console.log('Using uploaded PDF file - sending exact same file')
+      // Check if uploaded file is small enough for email (6KB limit)
+      const fileSizeKB = consultationData.uploadedFile.size / 1024
+      console.log(`Uploaded file size: ${fileSizeKB.toFixed(2)}KB`)
+      
+      if (fileSizeKB > 6) {
+        console.log('File too large for email attachment, skipping PDF attachment')
+        pdfBuffer = null
+      } else {
+        // Return the exact uploaded PDF file without any modifications
+        const arrayBuffer = await consultationData.uploadedFile.arrayBuffer()
+        pdfBuffer = Buffer.from(arrayBuffer)
+        console.log('Using uploaded PDF file - sending exact same file')
+      }
     } else {
       // Generate a simple consultation PDF if no file uploaded
       const pdfService = new ConsultationPDFService()
@@ -265,17 +274,17 @@ export async function POST(req) {
                 <p><strong>File Uploaded:</strong> ${consultationData.uploadedFile ? 'Yes' : 'No'}</p>
               </div>
               <p style="color: #64748b;">Please contact the client to confirm the consultation time.</p>
-              <p style="color: #64748b; margin-top: 20px;"><strong>Quote PDF:</strong> See attached quote document for client details.</p>
+              <p style="color: #64748b; margin-top: 20px;"><strong>Quote PDF:</strong> ${pdfBuffer ? 'See attached quote document for client details.' : 'No PDF attached (file too large for email).'}</p>
             </div>
           `,
-          attachments: [
+          attachments: pdfBuffer ? [
             {
               content: pdfBuffer.toString('base64'),
               filename: consultationData.uploadedFile ? consultationData.uploadedFile.name : `AtarWebb-Quote-${consultationId.substring(0, 8)}.pdf`,
               type: 'application/pdf',
               disposition: 'attachment'
             }
-           ]
+          ] : []
          }).then(() => {
            console.log('Admin email sent successfully')
            return { success: true }
@@ -306,20 +315,20 @@ export async function POST(req) {
                 <p><strong>Company:</strong> ${consultationData.company || 'Not provided'}</p>
                 <p><strong>Phone:</strong> ${consultationData.phone || 'Not provided'}</p>
               </div>
-              <p>Please find attached your personalized quote for the services discussed.</p>
+              <p>${pdfBuffer ? 'Please find attached your personalized quote for the services discussed.' : 'Note: Your uploaded file was too large for email attachment. We have received your consultation request and will contact you soon.'}</p>
               <p>If you have any questions or need to reschedule, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
               <p>We look forward to working with you!</p>
               <p>Best regards,<br>The AtarWebb Team</p>
             </div>
           `,
-          attachments: [
+          attachments: pdfBuffer ? [
             {
               content: pdfBuffer.toString('base64'),
               filename: consultationData.uploadedFile ? consultationData.uploadedFile.name : `AtarWebb-Quote-${consultationId.substring(0, 8)}.pdf`,
               type: 'application/pdf',
               disposition: 'attachment'
             }
-           ]
+          ] : []
          }).then(() => {
            console.log('Client email sent successfully')
            return { success: true }
