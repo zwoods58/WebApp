@@ -919,9 +919,6 @@ export default function Services() {
           description: selectedPlan.description,
           tier: selectedPlan.tier
         } : null}
-        additionalServices={additionalServices}
-        comboDeals={comboDeals}
-        currency={currency}
       />
     </>
   )
