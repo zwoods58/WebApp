@@ -23,7 +23,7 @@ export default function FileUpload({
   clientId,
   description,
   maxFiles = 10,
-  maxSize = 10, // 10MB default
+  maxSize = 4, // 4MB default to stay within Vercel limits
   acceptedTypes = ['image/*', 'application/pdf', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
   className = ""
 }: FileUploadProps) {

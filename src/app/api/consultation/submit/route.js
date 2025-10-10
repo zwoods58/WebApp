@@ -155,10 +155,10 @@ export async function POST(req) {
       )
     }
 
-    // Validate file size (max 10MB to match Vercel limit)
-    if (consultationData.uploadedFile && consultationData.uploadedFile.size > 10 * 1024 * 1024) {
+    // Validate file size (max 4MB to stay within Vercel limits)
+    if (consultationData.uploadedFile && consultationData.uploadedFile.size > 4 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'File size too large. Please upload a file smaller than 10MB.' },
+        { error: 'File size too large. Please upload a file smaller than 4MB.' },
         { status: 413 }
       )
     }
