@@ -291,6 +291,9 @@ export async function POST(req) {
         }
 
         const formatPrice = (price, targetCurrency) => {
+          if (price === 0 || price === null || price === undefined) {
+            return 'Contact for Pricing'
+          }
           const convertedPrice = convertPrice(price, targetCurrency)
           return `${getCurrencySymbol(targetCurrency)}${convertedPrice.toLocaleString()}`
         }
@@ -364,13 +367,25 @@ export async function POST(req) {
                 <div style="background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
                   <h4 style="color: #374151; margin-bottom: 15px; font-size: 16px;">Additional Services Selected</h4>
                   ${selectedAdditionalServices.map(serviceId => {
+                    // Map service IDs to actual service names (you may need to adjust this based on your service data)
+                    const serviceNames = {
+                      'logo-design': 'Logo Design',
+                      'domain-registration': 'Domain Registration', 
+                      'hosting': 'Hosting Service',
+                      'email-service': 'Email Service',
+                      'seo-optimization': 'SEO Optimization',
+                      'social-media-setup': 'Social Media Setup',
+                      'analytics-setup': 'Analytics Setup',
+                      'automation-workflow': 'Automation Workflow'
+                    }
+                    const serviceName = serviceNames[serviceId] || `Service: ${serviceId}`
                     return `
                       <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
                         <div>
-                          <span style="font-weight: 500; color: #374151;">Service ID: ${serviceId}</span>
+                          <span style="font-weight: 500; color: #374151;">${serviceName}</span>
                           <br><span style="font-size: 14px; color: #6b7280;">Additional service selected by client</span>
                         </div>
-                        <span style="font-weight: bold; color: #2563eb; font-size: 16px;">Price TBD</span>
+                        <span style="font-weight: bold; color: #2563eb; font-size: 16px;">Contact for Pricing</span>
                       </div>
                     `
                   }).join('')}

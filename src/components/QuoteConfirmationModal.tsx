@@ -193,6 +193,9 @@ export default function QuoteConfirmationModal({
 
   // Currency conversion (approximate rates)
   const convertPrice = (usdPrice: number) => {
+    if (usdPrice === 0 || usdPrice === null || usdPrice === undefined) {
+      return 'Contact for Pricing'
+    }
     if (currency === 'KSH') {
       return Math.round(usdPrice * 130) // Approximate USD to KSH rate
     }
@@ -782,7 +785,11 @@ export default function QuoteConfirmationModal({
                         <p className="text-sm text-gray-600 mt-1">Custom service package</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-semibold text-gray-900">{getCurrencySymbol()}{convertPrice(service.basePrice).toLocaleString()}</span>
+                        <span className="text-lg font-semibold text-gray-900">
+                          {typeof convertPrice(service.basePrice) === 'string' 
+                            ? convertPrice(service.basePrice) 
+                            : `${getCurrencySymbol()}${convertPrice(service.basePrice).toLocaleString()}`}
+                        </span>
                       </div>
                     </div>
               </div>
@@ -808,7 +815,11 @@ export default function QuoteConfirmationModal({
                       </label>
                             </div>
                             <div className="text-right">
-                              <span className="font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(addon.price).toLocaleString()}</span>
+                              <span className="font-medium text-gray-900">
+                                {typeof convertPrice(addon.price) === 'string' 
+                                  ? convertPrice(addon.price) 
+                                  : `${getCurrencySymbol()}${convertPrice(addon.price).toLocaleString()}`}
+                              </span>
                             </div>
                     </div>
                   ))}
@@ -839,7 +850,11 @@ export default function QuoteConfirmationModal({
                                 <div className="text-xs text-blue-600 font-medium">{service.category}</div>
                           </div>
                           <div className="flex items-center space-x-2">
-                                <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                                <span className="text-sm font-medium text-gray-900">
+                                  {typeof convertPrice(service.price || 0) === 'string' 
+                                    ? convertPrice(service.price || 0) 
+                                    : `${getCurrencySymbol()}${convertPrice(service.price || 0).toLocaleString()}`}
+                                </span>
                             <button
                               onClick={() => toggleAdditionalService(service.id)}
                               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
@@ -868,7 +883,11 @@ export default function QuoteConfirmationModal({
                           return service ? (
                             <div key={serviceId} className="flex justify-between text-sm">
                               <span>{service.name}</span>
-                              <span>{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                              <span>
+                                {typeof convertPrice(service.price || 0) === 'string' 
+                                  ? convertPrice(service.price || 0) 
+                                  : `${getCurrencySymbol()}${convertPrice(service.price || 0).toLocaleString()}`}
+                              </span>
                             </div>
                           ) : null
                         })}
@@ -880,7 +899,11 @@ export default function QuoteConfirmationModal({
                   <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold text-gray-900">Total</span>
-                      <span className="text-2xl font-bold text-blue-600">{getCurrencySymbol()}{convertPrice(calculateTotal()).toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-blue-600">
+                        {typeof convertPrice(calculateTotal()) === 'string' 
+                          ? convertPrice(calculateTotal()) 
+                          : `${getCurrencySymbol()}${convertPrice(calculateTotal()).toLocaleString()}`}
+                      </span>
                     </div>
                 </div>
               </div>
