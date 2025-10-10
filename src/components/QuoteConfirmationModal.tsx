@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Download, Calendar, CheckCircle, FileText, Mail, Globe, Phone, Palette, Database, Monitor, Zap, Workflow } from 'lucide-react'
+import { X, Download, Calendar, CheckCircle, FileText, Mail, Globe, Phone, Palette, Database, Monitor, Zap, Workflow, User, MessageSquare, Clock, Upload } from 'lucide-react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
@@ -50,13 +50,118 @@ export default function QuoteConfirmationModal({
   const [selectedAddOns, setSelectedAddOns] = useState(service.addOns)
   const [selectedAdditionalServices, setSelectedAdditionalServices] = useState<Set<string>>(new Set())
   const [showAddMoreServices, setShowAddMoreServices] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1) // 1 = Quote Review, 2 = Consultation Form
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [consultationData, setConsultationData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    projectDetails: '',
+    preferredDate: '',
+    preferredTime: '',
+    uploadedFile: null as File | null
+  })
 
   // Reset add-ons when modal opens
   useEffect(() => {
     if (isOpen) {
       setSelectedAddOns(service.addOns.map(addon => ({ ...addon, selected: false })))
+      setCurrentStep(1)
+      setIsSuccess(false)
+      setConsultationData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        projectDetails: '',
+        preferredDate: '',
+        preferredTime: '',
+        uploadedFile: null
+      })
     }
   }, [isOpen, service.addOns])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setConsultationData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null
+    setConsultationData(prev => ({ ...prev, uploadedFile: file }))
+  }
+
+  const handleContinue = () => {
+    setCurrentStep(2)
+  }
+
+  const handleBack = () => {
+    setCurrentStep(1)
+  }
+
+  const handleSubmitConsultation = async () => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+
+    try {
+      // Create FormData for file upload
+      const submitData = new FormData()
+      submitData.append('name', consultationData.name)
+      submitData.append('email', consultationData.email)
+      submitData.append('phone', consultationData.phone)
+      submitData.append('company', consultationData.company)
+      submitData.append('projectDetails', consultationData.projectDetails)
+      submitData.append('preferredDate', consultationData.preferredDate)
+      submitData.append('preferredTime', consultationData.preferredTime)
+      
+      // Add selected service information
+      submitData.append('serviceType', service.name)
+      submitData.append('serviceTier', 'Custom')
+      submitData.append('servicePrice', service.basePrice.toString())
+      submitData.append('serviceDescription', 'Custom service package')
+
+      // Add selected add-ons
+      const selectedAddOnsData = selectedAddOns.filter(addon => addon.selected)
+      submitData.append('selectedAddOns', JSON.stringify(selectedAddOnsData))
+
+      // Add selected additional services
+      const selectedServices = Array.from(selectedAdditionalServices)
+      submitData.append('additionalServices', JSON.stringify(selectedServices))
+      submitData.append('totalPrice', calculateTotal().toString())
+      
+      if (consultationData.uploadedFile) {
+        submitData.append('uploadedFile', consultationData.uploadedFile)
+      }
+
+      // Submit consultation request
+      const response = await fetch('/api/consultation/submit', {
+        method: 'POST',
+        body: submitData
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        setIsSuccess(true)
+        // Generate and download PDF after successful submission
+        await generateQuotePDF()
+        // Close modal after a delay
+        setTimeout(() => {
+          onClose()
+        }, 3000)
+      } else {
+        const errorData = await response.json()
+        alert(errorData.error || 'Failed to submit consultation request')
+      }
+    } catch (error) {
+      console.error('Error submitting consultation:', error)
+      alert('Failed to submit consultation request. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const toggleAddOn = (index: number) => {
     setSelectedAddOns(prev => 
@@ -109,6 +214,23 @@ export default function QuoteConfirmationModal({
     if (currency === 'ZAR') return 'R'
     return '$'
   }
+
+  // Date and time options for consultation
+  const dateOptions = [
+    { value: 'asap', label: 'As soon as possible' },
+    { value: 'this-week', label: 'This week' },
+    { value: 'next-week', label: 'Next week' },
+    { value: 'this-month', label: 'This month' },
+    { value: 'next-month', label: 'Next month' },
+    { value: 'flexible', label: 'I\'m flexible' }
+  ]
+
+  const timeSlots = [
+    { value: 'morning', label: 'Morning (9 AM - 12 PM)' },
+    { value: 'afternoon', label: 'Afternoon (12 PM - 5 PM)' },
+    { value: 'evening', label: 'Evening (5 PM - 8 PM)' },
+    { value: 'flexible', label: 'I\'m flexible' }
+  ]
 
   const generateQuotePDF = async () => {
     setIsGeneratingPDF(true)
@@ -575,205 +697,387 @@ export default function QuoteConfirmationModal({
       
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="relative w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white bg-opacity-20">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">
+                    {currentStep === 1 ? 'Thank You for Choosing AtarWebb!' : 'Schedule Your Consultation'}
+                  </h3>
+                  <p className="text-blue-100">
+                    {currentStep === 1 
+                      ? 'Your custom quote has been prepared. Review it below and continue to schedule your consultation.'
+                      : 'Fill out the form below to schedule your consultation and submit your request.'
+                    }
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Quote Ready!</h3>
-                <p className="text-sm text-gray-500">Your custom quote is prepared</p>
+              <button
+                onClick={onClose}
+                className="rounded-full p-2 text-white hover:bg-white hover:bg-opacity-20 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Step Indicator */}
+          <div className="px-6 py-4 bg-gray-50 border-b">
+            <div className="flex items-center justify-center space-x-4">
+              <div className={`flex items-center space-x-2 ${currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+                }`}>
+                  1
+                </div>
+                <span className="font-medium">Quote Review</span>
+              </div>
+              <div className={`w-8 h-0.5 ${currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+              <div className={`flex items-center space-x-2 ${currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
+                }`}>
+                  2
+                </div>
+                <span className="font-medium">Schedule Consultation</span>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-500" />
-            </button>
           </div>
 
           {/* Content */}
-          <div className="p-6">
-            {/* Success Message */}
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Thank You for Choosing AtarWebb!</h3>
-              <p className="text-gray-600">
-                Your custom quote has been prepared. Download it below and schedule a consultation to get started.
-              </p>
-            </div>
+          <div className="px-6 py-6">
+            {currentStep === 1 ? (
+              /* Step 1: Quote Review */
+              <div>
 
-            {/* Service Selection */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-gray-900 mb-3">Customize Your Package</h4>
-              
-              {/* Base Service */}
-              <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                <span className="text-sm font-medium text-gray-900">{service.name} - Base Service</span>
-                <span className="text-sm font-bold text-gray-900">{getCurrencySymbol()}{convertPrice(service.basePrice).toLocaleString()}</span>
-              </div>
-
-              {/* Add-ons */}
-              <div className="mt-3">
-                <h5 className="text-sm font-medium text-gray-700 mb-2">Available Add-ons (Optional)</h5>
-                <div className="space-y-2">
-                  {selectedAddOns.map((addOn, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={addOn.selected}
-                          onChange={() => toggleAddOn(index)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">{addOn.name}</span>
-                      </label>
-                      <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(addOn.price).toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Add More Services Section */}
-              {additionalServices.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h5 className="text-sm font-medium text-gray-700">Add More Services</h5>
-                    <button
-                      onClick={() => setShowAddMoreServices(!showAddMoreServices)}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
-                      {showAddMoreServices ? 'Hide' : 'Show'} Services
-                    </button>
-                  </div>
+                {/* Service Details */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Customize Your Package</h4>
                   
-                  {showAddMoreServices && (
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {additionalServices.map((service) => (
-                        <div key={service.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                              {service.icon === 'Palette' && <Palette className="h-4 w-4 text-blue-600" />}
-                              {service.icon === 'Globe' && <Globe className="h-4 w-4 text-green-600" />}
-                              {service.icon === 'Database' && <Database className="h-4 w-4 text-purple-600" />}
-                              {service.icon === 'Mail' && <Mail className="h-4 w-4 text-red-600" />}
-                              {service.icon === 'FileText' && <FileText className="h-4 w-4 text-yellow-600" />}
-                              {service.icon === 'Monitor' && <Monitor className="h-4 w-4 text-indigo-600" />}
-                              {service.icon === 'Zap' && <Zap className="h-4 w-4 text-orange-600" />}
-                              {service.icon === 'Workflow' && <Workflow className="h-4 w-4 text-pink-600" />}
+                  {/* Base Service */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h5 className="font-medium text-gray-900">{service.name} - Base Service</h5>
+                        <p className="text-sm text-gray-600 mt-1">Custom service package</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-semibold text-gray-900">{getCurrencySymbol()}{convertPrice(service.basePrice).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Add-ons */}
+                  {service.addOns && service.addOns.length > 0 && (
+                    <div className="mb-6">
+                      <h5 className="font-medium text-gray-900 mb-3">Available Add-ons (Optional)</h5>
+                      <div className="space-y-3">
+                        {selectedAddOns.map((addon, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                            <div className="flex items-center space-x-3">
+                              <input
+                                type="checkbox"
+                                id={`addon-${index}`}
+                                checked={addon.selected}
+                                onChange={() => toggleAddOn(index)}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                              <label htmlFor={`addon-${index}`} className="flex-1 cursor-pointer">
+                                <div className="font-medium text-gray-900">{addon.name}</div>
+                                <div className="text-sm text-gray-600">Optional add-on service</div>
+                              </label>
                             </div>
-                            <div>
-                              <span className="text-sm font-medium text-gray-700">{service.name}</span>
-                              <span className="text-xs text-gray-500 ml-2">({service.type})</span>
+                            <div className="text-right">
+                              <span className="font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(addon.price).toLocaleString()}</span>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price).toLocaleString()}</span>
-                            <button
-                              onClick={() => toggleAdditionalService(service.id)}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                selectedAdditionalServices.has(service.id)
-                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                              }`}
-                            >
-                              {selectedAdditionalServices.has(service.id) ? 'Remove' : 'Add'}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
-                </div>
-              )}
 
-              {/* Selected Additional Services */}
-              {selectedAdditionalServices.size > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h5 className="text-sm font-medium text-gray-700 mb-3">Selected Additional Services</h5>
-                  <div className="space-y-2">
-                    {additionalServices
-                      .filter(service => selectedAdditionalServices.has(service.id))
-                      .map((service, index) => (
-                        <div key={index} className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                              {service.icon === 'Palette' && <Palette className="h-4 w-4 text-blue-600" />}
-                              {service.icon === 'Globe' && <Globe className="h-4 w-4 text-green-600" />}
-                              {service.icon === 'Database' && <Database className="h-4 w-4 text-purple-600" />}
-                              {service.icon === 'Mail' && <Mail className="h-4 w-4 text-red-600" />}
-                              {service.icon === 'FileText' && <FileText className="h-4 w-4 text-yellow-600" />}
-                              {service.icon === 'Monitor' && <Monitor className="h-4 w-4 text-indigo-600" />}
-                              {service.icon === 'Zap' && <Zap className="h-4 w-4 text-orange-600" />}
-                              {service.icon === 'Workflow' && <Workflow className="h-4 w-4 text-pink-600" />}
+                  {/* Additional Services */}
+                  {additionalServices.length > 0 && (
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-medium text-gray-900">Add More Services</h5>
+                        <button
+                          onClick={() => setShowAddMoreServices(!showAddMoreServices)}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                        >
+                          {showAddMoreServices ? 'Hide Services' : 'Show Services'}
+                        </button>
+                      </div>
+                      
+                      {showAddMoreServices && (
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {additionalServices.map((service) => (
+                            <div key={service.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900">{service.name}</div>
+                                <div className="text-sm text-gray-600">{service.description}</div>
+                                <div className="text-xs text-blue-600 font-medium">{service.category}</div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                                <button
+                                  onClick={() => toggleAdditionalService(service.id)}
+                                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                    selectedAdditionalServices.has(service.id)
+                                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                      : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                  }`}
+                                >
+                                  {selectedAdditionalServices.has(service.id) ? 'Remove' : 'Add'}
+                                </button>
+                              </div>
                             </div>
-                            <span className="text-sm text-gray-700">{service.name}</span>
-                            <span className="text-xs text-gray-500">({service.type})</span>
-                          </div>
-                          <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price).toLocaleString()}</span>
+                          ))}
                         </div>
-                      ))}
+                      )}
+                    </div>
+                  )}
+
+                  {/* Selected Additional Services */}
+                  {selectedAdditionalServices.size > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h5 className="font-medium text-gray-900 mb-3">Selected Additional Services</h5>
+                      <div className="space-y-2">
+                        {Array.from(selectedAdditionalServices).map(serviceId => {
+                          const service = additionalServices.find(s => s.id === serviceId)
+                          return service ? (
+                            <div key={serviceId} className="flex justify-between text-sm">
+                              <span>{service.name}</span>
+                              <span>{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                            </div>
+                          ) : null
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Total */}
+                  <div className="mt-6 pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <span className="text-2xl font-bold text-blue-600">{getCurrencySymbol()}{convertPrice(calculateTotal()).toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
-              )}
 
-              {/* Total */}
-              <div className="border-t border-gray-200 pt-3 mt-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="font-bold text-blue-600 text-lg">{getCurrencySymbol()}{convertPrice(calculateTotal()).toLocaleString()}</span>
+                {/* Action Button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleContinue}
+                    className="bg-blue-600 text-white py-3 px-8 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  >
+                    <span>Continue to Consultation</span>
+                    <Calendar className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-
-            </div>
-
-            {/* Actions */}
-            <div className="space-y-3">
-              <button
-                onClick={generateQuotePDF}
-                disabled={isGeneratingPDF}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-              >
-                {isGeneratingPDF ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Generating PDF...</span>
-                  </>
+            ) : (
+              /* Step 2: Consultation Form */
+              <div>
+                {isSuccess ? (
+                  /* Success State */
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Consultation Request Submitted!</h3>
+                    <p className="text-gray-600 mb-4">
+                      Thank you for your interest. We'll contact you soon to confirm your consultation details.
+                      Your quote PDF is being downloaded automatically.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      This window will close automatically in a few seconds.
+                    </p>
+                  </div>
                 ) : (
-                  <>
-                    <Download className="h-5 w-5" />
-                    <span>Download Quote PDF</span>
-                  </>
-                )}
-              </button>
-              
-              <button
-                onClick={onScheduleConsultation}
-                className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
-              >
-                <Calendar className="h-5 w-5" />
-                <span>Schedule A Consultation</span>
-              </button>
-            </div>
+                  /* Consultation Form */
+                  <form onSubmit={(e) => { e.preventDefault(); handleSubmitConsultation(); }}>
+                    {/* Contact Information */}
+                    <div className="mb-8">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <User className="h-5 w-5 mr-2 text-blue-600" />
+                        Contact Information
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={consultationData.name}
+                            onChange={handleInputChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your full name"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={consultationData.email}
+                            onChange={handleInputChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your email"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                          <input
+                            type="tel"
+                            name="phone"
+                            value={consultationData.phone}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your phone number"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                          <input
+                            type="text"
+                            name="company"
+                            value={consultationData.company}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your company name"
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-            {/* Company Info */}
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-                <div className="flex items-center space-x-1">
-                  <Mail className="h-4 w-4" />
-                  <span>admin@atarwebb.com</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Globe className="h-4 w-4" />
-                  <span>atarwebb.com</span>
-                </div>
+                    {/* Project Details */}
+                    <div className="mb-8">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <MessageSquare className="h-5 w-5 mr-2 text-blue-600" />
+                        Project Details
+                      </h4>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Tell us about your project</label>
+                        <textarea
+                          name="projectDetails"
+                          value={consultationData.projectDetails}
+                          onChange={handleInputChange}
+                          rows={4}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Tell us about your project goals, timeline, and any specific requirements..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preferred Consultation Time */}
+                    <div className="mb-8">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <Clock className="h-5 w-5 mr-2 text-blue-600" />
+                        Preferred Consultation Time
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
+                          <select
+                            name="preferredDate"
+                            value={consultationData.preferredDate}
+                            onChange={handleInputChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="">Select a date</option>
+                            {dateOptions.map((date) => (
+                              <option key={date.value} value={date.value}>
+                                {date.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
+                          <select
+                            name="preferredTime"
+                            value={consultationData.preferredTime}
+                            onChange={handleInputChange}
+                            required
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="">Select a time</option>
+                            {timeSlots.map((slot) => (
+                              <option key={slot.value} value={slot.value}>
+                                {slot.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">
+                        * All times are in Central Time (Dallas, Texas). We'll confirm the exact time with you.
+                      </p>
+                    </div>
+
+                    {/* File Upload */}
+                    <div className="mb-8">
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Quote PDF (Optional)
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileUpload}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <p className="text-sm text-gray-500 mt-1">
+                        Upload the quote PDF you received to help us prepare for your consultation.
+                        <br />
+                        <span className="text-amber-600 font-medium">Maximum file size: 10MB</span>
+                        <br />
+                        <span className="text-sm text-gray-400">
+                          For larger files, please email us directly at admin@atarwebb.com
+                        </span>
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-4">
+                      <button
+                        type="button"
+                        onClick={handleBack}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                      >
+                        Back to Quote
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Submitting Request...</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Submit Request & Download PDF</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
