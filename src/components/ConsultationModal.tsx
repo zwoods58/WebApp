@@ -13,6 +13,26 @@ interface ConsultationModalProps {
     description: string
     tier: string
   } | null
+  additionalServices?: Array<{
+    id: string
+    name: string
+    price?: number
+    description: string
+    category: string
+    type: string
+    icon: string
+  }>
+  comboDeals?: Array<{
+    id: string
+    name: string
+    description: string
+    price?: number
+    savings?: number
+    badge: string
+    services: string[]
+    features: string[]
+  }>
+  currency?: 'USD' | 'KSH' | 'ZAR'
 }
 
 interface ConsultationFormData {
@@ -26,7 +46,15 @@ interface ConsultationFormData {
   uploadedFile: File | null
 }
 
-export default function ConsultationModal({ isOpen, onClose, onSuccess, selectedService }: ConsultationModalProps) {
+export default function ConsultationModal({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  selectedService,
+  additionalServices = [],
+  comboDeals = [],
+  currency = 'USD'
+}: ConsultationModalProps) {
   const [formData, setFormData] = useState<ConsultationFormData>({
     name: '',
     email: '',
@@ -40,6 +68,8 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [selectedAdditionalServices, setSelectedAdditionalServices] = useState<Set<string>>(new Set())
+  const [showAddMoreServices, setShowAddMoreServices] = useState(false)
 
   // Reset form when modal opens
   useEffect(() => {
@@ -105,6 +135,48 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
     setFormData(prev => ({ ...prev, uploadedFile: file }))
   }
 
+  const toggleAdditionalService = (serviceId: string) => {
+    setSelectedAdditionalServices(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(serviceId)) {
+        newSet.delete(serviceId)
+      } else {
+        newSet.add(serviceId)
+      }
+      return newSet
+    })
+  }
+
+  const calculateTotal = () => {
+    let total = selectedService ? selectedService.price : 0
+    
+    // Add selected additional services
+    additionalServices.forEach(service => {
+      if (selectedAdditionalServices.has(service.id)) {
+        total += service.price || 0
+      }
+    })
+    
+    return total
+  }
+
+  // Currency conversion (approximate rates)
+  const convertPrice = (usdPrice: number) => {
+    if (currency === 'KSH') {
+      return Math.round(usdPrice * 130) // Approximate USD to KSH rate
+    }
+    if (currency === 'ZAR') {
+      return Math.round(usdPrice * 18) // Approximate USD to ZAR rate
+    }
+    return usdPrice
+  }
+
+  const getCurrencySymbol = () => {
+    if (currency === 'KSH') return 'KSh'
+    if (currency === 'ZAR') return 'R'
+    return '$'
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -157,6 +229,11 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
         submitData.append('servicePrice', selectedService.price.toString())
         submitData.append('serviceDescription', selectedService.description)
       }
+
+      // Add selected additional services
+      const selectedServices = Array.from(selectedAdditionalServices)
+      submitData.append('additionalServices', JSON.stringify(selectedServices))
+      submitData.append('totalPrice', calculateTotal().toString())
       
       if (formData.uploadedFile) {
         submitData.append('uploadedFile', formData.uploadedFile)
@@ -369,6 +446,75 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
                     * All times are in Central Time (Dallas, Texas). We'll confirm the exact time with you.
                   </p>
                 </div>
+
+                {/* Additional Services Selection */}
+                {additionalServices.length > 0 && (
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-2 text-blue-600" />
+                      Add Additional Services (Optional)
+                    </h4>
+                    <div className="space-y-3">
+                      {additionalServices.map((service) => (
+                        <div key={service.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <MessageSquare className="h-5 w-5 text-blue-600" />
+                              </div>
+                              <div>
+                                <h5 className="font-medium text-gray-900">{service.name}</h5>
+                                <p className="text-sm text-gray-500">{service.description}</p>
+                                <span className="text-xs text-blue-600 font-medium">{service.category}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium text-gray-900">{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                            <button
+                              type="button"
+                              onClick={() => toggleAdditionalService(service.id)}
+                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                selectedAdditionalServices.has(service.id)
+                                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                              }`}
+                            >
+                              {selectedAdditionalServices.has(service.id) ? 'Remove' : 'Add'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Selected Services Summary */}
+                    {selectedAdditionalServices.size > 0 && (
+                      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                        <h5 className="font-medium text-gray-900 mb-2">Selected Additional Services:</h5>
+                        <div className="space-y-1">
+                          {Array.from(selectedAdditionalServices).map(serviceId => {
+                            const service = additionalServices.find(s => s.id === serviceId)
+                            return service ? (
+                              <div key={serviceId} className="flex justify-between text-sm">
+                                <span>{service.name}</span>
+                                <span>{getCurrencySymbol()}{convertPrice(service.price || 0).toLocaleString()}</span>
+                              </div>
+                            ) : null
+                          })}
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-blue-200">
+                          <div className="flex justify-between font-medium">
+                            <span>Total Additional Services:</span>
+                            <span>{getCurrencySymbol()}{convertPrice(Array.from(selectedAdditionalServices).reduce((sum, serviceId) => {
+                              const service = additionalServices.find(s => s.id === serviceId)
+                              return sum + (service ? (service.price || 0) : 0)
+                            }, 0)).toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* File Upload */}
                 <div>
