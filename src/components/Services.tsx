@@ -288,14 +288,6 @@ const comboDeals = [
     badge: 'Complete',
     services: ['premium-accelerator', 'logo-design', 'domain-hosting-combo', 'email-service', 'supabase-connect', 'api-usage', 'automation-workflow'],
     features: ['Full automation ecosystem', 'Advanced features', 'Custom integrations']
-  },
-  {
-    id: 'startup-automation-kit',
-    name: 'Startup Automation Kit',
-    description: 'Essential automation for new businesses',
-    badge: 'Startups',
-    services: ['basic-launchpad', 'logo-design', 'domain-hosting-combo', 'ad-copies'],
-    features: ['Essential automation', 'Professional branding', 'Lead generation']
   }
 ]
 
@@ -744,11 +736,6 @@ export default function Services() {
                       {combo.id === 'enterprise-automation-suite' && (
                         <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                           <Building className="h-6 w-6 text-purple-600" />
-                        </div>
-                      )}
-                      {combo.id === 'startup-automation-kit' && (
-                        <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                          <TrendingUp className="h-6 w-6 text-orange-600" />
                         </div>
                       )}
                     </div>
