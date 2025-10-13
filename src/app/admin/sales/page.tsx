@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Phone, Users, TrendingUp, Calendar, Clock, Target, CheckCircle, DollarSign } from 'lucide-react'
+import { Plus, Phone, Users, TrendingUp, Calendar, Clock, Target, CheckCircle, DollarSign, FileText } from 'lucide-react'
 import CallLogModal from '@/components/CallLogModal'
 import TaskFormModal from '@/components/TaskFormModal'
+import NotesModal from '@/components/NotesModal'
 
 interface User {
   id: string
@@ -78,6 +79,7 @@ export default function SalesDashboard() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [showCallLogModal, setShowCallLogModal] = useState(false)
   const [showTaskModal, setShowTaskModal] = useState(false)
+  const [showNotesModal, setShowNotesModal] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
   const [calls, setCalls] = useState<Call[]>([])
@@ -257,6 +259,30 @@ export default function SalesDashboard() {
       URGENT: 'text-red-400'
     }
     return priorityClasses[priority]
+  }
+
+  const handleNotesSave = async (notes: string) => {
+    try {
+      const response = await fetch(`/api/leads`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedLead!.id,
+          notes
+        })
+      })
+
+      if (response.ok) {
+        setLeads(prev => prev.map(lead =>
+          lead.id === selectedLead!.id
+            ? { ...lead, notes, updatedAt: new Date().toISOString() }
+            : lead
+        ))
+        setShowNotesModal(false)
+      }
+    } catch (error) {
+      console.error('Error saving notes:', error)
+    }
   }
 
   const handleSaveCall = (callData: {
@@ -685,15 +711,24 @@ export default function SalesDashboard() {
                   </div>
                 ) : (
                   getFilteredLeads().map(lead => (
-                    <div key={lead.id} className="card">
+                    <div 
+                      key={lead.id} 
+                      className="card cursor-pointer hover:bg-slate-800/70 transition-all duration-200"
+                      onClick={() => {
+                        setSelectedLead(lead)
+                        setShowNotesModal(true)
+                      }}
+                      title="Click to add/view notes"
+                    >
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h4 className="font-semibold text-white">
+                          <h4 className="font-semibold text-white flex items-center gap-2">
                             {lead.firstName} {lead.lastName}
+                            <FileText className="h-4 w-4 text-purple-400" />
                           </h4>
                           <p className="text-slate-300 text-sm">{lead.company}</p>
                         </div>
-                        <div className="flex space-x-1">
+                        <div className="flex space-x-1" onClick={(e) => e.stopPropagation()}>
                           <button className="text-blue-400 hover:text-blue-300 p-1" title="Call">
                             <Phone className="h-4 w-4" />
                           </button>
@@ -703,7 +738,7 @@ export default function SalesDashboard() {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                         {/* Status */}
                         <div>
                           <select 
@@ -736,6 +771,13 @@ export default function SalesDashboard() {
                         {lead.lastContact && (
                           <div className="text-xs text-slate-400">
                             Last: {lead.lastContact}
+                          </div>
+                        )}
+
+                        {/* Notes Preview */}
+                        {lead.notes && (
+                          <div className="text-xs text-slate-400 bg-slate-700/30 p-2 rounded">
+                            {lead.notes.substring(0, 100)}{lead.notes.length > 100 ? '...' : ''}
                           </div>
                         )}
                       </div>
@@ -852,6 +894,15 @@ export default function SalesDashboard() {
       )}
 
       {/* Modals */}
+      <NotesModal
+        isOpen={showNotesModal}
+        onClose={() => setShowNotesModal(false)}
+        leadId={selectedLead?.id || ''}
+        leadName={selectedLead ? `${selectedLead.firstName} ${selectedLead.lastName}` : ''}
+        initialNotes={selectedLead?.notes || ''}
+        onSave={handleNotesSave}
+      />
+
       <CallLogModal
         isOpen={showCallLogModal}
         onClose={() => setShowCallLogModal(false)}

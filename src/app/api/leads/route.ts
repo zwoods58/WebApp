@@ -45,3 +45,72 @@ export async function POST(request: Request) {
     )
   }
 }
+
+export async function PUT(request: Request) {
+  try {
+    const updateData = await request.json()
+    const { id, ...data } = updateData
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Lead ID is required' },
+        { status: 400 }
+      )
+    }
+    
+    const updatedLead = await mockDb.lead.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedAt: new Date().toISOString()
+      }
+    })
+
+    if (!updatedLead) {
+      return NextResponse.json(
+        { error: 'Lead not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(updatedLead)
+  } catch (error) {
+    console.error('Error updating lead:', error)
+    return NextResponse.json(
+      { error: 'Failed to update lead' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json()
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Lead ID is required' },
+        { status: 400 }
+      )
+    }
+    
+    const deletedLead = await mockDb.lead.delete({
+      where: { id }
+    })
+
+    if (!deletedLead) {
+      return NextResponse.json(
+        { error: 'Lead not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ success: true, message: 'Lead deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting lead:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete lead' },
+      { status: 500 }
+    )
+  }
+}

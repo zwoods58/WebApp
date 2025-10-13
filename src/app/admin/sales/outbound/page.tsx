@@ -369,22 +369,21 @@ export default function OutboundPipeline() {
             </div>
           ) : (
             filteredLeads.map(lead => (
-              <div key={lead.id} className="card">
+              <div 
+                key={lead.id} 
+                className="card cursor-pointer hover:bg-slate-800/70 transition-all duration-200 relative"
+                onClick={() => handleNotesClick(lead)}
+                title="Click to add/view notes"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                       {lead.firstName} {lead.lastName}
+                      <FileText className="h-4 w-4 text-purple-400" />
                     </h3>
                     <p className="text-slate-300">{lead.company}</p>
                   </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleNotesClick(lead)}
-                      className="text-purple-400 hover:text-purple-300 p-1"
-                      title="Add/View Notes"
-                    >
-                      <FileText className="h-4 w-4" />
-                    </button>
+                  <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => handleCallClick(lead)}
                       className="text-blue-400 hover:text-blue-300 p-1"
@@ -402,7 +401,7 @@ export default function OutboundPipeline() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
                   {/* Status */}
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">Status</label>
