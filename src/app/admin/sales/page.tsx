@@ -32,6 +32,7 @@ interface Lead {
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
   statusDetail?: string
   score: number
+  notes?: string
   lastContact?: string
   userId: string
   createdAt: string

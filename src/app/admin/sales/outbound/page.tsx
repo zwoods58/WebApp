@@ -327,9 +327,9 @@ export default function OutboundPipeline() {
           </div>
           <div className="card text-center">
             <div className="text-2xl font-bold text-gray-400">
-              {leads.filter(l => l.status === 'CLOSED').length}
+              {leads.filter(l => l.status === 'CLOSED_WON').length}
             </div>
-            <div className="text-slate-400 text-sm">Closed</div>
+            <div className="text-slate-400 text-sm">Closed Won</div>
           </div>
         </div>
 
