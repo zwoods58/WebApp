@@ -10,7 +10,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "automate": "node run-automations.js",
+    "automate:score": "node run-automations.js score",
+    "automate:assign": "node run-automations.js assign",
+    "automate:metrics": "node run-automations.js metrics",
+    "automate:followup": "node run-automations.js followup",
+    "automate:escalate": "node run-automations.js escalate",
+    "automate:daily": "node run-automations.js daily",
+    "automate:weekly": "node run-automations.js weekly"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
