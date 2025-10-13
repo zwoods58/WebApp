@@ -12,7 +12,7 @@
     "lint": "next lint",
     "seed": "tsx scripts/seed.ts",
     "automate": "node run-automations.js",
-    "automate:start": "node automation-service.js",
+    "automate:start": "tsx automation-service.ts",
     "automate:score": "node run-automations.js score",
     "automate:assign": "node run-automations.js assign",
     "automate:metrics": "node run-automations.js metrics",
@@ -74,6 +74,7 @@
     "eslint-config-next": "14.0.4",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 
 /**
  * CRM Automation Service
@@ -7,25 +7,11 @@
  * 
  * Usage:
  *   npm run automate:start       // Start the automation service
- *   npm run automate:stop        // Stop it (Ctrl+C)
  */
 
-// Import using dynamic imports for TypeScript modules
-async function loadModules() {
-  const leadManagement = await import('./src/lib/automation/lead-management.ts')
-  const analytics = await import('./src/lib/automation/analytics.ts')
-  return {
-    scoreAllLeads: leadManagement.scoreAllLeads,
-    assignUnassignedLeads: leadManagement.assignUnassignedLeads,
-    followUpStaleLeads: leadManagement.followUpStaleLeads,
-    escalateOldLeads: leadManagement.escalateOldLeads,
-    updateDashboardMetrics: analytics.updateDashboardMetrics,
-    generateDailyReport: analytics.generateDailyReport,
-    generateWeeklyReport: analytics.generateWeeklyReport
-  }
-}
-
-const cron = require('node-cron')
+import cron from 'node-cron'
+import { scoreAllLeads, assignUnassignedLeads, followUpStaleLeads, escalateOldLeads } from './src/lib/automation/lead-management'
+import { updateDashboardMetrics, generateDailyReport, generateWeeklyReport } from './src/lib/automation/analytics'
 
 console.log('\n🤖 CRM Automation Service Starting...\n')
 
@@ -41,7 +27,7 @@ cron.schedule('0 * * * *', async () => {
   try {
     await scoreAllLeads()
     console.log('✅ Lead scoring completed\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Lead scoring failed:', error.message)
   }
 })
@@ -53,7 +39,7 @@ cron.schedule('15 * * * *', async () => {
   try {
     await assignUnassignedLeads()
     console.log('✅ Lead assignment completed\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Lead assignment failed:', error.message)
   }
 })
@@ -65,7 +51,7 @@ cron.schedule('30 * * * *', async () => {
   try {
     await updateDashboardMetrics()
     console.log('✅ Dashboard metrics updated\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Dashboard metrics update failed:', error.message)
   }
 })
@@ -79,7 +65,7 @@ cron.schedule('0 9 * * *', async () => {
   try {
     await followUpStaleLeads()
     console.log('✅ Follow-up emails sent\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Follow-up failed:', error.message)
   }
 })
@@ -91,7 +77,7 @@ cron.schedule('0 10 * * *', async () => {
   try {
     await escalateOldLeads()
     console.log('✅ Lead escalation completed\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Lead escalation failed:', error.message)
   }
 })
@@ -103,7 +89,7 @@ cron.schedule('0 18 * * *', async () => {
   try {
     await generateDailyReport()
     console.log('✅ Daily report sent\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Daily report failed:', error.message)
   }
 })
@@ -117,7 +103,7 @@ cron.schedule('0 9 * * 1', async () => {
   try {
     await generateWeeklyReport()
     console.log('✅ Weekly report sent\n')
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Weekly report failed:', error.message)
   }
 })
@@ -156,17 +142,4 @@ process.on('SIGTERM', () => {
 
 // Keep the process running
 process.stdin.resume()
-
-// Run initial automations on startup (optional - uncomment if you want)
-// console.log('\n🔄 Running initial automation cycle...\n')
-// setTimeout(async () => {
-//   try {
-//     await scoreAllLeads()
-//     await assignUnassignedLeads()
-//     await updateDashboardMetrics()
-//     console.log('\n✅ Initial automation cycle completed!\n')
-//   } catch (error) {
-//     console.error('❌ Initial automation failed:', error)
-//   }
-// }, 1000)
 
