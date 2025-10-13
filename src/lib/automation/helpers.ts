@@ -131,12 +131,20 @@ export async function sendSlackNotification(message: string) {
 export async function sendAutomationEmail(to: string, subject: string, html: string) {
   console.log(`[EMAIL]: Sending to ${to} - ${subject}`)
   
+  // Get API key from environment
+  const apiKey = process.env.SENDGRID_API_KEY
+  
+  if (!apiKey) {
+    console.warn('[EMAIL]: SENDGRID_API_KEY not found - email not sent (development mode)')
+    return
+  }
+  
   try {
     // Use SendGrid API (same as consultation submit)
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
