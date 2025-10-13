@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, Edit, Trash2, Eye, Phone, Mail, MoreHorizontal } from 'lucide-react'
+import { Search, Filter, Edit, Trash2, Eye, Phone, Mail, MoreHorizontal, Trash } from 'lucide-react'
 import LeadFormModal from '@/components/LeadFormModal'
+import ClearLeadsModal from '@/components/ClearLeadsModal'
 
 interface Lead {
   id: string
@@ -25,6 +26,7 @@ interface FlexibleLeadsTableProps {
   leads: Lead[]
   onUpdateLead?: (lead: Lead) => void
   onDeleteLead?: (leadId: string) => void
+  onClearAllLeads?: () => void
   showAllLeads?: boolean
   title?: string
   description?: string
@@ -34,6 +36,7 @@ export default function FlexibleLeadsTable({
   leads, 
   onUpdateLead, 
   onDeleteLead, 
+  onClearAllLeads,
   showAllLeads = false,
   title = "Leads",
   description = "Manage your leads and track their progress"
@@ -44,6 +47,7 @@ export default function FlexibleLeadsTable({
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
   const [visibleColumns, setVisibleColumns] = useState<string[]>([])
   const [availableColumns, setAvailableColumns] = useState<string[]>([])
+  const [showClearModal, setShowClearModal] = useState(false)
 
   // Get all possible columns from leads data
   useEffect(() => {
@@ -95,6 +99,12 @@ export default function FlexibleLeadsTable({
       if (onDeleteLead) {
         onDeleteLead(leadId)
       }
+    }
+  }
+
+  const handleClearAllLeads = async () => {
+    if (onClearAllLeads) {
+      await onClearAllLeads()
     }
   }
 
@@ -261,6 +271,15 @@ export default function FlexibleLeadsTable({
           >
             <span>Add Lead</span>
           </button>
+          {leads.length > 0 && onClearAllLeads && (
+            <button 
+              onClick={() => setShowClearModal(true)}
+              className="btn-danger flex items-center space-x-2"
+            >
+              <Trash className="h-4 w-4" />
+              <span>Clear All</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -350,6 +369,13 @@ export default function FlexibleLeadsTable({
         onClose={() => setEditingLead(null)}
         onSave={handleSaveLead}
         lead={editingLead}
+      />
+
+      <ClearLeadsModal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        onConfirm={handleClearAllLeads}
+        leadCount={leads.length}
       />
     </div>
   )

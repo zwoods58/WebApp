@@ -199,6 +199,11 @@ export const mockDb = {
       }
       return null
     },
+    deleteMany: async (): Promise<{ count: number }> => {
+      const count = leads.length
+      leads.length = 0 // Clear the array
+      return { count }
+    },
     count: async ({ where }: { where?: { status?: Lead['status'] } } = {}): Promise<number> => {
       if (where?.status) {
         return leads.filter(l => l.status === where.status).length

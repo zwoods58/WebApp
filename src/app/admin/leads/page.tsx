@@ -56,6 +56,29 @@ export default function LeadsPage() {
     setLeads(prev => prev.filter(lead => lead.id !== leadId))
   }
 
+  const handleClearAllLeads = async () => {
+    try {
+      const response = await fetch('/api/leads/clear-all', {
+        method: 'DELETE',
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setLeads([]) // Clear the leads from state
+          alert('All leads have been cleared successfully!')
+        } else {
+          alert('Failed to clear leads: ' + result.message)
+        }
+      } else {
+        alert('Failed to clear leads. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error clearing leads:', error)
+      alert('Error clearing leads. Please try again.')
+    }
+  }
+
   if (isLoading) {
     return (
       <AdminLayout currentPage="leads">
@@ -73,6 +96,7 @@ export default function LeadsPage() {
           leads={leads}
           onUpdateLead={handleUpdateLead}
           onDeleteLead={handleDeleteLead}
+          onClearAllLeads={handleClearAllLeads}
           showAllLeads={true}
           title="All Leads"
           description="Manage all your leads and track their progress through the sales pipeline"
