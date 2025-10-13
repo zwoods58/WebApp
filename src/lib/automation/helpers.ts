@@ -105,15 +105,26 @@ export function getWelcomeEmailTemplate(lead: any) {
   }
 }
 
-// Slack notification helpers
+// Notification helpers (Email instead of Slack)
 export async function sendSlackNotification(message: string) {
-  // TODO: Implement actual Slack webhook
-  console.log(`[SLACK NOTIFICATION]: ${message}`)
-  // Example implementation:
-  // await fetch(process.env.SLACK_WEBHOOK_URL, {
-  //   method: 'POST',
-  //   body: JSON.stringify({ text: message })
-  // })
+  // Log to console for development
+  console.log(`[CRM ALERT]: ${message}`)
+  
+  // Send email notification to admin
+  await sendAutomationEmail(
+    'admin@atarwebb.com',
+    '🤖 CRM Automation Alert',
+    `
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #2563eb;">CRM Notification</h2>
+        <p style="font-size: 16px; line-height: 1.5;">${message}</p>
+        <hr style="margin: 20px 0; border: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          This is an automated notification from your CRM system.
+        </p>
+      </div>
+    `
+  )
 }
 
 // Email sending helper
