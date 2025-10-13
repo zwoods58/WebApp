@@ -19,7 +19,17 @@ interface Lead {
   email?: string
   phone?: string
   company?: string
+  title?: string
+  source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
   score: number
   lastContact?: string
   userId: string
@@ -513,9 +523,11 @@ export default function SalesDashboard() {
                     <tr>
                       <th>Name</th>
                       <th>Company</th>
+                      <th>Industry</th>
                       <th>Contact</th>
                       <th>Status</th>
                       <th>Score</th>
+                      <th>Source</th>
                       <th>Last Contact</th>
                       <th>Actions</th>
                     </tr>
@@ -529,6 +541,7 @@ export default function SalesDashboard() {
                           </div>
                         </td>
                         <td className="text-slate-300">{lead.company}</td>
+                        <td className="text-slate-300">{lead.industry || 'N/A'}</td>
                         <td>
                           <div className="text-sm text-slate-300">
                             {lead.email && <div>{lead.email}</div>}
@@ -539,6 +552,7 @@ export default function SalesDashboard() {
                         <td>
                           <span className="font-semibold text-white">{lead.score}</span>
                         </td>
+                        <td className="text-slate-300">{lead.source || 'Import'}</td>
                         <td className="text-slate-300">{lead.lastContact || new Date(lead.updatedAt).toLocaleDateString()}</td>
                         <td>
                           <div className="flex items-center space-x-2">

@@ -20,6 +20,14 @@ interface DashboardStats {
   conversionGrowth: number
 }
 
+interface IndustryBreakdown {
+  [key: string]: number
+}
+
+interface SourceBreakdown {
+  [key: string]: number
+}
+
 interface RecentActivity {
   id: string
   type: 'lead' | 'deal' | 'task' | 'call'
@@ -40,6 +48,8 @@ interface QuickAction {
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
+  const [industryBreakdown, setIndustryBreakdown] = useState<IndustryBreakdown>({})
+  const [sourceBreakdown, setSourceBreakdown] = useState<SourceBreakdown>({})
   const [isLoading, setIsLoading] = useState(true)
   const [showNotifications, setShowNotifications] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -73,6 +83,8 @@ export default function AdminDashboard() {
           const data = await response.json()
           setStats(data.stats)
           setRecentActivity(data.recentActivity)
+          setIndustryBreakdown(data.industryBreakdown || {})
+          setSourceBreakdown(data.sourceBreakdown || {})
         } else {
           // Fallback to empty data if API fails
           const emptyStats: DashboardStats = {
@@ -339,6 +351,63 @@ export default function AdminDashboard() {
                 </div>
               </a>
             ))}
+          </div>
+        </div>
+
+        {/* Lead Analytics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4">Industry Breakdown</h3>
+            <div className="space-y-3">
+              {Object.entries(industryBreakdown).length > 0 ? (
+                Object.entries(industryBreakdown)
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 5)
+                  .map(([industry, count]) => (
+                    <div key={industry} className="flex items-center justify-between">
+                      <span className="text-slate-300">{industry}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-20 bg-slate-700 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full" 
+                            style={{ width: `${(count / stats?.totalLeads!) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-white font-medium w-8 text-right">{count}</span>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <p className="text-slate-400 text-center py-4">No industry data available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 className="text-lg font-semibold text-white mb-4">Lead Sources</h3>
+            <div className="space-y-3">
+              {Object.entries(sourceBreakdown).length > 0 ? (
+                Object.entries(sourceBreakdown)
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 5)
+                  .map(([source, count]) => (
+                    <div key={source} className="flex items-center justify-between">
+                      <span className="text-slate-300">{source}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-20 bg-slate-700 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full" 
+                            style={{ width: `${(count / stats?.totalLeads!) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-white font-medium w-8 text-right">{count}</span>
+                      </div>
+                    </div>
+                  ))
+              ) : (
+                <p className="text-slate-400 text-center py-4">No source data available</p>
+              )}
+            </div>
           </div>
         </div>
 

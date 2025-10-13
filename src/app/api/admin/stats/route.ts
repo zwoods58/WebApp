@@ -27,11 +27,25 @@ export async function GET() {
       .map(lead => ({
         id: lead.id,
         type: 'lead',
-        description: `New lead added: ${lead.firstName} ${lead.lastName} from ${lead.company || 'Unknown Company'}`,
+        description: `New lead added: ${lead.firstName} ${lead.lastName} from ${lead.company || 'Unknown Company'}${lead.industry ? ` (${lead.industry})` : ''}`,
         user: 'Sales Rep',
         timestamp: lead.createdAt,
         status: 'info' as const
       }))
+
+    // Calculate industry breakdown
+    const industryBreakdown = allLeads.reduce((acc: any, lead) => {
+      const industry = lead.industry || 'Unknown'
+      acc[industry] = (acc[industry] || 0) + 1
+      return acc
+    }, {})
+
+    // Calculate source breakdown
+    const sourceBreakdown = allLeads.reduce((acc: any, lead) => {
+      const source = lead.source || 'Import'
+      acc[source] = (acc[source] || 0) + 1
+      return acc
+    }, {})
 
     // Calculate growth percentages (mock for now, but dynamic)
     const leadGrowth = totalLeads > 0 ? Math.random() * 20 - 10 : 0 // -10% to +10%
@@ -59,7 +73,9 @@ export async function GET() {
 
     return NextResponse.json({
       stats,
-      recentActivity: recentLeads
+      recentActivity: recentLeads,
+      industryBreakdown,
+      sourceBreakdown
     })
 
   } catch (error) {

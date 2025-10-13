@@ -13,13 +13,24 @@ interface Lead {
   email?: string
   phone?: string
   company?: string
+  title?: string
+  source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW_LEAD' | 'FIRST_CONTACT' | 'FOLLOW_UP' | 'APPOINTMENT_BOOKED' | 'APPOINTMENT_COMPLETED' | 'CLOSED'
+  statusDetail?: string
   priority: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE'
   followUpDate?: string
   lastContactDate?: string
   notes?: string
   appointmentDate?: string
   appointmentType?: 'PHONE' | 'VIDEO' | 'IN_PERSON'
+  score?: number
   userId: string
   createdAt: string
   updatedAt: string
@@ -391,6 +402,14 @@ export default function OutboundPipeline() {
                   <div className="text-sm text-slate-300">
                     {lead.email && <div>📧 {lead.email}</div>}
                     {lead.phone && <div>📞 {lead.phone}</div>}
+                    {lead.website && <div>🌐 <a href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">{lead.website}</a></div>}
+                  </div>
+
+                  {/* Additional Info */}
+                  <div className="text-sm text-slate-400">
+                    {lead.industry && <div>🏢 {lead.industry}</div>}
+                    {lead.source && <div>📍 Source: {lead.source}</div>}
+                    {lead.city && lead.state && <div>📍 {lead.city}, {lead.state}</div>}
                   </div>
 
                   {/* Follow-up Date */}
