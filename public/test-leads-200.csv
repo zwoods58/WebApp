@@ -1,0 +1,201 @@
+firstName,lastName,email,phone,company,title,source,industry,website,city,state,status,score
+Logan,Wood,logan.wood150@example.com,555-9616,Data Analytics Inc,VP Sales,Advertisement,Retail,https://dataanalyticsinc.com,Lubbock,TX,NEW,97
+Jason,Sanchez,jason.sanchez57@example.com,555-2882,Education Plus,Founder,Email Campaign,Technology,https://educationplus.com,Austin,TX,NEW,96
+Laura,White,laura.white252@example.com,555-7881,Consulting Group,Manager,Referral,Real Estate,https://consultinggroup.com,Dallas,TX,NEW,68
+Emily,Gonzalez,emily.gonzalez557@example.com,555-9899,Education Plus,Business Owner,Cold Call,Healthcare,https://educationplus.com,Lubbock,TX,NEW,70
+Samuel,Wood,samuel.wood651@example.com,555-5244,Cloud Services LLC,Operations Lead,Website,Technology,https://cloudservicesllc.com,Corpus Christi,TX,NEW,73
+Ryan,Ruiz,ryan.ruiz110@example.com,555-1428,Software Dynamics,Director,Website,Software,https://softwaredynamics.com,San Antonio,TX,NEW,61
+Emily,King,emily.king369@example.com,555-6450,Education Plus,Operations Lead,Advertisement,Education,https://educationplus.com,El Paso,TX,NEW,90
+Brian,Miller,brian.miller318@example.com,555-1910,Finance Corp,Partner,Cold Call,Software,https://financecorp.com,Houston,TX,NEW,66
+Mila,Allen,mila.allen103@example.com,555-9516,Consulting Group,Director,Cold Call,Retail,https://consultinggroup.com,Houston,TX,NEW,70
+Cameron,Castillo,cameron.castillo422@example.com,555-5106,Retail Ventures,Director,Advertisement,Healthcare,https://retailventures.com,Plano,TX,NEW,98
+Tyler,Peterson,tyler.peterson980@example.com,555-4811,Tech Solutions Inc,Marketing Head,Email Campaign,Healthcare,https://techsolutionsinc.com,El Paso,TX,NEW,93
+Chloe,Hill,chloe.hill574@example.com,555-3254,Consulting Group,Marketing Head,Trade Show,Consulting,https://consultinggroup.com,El Paso,TX,NEW,92
+Elizabeth,Turner,elizabeth.turner609@example.com,555-9387,Finance Corp,Marketing Head,Referral,Education,https://financecorp.com,Corpus Christi,TX,NEW,74
+Luke,Richardson,luke.richardson122@example.com,555-1613,Digital Marketing Pro,VP Sales,Cold Call,Retail,https://digitalmarketingpro.com,Arlington,TX,NEW,64
+Nicholas,Price,nicholas.price858@example.com,555-6803,Global Trading Co,Marketing Head,Partner,Marketing,https://globaltradingco.com,Lubbock,TX,NEW,51
+Emily,Young,emily.young31@example.com,555-8110,Digital Marketing Pro,CEO,Email Campaign,Education,https://digitalmarketingpro.com,Arlington,TX,NEW,54
+Olivia,Gomez,olivia.gomez688@example.com,555-8777,Manufacturing Co,Marketing Head,LinkedIn,Real Estate,https://manufacturingco.com,Corpus Christi,TX,NEW,84
+Brian,Miller,brian.miller371@example.com,555-5613,Digital Marketing Pro,Founder,Trade Show,Marketing,https://digitalmarketingpro.com,Lubbock,TX,NEW,57
+Ashley,Richardson,ashley.richardson43@example.com,555-6936,Finance Corp,Business Owner,Trade Show,Retail,https://financecorp.com,Dallas,TX,NEW,92
+Gabriel,Mendoza,gabriel.mendoza697@example.com,555-5403,Education Plus,CEO,Cold Call,Healthcare,https://educationplus.com,El Paso,TX,NEW,82
+Christian,Parker,christian.parker858@example.com,555-6966,Finance Corp,Partner,Cold Call,Education,https://financecorp.com,El Paso,TX,NEW,83
+Katherine,Ramos,katherine.ramos849@example.com,555-8231,Real Estate Partners,Business Owner,Trade Show,Technology,https://realestatepartners.com,Corpus Christi,TX,NEW,72
+Charlotte,Thomas,charlotte.thomas111@example.com,555-9037,Software Dynamics,VP Sales,Partner,Education,https://softwaredynamics.com,Austin,TX,NEW,90
+Brooklyn,Morgan,brooklyn.morgan714@example.com,555-3458,Education Plus,CEO,Advertisement,Manufacturing,https://educationplus.com,El Paso,TX,NEW,64
+Matthew,Gonzalez,matthew.gonzalez216@example.com,555-1361,Manufacturing Co,Marketing Head,Partner,Software,https://manufacturingco.com,Arlington,TX,NEW,85
+Zachary,Taylor,zachary.taylor65@example.com,555-9912,Cloud Services LLC,Operations Lead,LinkedIn,Consulting,https://cloudservicesllc.com,Fort Worth,TX,NEW,57
+Stephanie,Collins,stephanie.collins420@example.com,555-4552,Digital Marketing Pro,Founder,Referral,Software,https://digitalmarketingpro.com,Austin,TX,NEW,74
+Madison,Diaz,madison.diaz489@example.com,555-4665,Manufacturing Co,CEO,Email Campaign,Technology,https://manufacturingco.com,Austin,TX,NEW,81
+Rebecca,Nelson,rebecca.nelson870@example.com,555-4445,Cloud Services LLC,Senior Manager,LinkedIn,Marketing,https://cloudservicesllc.com,San Antonio,TX,NEW,60
+Scarlett,Flores,scarlett.flores104@example.com,555-8438,Digital Marketing Pro,Senior Manager,Partner,Real Estate,https://digitalmarketingpro.com,El Paso,TX,NEW,51
+Zachary,Rodriguez,zachary.rodriguez419@example.com,555-3856,Cloud Services LLC,Business Owner,LinkedIn,Consulting,https://cloudservicesllc.com,Dallas,TX,NEW,54
+Aria,Sanders,aria.sanders207@example.com,555-2352,Digital Marketing Pro,Business Owner,Website,Retail,https://digitalmarketingpro.com,Arlington,TX,NEW,71
+Brian,Patel,brian.patel691@example.com,555-5051,Manufacturing Co,Founder,Email Campaign,Marketing,https://manufacturingco.com,Fort Worth,TX,NEW,74
+James,Ortiz,james.ortiz587@example.com,555-7067,Manufacturing Co,Operations Lead,Website,Software,https://manufacturingco.com,Plano,TX,NEW,83
+Lily,Long,lily.long774@example.com,555-4678,Tech Solutions Inc,CEO,Website,Real Estate,https://techsolutionsinc.com,Lubbock,TX,NEW,54
+Grayson,Kelly,grayson.kelly608@example.com,555-3399,Education Plus,Marketing Head,Trade Show,Consulting,https://educationplus.com,Dallas,TX,NEW,66
+Ashley,Edwards,ashley.edwards7@example.com,555-4444,Software Dynamics,CEO,Cold Call,Consulting,https://softwaredynamics.com,Dallas,TX,NEW,64
+Maria,Anderson,maria.anderson860@example.com,555-4165,Software Dynamics,Partner,Email Campaign,Retail,https://softwaredynamics.com,San Antonio,TX,NEW,59
+Chloe,King,chloe.king12@example.com,555-6668,Consulting Group,Senior Manager,Referral,Consulting,https://consultinggroup.com,Lubbock,TX,NEW,74
+Kyle,Wright,kyle.wright483@example.com,555-4258,Global Trading Co,Senior Manager,Cold Call,Consulting,https://globaltradingco.com,Fort Worth,TX,NEW,94
+Nicholas,Reed,nicholas.reed82@example.com,555-8236,Manufacturing Co,Business Owner,Cold Call,Real Estate,https://manufacturingco.com,Corpus Christi,TX,NEW,87
+Chris,Ross,chris.ross986@example.com,555-6522,Tech Solutions Inc,Director,Email Campaign,Healthcare,https://techsolutionsinc.com,Dallas,TX,NEW,79
+Robert,Morales,robert.morales10@example.com,555-4854,Data Analytics Inc,VP Sales,Website,Healthcare,https://dataanalyticsinc.com,Plano,TX,NEW,65
+Lily,Johnson,lily.johnson864@example.com,555-9606,Cloud Services LLC,Manager,Cold Call,Finance,https://cloudservicesllc.com,Corpus Christi,TX,NEW,58
+Mason,Peterson,mason.peterson318@example.com,555-7624,Tech Solutions Inc,CEO,LinkedIn,Consulting,https://techsolutionsinc.com,Dallas,TX,NEW,84
+Emily,Rodriguez,emily.rodriguez94@example.com,555-4819,Data Analytics Inc,Senior Manager,Cold Call,Real Estate,https://dataanalyticsinc.com,El Paso,TX,NEW,72
+Jackson,Sanders,jackson.sanders455@example.com,555-7525,Software Dynamics,Operations Lead,Advertisement,Education,https://softwaredynamics.com,Dallas,TX,NEW,56
+William,Brooks,william.brooks715@example.com,555-3187,Data Analytics Inc,Manager,Email Campaign,Finance,https://dataanalyticsinc.com,Houston,TX,NEW,50
+Nicholas,Jimenez,nicholas.jimenez33@example.com,555-8187,Education Plus,Founder,Referral,Marketing,https://educationplus.com,Austin,TX,NEW,67
+Scarlett,Kim,scarlett.kim520@example.com,555-2325,Manufacturing Co,Business Owner,Website,Manufacturing,https://manufacturingco.com,Austin,TX,NEW,73
+Jacob,Green,jacob.green574@example.com,555-7481,Real Estate Partners,Partner,Trade Show,Real Estate,https://realestatepartners.com,Dallas,TX,NEW,81
+Ashley,Lewis,ashley.lewis820@example.com,555-8973,Manufacturing Co,Director,Referral,Technology,https://manufacturingco.com,Fort Worth,TX,NEW,64
+Stephanie,Gomez,stephanie.gomez769@example.com,555-9545,Software Dynamics,Marketing Head,Cold Call,Healthcare,https://softwaredynamics.com,Houston,TX,NEW,83
+Jack,Howard,jack.howard19@example.com,555-5448,Digital Marketing Pro,Director,Website,Retail,https://digitalmarketingpro.com,Corpus Christi,TX,NEW,88
+Alexis,Patel,alexis.patel42@example.com,555-6334,Innovation Labs,Senior Manager,LinkedIn,Consulting,https://innovationlabs.com,Fort Worth,TX,NEW,82
+Lisa,King,lisa.king726@example.com,555-3786,Education Plus,CEO,Email Campaign,Technology,https://educationplus.com,Lubbock,TX,NEW,74
+Brandon,Green,brandon.green943@example.com,555-5007,Retail Ventures,Operations Lead,Trade Show,Manufacturing,https://retailventures.com,Houston,TX,NEW,51
+Ella,Myers,ella.myers876@example.com,555-7295,Strategic Advisors,Business Owner,Partner,Retail,https://strategicadvisors.com,Plano,TX,NEW,93
+Connor,Lewis,connor.lewis489@example.com,555-7960,Real Estate Partners,Founder,Cold Call,Real Estate,https://realestatepartners.com,Plano,TX,NEW,89
+Ava,Miller,ava.miller469@example.com,555-1595,Real Estate Partners,Marketing Head,Cold Call,Software,https://realestatepartners.com,El Paso,TX,NEW,68
+Steven,Foster,steven.foster463@example.com,555-9847,Education Plus,Partner,Website,Retail,https://educationplus.com,Arlington,TX,NEW,83
+Abigail,Allen,abigail.allen188@example.com,555-3441,Consulting Group,Marketing Head,Trade Show,Education,https://consultinggroup.com,San Antonio,TX,NEW,95
+Laura,Anderson,laura.anderson495@example.com,555-9905,Consulting Group,Marketing Head,Partner,Real Estate,https://consultinggroup.com,Houston,TX,NEW,98
+Jayden,Martin,jayden.martin368@example.com,555-4717,Innovation Labs,Operations Lead,Advertisement,Consulting,https://innovationlabs.com,Plano,TX,NEW,79
+Kevin,Myers,kevin.myers392@example.com,555-8022,Digital Marketing Pro,Business Owner,Referral,Software,https://digitalmarketingpro.com,Corpus Christi,TX,NEW,67
+Adam,Edwards,adam.edwards521@example.com,555-5310,Strategic Advisors,Senior Manager,Email Campaign,Healthcare,https://strategicadvisors.com,Lubbock,TX,NEW,65
+Lisa,Morgan,lisa.morgan29@example.com,555-3302,Consulting Group,Marketing Head,Cold Call,Technology,https://consultinggroup.com,El Paso,TX,NEW,50
+Gabriel,Hall,gabriel.hall811@example.com,555-7732,Healthcare Systems,Business Owner,Website,Education,https://healthcaresystems.com,Houston,TX,NEW,99
+Isabella,Gutierrez,isabella.gutierrez742@example.com,555-2020,Real Estate Partners,Operations Lead,LinkedIn,Technology,https://realestatepartners.com,Dallas,TX,NEW,92
+Katherine,Miller,katherine.miller630@example.com,555-4140,Education Plus,Partner,Partner,Finance,https://educationplus.com,Fort Worth,TX,NEW,72
+Zachary,Miller,zachary.miller11@example.com,555-6831,Innovation Labs,Manager,Advertisement,Retail,https://innovationlabs.com,Fort Worth,TX,NEW,79
+Jason,Sanders,jason.sanders371@example.com,555-8076,Global Trading Co,Marketing Head,Advertisement,Finance,https://globaltradingco.com,El Paso,TX,NEW,94
+Jennifer,Lewis,jennifer.lewis205@example.com,555-5444,Innovation Labs,Director,Trade Show,Technology,https://innovationlabs.com,Dallas,TX,NEW,88
+Scarlett,Nelson,scarlett.nelson128@example.com,555-9271,Global Trading Co,Partner,LinkedIn,Finance,https://globaltradingco.com,Plano,TX,NEW,81
+Nora,Lee,nora.lee981@example.com,555-9181,Consulting Group,Business Owner,Partner,Software,https://consultinggroup.com,Plano,TX,NEW,69
+Melissa,Kim,melissa.kim394@example.com,555-5401,Healthcare Systems,Founder,Advertisement,Software,https://healthcaresystems.com,Plano,TX,NEW,98
+Benjamin,Stewart,benjamin.stewart709@example.com,555-9152,Consulting Group,Partner,Website,Marketing,https://consultinggroup.com,Houston,TX,NEW,74
+Michael,Gonzalez,michael.gonzalez236@example.com,555-7827,Real Estate Partners,Partner,Referral,Education,https://realestatepartners.com,Plano,TX,NEW,82
+Alexis,Edwards,alexis.edwards759@example.com,555-8825,Retail Ventures,Marketing Head,Trade Show,Healthcare,https://retailventures.com,Austin,TX,NEW,77
+John,Gray,john.gray196@example.com,555-5464,Finance Corp,Business Owner,Advertisement,Technology,https://financecorp.com,El Paso,TX,NEW,97
+Nora,Anderson,nora.anderson420@example.com,555-7901,Education Plus,CEO,Trade Show,Manufacturing,https://educationplus.com,Houston,TX,NEW,68
+Christina,Parker,christina.parker841@example.com,555-1915,Finance Corp,Partner,Email Campaign,Consulting,https://financecorp.com,Lubbock,TX,NEW,90
+Brian,Campbell,brian.campbell248@example.com,555-2820,Real Estate Partners,Marketing Head,Email Campaign,Education,https://realestatepartners.com,Arlington,TX,NEW,91
+Charlotte,Edwards,charlotte.edwards348@example.com,555-9138,Finance Corp,Director,Cold Call,Finance,https://financecorp.com,Houston,TX,NEW,77
+Amanda,Castillo,amanda.castillo175@example.com,555-5619,Cloud Services LLC,Senior Manager,Partner,Real Estate,https://cloudservicesllc.com,San Antonio,TX,NEW,89
+Liam,Gray,liam.gray93@example.com,555-2630,Real Estate Partners,Operations Lead,Advertisement,Retail,https://realestatepartners.com,Lubbock,TX,NEW,50
+Ella,Rodriguez,ella.rodriguez894@example.com,555-3175,Software Dynamics,Partner,LinkedIn,Real Estate,https://softwaredynamics.com,Plano,TX,NEW,73
+Owen,Collins,owen.collins924@example.com,555-9287,Innovation Labs,Director,Cold Call,Software,https://innovationlabs.com,Corpus Christi,TX,NEW,67
+Kevin,Brown,kevin.brown276@example.com,555-9950,Innovation Labs,Marketing Head,Email Campaign,Finance,https://innovationlabs.com,El Paso,TX,NEW,99
+Jayden,White,jayden.white902@example.com,555-6252,Strategic Advisors,Director,Cold Call,Healthcare,https://strategicadvisors.com,San Antonio,TX,NEW,80
+Joshua,Alvarez,joshua.alvarez403@example.com,555-3069,Software Dynamics,Manager,Trade Show,Retail,https://softwaredynamics.com,Arlington,TX,NEW,66
+Mason,Howard,mason.howard333@example.com,555-6223,Consulting Group,Senior Manager,Partner,Technology,https://consultinggroup.com,El Paso,TX,NEW,76
+Gabriel,Bailey,gabriel.bailey433@example.com,555-6353,Data Analytics Inc,Partner,Trade Show,Retail,https://dataanalyticsinc.com,Houston,TX,NEW,72
+Charlotte,Price,charlotte.price29@example.com,555-6261,Data Analytics Inc,Partner,Website,Manufacturing,https://dataanalyticsinc.com,Dallas,TX,NEW,60
+Aria,Thomas,aria.thomas528@example.com,555-8313,Education Plus,Marketing Head,Email Campaign,Finance,https://educationplus.com,Plano,TX,NEW,99
+Daniel,Garcia,daniel.garcia48@example.com,555-5317,Tech Solutions Inc,Partner,LinkedIn,Healthcare,https://techsolutionsinc.com,Plano,TX,NEW,55
+Logan,Martin,logan.martin553@example.com,555-1862,Global Trading Co,Marketing Head,Email Campaign,Finance,https://globaltradingco.com,Dallas,TX,NEW,53
+Steven,Hernandez,steven.hernandez843@example.com,555-5837,Digital Marketing Pro,Director,LinkedIn,Healthcare,https://digitalmarketingpro.com,Arlington,TX,NEW,96
+Angela,Morris,angela.morris47@example.com,555-3362,Retail Ventures,Operations Lead,Trade Show,Real Estate,https://retailventures.com,Plano,TX,NEW,82
+Connor,Jimenez,connor.jimenez856@example.com,555-1390,Education Plus,Director,Partner,Marketing,https://educationplus.com,Fort Worth,TX,NEW,76
+Dylan,Gonzalez,dylan.gonzalez561@example.com,555-8576,Digital Marketing Pro,Operations Lead,Partner,Healthcare,https://digitalmarketingpro.com,Arlington,TX,NEW,67
+Olivia,Peterson,olivia.peterson192@example.com,555-5773,Real Estate Partners,Operations Lead,Advertisement,Education,https://realestatepartners.com,Fort Worth,TX,NEW,52
+Robert,Wilson,robert.wilson376@example.com,555-5274,Manufacturing Co,Director,Advertisement,Software,https://manufacturingco.com,Corpus Christi,TX,NEW,64
+Brooklyn,Carter,brooklyn.carter990@example.com,555-6140,Tech Solutions Inc,Senior Manager,Partner,Healthcare,https://techsolutionsinc.com,Arlington,TX,NEW,71
+Stephanie,Martin,stephanie.martin26@example.com,555-3347,Software Dynamics,CEO,Referral,Retail,https://softwaredynamics.com,Plano,TX,NEW,53
+Alexander,Thomas,alexander.thomas28@example.com,555-9820,Retail Ventures,Operations Lead,Referral,Retail,https://retailventures.com,Arlington,TX,NEW,53
+Jason,Wright,jason.wright928@example.com,555-3506,Real Estate Partners,Business Owner,Partner,Consulting,https://realestatepartners.com,Houston,TX,NEW,55
+Layla,Young,layla.young487@example.com,555-9428,Healthcare Systems,Founder,Advertisement,Manufacturing,https://healthcaresystems.com,El Paso,TX,NEW,61
+Sarah,Moore,sarah.moore249@example.com,555-1151,Real Estate Partners,Manager,LinkedIn,Retail,https://realestatepartners.com,El Paso,TX,NEW,64
+Jayden,Clark,jayden.clark46@example.com,555-3334,Education Plus,Manager,Email Campaign,Healthcare,https://educationplus.com,Plano,TX,NEW,65
+David,Sanders,david.sanders611@example.com,555-1365,Data Analytics Inc,Business Owner,Trade Show,Healthcare,https://dataanalyticsinc.com,Arlington,TX,NEW,58
+Robert,Patel,robert.patel724@example.com,555-9728,Education Plus,Marketing Head,Partner,Marketing,https://educationplus.com,Dallas,TX,NEW,92
+Lisa,Walker,lisa.walker467@example.com,555-7096,Education Plus,Partner,Cold Call,Technology,https://educationplus.com,Corpus Christi,TX,NEW,75
+Nicole,James,nicole.james19@example.com,555-5992,Education Plus,Marketing Head,Website,Technology,https://educationplus.com,Arlington,TX,NEW,74
+Jordan,Alvarez,jordan.alvarez556@example.com,555-3737,Manufacturing Co,CEO,Partner,Consulting,https://manufacturingco.com,Arlington,TX,NEW,93
+Owen,Lopez,owen.lopez895@example.com,555-9359,Manufacturing Co,Operations Lead,Email Campaign,Technology,https://manufacturingco.com,San Antonio,TX,NEW,60
+Jonathan,Gomez,jonathan.gomez607@example.com,555-3224,Innovation Labs,Marketing Head,Advertisement,Consulting,https://innovationlabs.com,El Paso,TX,NEW,55
+Nora,Carter,nora.carter437@example.com,555-1482,Retail Ventures,Operations Lead,LinkedIn,Consulting,https://retailventures.com,Fort Worth,TX,NEW,98
+Joshua,Sanchez,joshua.sanchez671@example.com,555-2385,Innovation Labs,CEO,Referral,Finance,https://innovationlabs.com,Arlington,TX,NEW,93
+Cameron,Ruiz,cameron.ruiz831@example.com,555-5615,Software Dynamics,Director,Website,Consulting,https://softwaredynamics.com,Fort Worth,TX,NEW,90
+Melissa,Hernandez,melissa.hernandez824@example.com,555-5423,Innovation Labs,Business Owner,Partner,Software,https://innovationlabs.com,Plano,TX,NEW,86
+William,Stewart,william.stewart382@example.com,555-3070,Retail Ventures,Operations Lead,LinkedIn,Consulting,https://retailventures.com,Lubbock,TX,NEW,72
+Mike,Johnson,mike.johnson220@example.com,555-3945,Data Analytics Inc,Marketing Head,Referral,Software,https://dataanalyticsinc.com,Houston,TX,NEW,60
+Austin,White,austin.white473@example.com,555-1109,Retail Ventures,Founder,Trade Show,Software,https://retailventures.com,Austin,TX,NEW,58
+Jack,Walker,jack.walker481@example.com,555-8165,Education Plus,VP Sales,Referral,Technology,https://educationplus.com,El Paso,TX,NEW,78
+Owen,Patel,owen.patel782@example.com,555-1560,Software Dynamics,Manager,Cold Call,Manufacturing,https://softwaredynamics.com,El Paso,TX,NEW,95
+Victoria,Wilson,victoria.wilson226@example.com,555-1805,Healthcare Systems,Business Owner,Trade Show,Finance,https://healthcaresystems.com,Fort Worth,TX,NEW,61
+Alexis,Hughes,alexis.hughes458@example.com,555-3771,Tech Solutions Inc,CEO,Email Campaign,Manufacturing,https://techsolutionsinc.com,San Antonio,TX,NEW,91
+Charlotte,Turner,charlotte.turner79@example.com,555-6037,Cloud Services LLC,Marketing Head,Trade Show,Manufacturing,https://cloudservicesllc.com,Arlington,TX,NEW,64
+Ethan,Ward,ethan.ward472@example.com,555-9376,Finance Corp,Senior Manager,Cold Call,Technology,https://financecorp.com,Arlington,TX,NEW,77
+Emily,Gray,emily.gray510@example.com,555-4537,Healthcare Systems,Senior Manager,LinkedIn,Technology,https://healthcaresystems.com,Dallas,TX,NEW,86
+Angela,Taylor,angela.taylor243@example.com,555-4484,Digital Marketing Pro,Founder,Cold Call,Real Estate,https://digitalmarketingpro.com,San Antonio,TX,NEW,91
+Alexis,Taylor,alexis.taylor750@example.com,555-4458,Digital Marketing Pro,Senior Manager,Website,Finance,https://digitalmarketingpro.com,Fort Worth,TX,NEW,55
+Jason,Walker,jason.walker248@example.com,555-1307,Cloud Services LLC,Manager,LinkedIn,Software,https://cloudservicesllc.com,Dallas,TX,NEW,52
+Victoria,Rogers,victoria.rogers690@example.com,555-2908,Retail Ventures,Operations Lead,Website,Marketing,https://retailventures.com,Plano,TX,NEW,90
+Penelope,Clark,penelope.clark584@example.com,555-2041,Consulting Group,Marketing Head,Advertisement,Marketing,https://consultinggroup.com,Arlington,TX,NEW,70
+Brandon,Smith,brandon.smith887@example.com,555-5301,Tech Solutions Inc,Manager,Email Campaign,Retail,https://techsolutionsinc.com,El Paso,TX,NEW,51
+Kimberly,Stewart,kimberly.stewart183@example.com,555-9707,Tech Solutions Inc,Business Owner,LinkedIn,Marketing,https://techsolutionsinc.com,Plano,TX,NEW,82
+Sarah,Edwards,sarah.edwards706@example.com,555-4015,Data Analytics Inc,Partner,Partner,Real Estate,https://dataanalyticsinc.com,Plano,TX,NEW,54
+Lisa,Young,lisa.young738@example.com,555-3906,Digital Marketing Pro,VP Sales,Partner,Retail,https://digitalmarketingpro.com,Lubbock,TX,NEW,84
+Rebecca,King,rebecca.king792@example.com,555-4466,Healthcare Systems,VP Sales,Trade Show,Consulting,https://healthcaresystems.com,Corpus Christi,TX,NEW,56
+Jessica,Myers,jessica.myers382@example.com,555-7839,Innovation Labs,Manager,Referral,Manufacturing,https://innovationlabs.com,El Paso,TX,NEW,61
+Emily,Ramirez,emily.ramirez77@example.com,555-6675,Manufacturing Co,Marketing Head,Referral,Software,https://manufacturingco.com,Lubbock,TX,NEW,71
+Elizabeth,Hill,elizabeth.hill161@example.com,555-4613,Data Analytics Inc,CEO,Email Campaign,Manufacturing,https://dataanalyticsinc.com,Austin,TX,NEW,66
+Brandon,Stewart,brandon.stewart755@example.com,555-6248,Cloud Services LLC,Business Owner,Cold Call,Education,https://cloudservicesllc.com,Lubbock,TX,NEW,95
+Elizabeth,Martinez,elizabeth.martinez998@example.com,555-3465,Tech Solutions Inc,CEO,Referral,Marketing,https://techsolutionsinc.com,Lubbock,TX,NEW,57
+Andrew,Howard,andrew.howard121@example.com,555-3645,Data Analytics Inc,Operations Lead,Website,Marketing,https://dataanalyticsinc.com,Houston,TX,NEW,87
+Owen,Miller,owen.miller560@example.com,555-3569,Digital Marketing Pro,VP Sales,Partner,Healthcare,https://digitalmarketingpro.com,El Paso,TX,NEW,62
+Maria,Torres,maria.torres630@example.com,555-2191,Cloud Services LLC,Senior Manager,Cold Call,Healthcare,https://cloudservicesllc.com,Plano,TX,NEW,96
+Isabella,Jones,isabella.jones1@example.com,555-3056,Retail Ventures,CEO,Trade Show,Manufacturing,https://retailventures.com,Corpus Christi,TX,NEW,84
+Kevin,Gutierrez,kevin.gutierrez573@example.com,555-6681,Global Trading Co,Partner,Partner,Technology,https://globaltradingco.com,El Paso,TX,NEW,94
+Samantha,Sanders,samantha.sanders45@example.com,555-1536,Data Analytics Inc,Founder,Website,Consulting,https://dataanalyticsinc.com,El Paso,TX,NEW,79
+Alexander,Scott,alexander.scott467@example.com,555-1415,Consulting Group,Marketing Head,Website,Finance,https://consultinggroup.com,Lubbock,TX,NEW,65
+Ella,Miller,ella.miller520@example.com,555-2600,Manufacturing Co,Founder,Referral,Healthcare,https://manufacturingco.com,Houston,TX,NEW,66
+Samuel,Young,samuel.young573@example.com,555-5153,Manufacturing Co,CEO,Trade Show,Healthcare,https://manufacturingco.com,Plano,TX,NEW,64
+Rachel,Hill,rachel.hill652@example.com,555-7914,Healthcare Systems,Manager,Referral,Education,https://healthcaresystems.com,Corpus Christi,TX,NEW,58
+Ellie,Cox,ellie.cox939@example.com,555-5362,Digital Marketing Pro,Manager,Cold Call,Education,https://digitalmarketingpro.com,San Antonio,TX,NEW,74
+Evan,Allen,evan.allen153@example.com,555-8540,Consulting Group,Business Owner,Referral,Marketing,https://consultinggroup.com,Fort Worth,TX,NEW,63
+Liam,Ortiz,liam.ortiz358@example.com,555-2028,Consulting Group,Manager,Email Campaign,Technology,https://consultinggroup.com,Fort Worth,TX,NEW,50
+Samuel,King,samuel.king730@example.com,555-7346,Global Trading Co,Business Owner,Email Campaign,Technology,https://globaltradingco.com,El Paso,TX,NEW,76
+Sarah,Peterson,sarah.peterson452@example.com,555-8504,Retail Ventures,Manager,Referral,Software,https://retailventures.com,Lubbock,TX,NEW,97
+Melissa,Morgan,melissa.morgan674@example.com,555-1611,Innovation Labs,Marketing Head,LinkedIn,Finance,https://innovationlabs.com,Arlington,TX,NEW,97
+Kimberly,Rogers,kimberly.rogers149@example.com,555-6094,Software Dynamics,Manager,Trade Show,Retail,https://softwaredynamics.com,Houston,TX,NEW,83
+Aubrey,Mitchell,aubrey.mitchell324@example.com,555-8132,Real Estate Partners,Founder,Website,Technology,https://realestatepartners.com,Dallas,TX,NEW,83
+Sarah,Cruz,sarah.cruz506@example.com,555-6840,Digital Marketing Pro,VP Sales,Website,Education,https://digitalmarketingpro.com,San Antonio,TX,NEW,60
+Michelle,Jackson,michelle.jackson480@example.com,555-9155,Finance Corp,Senior Manager,Trade Show,Software,https://financecorp.com,Austin,TX,NEW,57
+Kevin,Cruz,kevin.cruz560@example.com,555-5470,Real Estate Partners,Director,LinkedIn,Consulting,https://realestatepartners.com,Arlington,TX,NEW,77
+Logan,Gray,logan.gray415@example.com,555-6966,Healthcare Systems,Partner,Partner,Healthcare,https://healthcaresystems.com,Lubbock,TX,NEW,82
+Emily,Morgan,emily.morgan730@example.com,555-4008,Strategic Advisors,VP Sales,Cold Call,Marketing,https://strategicadvisors.com,Arlington,TX,NEW,75
+Emily,Evans,emily.evans58@example.com,555-3640,Finance Corp,Operations Lead,Partner,Education,https://financecorp.com,Corpus Christi,TX,NEW,70
+Scarlett,Roberts,scarlett.roberts448@example.com,555-9340,Tech Solutions Inc,Partner,LinkedIn,Software,https://techsolutionsinc.com,Houston,TX,NEW,76
+Alexander,Clark,alexander.clark311@example.com,555-8250,Software Dynamics,Director,LinkedIn,Healthcare,https://softwaredynamics.com,Arlington,TX,NEW,88
+Laura,Price,laura.price115@example.com,555-1944,Data Analytics Inc,VP Sales,Email Campaign,Technology,https://dataanalyticsinc.com,Plano,TX,NEW,61
+Isabella,Alvarez,isabella.alvarez744@example.com,555-2530,Tech Solutions Inc,Director,Partner,Technology,https://techsolutionsinc.com,Dallas,TX,NEW,71
+Olivia,Hughes,olivia.hughes300@example.com,555-6239,Global Trading Co,Partner,Trade Show,Real Estate,https://globaltradingco.com,Dallas,TX,NEW,71
+Michael,Kim,michael.kim179@example.com,555-3573,Finance Corp,VP Sales,Partner,Software,https://financecorp.com,Houston,TX,NEW,52
+Katherine,Ramirez,katherine.ramirez657@example.com,555-8688,Finance Corp,VP Sales,LinkedIn,Retail,https://financecorp.com,Dallas,TX,NEW,86
+Ethan,Reed,ethan.reed968@example.com,555-1298,Data Analytics Inc,Senior Manager,Website,Education,https://dataanalyticsinc.com,San Antonio,TX,NEW,60
+Carter,Gray,carter.gray877@example.com,555-4056,Finance Corp,Manager,Website,Technology,https://financecorp.com,El Paso,TX,NEW,81
+Kimberly,Jackson,kimberly.jackson418@example.com,555-7080,Software Dynamics,CEO,Partner,Consulting,https://softwaredynamics.com,San Antonio,TX,NEW,98
+Adam,Ortiz,adam.ortiz197@example.com,555-9368,Digital Marketing Pro,Business Owner,Email Campaign,Healthcare,https://digitalmarketingpro.com,El Paso,TX,NEW,67
+Angela,Hughes,angela.hughes518@example.com,555-3884,Tech Solutions Inc,Operations Lead,Cold Call,Real Estate,https://techsolutionsinc.com,Arlington,TX,NEW,91
+Caleb,Morris,caleb.morris876@example.com,555-4763,Tech Solutions Inc,VP Sales,Referral,Real Estate,https://techsolutionsinc.com,Lubbock,TX,NEW,56
+Rebecca,Brown,rebecca.brown269@example.com,555-3967,Finance Corp,Partner,Referral,Real Estate,https://financecorp.com,San Antonio,TX,NEW,88
+Lisa,Peterson,lisa.peterson244@example.com,555-8909,Data Analytics Inc,CEO,Trade Show,Healthcare,https://dataanalyticsinc.com,Corpus Christi,TX,NEW,73
+Cameron,Stewart,cameron.stewart282@example.com,555-1153,Education Plus,Partner,Email Campaign,Finance,https://educationplus.com,Austin,TX,NEW,97
+Jennifer,Davis,jennifer.davis327@example.com,555-6028,Consulting Group,Manager,Email Campaign,Technology,https://consultinggroup.com,Dallas,TX,NEW,63
+Adam,Smith,adam.smith649@example.com,555-8639,Finance Corp,Senior Manager,LinkedIn,Consulting,https://financecorp.com,Austin,TX,NEW,98
+Madison,Morris,madison.morris932@example.com,555-6747,Tech Solutions Inc,Marketing Head,Cold Call,Retail,https://techsolutionsinc.com,Austin,TX,NEW,57
+Dylan,Johnson,dylan.johnson494@example.com,555-1448,Cloud Services LLC,Marketing Head,Email Campaign,Education,https://cloudservicesllc.com,Corpus Christi,TX,NEW,68
+Sarah,Reyes,sarah.reyes960@example.com,555-5265,Data Analytics Inc,Marketing Head,Cold Call,Software,https://dataanalyticsinc.com,Fort Worth,TX,NEW,59
+Matthew,Miller,matthew.miller708@example.com,555-8681,Data Analytics Inc,Senior Manager,Cold Call,Real Estate,https://dataanalyticsinc.com,El Paso,TX,NEW,83
+Andrew,Robinson,andrew.robinson600@example.com,555-9400,Finance Corp,Manager,Email Campaign,Software,https://financecorp.com,Corpus Christi,TX,NEW,83
+Michael,Patel,michael.patel516@example.com,555-4448,Strategic Advisors,Founder,Email Campaign,Education,https://strategicadvisors.com,Corpus Christi,TX,NEW,93
+Aria,Taylor,aria.taylor8@example.com,555-7179,Consulting Group,Senior Manager,LinkedIn,Software,https://consultinggroup.com,San Antonio,TX,NEW,84
+Daniel,Lee,daniel.lee333@example.com,555-3727,Global Trading Co,VP Sales,Advertisement,Healthcare,https://globaltradingco.com,Austin,TX,NEW,90
+Nicholas,Rogers,nicholas.rogers383@example.com,555-8946,Digital Marketing Pro,VP Sales,Trade Show,Healthcare,https://digitalmarketingpro.com,Arlington,TX,NEW,51
+Liam,Turner,liam.turner176@example.com,555-2142,Digital Marketing Pro,CEO,Trade Show,Consulting,https://digitalmarketingpro.com,San Antonio,TX,NEW,84
+Riley,Edwards,riley.edwards376@example.com,555-1146,Digital Marketing Pro,Marketing Head,Referral,Retail,https://digitalmarketingpro.com,Houston,TX,NEW,93
+Christian,Torres,christian.torres468@example.com,555-8456,Innovation Labs,Partner,LinkedIn,Retail,https://innovationlabs.com,Lubbock,TX,NEW,82

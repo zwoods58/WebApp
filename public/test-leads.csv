@@ -1,0 +1,4 @@
+firstName,lastName,email,phone,company,title,source,industry,website,city,state,status,score
+Wesley,Admin,admin@atarwebb.com,555-0101,AtarWebb,Owner,Website,Technology,https://atarwebb.com,Austin,TX,NEW,95
+John,Smith,john.smith@example.com,555-0102,Tech Corp,CEO,Referral,Technology,https://techcorp.com,Dallas,TX,NEW,75
+Sarah,Johnson,sarah.j@example.com,555-0103,Marketing Inc,Director,Website,Marketing,https://marketinginc.com,Houston,TX,NEW,85

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Phone, Calendar, Target, Edit, Trash2, Eye, Filter, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { Plus, Phone, Calendar, Target, Edit, Trash2, Eye, Filter, Clock, CheckCircle, XCircle, AlertCircle, FileText } from 'lucide-react'
 import AdminLayout from '@/components/AdminLayout'
 import CallLogModal from '@/components/CallLogModal'
 import AppointmentModal from '@/components/AppointmentModal'
+import NotesModal from '@/components/NotesModal'
 
 interface Lead {
   id: string
@@ -56,6 +57,7 @@ export default function OutboundPipeline() {
   const [priorityFilter, setPriorityFilter] = useState('ALL')
   const [showCallModal, setShowCallModal] = useState(false)
   const [showAppointmentModal, setShowAppointmentModal] = useState(false)
+  const [showNotesModal, setShowNotesModal] = useState(false)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
 
   // Fetch leads from API
@@ -190,6 +192,34 @@ export default function OutboundPipeline() {
   const handleAppointmentClick = (lead: Lead) => {
     setSelectedLead(lead)
     setShowAppointmentModal(true)
+  }
+
+  const handleNotesClick = (lead: Lead) => {
+    setSelectedLead(lead)
+    setShowNotesModal(true)
+  }
+
+  const handleNotesSave = async (notes: string) => {
+    try {
+      const response = await fetch(`/api/leads`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedLead!.id,
+          notes
+        })
+      })
+
+      if (response.ok) {
+        setLeads(prev => prev.map(lead =>
+          lead.id === selectedLead!.id
+            ? { ...lead, notes, updatedAt: new Date().toISOString() }
+            : lead
+        ))
+      }
+    } catch (error) {
+      console.error('Error saving notes:', error)
+    }
   }
 
   const handleCallSave = async (callData: any) => {
@@ -349,6 +379,13 @@ export default function OutboundPipeline() {
                   </div>
                   <div className="flex space-x-2">
                     <button
+                      onClick={() => handleNotesClick(lead)}
+                      className="text-purple-400 hover:text-purple-300 p-1"
+                      title="Add/View Notes"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={() => handleCallClick(lead)}
                       className="text-blue-400 hover:text-blue-300 p-1"
                       title="Log Call"
@@ -441,6 +478,15 @@ export default function OutboundPipeline() {
         </div>
 
         {/* Modals */}
+        <NotesModal
+          isOpen={showNotesModal}
+          onClose={() => setShowNotesModal(false)}
+          leadId={selectedLead?.id || ''}
+          leadName={selectedLead ? `${selectedLead.firstName} ${selectedLead.lastName}` : ''}
+          initialNotes={selectedLead?.notes || ''}
+          onSave={handleNotesSave}
+        />
+
         <CallLogModal
           isOpen={showCallModal}
           onClose={() => setShowCallModal(false)}
