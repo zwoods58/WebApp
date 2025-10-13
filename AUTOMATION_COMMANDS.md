@@ -4,12 +4,27 @@ You can run the CRM automations manually from your command line anytime!
 
 ## 🚀 Quick Start
 
-### Run ALL Automations at Once
+### ⭐ Start Automation Service (Recommended)
+Run this once and automations will run automatically on schedule:
+```bash
+npm run automate:start
+```
+
+This starts a background service that runs automations automatically:
+- **Hourly**: Lead scoring (:00), Assignment (:15), Metrics (:30)
+- **Daily**: Follow-ups (9am), Escalation (10am), Daily report (6pm)
+- **Weekly**: Weekly report (Monday 9am)
+
+**To stop**: Press `Ctrl+C` in the terminal
+
+---
+
+### Run ALL Automations Once
 ```bash
 npm run automate
 ```
 
-This will run all 7 automations in sequence:
+This will run all 7 automations immediately in sequence:
 1. Score all leads
 2. Assign unassigned leads
 3. Update dashboard metrics
