@@ -1,51 +1,58 @@
-# Neomail Email Setup for CRM Automation
+# Neo.space Email Setup for CRM Automation
 
 ## Quick Setup
 
-Replace your `.env.local` file with Neomail SMTP settings:
+Replace your `.env.local` file with Neo.space SMTP settings:
 
 ### Step 1: Update `.env.local`
 
 ```env
-# Neomail SMTP Configuration
-SMTP_HOST=smtp.neomail.com
+# Neo.space SMTP Configuration
+SMTP_HOST=smtp.neo.space
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=your-email@yourdomain.com
-SMTP_PASSWORD=your-neomail-password
+SMTP_USER=your-email@neo.space
+SMTP_PASSWORD=your-neo-space-password
 SMTP_FROM=admin@atarwebb.com
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### Step 2: Find Your Neomail SMTP Settings
+### Step 2: Neo.space SMTP Settings
 
-**You'll need from Neomail:**
-1. **SMTP Host** - Usually `smtp.neomail.com` or check Neomail docs
-2. **SMTP Port** - Usually `587` (TLS) or `465` (SSL)
-3. **Your Email** - The email address you use with Neomail
-4. **Password** - Your Neomail password
+**Most Common Neo.space SMTP Configuration:**
+- **SMTP Host:** `smtp.neo.space`
+- **SMTP Port:** `587` (STARTTLS) or `465` (SSL/TLS)
+- **Your Email:** Your full Neo.space email address
+- **Password:** Your Neo.space email password
 
-**If using SSL (port 465):**
+**Option 1: Using Port 587 (STARTTLS - Recommended):**
 ```env
-SMTP_PORT=465
-SMTP_SECURE=true
-```
-
-**If using TLS (port 587):**
-```env
+SMTP_HOST=smtp.neo.space
 SMTP_PORT=587
 SMTP_SECURE=false
 ```
 
-### Step 3: Common Neomail SMTP Settings
+**Option 2: Using Port 465 (SSL/TLS):**
+```env
+SMTP_HOST=smtp.neo.space
+SMTP_PORT=465
+SMTP_SECURE=true
+```
 
-Check your Neomail account settings or documentation for exact values:
+### Step 3: Find Your Exact SMTP Settings
 
-- **Host:** `smtp.neomail.com` or `mail.yourdomain.com`
-- **Port:** `587` (recommended) or `465`
-- **Authentication:** Required (your email + password)
+**Where to look in Neo.space:**
+1. Log in to your Neo.space account
+2. Go to **Settings** → **Email Settings** or **Mail Configuration**
+3. Look for **Outgoing Mail Server** or **SMTP Settings**
+4. You should see the exact host, port, and security settings
+
+**Alternative SMTP hosts to try if `smtp.neo.space` doesn't work:**
+- `mail.neo.space`
+- `outgoing.neo.space`
+- `[your-domain].neo.space` (if using custom domain)
 
 ### Step 4: Test the Configuration
 
