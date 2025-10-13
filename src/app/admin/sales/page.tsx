@@ -195,12 +195,12 @@ export default function SalesDashboard() {
       )
 
       // Make API call to persist the change
-      const response = await fetch('/api/leads/update-status', {
+      const response = await fetch('/api/leads', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ leadId, status: newStatus }),
+        body: JSON.stringify({ id: leadId, status: newStatus }),
       })
 
       if (!response.ok) {
