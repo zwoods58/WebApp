@@ -8,22 +8,29 @@ let transporter: any = null
 function getEmailTransporter() {
   if (transporter) return transporter
 
+  // Debug: Log what we're seeing
+  console.log('[EMAIL DEBUG]: Checking SMTP credentials...')
+  console.log('[EMAIL DEBUG]: SMTP_HOST:', process.env.SMTP_HOST ? 'Found' : 'Missing')
+  console.log('[EMAIL DEBUG]: SMTP_USER:', process.env.SMTP_USER ? 'Found' : 'Missing')
+  console.log('[EMAIL DEBUG]: SMTP_PASSWORD:', process.env.SMTP_PASSWORD ? 'Found' : 'Missing')
+
   // Check if we have custom SMTP settings (Neomail or any provider)
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
+    const isSecure = process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465'
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+      secure: isSecure, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD
       }
     })
-    console.log(`[EMAIL]: Nodemailer initialized with ${process.env.SMTP_HOST}`)
+    console.log(`[EMAIL]: ✅ Nodemailer initialized with ${process.env.SMTP_HOST}:${process.env.SMTP_PORT} (secure: ${isSecure})`)
   }
   // Development mode - log to console only
   else {
-    console.log('[EMAIL]: No SMTP credentials found - using console logging only')
+    console.log('[EMAIL]: ❌ No SMTP credentials found - using console logging only')
     return null
   }
 
