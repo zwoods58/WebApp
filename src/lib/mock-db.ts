@@ -40,6 +40,8 @@ interface Task {
   status: 'PENDING' | 'COMPLETED' | 'OVERDUE'
   category: string
   assignedTo: string
+  leadId?: string // Link task to a lead for notes sync
+  leadName?: string // Store lead name for easy reference
   createdAt: string
   updatedAt: string
 }

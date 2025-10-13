@@ -14,6 +14,8 @@ interface Task {
   status: 'PENDING' | 'COMPLETED' | 'OVERDUE'
   category: string
   assignedTo: string
+  leadId?: string
+  leadName?: string
   createdAt: string
   updatedAt: string
 }
@@ -182,6 +184,11 @@ export default function TasksPage() {
                       <h3 className={`text-lg font-medium ${task.status === 'COMPLETED' ? 'line-through text-slate-400' : 'text-white'}`}>
                         {task.title}
                       </h3>
+                      {task.leadName && (
+                        <p className="text-blue-400 text-sm mt-1">
+                          📋 Lead: {task.leadName}
+                        </p>
+                      )}
                       {task.description && (
                         <p className="text-slate-300 text-sm mt-1">{task.description}</p>
                       )}

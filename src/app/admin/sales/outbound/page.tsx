@@ -201,6 +201,7 @@ export default function OutboundPipeline() {
 
   const handleNotesSave = async (notes: string) => {
     try {
+      // 1. Update lead notes
       const response = await fetch(`/api/leads`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -216,6 +217,22 @@ export default function OutboundPipeline() {
             ? { ...lead, notes, updatedAt: new Date().toISOString() }
             : lead
         ))
+
+        // 2. Create/update task with the notes for admin visibility
+        const taskResponse = await fetch('/api/tasks/sync-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leadId: selectedLead!.id,
+            leadName: `${selectedLead!.firstName} ${selectedLead!.lastName}`,
+            notes: notes,
+            assignedTo: '2' // Sales user ID
+          })
+        })
+
+        if (!taskResponse.ok) {
+          console.error('Failed to sync notes to task')
+        }
       }
     } catch (error) {
       console.error('Error saving notes:', error)
