@@ -8,32 +8,22 @@ let transporter: any = null
 function getEmailTransporter() {
   if (transporter) return transporter
 
-  // Check if we have Gmail credentials
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+  // Check if we have custom SMTP settings (Neomail or any provider)
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD
       }
     })
-    console.log('[EMAIL]: Nodemailer initialized with Gmail')
-  } 
-  // Fallback to SendGrid SMTP if available
-  else if (process.env.SENDGRID_API_KEY) {
-    transporter = nodemailer.createTransport({
-      host: 'smtp.sendgrid.net',
-      port: 587,
-      auth: {
-        user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY
-      }
-    })
-    console.log('[EMAIL]: Nodemailer initialized with SendGrid SMTP')
+    console.log(`[EMAIL]: Nodemailer initialized with ${process.env.SMTP_HOST}`)
   }
   // Development mode - log to console only
   else {
-    console.log('[EMAIL]: No email credentials found - using console logging only')
+    console.log('[EMAIL]: No SMTP credentials found - using console logging only')
     return null
   }
 
@@ -180,7 +170,7 @@ export async function sendAutomationEmail(to: string, subject: string, html: str
   
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'noreply@atarwebb.com',
+      from: process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@atarwebb.com',
       to: to,
       subject: subject,
       html: html
