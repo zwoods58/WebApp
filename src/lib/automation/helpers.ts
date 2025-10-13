@@ -1,15 +1,43 @@
 // Automation Helper Functions
 import { mockDb } from '@/lib/mock-db'
-import sgMail from '@sendgrid/mail'
+import nodemailer from 'nodemailer'
 
-// Initialize SendGrid (only once)
-let sgInitialized = false
-function initializeSendGrid() {
-  if (!sgInitialized && process.env.SENDGRID_API_KEY) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-    sgInitialized = true
-    console.log('[EMAIL]: SendGrid initialized successfully')
+// Create reusable transporter
+let transporter: any = null
+
+function getEmailTransporter() {
+  if (transporter) return transporter
+
+  // Check if we have Gmail credentials
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    })
+    console.log('[EMAIL]: Nodemailer initialized with Gmail')
+  } 
+  // Fallback to SendGrid SMTP if available
+  else if (process.env.SENDGRID_API_KEY) {
+    transporter = nodemailer.createTransport({
+      host: 'smtp.sendgrid.net',
+      port: 587,
+      auth: {
+        user: 'apikey',
+        pass: process.env.SENDGRID_API_KEY
+      }
+    })
+    console.log('[EMAIL]: Nodemailer initialized with SendGrid SMTP')
   }
+  // Development mode - log to console only
+  else {
+    console.log('[EMAIL]: No email credentials found - using console logging only')
+    return null
+  }
+
+  return transporter
 }
 
 // Date helpers
@@ -138,34 +166,30 @@ export async function sendSlackNotification(message: string) {
   )
 }
 
-// Email sending helper using SendGrid
+// Email sending helper using Nodemailer
 export async function sendAutomationEmail(to: string, subject: string, html: string) {
   console.log(`[EMAIL]: Sending to ${to} - ${subject}`)
   
-  // Initialize SendGrid if not already done
-  initializeSendGrid()
+  const emailTransporter = getEmailTransporter()
   
-  // Check if API key is available
-  if (!process.env.SENDGRID_API_KEY) {
-    console.warn('[EMAIL]: SENDGRID_API_KEY not found - email not sent (development mode)')
+  // If no transporter, just log to console (development mode)
+  if (!emailTransporter) {
+    console.log(`[EMAIL]: 📧 Email content (not sent):\nTo: ${to}\nSubject: ${subject}`)
     return
   }
   
   try {
-    const msg = {
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'noreply@atarwebb.com',
       to: to,
-      from: {
-        email: 'noreply@atarwebb.com',
-        name: 'AtarWebb CRM'
-      },
       subject: subject,
       html: html
     }
     
-    await sgMail.send(msg)
+    await emailTransporter.sendMail(mailOptions)
     console.log(`[EMAIL]: ✅ Successfully sent to ${to}`)
   } catch (error: any) {
-    console.error('[EMAIL ERROR]:', error.response?.body || error.message || error)
+    console.error('[EMAIL ERROR]:', error.message || error)
   }
 }
 
