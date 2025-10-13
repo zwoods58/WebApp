@@ -9,7 +9,15 @@ interface Lead {
   company?: string
   title?: string
   source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
   score: number
   notes?: string
 }
@@ -54,7 +62,15 @@ export async function POST(request: Request) {
             company: leadData.company,
             title: leadData.title,
             source: leadData.source || 'Import',
+            industry: leadData.industry,
+            website: leadData.website,
+            address: leadData.address,
+            city: leadData.city,
+            state: leadData.state,
+            zipCode: leadData.zipCode,
+            timeZone: leadData.timeZone,
             status: leadData.status || 'NEW',
+            statusDetail: leadData.statusDetail,
             score: leadData.score || 50,
             notes: leadData.notes,
             userId: assignedTo === 'sales' ? '2' : '1', // Assign to sales user (ID: 2)
