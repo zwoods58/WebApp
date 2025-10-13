@@ -23,7 +23,7 @@ interface Lead {
   state?: string
   zipCode?: string
   timeZone?: string
-  status: 'NEW_LEAD' | 'FIRST_CONTACT' | 'FOLLOW_UP' | 'APPOINTMENT_BOOKED' | 'APPOINTMENT_COMPLETED' | 'CLOSED'
+  status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
   statusDetail?: string
   priority: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE'
   followUpDate?: string
@@ -93,18 +93,18 @@ export default function OutboundPipeline() {
 
   const getStatusColor = (status: Lead['status']) => {
     switch (status) {
-      case 'NEW_LEAD':
+      case 'NEW':
         return 'bg-red-100 text-red-800'
-      case 'FIRST_CONTACT':
-        return 'bg-yellow-100 text-yellow-800'
+      case 'NOT_INTERESTED':
+        return 'bg-gray-100 text-gray-800'
       case 'FOLLOW_UP':
         return 'bg-yellow-100 text-yellow-800'
+      case 'QUALIFIED':
+        return 'bg-blue-100 text-blue-800'
       case 'APPOINTMENT_BOOKED':
         return 'bg-green-100 text-green-800'
-      case 'APPOINTMENT_COMPLETED':
-        return 'bg-green-100 text-green-800'
-      case 'CLOSED':
-        return 'bg-gray-100 text-gray-800'
+      case 'CLOSED_WON':
+        return 'bg-emerald-100 text-emerald-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -127,18 +127,18 @@ export default function OutboundPipeline() {
 
   const getStatusIcon = (status: Lead['status']) => {
     switch (status) {
-      case 'NEW_LEAD':
+      case 'NEW':
         return <AlertCircle className="h-4 w-4" />
-      case 'FIRST_CONTACT':
-        return <Phone className="h-4 w-4" />
+      case 'NOT_INTERESTED':
+        return <XCircle className="h-4 w-4" />
       case 'FOLLOW_UP':
         return <Clock className="h-4 w-4" />
+      case 'QUALIFIED':
+        return <Phone className="h-4 w-4" />
       case 'APPOINTMENT_BOOKED':
         return <Calendar className="h-4 w-4" />
-      case 'APPOINTMENT_COMPLETED':
+      case 'CLOSED_WON':
         return <CheckCircle className="h-4 w-4" />
-      case 'CLOSED':
-        return <XCircle className="h-4 w-4" />
       default:
         return <Target className="h-4 w-4" />
     }
@@ -309,13 +309,13 @@ export default function OutboundPipeline() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="card text-center">
             <div className="text-2xl font-bold text-red-400">
-              {leads.filter(l => l.status === 'NEW_LEAD').length}
+              {leads.filter(l => l.status === 'NEW').length}
             </div>
             <div className="text-slate-400 text-sm">New Leads</div>
           </div>
           <div className="card text-center">
             <div className="text-2xl font-bold text-yellow-400">
-              {leads.filter(l => ['FIRST_CONTACT', 'FOLLOW_UP'].includes(l.status)).length}
+              {leads.filter(l => ['QUALIFIED', 'FOLLOW_UP'].includes(l.status)).length}
             </div>
             <div className="text-slate-400 text-sm">In Progress</div>
           </div>
@@ -352,12 +352,12 @@ export default function OutboundPipeline() {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="ALL">All Status</option>
-                <option value="NEW_LEAD">New Lead</option>
-                <option value="FIRST_CONTACT">First Contact</option>
+                <option value="NEW">New Lead</option>
+                <option value="NOT_INTERESTED">Not Interested</option>
                 <option value="FOLLOW_UP">Follow-up</option>
+                <option value="QUALIFIED">Qualified</option>
                 <option value="APPOINTMENT_BOOKED">Appointment Booked</option>
-                <option value="APPOINTMENT_COMPLETED">Appointment Completed</option>
-                <option value="CLOSED">Closed</option>
+                <option value="CLOSED_WON">Closed Won</option>
               </select>
               <select
                 className="input w-32"
@@ -427,12 +427,12 @@ export default function OutboundPipeline() {
                       onChange={(e) => handleStatusChange(lead.id, e.target.value as Lead['status'])}
                       className={`input text-sm ${getStatusColor(lead.status)}`}
                     >
-                      <option value="NEW_LEAD">New Lead</option>
-                      <option value="FIRST_CONTACT">First Contact</option>
+                      <option value="NEW">New Lead</option>
+                      <option value="NOT_INTERESTED">Not Interested</option>
                       <option value="FOLLOW_UP">Follow-up</option>
+                      <option value="QUALIFIED">Qualified</option>
                       <option value="APPOINTMENT_BOOKED">Appointment Booked</option>
-                      <option value="APPOINTMENT_COMPLETED">Appointment Completed</option>
-                      <option value="CLOSED">Closed</option>
+                      <option value="CLOSED_WON">Closed Won</option>
                     </select>
                   </div>
 
