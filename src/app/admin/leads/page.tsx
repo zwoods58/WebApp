@@ -13,7 +13,15 @@ interface Lead {
   company?: string
   title?: string
   source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
   score: number
   notes?: string
   createdAt: string

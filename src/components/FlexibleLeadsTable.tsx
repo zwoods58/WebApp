@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, Edit, Trash2, Eye, Phone, Mail, MoreHorizontal, Trash } from 'lucide-react'
+import { Search, Filter, Edit, Trash2, Eye, Phone, Mail, MoreHorizontal, Trash, MapPin, Building, Clock } from 'lucide-react'
 import LeadFormModal from '@/components/LeadFormModal'
 import ClearLeadsModal from '@/components/ClearLeadsModal'
 
@@ -14,7 +14,15 @@ interface Lead {
   company?: string
   title?: string
   source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
   score: number
   notes?: string
   createdAt: string
@@ -177,6 +185,15 @@ export default function FlexibleLeadsTable({
       )
     }
     
+    if (column === 'website' && value) {
+      const url = value.startsWith('http') ? value : `https://${value}`
+      return (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
+          {value}
+        </a>
+      )
+    }
+    
     if (column === 'createdAt' || column === 'updatedAt') {
       return new Date(value).toLocaleDateString()
     }
@@ -195,6 +212,10 @@ export default function FlexibleLeadsTable({
   const getColumnIcon = (column: string) => {
     if (column === 'email') return <Mail className="h-4 w-4" />
     if (column === 'phone') return <Phone className="h-4 w-4" />
+    if (column === 'website') return <Eye className="h-4 w-4" />
+    if (column === 'address' || column === 'city' || column === 'state' || column === 'zipCode') return <MapPin className="h-4 w-4" />
+    if (column === 'industry') return <Building className="h-4 w-4" />
+    if (column === 'timeZone') return <Clock className="h-4 w-4" />
     return null
   }
 

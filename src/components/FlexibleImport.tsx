@@ -21,7 +21,15 @@ interface Lead {
   company?: string
   title?: string
   source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
   status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
   score: number
   notes?: string
 }
@@ -48,14 +56,23 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
 
   // Define the expected lead fields and their possible column names
   const fieldMappings = {
-    firstName: ['first name', 'firstname', 'first_name', 'fname', 'given name', 'name'],
+    firstName: ['first name', 'firstname', 'first_name', 'fname', 'given name', 'name', 'email 1 full name', 'email 2 full name', 'full name'],
     lastName: ['last name', 'lastname', 'last_name', 'lname', 'surname', 'family name'],
-    email: ['email', 'email address', 'e-mail', 'mail'],
-    phone: ['phone', 'phone number', 'telephone', 'mobile', 'cell', 'contact number'],
-    company: ['company', 'organization', 'org', 'business', 'firm'],
-    title: ['title', 'job title', 'position', 'role', 'designation'],
-    source: ['source', 'lead source', 'origin', 'referral source'],
-    notes: ['notes', 'comments', 'description', 'remarks', 'additional info']
+    email: ['email', 'email address', 'e-mail', 'mail', 'email 1', 'email 2', 'primary email', 'contact email'],
+    phone: ['phone', 'phone number', 'telephone', 'mobile', 'cell', 'contact number', 'phone number 1', 'phone number 2', 'email 1 phone', 'email 2 phone number'],
+    company: ['company', 'organization', 'org', 'business', 'firm', 'business name', 'company name'],
+    title: ['title', 'job title', 'position', 'role', 'designation', 'email 1 title', 'email 2 title'],
+    source: ['source', 'lead source', 'origin', 'referral source', 'website', 'referral'],
+    industry: ['industry', 'business type', 'sector', 'category'],
+    website: ['website', 'web site', 'url', 'homepage', 'domain'],
+    address: ['address', 'street address', 'location', 'full address'],
+    city: ['city', 'town', 'municipality'],
+    state: ['state', 'province', 'region', 'territory'],
+    zipCode: ['zip code', 'zipcode', 'postal code', 'postcode', 'zip'],
+    timeZone: ['time zone', 'timezone', 'tz'],
+    status: ['status', 'email status', 'email 1 status', 'email 2 status', 'lead status'],
+    statusDetail: ['status detail', 'email status detail', 'email 1 status detail', 'email 2 status detail'],
+    notes: ['notes', 'comments', 'description', 'remarks', 'additional info', 'memo']
   }
 
   const handleFileSelect = (file: File) => {
@@ -205,7 +222,15 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         company: undefined,
         title: undefined,
         source: 'Import',
+        industry: undefined,
+        website: undefined,
+        address: undefined,
+        city: undefined,
+        state: undefined,
+        zipCode: undefined,
+        timeZone: undefined,
         status: 'NEW',
+        statusDetail: undefined,
         score: 50,
         notes: undefined
       }
@@ -235,6 +260,33 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
               break
             case 'source':
               lead.source = value.toString().trim()
+              break
+            case 'industry':
+              lead.industry = value.toString().trim()
+              break
+            case 'website':
+              lead.website = value.toString().trim()
+              break
+            case 'address':
+              lead.address = value.toString().trim()
+              break
+            case 'city':
+              lead.city = value.toString().trim()
+              break
+            case 'state':
+              lead.state = value.toString().trim()
+              break
+            case 'zipCode':
+              lead.zipCode = value.toString().trim()
+              break
+            case 'timeZone':
+              lead.timeZone = value.toString().trim()
+              break
+            case 'status':
+              lead.status = value.toString().trim() as Lead['status']
+              break
+            case 'statusDetail':
+              lead.statusDetail = value.toString().trim()
               break
             case 'notes':
               lead.notes = value.toString().trim()
@@ -348,6 +400,15 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
       { value: 'company', label: 'Company' },
       { value: 'title', label: 'Title' },
       { value: 'source', label: 'Source' },
+      { value: 'industry', label: 'Industry' },
+      { value: 'website', label: 'Website' },
+      { value: 'address', label: 'Address' },
+      { value: 'city', label: 'City' },
+      { value: 'state', label: 'State' },
+      { value: 'zipCode', label: 'Zip Code' },
+      { value: 'timeZone', label: 'Time Zone' },
+      { value: 'status', label: 'Status' },
+      { value: 'statusDetail', label: 'Status Detail' },
       { value: 'notes', label: 'Notes' }
     ]
   }
