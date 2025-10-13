@@ -129,14 +129,40 @@ export async function sendSlackNotification(message: string) {
 
 // Email sending helper
 export async function sendAutomationEmail(to: string, subject: string, html: string) {
-  // TODO: Integrate with actual SendGrid API
-  console.log(`[EMAIL SENT]: To: ${to}, Subject: ${subject}`)
-  // Example implementation:
-  // await sendgrid.send({
-  //   to,
-  //   from: 'noreply@atarwebb.com',
-  //   subject,
-  //   html
-  // })
+  console.log(`[EMAIL]: Sending to ${to} - ${subject}`)
+  
+  try {
+    // Use SendGrid API (same as consultation submit)
+    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        personalizations: [{
+          to: [{ email: to }]
+        }],
+        from: {
+          email: 'noreply@atarwebb.com',
+          name: 'AtarWebb CRM'
+        },
+        subject: subject,
+        content: [{
+          type: 'text/html',
+          value: html
+        }]
+      })
+    })
+    
+    if (response.ok) {
+      console.log(`[EMAIL]: Successfully sent to ${to}`)
+    } else {
+      const error = await response.text()
+      console.error(`[EMAIL ERROR]: ${response.status} - ${error}`)
+    }
+  } catch (error) {
+    console.error('[EMAIL ERROR]:', error)
+  }
 }
 
