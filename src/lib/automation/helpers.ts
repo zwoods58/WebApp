@@ -1,5 +1,16 @@
 // Automation Helper Functions
 import { mockDb } from '@/lib/mock-db'
+import sgMail from '@sendgrid/mail'
+
+// Initialize SendGrid (only once)
+let sgInitialized = false
+function initializeSendGrid() {
+  if (!sgInitialized && process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+    sgInitialized = true
+    console.log('[EMAIL]: SendGrid initialized successfully')
+  }
+}
 
 // Date helpers
 export function getDaysAgo(days: number): Date {
@@ -127,50 +138,34 @@ export async function sendSlackNotification(message: string) {
   )
 }
 
-// Email sending helper
+// Email sending helper using SendGrid
 export async function sendAutomationEmail(to: string, subject: string, html: string) {
   console.log(`[EMAIL]: Sending to ${to} - ${subject}`)
   
-  // Get API key from environment
-  const apiKey = process.env.SENDGRID_API_KEY
+  // Initialize SendGrid if not already done
+  initializeSendGrid()
   
-  if (!apiKey) {
+  // Check if API key is available
+  if (!process.env.SENDGRID_API_KEY) {
     console.warn('[EMAIL]: SENDGRID_API_KEY not found - email not sent (development mode)')
     return
   }
   
   try {
-    // Use SendGrid API (same as consultation submit)
-    const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+    const msg = {
+      to: to,
+      from: {
+        email: 'noreply@atarwebb.com',
+        name: 'AtarWebb CRM'
       },
-      body: JSON.stringify({
-        personalizations: [{
-          to: [{ email: to }]
-        }],
-        from: {
-          email: 'noreply@atarwebb.com',
-          name: 'AtarWebb CRM'
-        },
-        subject: subject,
-        content: [{
-          type: 'text/html',
-          value: html
-        }]
-      })
-    })
-    
-    if (response.ok) {
-      console.log(`[EMAIL]: Successfully sent to ${to}`)
-    } else {
-      const error = await response.text()
-      console.error(`[EMAIL ERROR]: ${response.status} - ${error}`)
+      subject: subject,
+      html: html
     }
-  } catch (error) {
-    console.error('[EMAIL ERROR]:', error)
+    
+    await sgMail.send(msg)
+    console.log(`[EMAIL]: ✅ Successfully sent to ${to}`)
+  } catch (error: any) {
+    console.error('[EMAIL ERROR]:', error.response?.body || error.message || error)
   }
 }
 
