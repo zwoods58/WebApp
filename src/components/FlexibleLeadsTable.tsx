@@ -73,7 +73,7 @@ export default function FlexibleLeadsTable({
       setAvailableColumns(columns)
       
       // Set default visible columns
-      const defaultColumns = ['firstName', 'lastName', 'email', 'phone', 'company', 'status', 'score']
+      const defaultColumns = ['firstName', 'lastName', 'email', 'phone', 'company', 'status', 'score', 'notes']
       const visible = defaultColumns.filter(col => columns.includes(col))
       setVisibleColumns(visible)
     }
@@ -191,6 +191,17 @@ export default function FlexibleLeadsTable({
         <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
           {value}
         </a>
+      )
+    }
+
+    if (column === 'notes' && value) {
+      const truncated = value.length > 100 ? value.substring(0, 100) + '...' : value
+      return (
+        <div className="max-w-xs" title={value}>
+          <span className="text-slate-300 bg-slate-700/30 px-2 py-1 rounded text-sm">
+            {truncated}
+          </span>
+        </div>
       )
     }
     

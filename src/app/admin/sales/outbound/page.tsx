@@ -146,10 +146,10 @@ export default function OutboundPipeline() {
 
   const handleStatusChange = async (leadId: string, newStatus: Lead['status']) => {
     try {
-      const response = await fetch(`/api/leads/${leadId}`, {
-        method: 'PATCH',
+      const response = await fetch(`/api/leads`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ id: leadId, status: newStatus })
       })
       
       if (response.ok) {
@@ -166,10 +166,10 @@ export default function OutboundPipeline() {
 
   const handlePriorityChange = async (leadId: string, newPriority: Lead['priority']) => {
     try {
-      const response = await fetch(`/api/leads/${leadId}`, {
-        method: 'PATCH',
+      const response = await fetch(`/api/leads`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priority: newPriority })
+        body: JSON.stringify({ id: leadId, priority: newPriority })
       })
       
       if (response.ok) {
