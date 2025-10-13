@@ -67,6 +67,9 @@ const tasks: Task[] = []
 
 export const mockDb = {
   user: {
+    findMany: async (): Promise<User[]> => {
+      return users
+    },
     findUnique: async ({ where }: { where: { email: string } }): Promise<User | null> => {
       return users.find(u => u.email === where.email) || null
     },
@@ -88,8 +91,14 @@ export const mockDb = {
     findMany: async (): Promise<Lead[]> => {
       return leads
     },
-    findUnique: async ({ where }: { where: { email: string } }): Promise<Lead | null> => {
-      return leads.find(l => l.email === where.email) || null
+    findUnique: async ({ where }: { where: { email?: string; id?: string } }): Promise<Lead | null> => {
+      if (where.email) {
+        return leads.find(l => l.email === where.email) || null
+      }
+      if (where.id) {
+        return leads.find(l => l.id === where.id) || null
+      }
+      return null
     },
     create: async (data: { data: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'> & { id?: string, createdAt?: string, updatedAt?: string } }): Promise<Lead> => {
       const newLead: Lead = {

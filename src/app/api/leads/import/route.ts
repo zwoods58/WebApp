@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { mockDb } from '@/lib/mock-db'
+import { processNewLead } from '@/lib/automation/lead-management'
 
 interface Lead {
   firstName: string
@@ -80,6 +81,10 @@ export async function POST(request: Request) {
         })
 
         imported++
+        
+        // 🤖 AUTOMATION: Process new lead (score, assign, welcome email, create task)
+        await processNewLead(newLead.id)
+        
       } catch (error) {
         errors.push(`Failed to import ${leadData.firstName} ${leadData.lastName}: ${error}`)
       }
