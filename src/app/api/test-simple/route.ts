@@ -4,11 +4,8 @@ export async function GET() {
   try {
     return NextResponse.json({
       success: true,
-      message: 'Environment test',
+      message: 'Simple test route working',
       environment: process.env.NODE_ENV,
-      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      hasCronSecret: !!process.env.CRON_SECRET,
       timestamp: new Date().toISOString()
     })
   } catch (error) {
