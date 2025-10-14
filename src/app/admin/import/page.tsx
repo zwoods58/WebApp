@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import TestImport from '@/components/TestImport'
+import FlexibleImport from '@/components/FlexibleImport'
 import AdminLayout from '@/components/AdminLayout'
 import { Users, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
 
@@ -15,9 +15,115 @@ interface ImportResult {
 
 export default function ImportPage() {
   const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [importMode, setImportMode] = useState<'file' | 'text'>('file')
+  const [textData, setTextData] = useState('')
 
   const handleImportComplete = (result: ImportResult) => {
     setImportResult(result)
+  }
+
+  const handleTextImport = async () => {
+    if (!textData.trim()) return
+
+    try {
+      // Parse the pasted data
+      const lines = textData.trim().split('\n')
+      if (lines.length < 2) {
+        alert('Please paste data with headers and at least one row')
+        return
+      }
+
+      // Check if first line has tabs (Google Sheets format)
+      const hasTabs = lines[0].includes('\t')
+      const delimiter = hasTabs ? '\t' : ','
+      
+      const headers = lines[0].split(delimiter).map(h => h.trim().replace(/"/g, ''))
+      const leads = []
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (!line) continue
+
+        const values = line.split(delimiter).map(v => v.trim().replace(/"/g, ''))
+        if (values.length === headers.length) {
+          const lead: any = {}
+          headers.forEach((header, index) => {
+            lead[header.toLowerCase()] = values[index] || ''
+          })
+          leads.push(lead)
+        }
+      }
+
+      if (leads.length === 0) {
+        alert('No valid data found. Please check your format.')
+        return
+      }
+
+      // Transform data to match API format
+      const transformedLeads = leads.map(lead => ({
+        firstName: lead.firstname || lead.first_name || lead.name?.split(' ')[0] || '',
+        lastName: lead.lastname || lead.last_name || lead.name?.split(' ').slice(1).join(' ') || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        company: lead.company || '',
+        source: 'Google Sheets Import',
+        industry: lead.industry || '',
+        status: 'NEW',
+        score: 50,
+        userId: '00000000-0000-0000-0000-000000000002'
+      })).filter(lead => lead.firstName || lead.lastName)
+
+      if (transformedLeads.length === 0) {
+        alert('No valid leads found. Please ensure you have firstName/lastName data.')
+        return
+      }
+
+      // Import each lead
+      let imported = 0
+      let errors = []
+
+      for (const lead of transformedLeads) {
+        try {
+          const response = await fetch('/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lead)
+          })
+          
+          if (response.ok) {
+            imported++
+          } else {
+            const errorData = await response.json()
+            errors.push(`Failed to import ${lead.firstName} ${lead.lastName}: ${errorData.error || 'Unknown error'}`)
+          }
+        } catch (error) {
+          errors.push(`Failed to import ${lead.firstName} ${lead.lastName}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        }
+      }
+
+      const result = {
+        success: errors.length === 0,
+        message: `Successfully imported ${imported} leads from Google Sheets`,
+        imported,
+        duplicates: 0,
+        errors
+      }
+
+      setImportResult(result)
+      
+      if (result.success) {
+        setTextData('')
+      }
+
+    } catch (error) {
+      setImportResult({
+        success: false,
+        message: 'Failed to import leads',
+        imported: 0,
+        duplicates: 0,
+        errors: [error instanceof Error ? error.message : 'Unknown error']
+      })
+    }
   }
 
   return (
@@ -50,8 +156,79 @@ export default function ImportPage() {
           </div>
         )}
 
-        {/* Import Component */}
-        <TestImport />
+        {/* Import Method Toggle */}
+        <div className="card mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">Choose Import Method</h2>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => setImportMode('file')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                importMode === 'file'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              Upload File
+            </button>
+            <button
+              onClick={() => setImportMode('text')}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                importMode === 'text'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              Paste from Google Sheets
+            </button>
+          </div>
+        </div>
+
+        {/* Google Sheets Text Area */}
+        {importMode === 'text' && (
+          <div className="card mb-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Paste Data from Google Sheets</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Instructions:
+                </label>
+                <div className="text-sm text-slate-400 space-y-1">
+                  <p>1. Select your data in Google Sheets (including headers)</p>
+                  <p>2. Copy the data (Ctrl+C or Cmd+C)</p>
+                  <p>3. Paste it in the text area below</p>
+                  <p>4. Click "Import to CRM" to process the data</p>
+                </div>
+              </div>
+              <textarea
+                value={textData}
+                onChange={(e) => setTextData(e.target.value)}
+                placeholder="Paste your Google Sheets data here...
+firstName	lastName	email	company	phone
+John	Doe	john@example.com	Acme Corp	555-0123
+Jane	Smith	jane@example.com	Tech Inc	555-0456"
+                className="w-full h-48 px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={10}
+              />
+              {textData && (
+                <div className="text-sm text-slate-400">
+                  <span className="text-green-400">✓ Data pasted successfully</span>
+                </div>
+              )}
+              <button
+                onClick={handleTextImport}
+                disabled={!textData.trim()}
+                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Import to CRM
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* File Upload Component */}
+        {importMode === 'file' && (
+          <FlexibleImport onImportComplete={handleImportComplete} />
+        )}
 
         {/* Success Message */}
         {importResult?.success && (
