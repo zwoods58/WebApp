@@ -42,13 +42,19 @@ export async function POST(request: Request) {
 
     // Parse CSV file
     const csvText = await file.text()
-    const lines = csvText.trim().split('\n')
+    // Clean up carriage returns and split by lines
+    const lines = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n')
     const headers = lines[0].split(',').map(h => h.trim())
     const leads: Lead[] = []
 
+    console.log('CSV Headers:', headers)
+    console.log('CSV Lines count:', lines.length)
+
     // Parse CSV data
     for (let i = 1; i < lines.length; i++) {
-      const line = lines[i]
+      const line = lines[i].trim()
+      if (!line) continue // Skip empty lines
+      
       const values: string[] = []
       let current = ''
       let inQuotes = false
@@ -66,6 +72,8 @@ export async function POST(request: Request) {
         }
       }
       values.push(current.trim()) // Add the last field
+      
+      console.log(`Parsing line ${i}:`, { line, values, headersLength: headers.length, valuesLength: values.length })
       
       if (values.length === headers.length) {
         const lead: any = {}
@@ -138,6 +146,13 @@ export async function POST(request: Request) {
           }
         }
 
+        // Validate required fields
+        if (!leadData.firstName || !leadData.lastName) {
+          console.error('Missing required fields:', leadData)
+          errors.push(`Failed to import ${leadData.firstName || 'Unknown'} ${leadData.lastName || 'Unknown'}: Missing required fields (firstName, lastName)`)
+          continue
+        }
+
         // Create new lead
         const userId = assignedTo === 'sales' ? '00000000-0000-0000-0000-000000000002' : '00000000-0000-0000-0000-000000000001'
         
@@ -148,35 +163,45 @@ export async function POST(request: Request) {
           userId: userId
         })
         
-        const newLead = await db.lead.create({
-          firstName: leadData.firstName,
-          lastName: leadData.lastName,
-          email: leadData.email,
-          phone: leadData.phone,
-          company: leadData.company,
-          title: leadData.title,
-          source: leadData.source || 'Import',
-          industry: leadData.industry,
-          website: leadData.website,
-          address: leadData.address,
-          city: leadData.city,
-          state: leadData.state,
-          zipCode: leadData.zipCode,
-          timeZone: leadData.timeZone,
-          status: leadData.status || 'NEW',
-          statusDetail: leadData.statusDetail,
-          score: leadData.score || 50,
-          notes: leadData.notes,
-          userId: userId, // Use proper UUID
-          unsubscribed: false // Default to not unsubscribed
-        })
-        
-        console.log('Lead created successfully:', newLead.id)
+        try {
+          const newLead = await db.lead.create({
+            firstName: leadData.firstName,
+            lastName: leadData.lastName,
+            email: leadData.email,
+            phone: leadData.phone,
+            company: leadData.company,
+            title: leadData.title,
+            source: leadData.source || 'Import',
+            industry: leadData.industry,
+            website: leadData.website,
+            address: leadData.address,
+            city: leadData.city,
+            state: leadData.state,
+            zipCode: leadData.zipCode,
+            timeZone: leadData.timeZone,
+            status: leadData.status || 'NEW',
+            statusDetail: leadData.statusDetail,
+            score: leadData.score || 50,
+            notes: leadData.notes,
+            userId: userId, // Use proper UUID
+            unsubscribed: false // Default to not unsubscribed
+          })
+          
+          console.log('Lead created successfully:', newLead.id)
 
-        imported++
-        
-        // 🤖 AUTOMATION: Process new lead (score, assign, welcome email, create task)
-        await processNewLead(newLead.id)
+          imported++
+          
+          // 🤖 AUTOMATION: Process new lead (score, assign, welcome email, create task)
+          try {
+            await processNewLead(newLead.id)
+          } catch (automationError) {
+            console.error('Automation error for lead:', newLead.id, automationError)
+            // Don't fail the import for automation errors
+          }
+        } catch (createError) {
+          console.error('Error creating lead:', createError)
+          errors.push(`Failed to import ${leadData.firstName} ${leadData.lastName}: ${createError instanceof Error ? createError.message : String(createError)}`)
+        }
         
       } catch (error) {
         console.error('Import error for lead:', leadData, 'Error:', error)
