@@ -43,6 +43,7 @@ interface FlexibleImportProps {
 }
 
 export default function FlexibleImport({ onImportComplete }: FlexibleImportProps) {
+  // Component for importing leads with file upload or text paste options
   const [isDragOver, setIsDragOver] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [importResult, setImportResult] = useState<ImportResult | null>(null)
