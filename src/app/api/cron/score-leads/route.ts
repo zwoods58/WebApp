@@ -7,8 +7,23 @@ export async function GET(request: Request) {
   try {
     // Verify the request is from Vercel Cron
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`
+    
+    console.log('Cron auth check:', {
+      hasAuthHeader: !!authHeader,
+      hasCronSecret: !!process.env.CRON_SECRET,
+      authHeaderMatch: authHeader === expectedAuth
+    })
+    
+    if (authHeader !== expectedAuth) {
+      return NextResponse.json({ 
+        error: 'Unauthorized',
+        details: {
+          hasAuthHeader: !!authHeader,
+          hasCronSecret: !!process.env.CRON_SECRET,
+          expectedFormat: 'Bearer [CRON_SECRET]'
+        }
+      }, { status: 401 })
     }
 
     console.log('[CRON] Running lead scoring automation...')

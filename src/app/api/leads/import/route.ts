@@ -3,8 +3,8 @@ import { fileDb } from '@/lib/file-db'
 import { productionDb } from '@/lib/production-db'
 import { processNewLead } from '@/lib/automation/lead-management'
 
-// Use production database in production, file-db in development
-const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
+// Use production database (Supabase) for both development and production
+const db = productionDb
 
 interface Lead {
   firstName: string
@@ -72,6 +72,12 @@ export async function POST(request: Request) {
         headers.forEach((header, index) => {
           const value = values[index]
           switch (header.toLowerCase()) {
+            case 'firstname':
+              lead.firstName = value || ''
+              break
+            case 'lastname':
+              lead.lastName = value || ''
+              break
             case 'name':
               const nameParts = value.split(' ')
               lead.firstName = nameParts[0] || ''
@@ -133,11 +139,13 @@ export async function POST(request: Request) {
         }
 
         // Create new lead
+        const userId = assignedTo === 'sales' ? '00000000-0000-0000-0000-000000000002' : '00000000-0000-0000-0000-000000000001'
+        
         console.log('Creating lead with data:', {
           firstName: leadData.firstName,
           lastName: leadData.lastName,
           email: leadData.email,
-          userId: assignedTo === 'sales' ? '2' : '1'
+          userId: userId
         })
         
         const newLead = await db.lead.create({
@@ -159,7 +167,7 @@ export async function POST(request: Request) {
           statusDetail: leadData.statusDetail,
           score: leadData.score || 50,
           notes: leadData.notes,
-          userId: assignedTo === 'sales' ? '2' : '1', // Assign to sales user (ID: 2)
+          userId: userId, // Use proper UUID
           unsubscribed: false // Default to not unsubscribed
         })
         
