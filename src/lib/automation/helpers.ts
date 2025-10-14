@@ -1,11 +1,135 @@
 // Automation Helper Functions
-import { mockDb } from '@/lib/mock-db'
-import nodemailer from 'nodemailer'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
 
-// Create fresh transporter each time to ensure env vars are loaded
-function getEmailTransporter() {
-  // Option 1: Check for Brevo SMTP settings (primary for all email sending)
-  if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
+import { generateDynamicEmail, selectEmailType } from './dynamic-email-generator'
+
+// Lead scoring algorithm
+export function calculateLeadScore(lead: any): number {
+  let score = 50 // Base score
+  
+  // Industry scoring
+  const industryScores: { [key: string]: number } = {
+    'Technology': 20,
+    'Healthcare': 18,
+    'Finance': 16,
+    'E-commerce': 15,
+    'Real Estate': 14,
+    'Manufacturing': 12,
+    'Education': 10,
+    'Restaurant': 8,
+    'Retail': 6
+  }
+  
+  if (lead.industry && industryScores[lead.industry]) {
+    score += industryScores[lead.industry]
+  }
+  
+  // Company size indicators
+  if (lead.company) {
+    const company = lead.company.toLowerCase()
+    if (company.includes('inc') || company.includes('corp') || company.includes('llc')) {
+      score += 10
+    }
+    if (company.includes('group') || company.includes('enterprises')) {
+      score += 8
+    }
+  }
+  
+  // Contact completeness
+  if (lead.email) score += 5
+  if (lead.phone) score += 5
+  if (lead.website) score += 10
+  
+  // Source quality
+  const sourceScores: { [key: string]: number } = {
+    'Website': 15,
+    'Referral': 20,
+    'LinkedIn': 12,
+    'Google': 10,
+    'Import': 5
+  }
+  
+  if (lead.source && sourceScores[lead.source]) {
+    score += sourceScores[lead.source]
+  }
+  
+  // Cap the score between 0-100
+  return Math.min(Math.max(score, 0), 100)
+}
+
+// Get next available sales rep
+export async function getNextSalesRep() {
+  const salesReps = await db.user.findMany()
+  const salesUser = salesReps.find((user: any) => user.role === 'SALES')
+  
+  if (!salesUser) {
+    // Create default sales user if none exists
+    return await db.user.create({
+      email: 'sales@atarwebb.com',
+      password: 'sales123',
+      name: 'Sales Team',
+      role: 'SALES'
+    })
+  }
+  
+  return salesUser
+}
+
+// Date helper functions
+export function getDaysAgo(days: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() - days)
+  return date.toISOString()
+}
+
+export function getDaysSince(dateString: string): number {
+  const date = new Date(dateString)
+  const now = new Date()
+  return Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+// Slack notification (placeholder - you can implement actual Slack integration later)
+export async function sendSlackNotification(message: string) {
+  console.log(`[SLACK] ${message}`)
+  // TODO: Implement actual Slack webhook
+}
+
+// Email sending function
+// Check if a lead is unsubscribed
+export async function isLeadUnsubscribed(email: string): Promise<boolean> {
+  try {
+    const leads = await fileDb.lead.findMany()
+    const lead = leads.find((l: any) => l.email === email)
+    return lead ? lead.unsubscribed === true : false
+  } catch (error) {
+    console.error('Error checking unsubscribe status:', error)
+    return false
+  }
+}
+
+export async function sendAutomationEmail(to: string, subject: string, html: string) {
+  try {
+    // Check if lead is unsubscribed
+    const isUnsubscribed = await isLeadUnsubscribed(to)
+    if (isUnsubscribed) {
+      console.log(`[EMAIL]: ⏭️ Skipping email to ${to} - lead has unsubscribed`)
+      return
+    }
+
+    // Check if we have email credentials
+    if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASSWORD) {
+      console.log(`[EMAIL]: ❌ No email credentials found - using console logging only`)
+      console.log(`[EMAIL] To: ${to}`)
+      console.log(`[EMAIL] Subject: ${subject}`)
+      console.log(`[EMAIL] Body: ${html.substring(0, 200)}...`)
+      return
+    }
+
+    const nodemailer = await import('nodemailer')
+    
     const transporter = nodemailer.createTransport({
       host: 'smtp-relay.brevo.com',
       port: 587,
@@ -15,181 +139,32 @@ function getEmailTransporter() {
         pass: process.env.BREVO_SMTP_PASSWORD
       }
     })
-    console.log('[EMAIL]: ✅ Nodemailer initialized with Brevo SMTP')
-    return transporter
-  }
-  
-  // Option 2: Fallback to custom SMTP settings (Neo.space or any provider)
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
-    const isSecure = process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465'
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: isSecure,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-      }
-    })
-    console.log(`[EMAIL]: ✅ Nodemailer initialized with custom SMTP (${process.env.SMTP_HOST}:${process.env.SMTP_PORT})`)
-    return transporter
-  }
-  
-  // Development mode - log to console only
-  console.log('[EMAIL]: ❌ No email credentials found - using console logging only')
-  return null
-}
 
-// Date helpers
-export function getDaysAgo(days: number): Date {
-  const date = new Date()
-  date.setDate(date.getDate() - days)
-  return date
-}
-
-export function getDaysSince(dateString: string): number {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffTime = Math.abs(now.getTime() - date.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays
-}
-
-export function addDays(date: Date, days: number): Date {
-  const result = new Date(date)
-  result.setDate(result.getDate() + days)
-  return result
-}
-
-// Lead scoring algorithm
-export function calculateLeadScore(lead: any): number {
-  let score = 0
-  
-  // Base score
-  score += 10
-  
-  // Contact information
-  if (lead.email) score += 15
-  if (lead.phone) score += 15
-  
-  // Company information
-  if (lead.company) score += 10
-  if (lead.title) score += 5
-  if (lead.website) score += 5
-  
-  // Industry scoring
-  const highValueIndustries = ['Technology', 'Finance', 'Healthcare', 'E-commerce']
-  if (lead.industry && highValueIndustries.includes(lead.industry)) {
-    score += 20
-  }
-  
-  // Location data
-  if (lead.city && lead.state) score += 5
-  
-  // Source scoring
-  if (lead.source === 'Referral') score += 15
-  if (lead.source === 'Website') score += 10
-  if (lead.source === 'Import') score += 5
-  
-  return Math.min(score, 100) // Cap at 100
-}
-
-// Round-robin assignment helper
-let lastAssignedIndex = 0
-
-export async function getNextSalesRep() {
-  const salesReps = await mockDb.user.findMany()
-  const salesUsers = salesReps.filter(u => u.role === 'SALES')
-  
-  if (salesUsers.length === 0) {
-    return { id: '2', name: 'Default Sales', email: 'sales@atarwebb.com' }
-  }
-  
-  const rep = salesUsers[lastAssignedIndex % salesUsers.length]
-  lastAssignedIndex++
-  
-  return rep
-}
-
-// Email template helpers
-export function getFollowUpEmailTemplate(lead: any) {
-  return {
-    subject: `Following up on your inquiry`,
-    html: `
-      <h2>Hi ${lead.firstName},</h2>
-      <p>I wanted to follow up on your recent inquiry about our services.</p>
-      <p>At AtarWebb, we specialize in creating custom web applications that transform businesses.</p>
-      <p>Would you be available for a quick 15-minute call this week to discuss your needs?</p>
-      <br>
-      <p>Best regards,<br>
-      AtarWebb Team</p>
-    `
-  }
-}
-
-export function getWelcomeEmailTemplate(lead: any) {
-  return {
-    subject: `Welcome to AtarWebb!`,
-    html: `
-      <h2>Welcome ${lead.firstName}!</h2>
-      <p>Thank you for your interest in AtarWebb.</p>
-      <p>We're excited to help you transform your business with custom web solutions.</p>
-      <p>A member of our team will reach out to you shortly to discuss your specific needs.</p>
-      <br>
-      <p>In the meantime, feel free to check out our portfolio at <a href="https://atarwebb.com/portfolio">atarwebb.com/portfolio</a></p>
-      <br>
-      <p>Best regards,<br>
-      The AtarWebb Team</p>
-    `
-  }
-}
-
-// Notification helpers (Email instead of Slack)
-export async function sendSlackNotification(message: string) {
-  // Log to console for development
-  console.log(`[CRM ALERT]: ${message}`)
-  
-  // Send email notification to admin
-  await sendAutomationEmail(
-    'admin@atarwebb.com',
-    '🤖 CRM Automation Alert',
-    `
-      <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #2563eb;">CRM Notification</h2>
-        <p style="font-size: 16px; line-height: 1.5;">${message}</p>
-        <hr style="margin: 20px 0; border: 1px solid #e5e7eb;">
-        <p style="color: #6b7280; font-size: 14px;">
-          This is an automated notification from your CRM system.
-        </p>
-      </div>
-    `
-  )
-}
-
-// Email sending helper using Nodemailer
-export async function sendAutomationEmail(to: string, subject: string, html: string) {
-  console.log(`[EMAIL]: Sending to ${to} - ${subject}`)
-  
-  const emailTransporter = getEmailTransporter()
-  
-  // If no transporter, just log to console (development mode)
-  if (!emailTransporter) {
-    console.log(`[EMAIL]: 📧 Email content (not sent):\nTo: ${to}\nSubject: ${subject}`)
-    return
-  }
-  
-  try {
     const mailOptions = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@atarwebb.com',
+      from: 'admin@atarwebb.com',
       to: to,
       subject: subject,
       html: html
     }
-    
-    await emailTransporter.sendMail(mailOptions)
-    console.log(`[EMAIL]: ✅ Successfully sent to ${to}`)
-  } catch (error: any) {
-    console.error('[EMAIL ERROR]:', error.message || error)
+
+    await transporter.sendMail(mailOptions)
+    console.log(`[EMAIL]: ✅ Sent to ${to}`)
+  } catch (error) {
+    console.error(`[EMAIL]: ❌ Failed to send to ${to}:`, error)
   }
 }
 
+// Email template helpers - now using dynamic generation
+export function getFollowUpEmailTemplate(lead: any) {
+  return generateDynamicEmail(lead, 'followup')
+}
+
+export function getWelcomeEmailTemplate(lead: any) {
+  return generateDynamicEmail(lead, 'welcome')
+}
+
+// New function to get the best email type for a lead
+export function getBestEmailTemplate(lead: any) {
+  const emailType = selectEmailType(lead)
+  return generateDynamicEmail(lead, emailType)
+}

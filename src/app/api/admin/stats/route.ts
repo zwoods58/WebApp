@@ -1,17 +1,47 @@
 import { NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
+
+interface Lead {
+  id: string
+  firstName: string
+  lastName: string
+  email?: string
+  phone?: string
+  company?: string
+  title?: string
+  source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
+  status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
+  score: number
+  notes?: string
+  lastContact?: string
+  userId: string
+  createdAt: string
+  updatedAt: string
+}
 
 export async function GET() {
   try {
     // Get all leads
-    const allLeads = await mockDb.lead.findMany()
+    const allLeads: Lead[] = await db.lead.findMany()
     
     // Calculate stats
     const totalLeads = allLeads.length
-    const newLeads = allLeads.filter(lead => lead.status === 'NEW').length
-    const notInterested = allLeads.filter(lead => lead.status === 'NOT_INTERESTED').length
-    const followUp = allLeads.filter(lead => lead.status === 'FOLLOW_UP').length
-    const appointments = allLeads.filter(lead => lead.status === 'APPOINTMENT_BOOKED').length
+    const newLeads = allLeads.filter((lead: Lead) => lead.status === 'NEW').length
+    const notInterested = allLeads.filter((lead: Lead) => lead.status === 'NOT_INTERESTED').length
+    const followUp = allLeads.filter((lead: Lead) => lead.status === 'FOLLOW_UP').length
+    const appointments = allLeads.filter((lead: Lead) => lead.status === 'APPOINTMENT_BOOKED').length
     
     // Calculate conversion rate
     const conversionRate = totalLeads > 0 ? (appointments / totalLeads) * 100 : 0
@@ -34,14 +64,14 @@ export async function GET() {
       }))
 
     // Calculate industry breakdown
-    const industryBreakdown = allLeads.reduce((acc: any, lead) => {
+    const industryBreakdown = allLeads.reduce((acc: any, lead: Lead) => {
       const industry = lead.industry || 'Unknown'
       acc[industry] = (acc[industry] || 0) + 1
       return acc
     }, {})
 
     // Calculate source breakdown
-    const sourceBreakdown = allLeads.reduce((acc: any, lead) => {
+    const sourceBreakdown = allLeads.reduce((acc: any, lead: Lead) => {
       const source = lead.source || 'Import'
       acc[source] = (acc[source] || 0) + 1
       return acc

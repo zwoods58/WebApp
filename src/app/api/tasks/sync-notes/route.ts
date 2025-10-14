@@ -1,5 +1,24 @@
 import { NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
+
+interface Task {
+  id: string
+  title: string
+  description?: string
+  dueDate: string
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+  status: 'PENDING' | 'COMPLETED' | 'OVERDUE'
+  category: string
+  assignedTo: string
+  leadId?: string
+  leadName?: string
+  createdAt: string
+  updatedAt: string
+}
 
 export async function POST(request: Request) {
   try {
@@ -13,17 +32,14 @@ export async function POST(request: Request) {
     }
 
     // Check if a task already exists for this lead
-    const existingTasks = await mockDb.task.findMany()
-    const existingTask = existingTasks.find(task => task.leadId === leadId)
+    const existingTasks: Task[] = await db.task.findMany()
+    const existingTask = existingTasks.find((task: Task) => task.leadId === leadId)
 
     if (existingTask) {
       // Update existing task with new notes
-      const updatedTask = await mockDb.task.update({
-        where: { id: existingTask.id },
-        data: {
-          description: notes,
-          updatedAt: new Date().toISOString()
-        }
+      const updatedTask = await db.task.update(existingTask.id, {
+        description: notes,
+        updatedAt: new Date().toISOString()
       })
       return NextResponse.json({ 
         success: true, 
@@ -32,20 +48,16 @@ export async function POST(request: Request) {
       })
     } else {
       // Create new task with the notes
-      const newTask = await mockDb.task.create({
-        data: {
-          title: `Follow up: ${leadName}`,
-          description: notes,
-          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-          priority: 'MEDIUM',
-          status: 'PENDING',
-          category: 'Sales Notes',
-          assignedTo: assignedTo || '2', // Default to sales user
-          leadId: leadId,
-          leadName: leadName,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
+      const newTask = await db.task.create({
+        title: `Follow up: ${leadName}`,
+        description: notes,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+        priority: 'MEDIUM',
+        status: 'PENDING',
+        category: 'Sales Notes',
+        assignedTo: assignedTo || '2', // Default to sales user
+        leadId: leadId,
+        leadName: leadName
       })
       return NextResponse.json({ 
         success: true, 

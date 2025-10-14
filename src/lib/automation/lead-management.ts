@@ -1,5 +1,9 @@
 // Lead Management Automations
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 import { 
   calculateLeadScore, 
   getNextSalesRep, 
@@ -11,26 +15,53 @@ import {
   getFollowUpEmailTemplate
 } from './helpers'
 
+interface Lead {
+  id: string
+  firstName: string
+  lastName: string
+  email?: string
+  phone?: string
+  company?: string
+  title?: string
+  source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
+  status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
+  score: number
+  notes?: string
+  lastContact?: string
+  userId: string
+  unsubscribed: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 // AUTO 1: New Lead Processing
 export async function processNewLead(leadId: string) {
   console.log(`[AUTOMATION] Processing new lead: ${leadId}`)
   
-  const lead = await mockDb.lead.findUnique({ where: { id: leadId } })
+  const lead = await fileDb.lead.findUnique({ where: { id: leadId } })
   if (!lead) return
   
   // 1. Calculate and assign lead score
   const score = calculateLeadScore(lead)
-  await mockDb.lead.update({
-    where: { id: leadId },
-    data: { score }
+  await fileDb.lead.update(leadId, {
+    score,
+    updatedAt: new Date().toISOString()
   })
   
   // 2. Auto-assign to sales rep if not assigned
   if (!lead.userId || lead.userId === '1') {
     const salesRep = await getNextSalesRep()
-    await mockDb.lead.update({
-      where: { id: leadId },
-      data: { userId: salesRep.id }
+    await fileDb.lead.update(leadId, {
+      userId: salesRep.id,
+      updatedAt: new Date().toISOString()
     })
     
     // Notify sales rep
@@ -39,26 +70,21 @@ export async function processNewLead(leadId: string) {
     )
   }
   
-  // 3. Send welcome email
+  // 3. Send welcome email using dynamic generation
   const emailTemplate = getWelcomeEmailTemplate(lead)
   if (lead.email) {
     await sendAutomationEmail(lead.email, emailTemplate.subject, emailTemplate.html)
   }
   
   // 4. Create follow-up task for sales rep
-  await mockDb.task.create({
-    data: {
-      id: `task-${Date.now()}`,
-      title: `Call ${lead.firstName} ${lead.lastName}`,
-      description: `Initial outreach call for new lead from ${lead.source}`,
-      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
-      priority: score > 70 ? 'HIGH' : score > 50 ? 'MEDIUM' : 'LOW',
-      status: 'PENDING',
-      category: 'Sales',
-      assignedTo: lead.userId || '2',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      await db.task.create({
+    title: `Call ${lead.firstName} ${lead.lastName}`,
+    description: `Initial outreach call for new lead from ${lead.source}`,
+    dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
+    priority: score > 70 ? 'HIGH' : score > 50 ? 'MEDIUM' : 'LOW',
+    status: 'PENDING',
+    category: 'Sales',
+    assignedTo: lead.userId || '2'
   })
   
   console.log(`[AUTOMATION] New lead processed successfully: ${leadId}`)
@@ -68,15 +94,15 @@ export async function processNewLead(leadId: string) {
 export async function updateAllLeadScores() {
   console.log('[AUTOMATION] Updating all lead scores...')
   
-  const leads = await mockDb.lead.findMany()
+  const leads = await db.lead.findMany()
   let updated = 0
   
   for (const lead of leads) {
     const newScore = calculateLeadScore(lead)
     if (newScore !== lead.score) {
-      await mockDb.lead.update({
-        where: { id: lead.id },
-        data: { score: newScore }
+      await db.lead.update(lead.id, {
+        score: newScore,
+        updatedAt: new Date().toISOString()
       })
       updated++
     }
@@ -90,26 +116,23 @@ export async function updateAllLeadScores() {
 export async function followUpStaleLeads() {
   console.log('[AUTOMATION] Following up with stale leads...')
   
-  const leads = await mockDb.lead.findMany()
-  const staleLeads = leads.filter(lead => {
+  const leads: Lead[] = await db.lead.findMany()
+  const staleLeads = leads.filter((lead: Lead) => {
     const daysSince = getDaysSince(lead.updatedAt)
     return (lead.status === 'FOLLOW_UP' || lead.status === 'NEW') && daysSince >= 3
   })
   
   for (const lead of staleLeads) {
-    if (!lead.email) continue
+    if (!lead.email || lead.unsubscribed) continue
     
-    // Send follow-up email
+    // Send follow-up email using dynamic generation
     const emailTemplate = getFollowUpEmailTemplate(lead)
     await sendAutomationEmail(lead.email, emailTemplate.subject, emailTemplate.html)
     
     // Update lead
-    await mockDb.lead.update({
-      where: { id: lead.id },
-      data: {
-        notes: `${lead.notes || ''}\n[AUTO] Follow-up email sent on ${new Date().toLocaleDateString()}`,
-        updatedAt: new Date().toISOString()
-      }
+      await db.lead.update(lead.id, {
+      notes: `${lead.notes || ''}\n[AUTO] Follow-up email sent on ${new Date().toLocaleDateString()}`,
+      updatedAt: new Date().toISOString()
     })
   }
   
@@ -121,14 +144,14 @@ export async function followUpStaleLeads() {
 export async function assignUnassignedLeads() {
   console.log('[AUTOMATION] Assigning unassigned leads...')
   
-  const leads = await mockDb.lead.findMany()
-  const unassigned = leads.filter(lead => !lead.userId || lead.userId === '1')
+  const leads: Lead[] = await db.lead.findMany()
+  const unassigned = leads.filter((lead: Lead) => !lead.userId || lead.userId === '1')
   
   for (const lead of unassigned) {
     const salesRep = await getNextSalesRep()
-    await mockDb.lead.update({
-      where: { id: lead.id },
-      data: { userId: salesRep.id }
+      await db.lead.update(lead.id, {
+      userId: salesRep.id,
+      updatedAt: new Date().toISOString()
     })
     
     await sendSlackNotification(
@@ -143,8 +166,8 @@ export async function assignUnassignedLeads() {
 export async function escalateOldLeads() {
   console.log('[AUTOMATION] Escalating old leads...')
   
-  const leads = await mockDb.lead.findMany()
-  const oldLeads = leads.filter(lead => {
+  const leads: Lead[] = await db.lead.findMany()
+  const oldLeads = leads.filter((lead: Lead) => {
     const daysSince = getDaysSince(lead.createdAt)
     return lead.status === 'NEW' && daysSince >= 7
   })
@@ -155,12 +178,10 @@ export async function escalateOldLeads() {
     )
     
     // Update status to FOLLOW_UP
-    await mockDb.lead.update({
-      where: { id: lead.id },
-      data: { 
-        status: 'FOLLOW_UP',
-        notes: `${lead.notes || ''}\n[AUTO] Escalated due to age on ${new Date().toLocaleDateString()}`
-      }
+      await db.lead.update(lead.id, {
+      status: 'FOLLOW_UP',
+      notes: `${lead.notes || ''}\n[AUTO] Escalated due to age on ${new Date().toLocaleDateString()}`,
+      updatedAt: new Date().toISOString()
     })
   }
   

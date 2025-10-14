@@ -372,10 +372,10 @@ Visit our contact page: https://atarwebb.com/contact`
       try {
         console.log('Creating booking for consultation...')
         
-        // Import supabaseDb for booking creation
-        const { supabaseDb } = await import('@/lib/supabase-db')
+        // Import fileDb for booking creation
+        const { fileDb } = await import('@/lib/file-db')
         
-        const booking = await supabaseDb.booking.create({
+        const booking = await fileDb.booking.create({
           name: consultationData.name,
           email: consultationData.email,
           phone: consultationData.phone || '',

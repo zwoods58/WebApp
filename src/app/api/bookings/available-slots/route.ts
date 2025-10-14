@@ -1,5 +1,20 @@
 import { NextResponse } from 'next/server'
-import { supabaseDb } from '@/lib/supabase-db'
+import { fileDb } from '@/lib/file-db'
+
+interface Booking {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  date: string
+  time: string
+  duration: number
+  type: string
+  status: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -98,9 +113,10 @@ export async function GET(request: Request) {
     }
     
     // Get all bookings for this date
-    const bookings = await supabaseDb.booking.findMany({
-      where: { date, status: 'CONFIRMED' }
-    })
+    const allBookings: Booking[] = await fileDb.booking.findMany()
+    const bookings = allBookings.filter((booking: Booking) => 
+      booking.date === date && booking.status === 'CONFIRMED'
+    )
     
     const bookedSlots = bookings.map(b => ({
       time: b.time,

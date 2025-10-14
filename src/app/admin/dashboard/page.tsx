@@ -129,6 +129,10 @@ export default function AdminDashboard() {
     }
 
     fetchAdminStats()
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchAdminStats, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   const quickActions: QuickAction[] = [
@@ -152,13 +156,6 @@ export default function AdminDashboard() {
       icon: Target,
       href: '/admin/tasks',
       color: 'bg-purple-600'
-    },
-    {
-      title: 'Analytics',
-      description: 'View detailed analytics',
-      icon: BarChart3,
-      href: '/admin/analytics',
-      color: 'bg-cyan-600'
     },
     {
       title: 'Import Leads',
@@ -354,62 +351,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Lead Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="card">
-            <h3 className="text-lg font-semibold text-white mb-4">Industry Breakdown</h3>
-            <div className="space-y-3">
-              {Object.entries(industryBreakdown).length > 0 ? (
-                Object.entries(industryBreakdown)
-                  .sort(([,a], [,b]) => b - a)
-                  .slice(0, 5)
-                  .map(([industry, count]) => (
-                    <div key={industry} className="flex items-center justify-between">
-                      <span className="text-slate-300">{industry}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-20 bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-blue-500 h-2 rounded-full" 
-                            style={{ width: `${(count / stats?.totalLeads!) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-white font-medium w-8 text-right">{count}</span>
-                      </div>
-                    </div>
-                  ))
-              ) : (
-                <p className="text-slate-400 text-center py-4">No industry data available</p>
-              )}
-            </div>
-          </div>
-
-          <div className="card">
-            <h3 className="text-lg font-semibold text-white mb-4">Lead Sources</h3>
-            <div className="space-y-3">
-              {Object.entries(sourceBreakdown).length > 0 ? (
-                Object.entries(sourceBreakdown)
-                  .sort(([,a], [,b]) => b - a)
-                  .slice(0, 5)
-                  .map(([source, count]) => (
-                    <div key={source} className="flex items-center justify-between">
-                      <span className="text-slate-300">{source}</span>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-20 bg-slate-700 rounded-full h-2">
-                          <div 
-                            className="bg-green-500 h-2 rounded-full" 
-                            style={{ width: `${(count / stats?.totalLeads!) * 100}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-white font-medium w-8 text-right">{count}</span>
-                      </div>
-                    </div>
-                  ))
-              ) : (
-                <p className="text-slate-400 text-center py-4">No source data available</p>
-              )}
-            </div>
-          </div>
-        </div>
 
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

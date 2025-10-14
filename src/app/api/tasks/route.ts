@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 
 // GET /api/tasks - Fetch all tasks
 export async function GET() {
   try {
-    const tasks = await mockDb.task.findMany()
+    const tasks = await db.task.findMany()
     return NextResponse.json(tasks)
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -20,13 +24,11 @@ export async function POST(request: NextRequest) {
   try {
     const taskData = await request.json()
     
-    const newTask = await mockDb.task.create({
-      data: {
-        ...taskData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+    const newTask = await db.task.create({
+      ...taskData,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     })
     
     return NextResponse.json(newTask)

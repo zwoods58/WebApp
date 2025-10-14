@@ -1,0 +1,53 @@
+[
+  {
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "john.smith@techcorp.com",
+    "phone": "(555) 123-4567",
+    "company": "TechCorp Inc",
+    "source": "Import",
+    "industry": "Technology",
+    "website": "https://techcorp.com",
+    "status": "NEW",
+    "score": 100,
+    "userId": "2",
+    "unsubscribed": false,
+    "id": "lead-1760464518419-1f5ia9o0p",
+    "createdAt": "2025-10-14T17:55:18.419Z",
+    "updatedAt": "2025-10-14T17:55:18.423Z"
+  },
+  {
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "email": "sarah.j@retailplus.com",
+    "phone": "(555) 234-5678",
+    "company": "Retail Plus",
+    "source": "Import",
+    "industry": "Retail",
+    "website": "https://retailplus.com",
+    "status": "NEW",
+    "score": 81,
+    "userId": "2",
+    "unsubscribed": false,
+    "id": "lead-1760464654956-ywrp1yobl",
+    "createdAt": "2025-10-14T17:57:34.956Z",
+    "updatedAt": "2025-10-14T17:57:34.961Z"
+  },
+  {
+    "firstName": "Mike",
+    "lastName": "Davis",
+    "email": "mike.davis@consultingfirm.com",
+    "phone": "(555) 345-6789",
+    "company": "Consulting Firm LLC",
+    "source": "Import",
+    "industry": "Consulting",
+    "website": "https://consultingfirm.com",
+    "status": "NEW",
+    "score": 85,
+    "userId": "2",
+    "unsubscribed": false,
+    "id": "lead-1760464656931-xoej1891m",
+    "createdAt": "2025-10-14T17:57:36.931Z",
+    "updatedAt": "2025-10-14T17:57:36.934Z"
+  }
+]

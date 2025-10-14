@@ -25,6 +25,8 @@ export default function TasksPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handleSaveTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
@@ -69,6 +71,27 @@ export default function TasksPage() {
   const handleDeleteTask = (taskId: string) => {
     if (confirm('Are you sure you want to delete this task?')) {
       setTasks(prev => prev.filter(task => task.id !== taskId))
+    }
+  }
+
+  const handleClearAllTasks = async () => {
+    if (confirm('Are you sure you want to clear all tasks? This action cannot be undone.')) {
+      try {
+        const response = await fetch('/api/tasks/clear-all', {
+          method: 'DELETE'
+        })
+
+        if (response.ok) {
+          setTasks([])
+          setSuccessMessage('All tasks cleared successfully!')
+          setTimeout(() => setSuccessMessage(null), 3000)
+        } else {
+          setErrorMessage('Failed to clear tasks')
+        }
+      } catch (error) {
+        console.error('Error clearing tasks:', error)
+        setErrorMessage('Failed to clear tasks')
+      }
     }
   }
 
@@ -124,6 +147,18 @@ export default function TasksPage() {
           Task Management
         </h1>
 
+        {/* Success/Error Messages */}
+        {successMessage && (
+          <div className="mb-4 p-4 bg-green-900/20 border border-green-500/30 text-green-400 rounded-lg">
+            {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div className="mb-4 p-4 bg-red-900/20 border border-red-500/30 text-red-400 rounded-lg">
+            {errorMessage}
+          </div>
+        )}
+
         {/* Simple Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="card text-center">
@@ -144,8 +179,14 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Simple Add Button */}
-        <div className="flex justify-end mb-6">
+        {/* Add and Clear Buttons */}
+        <div className="flex justify-end mb-6 space-x-3">
+          <button 
+            onClick={handleClearAllTasks}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            Clear All Tasks
+          </button>
           <button 
             onClick={() => { setEditingTask(null); setShowAddModal(true); }}
             className="btn-primary flex items-center space-x-2"

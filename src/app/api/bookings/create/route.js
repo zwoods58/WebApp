@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseDb } from '@/lib/supabase-db'
+import { fileDb } from '@/lib/file-db'
 
 export async function POST(request) {
   try {
@@ -8,7 +8,7 @@ export async function POST(request) {
     console.log('Creating booking with data:', bookingData)
     
     // Create booking in Supabase database
-    const booking = await supabaseDb.booking.create({
+        const booking = await fileDb.booking.create({
       name: bookingData.name,
       email: bookingData.email,
       phone: bookingData.phone || '',

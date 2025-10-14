@@ -1,9 +1,13 @@
-import { NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { NextRequest, NextResponse } from 'next/server'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 
 export async function GET() {
   try {
-    const leads = await mockDb.lead.findMany()
+    const leads = await db.lead.findMany()
     return NextResponse.json(leads)
   } catch (error) {
     console.error('Error fetching leads:', error)
@@ -14,42 +18,9 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
-    const leadData = await request.json()
-    
-    const newLead = await mockDb.lead.create({
-      data: {
-        firstName: leadData.firstName,
-        lastName: leadData.lastName,
-        email: leadData.email,
-        phone: leadData.phone,
-        company: leadData.company,
-        title: leadData.title,
-        source: leadData.source || 'Manual Entry',
-        status: leadData.status || 'NEW',
-        score: leadData.score || 50,
-        notes: leadData.notes,
-        userId: leadData.userId || '1',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    })
-
-    return NextResponse.json(newLead, { status: 201 })
-  } catch (error) {
-    console.error('Error creating lead:', error)
-    return NextResponse.json(
-      { error: 'Failed to create lead' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function PUT(request: Request) {
-  try {
-    const updateData = await request.json()
-    const { id, ...data } = updateData
+    const { id, ...updateData } = await request.json()
     
     if (!id) {
       return NextResponse.json(
@@ -57,21 +28,11 @@ export async function PUT(request: Request) {
         { status: 400 }
       )
     }
-    
-    const updatedLead = await mockDb.lead.update({
-      where: { id },
-      data: {
-        ...data,
-        updatedAt: new Date().toISOString()
-      }
-    })
 
-    if (!updatedLead) {
-      return NextResponse.json(
-        { error: 'Lead not found' },
-        { status: 404 }
-      )
-    }
+    const updatedLead = await db.lead.update(id, {
+      ...updateData,
+      updatedAt: new Date().toISOString()
+    })
 
     return NextResponse.json(updatedLead)
   } catch (error) {
@@ -83,9 +44,10 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
-    const { id } = await request.json()
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
     
     if (!id) {
       return NextResponse.json(
@@ -93,19 +55,9 @@ export async function DELETE(request: Request) {
         { status: 400 }
       )
     }
-    
-    const deletedLead = await mockDb.lead.delete({
-      where: { id }
-    })
 
-    if (!deletedLead) {
-      return NextResponse.json(
-        { error: 'Lead not found' },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({ success: true, message: 'Lead deleted successfully' })
+    await db.lead.delete(id)
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting lead:', error)
     return NextResponse.json(

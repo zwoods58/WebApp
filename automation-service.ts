@@ -9,6 +9,10 @@
  *   npm run automate:start       // Start the automation service
  */
 
+// Load environment variables
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.local' })
+
 import cron from 'node-cron'
 import { updateAllLeadScores, assignUnassignedLeads, followUpStaleLeads, escalateOldLeads } from './src/lib/automation/lead-management'
 import { updateDashboardMetrics, generateDailyReport, generateWeeklyReport } from './src/lib/automation/analytics'

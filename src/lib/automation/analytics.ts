@@ -1,6 +1,37 @@
 // Analytics & Reporting Automations
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 import { getDaysAgo, sendSlackNotification, sendAutomationEmail } from './helpers'
+
+interface Lead {
+  id: string
+  firstName: string
+  lastName: string
+  email?: string
+  phone?: string
+  company?: string
+  title?: string
+  source?: string
+  industry?: string
+  website?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  timeZone?: string
+  status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
+  statusDetail?: string
+  score: number
+  notes?: string
+  lastContact?: string
+  userId: string
+  unsubscribed: boolean
+  createdAt: string
+  updatedAt: string
+}
 
 // AUTO 6: Daily Sales Report
 export async function generateDailyReport() {
@@ -9,24 +40,24 @@ export async function generateDailyReport() {
   const today = new Date()
   const yesterday = getDaysAgo(1)
   
-  const allLeads = await mockDb.lead.findMany()
+  const allLeads: Lead[] = await db.lead.findMany()
   
   // Calculate metrics
-  const newLeadsToday = allLeads.filter(l => 
-    new Date(l.createdAt) >= yesterday
+  const newLeadsToday = allLeads.filter((l: Lead) => 
+    new Date(l.createdAt) >= new Date(yesterday)
   ).length
   
-  const closedDealsToday = allLeads.filter(l => 
+  const closedDealsToday = allLeads.filter((l: Lead) => 
     l.status === 'CLOSED_WON' && 
-    new Date(l.updatedAt) >= yesterday
+    new Date(l.updatedAt) >= new Date(yesterday)
   ).length
   
   const totalLeads = allLeads.length
-  const newLeads = allLeads.filter(l => l.status === 'NEW').length
-  const followUpLeads = allLeads.filter(l => l.status === 'FOLLOW_UP').length
-  const qualifiedLeads = allLeads.filter(l => l.status === 'QUALIFIED').length
-  const appointmentLeads = allLeads.filter(l => l.status === 'APPOINTMENT_BOOKED').length
-  const closedLeads = allLeads.filter(l => l.status === 'CLOSED_WON').length
+  const newLeads = allLeads.filter((l: Lead) => l.status === 'NEW').length
+  const followUpLeads = allLeads.filter((l: Lead) => l.status === 'FOLLOW_UP').length
+  const qualifiedLeads = allLeads.filter((l: Lead) => l.status === 'QUALIFIED').length
+  const appointmentLeads = allLeads.filter((l: Lead) => l.status === 'APPOINTMENT_BOOKED').length
+  const closedLeads = allLeads.filter((l: Lead) => l.status === 'CLOSED_WON').length
   
   const conversionRate = totalLeads > 0 
     ? ((closedLeads / totalLeads) * 100).toFixed(2) 
@@ -127,21 +158,21 @@ export async function generateWeeklyReport() {
   const now = new Date()
   const weekAgo = getDaysAgo(7)
   
-  const allLeads = await mockDb.lead.findMany()
+  const allLeads = await fileDb.lead.findMany()
   
   // This week's metrics
-  const newLeadsThisWeek = allLeads.filter(l => 
-    new Date(l.createdAt) >= weekAgo
+  const newLeadsThisWeek = allLeads.filter((l: Lead) => 
+    new Date(l.createdAt) >= new Date(weekAgo)
   ).length
   
-  const closedDealsThisWeek = allLeads.filter(l => 
+  const closedDealsThisWeek = allLeads.filter((l: Lead) => 
     l.status === 'CLOSED_WON' && 
-    new Date(l.updatedAt) >= weekAgo
+    new Date(l.updatedAt) >= new Date(weekAgo)
   ).length
   
   // Calculate average score
   const avgScore = allLeads.length > 0
-    ? (allLeads.reduce((sum, lead) => sum + (lead.score || 0), 0) / allLeads.length).toFixed(1)
+    ? (allLeads.reduce((sum: number, lead: Lead) => sum + (lead.score || 0), 0) / allLeads.length).toFixed(1)
     : '0.0'
   
   const report = `
@@ -154,7 +185,7 @@ export async function generateWeeklyReport() {
 
 *Total Pipeline:*
 • Total Leads: ${allLeads.length}
-• Active Leads: ${allLeads.filter(l => l.status !== 'CLOSED_WON' && l.status !== 'NOT_INTERESTED').length}
+• Active Leads: ${allLeads.filter((l: Lead) => l.status !== 'CLOSED_WON' && l.status !== 'NOT_INTERESTED').length}
   `.trim()
   
   await sendSlackNotification(report)
@@ -168,15 +199,15 @@ export async function updateDashboardMetrics() {
   // This function can be called frequently to keep dashboard data fresh
   // In a real implementation, you'd update a cache or database table
   
-  const allLeads = await mockDb.lead.findMany()
+  const allLeads = await fileDb.lead.findMany()
   
   const metrics = {
     totalLeads: allLeads.length,
-    newLeads: allLeads.filter(l => l.status === 'NEW').length,
-    qualifiedLeads: allLeads.filter(l => l.status === 'QUALIFIED').length,
-    closedWonLeads: allLeads.filter(l => l.status === 'CLOSED_WON').length,
+    newLeads: allLeads.filter((l: Lead) => l.status === 'NEW').length,
+    qualifiedLeads: allLeads.filter((l: Lead) => l.status === 'QUALIFIED').length,
+    closedWonLeads: allLeads.filter((l: Lead) => l.status === 'CLOSED_WON').length,
     averageScore: allLeads.length > 0
-      ? allLeads.reduce((sum, l) => sum + (l.score || 0), 0) / allLeads.length
+      ? allLeads.reduce((sum: number, l: Lead) => sum + (l.score || 0), 0) / allLeads.length
       : 0,
     lastUpdated: new Date().toISOString()
   }

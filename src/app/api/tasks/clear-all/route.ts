@@ -7,23 +7,16 @@ const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 
 export async function DELETE() {
   try {
-    // Clear all leads from the database
-    await db.lead.deleteMany()
+    await db.task.deleteMany()
     
-    return NextResponse.json({
-      success: true,
-      message: 'All leads have been cleared successfully',
-      cleared: true
+    return NextResponse.json({ 
+      success: true, 
+      message: 'All tasks cleared successfully' 
     })
-
   } catch (error) {
-    console.error('Clear leads error:', error)
+    console.error('Error clearing all tasks:', error)
     return NextResponse.json(
-      { 
-        success: false,
-        error: 'Failed to clear leads',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: 'Failed to clear all tasks' },
       { status: 500 }
     )
   }

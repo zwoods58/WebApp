@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { fileDb } from '@/lib/file-db'
+import { productionDb } from '@/lib/production-db'
 import { processNewLead } from '@/lib/automation/lead-management'
+
+// Use production database in production, file-db in development
+const db = process.env.NODE_ENV === 'production' ? productionDb : fileDb
 
 interface Lead {
   firstName: string
@@ -25,11 +29,88 @@ interface Lead {
 
 export async function POST(request: Request) {
   try {
-    const { leads, assignedTo = 'sales' } = await request.json()
+    const formData = await request.formData()
+    const file = formData.get('file') as File
+    const assignedTo = formData.get('assignedTo') as string || 'sales'
 
-    if (!leads || !Array.isArray(leads)) {
+    if (!file) {
       return NextResponse.json(
-        { error: 'Invalid leads data' },
+        { error: 'No file provided' },
+        { status: 400 }
+      )
+    }
+
+    // Parse CSV file
+    const csvText = await file.text()
+    const lines = csvText.trim().split('\n')
+    const headers = lines[0].split(',').map(h => h.trim())
+    const leads: Lead[] = []
+
+    // Parse CSV data
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i]
+      const values: string[] = []
+      let current = ''
+      let inQuotes = false
+      
+      // Parse CSV line handling quoted fields
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j]
+        if (char === '"') {
+          inQuotes = !inQuotes
+        } else if (char === ',' && !inQuotes) {
+          values.push(current.trim())
+          current = ''
+        } else {
+          current += char
+        }
+      }
+      values.push(current.trim()) // Add the last field
+      
+      if (values.length === headers.length) {
+        const lead: any = {}
+        headers.forEach((header, index) => {
+          const value = values[index]
+          switch (header.toLowerCase()) {
+            case 'name':
+              const nameParts = value.split(' ')
+              lead.firstName = nameParts[0] || ''
+              lead.lastName = nameParts.slice(1).join(' ') || ''
+              break
+            case 'email':
+              lead.email = value
+              break
+            case 'phone':
+              lead.phone = value
+              break
+            case 'company':
+              lead.company = value
+              break
+            case 'industry':
+              lead.industry = value
+              break
+            case 'website':
+              lead.website = value
+              break
+            default:
+              lead[header.toLowerCase()] = value
+          }
+        })
+        
+        // Set default values
+        lead.status = 'NEW'
+        lead.score = 50
+        lead.source = 'Import'
+        lead.userId = assignedTo === 'sales' ? '2' : '1'
+        lead.unsubscribed = false
+        
+        leads.push(lead)
+      }
+    }
+
+    if (leads.length === 0) {
+      return NextResponse.json(
+        { error: 'No valid leads found in CSV' },
         { status: 400 }
       )
     }
@@ -43,9 +124,7 @@ export async function POST(request: Request) {
       try {
         // Check for duplicates by email
         if (leadData.email) {
-          const existingLead = await mockDb.lead.findUnique({
-            where: { email: leadData.email }
-          })
+          const existingLead = await db.lead.findUnique({ where: { email: leadData.email } })
           
           if (existingLead) {
             duplicates++
@@ -54,31 +133,37 @@ export async function POST(request: Request) {
         }
 
         // Create new lead
-        const newLead = await mockDb.lead.create({
-          data: {
-            firstName: leadData.firstName,
-            lastName: leadData.lastName,
-            email: leadData.email,
-            phone: leadData.phone,
-            company: leadData.company,
-            title: leadData.title,
-            source: leadData.source || 'Import',
-            industry: leadData.industry,
-            website: leadData.website,
-            address: leadData.address,
-            city: leadData.city,
-            state: leadData.state,
-            zipCode: leadData.zipCode,
-            timeZone: leadData.timeZone,
-            status: leadData.status || 'NEW',
-            statusDetail: leadData.statusDetail,
-            score: leadData.score || 50,
-            notes: leadData.notes,
-            userId: assignedTo === 'sales' ? '2' : '1', // Assign to sales user (ID: 2)
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
+        console.log('Creating lead with data:', {
+          firstName: leadData.firstName,
+          lastName: leadData.lastName,
+          email: leadData.email,
+          userId: assignedTo === 'sales' ? '2' : '1'
         })
+        
+        const newLead = await db.lead.create({
+          firstName: leadData.firstName,
+          lastName: leadData.lastName,
+          email: leadData.email,
+          phone: leadData.phone,
+          company: leadData.company,
+          title: leadData.title,
+          source: leadData.source || 'Import',
+          industry: leadData.industry,
+          website: leadData.website,
+          address: leadData.address,
+          city: leadData.city,
+          state: leadData.state,
+          zipCode: leadData.zipCode,
+          timeZone: leadData.timeZone,
+          status: leadData.status || 'NEW',
+          statusDetail: leadData.statusDetail,
+          score: leadData.score || 50,
+          notes: leadData.notes,
+          userId: assignedTo === 'sales' ? '2' : '1', // Assign to sales user (ID: 2)
+          unsubscribed: false // Default to not unsubscribed
+        })
+        
+        console.log('Lead created successfully:', newLead.id)
 
         imported++
         
@@ -86,7 +171,8 @@ export async function POST(request: Request) {
         await processNewLead(newLead.id)
         
       } catch (error) {
-        errors.push(`Failed to import ${leadData.firstName} ${leadData.lastName}: ${error}`)
+        console.error('Import error for lead:', leadData, 'Error:', error)
+        errors.push(`Failed to import ${leadData.firstName} ${leadData.lastName}: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
 
