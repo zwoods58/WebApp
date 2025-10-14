@@ -115,7 +115,7 @@ export async function POST(request: Request) {
         lead.status = 'NEW'
         lead.score = 50
         lead.source = 'Import'
-        lead.userId = assignedTo === 'sales' ? '2' : '1'
+        lead.userId = assignedTo === 'sales' ? '00000000-0000-0000-0000-000000000002' : '00000000-0000-0000-0000-000000000001'
         lead.unsubscribed = false
         
         leads.push(lead)
@@ -146,6 +146,15 @@ export async function POST(request: Request) {
           }
         }
 
+        // Debug logging
+        console.log('Parsed lead data:', {
+          firstName: leadData.firstName,
+          lastName: leadData.lastName,
+          email: leadData.email,
+          rawValues: values,
+          headers: headers
+        })
+        
         // Validate required fields
         if (!leadData.firstName || !leadData.lastName) {
           console.error('Missing required fields:', leadData)
