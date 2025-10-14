@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import FlexibleImport from '@/components/FlexibleImport'
+import TestImport from '@/components/TestImport'
 import AdminLayout from '@/components/AdminLayout'
 import { Users, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
 
@@ -51,7 +51,7 @@ export default function ImportPage() {
         )}
 
         {/* Import Component */}
-        <FlexibleImport onImportComplete={handleImportComplete} />
+        <TestImport />
 
         {/* Success Message */}
         {importResult?.success && (
