@@ -39,8 +39,8 @@ function checkRateLimit(ip) {
   // Check if under limit
   if (record.count < maxRequests) {
     record.count++
-    return true
-  }
+  return true
+}
 
   return false
 }
@@ -69,29 +69,29 @@ export async function POST(req) {
     console.log('Content-Length:', req.headers.get('content-length'))
 
     let consultationData = {}
-
+    
     // Parse form data based on content type
     if (contentType.includes('multipart/form-data')) {
       console.log('Parsing multipart/form-data...')
       try {
-        const formData = await req.formData()
+      const formData = await req.formData()
         console.log('FormData parsed successfully')
         console.log('FormData entries:', Array.from(formData.entries()).map(([key, value]) => [key, value instanceof File ? `File: ${value.name} (${value.size} bytes)` : value]))
         console.log('Additional services from formData:', formData.get('additionalServices'))
         console.log('Total price from formData:', formData.get('totalPrice'))
         
-        consultationData = {
-          name: formData.get('name'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          company: formData.get('company'),
-          projectDetails: formData.get('projectDetails'),
-          preferredDate: formData.get('preferredDate'),
-          preferredTime: formData.get('preferredTime'),
-          uploadedFile: formData.get('uploadedFile'),
-          serviceType: formData.get('serviceType'),
-          serviceTier: formData.get('serviceTier'),
-          servicePrice: formData.get('servicePrice'),
+      consultationData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        company: formData.get('company'),
+        projectDetails: formData.get('projectDetails'),
+        preferredDate: formData.get('preferredDate'),
+        preferredTime: formData.get('preferredTime'),
+        uploadedFile: formData.get('uploadedFile'),
+        serviceType: formData.get('serviceType'),
+        serviceTier: formData.get('serviceTier'),
+        servicePrice: formData.get('servicePrice'),
           serviceDescription: formData.get('serviceDescription'),
           selectedAddOns: formData.get('selectedAddOns'),
           additionalServices: formData.get('additionalServices'),
@@ -172,9 +172,9 @@ export async function POST(req) {
       timeZoneName: 'short'
     })
 
-    // Generate a simple consultation ID
-    const consultationId = `CONS-${Date.now().toString().slice(-6)}`
-    console.log('Generated consultation ID:', consultationId)
+        // Generate a simple consultation ID
+        const consultationId = `CONS-${Date.now().toString().slice(-6)}`
+        console.log('Generated consultation ID:', consultationId)
 
     // Skip PDF generation - emails will be text/HTML only
     console.log('Skipping PDF generation - using text/HTML emails only')
@@ -314,8 +314,8 @@ Visit our contact page: https://atarwebb.com/contact`
         console.log('Sending admin email...')
         await transporter.sendMail(adminEmail)
         adminEmailResult = { success: true }
-        console.log('Admin email sent successfully')
-        
+           console.log('Admin email sent successfully')
+
         // Send client email
         const clientEmail = {
           from: 'admin@atarwebb.com',
@@ -350,15 +350,15 @@ Visit our contact page: https://atarwebb.com/contact`
         console.log('Sending client email...')
         await transporter.sendMail(clientEmail)
         clientEmailResult = { success: true }
-        console.log('Client email sent successfully')
-        
-        console.log('Emails sent successfully:', { adminEmailResult, clientEmailResult })
+           console.log('Client email sent successfully')
+
+         console.log('Emails sent successfully:', { adminEmailResult, clientEmailResult })
       } catch (error) {
         console.error('Email sending error:', error)
         adminEmailResult = { success: false, error: error.message }
         clientEmailResult = { success: false, error: error.message }
       }
-    } else {
+     } else {
       console.log('=== BREVO SMTP CREDENTIALS NOT FOUND ===')
       console.log('Brevo SMTP credentials not configured, skipping email sending')
       console.log('Available environment variables:', Object.keys(process.env).filter(key => key.includes('BREVO')))
