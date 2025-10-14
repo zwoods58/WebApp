@@ -46,6 +46,20 @@ interface Task {
   updatedAt: string
 }
 
+interface Booking {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  date: string // ISO date string (YYYY-MM-DD)
+  time: string // Time in HH:MM format (e.g., "10:00", "14:30")
+  duration: number // Duration in minutes (default 30)
+  type: 'CONSULTATION' | 'CONTACT' // Type of booking
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+  notes?: string
+  createdAt: string
+}
+
 // In-memory storage
 const users: User[] = [
   {
@@ -66,6 +80,7 @@ const users: User[] = [
 const leads: Lead[] = []
 
 const tasks: Task[] = []
+const bookings: Booking[] = []
 
 export const mockDb = {
   user: {
@@ -175,6 +190,49 @@ export const mockDb = {
     },
     count: async (): Promise<number> => {
       return tasks.length
+    }
+  },
+  booking: {
+    findMany: async ({ where }: { where?: { date?: string, status?: string } } = {}): Promise<Booking[]> => {
+      let filtered = bookings
+      if (where?.date) {
+        filtered = filtered.filter(b => b.date === where.date)
+      }
+      if (where?.status) {
+        filtered = filtered.filter(b => b.status === where.status)
+      }
+      return filtered
+    },
+    findUnique: async ({ where }: { where: { id: string } }): Promise<Booking | null> => {
+      return bookings.find(b => b.id === where.id) || null
+    },
+    create: async ({ data }: { data: Omit<Booking, 'id' | 'createdAt'> & { id?: string, createdAt?: string } }): Promise<Booking> => {
+      const newBooking: Booking = {
+        id: data.id || (bookings.length + 1).toString(),
+        createdAt: data.createdAt || new Date().toISOString(),
+        ...data
+      }
+      bookings.push(newBooking)
+      return newBooking
+    },
+    update: async ({ where, data }: { where: { id: string }, data: Partial<Booking> }): Promise<Booking | null> => {
+      const index = bookings.findIndex(b => b.id === where.id)
+      if (index !== -1) {
+        bookings[index] = { ...bookings[index], ...data }
+        return bookings[index]
+      }
+      return null
+    },
+    delete: async ({ where }: { where: { id: string } }): Promise<Booking | null> => {
+      const index = bookings.findIndex(b => b.id === where.id)
+      if (index !== -1) {
+        const [deletedBooking] = bookings.splice(index, 1)
+        return deletedBooking
+      }
+      return null
+    },
+    count: async (): Promise<number> => {
+      return bookings.length
     }
   }
 }
