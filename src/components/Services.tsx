@@ -93,11 +93,7 @@ const pricingPlans: PricingPlan[] = [
     ],
     gradient: 'from-green-500 to-emerald-600',
     bgGradient: 'from-green-50 to-emerald-50',
-    addOns: [
-      { name: 'Premium Stock Photography', price: 50, selected: false },
-      { name: 'Contact Form Integration', price: 50, selected: false },
-      { name: 'Social Media Integration', price: 50, selected: false }
-    ]
+    addOns: []
   },
   {
     id: 'standard',
@@ -170,12 +166,7 @@ const pricingPlans: PricingPlan[] = [
     ],
     gradient: 'from-purple-500 to-pink-600',
     bgGradient: 'from-purple-50 to-pink-50',
-    addOns: [
-      { name: 'Custom Illustration Package', price: 75, selected: false },
-      { name: 'Advanced E-commerce Integration', price: 75, selected: false },
-      { name: 'Advanced Analytics Dashboard', price: 50, selected: false },
-      { name: 'Multi-language Support', price: 75, selected: false }
-    ]
+    addOns: []
   }
 ]
 
@@ -297,6 +288,11 @@ export default function Services() {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null)
   const [consultationData, setConsultationData] = useState<any>(null)
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set())
+  
+  // Force re-render to clear any cached issues
+  useEffect(() => {
+    console.log('Services component mounted successfully')
+  }, [])
   const [currency, setCurrency] = useState<'USD' | 'KSH' | 'ZAR'>('USD')
 
   useEffect(() => {

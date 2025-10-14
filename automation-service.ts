@@ -10,7 +10,7 @@
  */
 
 import cron from 'node-cron'
-import { scoreAllLeads, assignUnassignedLeads, followUpStaleLeads, escalateOldLeads } from './src/lib/automation/lead-management'
+import { updateAllLeadScores, assignUnassignedLeads, followUpStaleLeads, escalateOldLeads } from './src/lib/automation/lead-management'
 import { updateDashboardMetrics, generateDailyReport, generateWeeklyReport } from './src/lib/automation/analytics'
 
 console.log('\n🤖 CRM Automation Service Starting...\n')
@@ -25,7 +25,7 @@ cron.schedule('0 * * * *', async () => {
   if (!isRunning) return
   console.log('\n⏰ [HOURLY] Running lead scoring...')
   try {
-    await scoreAllLeads()
+    await updateAllLeadScores()
     console.log('✅ Lead scoring completed\n')
   } catch (error: any) {
     console.error('❌ Lead scoring failed:', error.message)

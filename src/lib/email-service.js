@@ -1,34 +1,43 @@
-// Email service using SendGrid
-const sgMail = require('@sendgrid/mail');
+// Email service using Brevo SMTP
+const nodemailer = require('nodemailer');
 
-// Initialize SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Create Brevo SMTP transporter
+function createTransporter() {
+  if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+    return nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASSWORD
+      }
+    });
+  }
+  return null;
 }
 
 export const sendDepositInvoiceEmail = async (consultation) => {
-  if (!process.env.SENDGRID_API_KEY) {
-    console.log('SendGrid API key not configured. Email not sent.');
-    return { success: false, error: 'SendGrid not configured' };
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log('Brevo SMTP credentials not configured. Email not sent.');
+    return { success: false, error: 'Brevo SMTP not configured' };
   }
 
   try {
     const { depositInvoiceEmail } = await import('./email-templates');
     const emailTemplate = depositInvoiceEmail(consultation);
     
-    const msg = {
+    const mailOptions = {
+      from: process.env.BREVO_SMTP_USER,
       to: consultation.email,
-      from: {
-        email: 'noreply@atarwebb.com',
-        name: 'AtarWebb'
-      },
-      replyTo: 'admin@atarwebb.com',
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
     };
 
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     console.log(`Deposit invoice email sent to ${consultation.email}`);
     return { success: true };
   } catch (error) {
@@ -38,28 +47,26 @@ export const sendDepositInvoiceEmail = async (consultation) => {
 };
 
 export const sendFinalInvoiceEmail = async (consultation) => {
-  if (!process.env.SENDGRID_API_KEY) {
-    console.log('SendGrid API key not configured. Email not sent.');
-    return { success: false, error: 'SendGrid not configured' };
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log('Brevo SMTP credentials not configured. Email not sent.');
+    return { success: false, error: 'Brevo SMTP not configured' };
   }
 
   try {
     const { finalInvoiceEmail } = await import('./email-templates');
     const emailTemplate = finalInvoiceEmail(consultation);
     
-    const msg = {
+    const mailOptions = {
+      from: process.env.BREVO_SMTP_USER,
       to: consultation.email,
-      from: {
-        email: 'noreply@atarwebb.com',
-        name: 'AtarWebb'
-      },
-      replyTo: 'admin@atarwebb.com',
       subject: emailTemplate.subject,
       text: emailTemplate.text,
       html: emailTemplate.html,
     };
 
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
     console.log(`Final invoice email sent to ${consultation.email}`);
     return { success: true };
   } catch (error) {

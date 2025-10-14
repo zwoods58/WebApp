@@ -188,14 +188,23 @@ export async function sendEmailNotification(
       throw new Error(notificationResult.error)
     }
 
-    // Send email via SendGrid
-    if (process.env.SENDGRID_API_KEY) {
-      const sgMail = require('@sendgrid/mail')
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+    // Send email via Brevo SMTP
+    if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+      const nodemailer = require('nodemailer')
+      
+      const transporter = nodemailer.createTransport({
+        host: 'smtp-relay.brevo.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.BREVO_SMTP_USER,
+          pass: process.env.BREVO_SMTP_PASSWORD
+        }
+      })
 
-      await sgMail.send({
+      await transporter.sendMail({
+        from: process.env.BREVO_SMTP_USER,
         to: to,
-        from: process.env.SENDGRID_FROM_EMAIL || 'admin@atarwebb.com',
         subject: subject,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -208,7 +217,7 @@ export async function sendEmailNotification(
         `
       })
     } else {
-      console.log('SendGrid not configured, logging email:', { to, subject, message })
+      console.log('Brevo SMTP not configured, logging email:', { to, subject, message })
     }
 
     return {

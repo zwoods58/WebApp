@@ -211,6 +211,50 @@ export interface Database {
           metadata?: any | null
         }
       }
+      bookings: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          name: string
+          email: string
+          phone: string | null
+          date: string
+          time: string
+          duration: number
+          type: string
+          status: string
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name: string
+          email: string
+          phone?: string | null
+          date: string
+          time: string
+          duration?: number
+          type?: string
+          status?: string
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          date?: string
+          time?: string
+          duration?: number
+          type?: string
+          status?: string
+          notes?: string | null
+        }
+      }
     }
   }
 }

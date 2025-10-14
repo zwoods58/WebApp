@@ -1,6 +1,14 @@
 -- AtarWebb CRM - Supabase Database Schema
 -- Run this in your Supabase SQL Editor to create all tables
 
+-- =====================
+-- CLEANUP (Starting fresh)
+-- =====================
+DROP TABLE IF EXISTS bookings CASCADE;
+DROP TABLE IF EXISTS tasks CASCADE;
+DROP TABLE IF EXISTS leads CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -83,23 +91,45 @@ CREATE TABLE IF NOT EXISTS bookings (
 -- =====================
 -- INDEXES for Performance
 -- =====================
-CREATE INDEX IF NOT EXISTS idx_leads_user_id ON leads(user_id);
-CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
-CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
+-- Drop existing indexes if they exist (to avoid conflicts)
+DROP INDEX IF EXISTS idx_leads_user_id;
+DROP INDEX IF EXISTS idx_leads_email;
+DROP INDEX IF EXISTS idx_leads_status;
+DROP INDEX IF EXISTS idx_leads_created_at;
+DROP INDEX IF EXISTS idx_tasks_assigned_to;
+DROP INDEX IF EXISTS idx_tasks_lead_id;
+DROP INDEX IF EXISTS idx_tasks_due_date;
+DROP INDEX IF EXISTS idx_tasks_status;
+DROP INDEX IF EXISTS idx_bookings_date;
+DROP INDEX IF EXISTS idx_bookings_status;
+DROP INDEX IF EXISTS idx_bookings_email;
 
-CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON tasks(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_tasks_lead_id ON tasks(lead_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+-- Create indexes
+CREATE INDEX idx_leads_user_id ON leads(user_id);
+CREATE INDEX idx_leads_email ON leads(email);
+CREATE INDEX idx_leads_status ON leads(status);
+CREATE INDEX idx_leads_created_at ON leads(created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(date);
-CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
-CREATE INDEX IF NOT EXISTS idx_bookings_email ON bookings(email);
+CREATE INDEX idx_tasks_assigned_to ON tasks(assigned_to);
+CREATE INDEX idx_tasks_lead_id ON tasks(lead_id);
+CREATE INDEX idx_tasks_due_date ON tasks(due_date);
+CREATE INDEX idx_tasks_status ON tasks(status);
+
+CREATE INDEX idx_bookings_date ON bookings(date);
+CREATE INDEX idx_bookings_status ON bookings(status);
+CREATE INDEX idx_bookings_email ON bookings(email);
 
 -- =====================
 -- ROW LEVEL SECURITY (RLS)
 -- =====================
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users - Admin can see all" ON users;
+DROP POLICY IF EXISTS "Leads - Admin can see all" ON leads;
+DROP POLICY IF EXISTS "Tasks - Admin can see all" ON tasks;
+DROP POLICY IF EXISTS "Bookings - Public read" ON bookings;
+DROP POLICY IF EXISTS "Bookings - Authenticated create" ON bookings;
+DROP POLICY IF EXISTS "Bookings - Admin can update/delete" ON bookings;
+
 -- Enable RLS on all tables
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leads ENABLE ROW LEVEL SECURITY;

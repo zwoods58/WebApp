@@ -24,21 +24,21 @@
       "short_name": "Services",
       "description": "View our web development packages",
       "url": "/services",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/Favicon.png", "sizes": "any" }]
     },
     {
       "name": "Contact",
       "short_name": "Contact",
       "description": "Get in touch with us",
       "url": "/contact",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/Favicon.png", "sizes": "any" }]
     },
     {
       "name": "Portfolio",
       "short_name": "Portfolio",
       "description": "View our work",
       "url": "/portfolio",
-      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/Favicon.png", "sizes": "any" }]
     }
   ]
 }

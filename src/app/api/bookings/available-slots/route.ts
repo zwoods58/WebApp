@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
-import { mockDb } from '@/lib/mock-db'
+import { supabaseDb } from '@/lib/supabase-db'
+
+export const dynamic = 'force-dynamic'
 
 // Business hours: 7 AM to 5 PM CT (excluding 12 PM)
 // Each slot is 30 minutes
@@ -96,7 +98,7 @@ export async function GET(request: Request) {
     }
     
     // Get all bookings for this date
-    const bookings = await mockDb.booking.findMany({
+    const bookings = await supabaseDb.booking.findMany({
       where: { date, status: 'CONFIRMED' }
     })
     

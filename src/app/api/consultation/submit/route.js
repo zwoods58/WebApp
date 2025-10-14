@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server'
-import sgMail from '@sendgrid/mail'
+import nodemailer from 'nodemailer'
 import { ConsultationPDFService } from '../../../../lib/consultation-pdf-service'
 
-// Initialize SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+// Initialize Brevo SMTP
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: 'smtp-relay.brevo.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.BREVO_SMTP_USER,
+      pass: process.env.BREVO_SMTP_PASSWORD
+    }
+  })
 }
 
 // Rate limiting storage
@@ -13,30 +21,28 @@ const rateLimitStore = new Map()
 function checkRateLimit(ip) {
   const now = Date.now()
   const windowMs = 15 * 60 * 1000 // 15 minutes
-  const maxRequests = 5
+  const maxRequests = 5 // Max 5 requests per 15 minutes per IP
 
   if (!rateLimitStore.has(ip)) {
-    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs })
+    rateLimitStore.set(ip, { count: 1, firstRequest: now })
     return true
   }
 
-  const data = rateLimitStore.get(ip)
+  const record = rateLimitStore.get(ip)
   
-  if (now > data.resetTime) {
-    rateLimitStore.set(ip, { count: 1, resetTime: now + windowMs })
+  // Reset if window has passed
+  if (now - record.firstRequest > windowMs) {
+    rateLimitStore.set(ip, { count: 1, firstRequest: now })
     return true
   }
 
-  if (data.count >= maxRequests) {
-    return false
+  // Check if under limit
+  if (record.count < maxRequests) {
+    record.count++
+    return true
   }
 
-  data.count++
-  return true
-}
-
-function getClientIP(req) {
-  return req.ip || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1'
+  return false
 }
 
 export async function POST(req) {
@@ -46,69 +52,34 @@ export async function POST(req) {
   
   try {
     // Get client IP for rate limiting
-    const clientIP = getClientIP(req)
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
     console.log('Client IP:', clientIP)
     
-    // Check rate limit
+    // Check rate limiting
     if (!checkRateLimit(clientIP)) {
       return NextResponse.json(
-        { 
-          error: 'Too many consultation requests. Please try again later.'
-        },
-        { 
-          status: 429
-        }
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       )
     }
 
-    // Parse form data - handle both multipart/form-data and application/x-www-form-urlencoded
-    let consultationData
-    
+    // Get content type
     const contentType = req.headers.get('content-type') || ''
     console.log('Content-Type:', contentType)
-    
-    try {
-      if (contentType.includes('multipart/form-data')) {
-        console.log('Parsing multipart/form-data...')
-        console.log('Content-Type header:', contentType)
-        
-        // Check if the request has a body
-        const contentLength = req.headers.get('content-length')
-        console.log('Content-Length:', contentLength)
-        
-        try {
-          const formData = await req.formData()
-          console.log('FormData parsed successfully')
-          console.log('FormData entries:', Array.from(formData.entries()).map(([key, value]) => [key, value instanceof File ? `File: ${value.name} (${value.size} bytes)` : value]))
-          
-          consultationData = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            company: formData.get('company'),
-            projectDetails: formData.get('projectDetails'),
-            preferredDate: formData.get('preferredDate'),
-            preferredTime: formData.get('preferredTime'),
-            uploadedFile: formData.get('uploadedFile'),
-            serviceType: formData.get('serviceType'),
-            serviceTier: formData.get('serviceTier'),
-            servicePrice: formData.get('servicePrice'),
-            serviceDescription: formData.get('serviceDescription')
-          }
-        } catch (formDataError) {
-          console.error('FormData parsing failed, trying alternative approach:', formDataError)
-          
-          // Try to read the raw body and parse manually as a fallback
-          const body = await req.text()
-          console.log('Raw body length:', body.length)
-          console.log('Body preview:', body.substring(0, 200))
-          
-          // For now, return a more helpful error
-          throw new Error(`FormData parsing failed: ${formDataError.message}. This might be due to malformed multipart data.`)
-        }
-      } else if (contentType.includes('application/x-www-form-urlencoded')) {
-        console.log('Parsing application/x-www-form-urlencoded...')
+    console.log('Content-Length:', req.headers.get('content-length'))
+
+    let consultationData = {}
+
+    // Parse form data based on content type
+    if (contentType.includes('multipart/form-data')) {
+      console.log('Parsing multipart/form-data...')
+      try {
         const formData = await req.formData()
+        console.log('FormData parsed successfully')
+        console.log('FormData entries:', Array.from(formData.entries()).map(([key, value]) => [key, value instanceof File ? `File: ${value.name} (${value.size} bytes)` : value]))
+        console.log('Additional services from formData:', formData.get('additionalServices'))
+        console.log('Total price from formData:', formData.get('totalPrice'))
+        
         consultationData = {
           name: formData.get('name'),
           email: formData.get('email'),
@@ -117,28 +88,52 @@ export async function POST(req) {
           projectDetails: formData.get('projectDetails'),
           preferredDate: formData.get('preferredDate'),
           preferredTime: formData.get('preferredTime'),
-          uploadedFile: null, // No file upload with URLSearchParams
+          uploadedFile: formData.get('uploadedFile'),
           serviceType: formData.get('serviceType'),
           serviceTier: formData.get('serviceTier'),
           servicePrice: formData.get('servicePrice'),
-          serviceDescription: formData.get('serviceDescription')
+          serviceDescription: formData.get('serviceDescription'),
+          selectedAddOns: formData.get('selectedAddOns'),
+          additionalServices: formData.get('additionalServices'),
+          totalPrice: formData.get('totalPrice'),
+          currency: formData.get('currency')
         }
-      } else {
-        console.log('Unsupported content type:', contentType)
-        return NextResponse.json(
-          { error: 'Unsupported content type. Please use multipart/form-data or application/x-www-form-urlencoded.' },
-          { status: 400 }
-        )
+      } catch (formDataError) {
+        console.error('FormData parsing failed, trying alternative approach:', formDataError)
+        
+        // Try to read the raw body and parse manually as a fallback
+        const body = await req.text()
+        console.log('Raw body length:', body.length)
+        console.log('Body preview:', body.substring(0, 200))
+        
+        // For now, return a more helpful error
+        throw new Error(`FormData parsing failed: ${formDataError.message}. This might be due to malformed multipart data.`)
       }
-    } catch (parseError) {
-      console.error('Error parsing form data:', parseError)
-      console.error('Parse error details:', {
-        message: parseError.message,
-        stack: parseError.stack,
-        contentType: contentType
-      })
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      console.log('Parsing application/x-www-form-urlencoded...')
+      const formData = await req.formData()
+      consultationData = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        company: formData.get('company'),
+        projectDetails: formData.get('projectDetails'),
+        preferredDate: formData.get('preferredDate'),
+        preferredTime: formData.get('preferredTime'),
+        uploadedFile: null, // No file upload with URLSearchParams
+        serviceType: formData.get('serviceType'),
+        serviceTier: formData.get('serviceTier'),
+        servicePrice: formData.get('servicePrice'),
+        serviceDescription: formData.get('serviceDescription'),
+        selectedAddOns: formData.get('selectedAddOns'),
+        additionalServices: formData.get('additionalServices'),
+        totalPrice: formData.get('totalPrice'),
+        currency: formData.get('currency')
+      }
+    } else {
+      console.log('Unsupported content type:', contentType)
       return NextResponse.json(
-        { error: `Failed to parse form data: ${parseError.message}. The request may be too large or malformed.` },
+        { error: 'Unsupported content type. Please use multipart/form-data or application/x-www-form-urlencoded.' },
         { status: 400 }
       )
     }
@@ -146,6 +141,8 @@ export async function POST(req) {
     console.log('=== FORM DATA PARSED ===')
     console.log('Received consultation data:', consultationData)
     console.log('Form data keys:', Object.keys(consultationData))
+    console.log('Additional services raw:', consultationData.additionalServices)
+    console.log('Total price raw:', consultationData.totalPrice)
 
     // Validate required fields
     if (!consultationData.name || !consultationData.email || !consultationData.preferredDate || !consultationData.preferredTime) {
@@ -175,81 +172,29 @@ export async function POST(req) {
       timeZoneName: 'short'
     })
 
-        // Generate a simple consultation ID
-        const consultationId = `CONS-${Date.now().toString().slice(-6)}`
-        console.log('Generated consultation ID:', consultationId)
+    // Generate a simple consultation ID
+    const consultationId = `CONS-${Date.now().toString().slice(-6)}`
+    console.log('Generated consultation ID:', consultationId)
 
-    // Generate PDF for email attachment using unified service
-    console.log('Generating PDF...')
-    const currentDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    // Skip PDF generation - emails will be text/HTML only
+    console.log('Skipping PDF generation - using text/HTML emails only')
     
-    // Use uploaded PDF file if available, otherwise generate a simple consultation PDF
-    let pdfBuffer
-    if (consultationData.uploadedFile) {
-      // Check if uploaded file is small enough for email (6KB limit)
-      const fileSizeKB = consultationData.uploadedFile.size / 1024
-      console.log(`Uploaded file size: ${fileSizeKB.toFixed(2)}KB`)
-      
-      if (fileSizeKB > 6) {
-        console.log('File too large for email attachment, skipping PDF attachment')
-        pdfBuffer = null
-      } else {
-        // Return the exact uploaded PDF file without any modifications
-        const arrayBuffer = await consultationData.uploadedFile.arrayBuffer()
-        pdfBuffer = Buffer.from(arrayBuffer)
-        console.log('Using uploaded PDF file - sending exact same file')
-      }
-    } else {
-      // Generate a simple consultation PDF if no file uploaded
-      const pdfService = new ConsultationPDFService()
-      const pdfData = {
-        consultationId: consultationId,
-        name: consultationData.name,
-        email: consultationData.email,
-        company: consultationData.company || undefined,
-        phone: consultationData.phone || undefined,
-        preferredDate: consultationData.preferredDate,
-        preferredTime: consultationData.preferredTime,
-        projectDetails: consultationData.projectDetails || undefined,
-        serviceType: consultationData.serviceType || undefined,
-        budget: consultationData.budget || undefined,
-        timeline: consultationData.timeline || undefined,
-        additionalNotes: consultationData.additionalNotes || undefined,
-        date: currentDate,
-        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        totalAmount: 250, // Consultation fee
-        currency: consultationData.currency || 'USD'
-      }
-      
-      pdfBuffer = await pdfService.getPDFBuffer(pdfData)
-      console.log('PDF generated successfully using unified service')
-    }
-    
-    // Send email to admin using SendGrid (optional)
-    console.log('Starting email sending process...')
+    // Send emails using Brevo SMTP
+    console.log('Starting email sending process with Brevo...')
     let adminEmailResult = { success: true }
     let clientEmailResult = { success: true }
     
-    // Environment variables - try multiple sources
-    const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || ''
-    const SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'admin@atarwebb.com'
-    
-    console.log('=== EMAIL SENDING DEBUG ===')
+    console.log('=== BREVO EMAIL SENDING DEBUG ===')
     console.log('Environment check:')
-    console.log('SENDGRID_API_KEY exists:', !!SENDGRID_API_KEY)
-    console.log('SENDGRID_FROM_EMAIL exists:', !!SENDGRID_FROM_EMAIL)
-    console.log('SENDGRID_FROM_EMAIL value:', SENDGRID_FROM_EMAIL)
-    console.log('About to check if SENDGRID_API_KEY exists...')
+    console.log('BREVO_SMTP_USER exists:', !!process.env.BREVO_SMTP_USER)
+    console.log('BREVO_SMTP_PASSWORD exists:', !!process.env.BREVO_SMTP_PASSWORD)
     
-    if (SENDGRID_API_KEY && SENDGRID_API_KEY.length > 0) {
-      console.log('SendGrid API key found, sending emails...')
-      console.log('API Key (first 10 chars):', SENDGRID_API_KEY.substring(0, 10) + '...')
+    if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+      console.log('Brevo SMTP credentials found, sending emails...')
       
       try {
+        const transporter = createTransporter()
+        
         // Parse additional services and add-ons
         let selectedAddOns = []
         let selectedAdditionalServices = []
@@ -260,50 +205,66 @@ export async function POST(req) {
           if (consultationData.selectedAddOns) {
             selectedAddOns = JSON.parse(consultationData.selectedAddOns)
           }
+        } catch (e) {
+          console.log('Error parsing selectedAddOns:', e.message)
+        }
+        
+        try {
           if (consultationData.additionalServices) {
-            selectedAdditionalServices = JSON.parse(consultationData.additionalServices)
+            console.log('Raw additionalServices data:', consultationData.additionalServices)
+            const serviceIds = JSON.parse(consultationData.additionalServices)
+            console.log('Parsed service IDs:', serviceIds)
+            // Map service IDs to service objects with names and prices
+            const serviceMap = {
+              'domain-registration': { name: 'Domain Registration', price: 15 },
+              'hosting': { name: 'Web Hosting (1 Year)', price: 35 },
+              'ssl-certificate': { name: 'SSL Certificate', price: 25 },
+              'email-setup': { name: 'Email Setup', price: 20 },
+              'backup-service': { name: 'Backup Service', price: 30 },
+              'maintenance': { name: 'Monthly Maintenance', price: 50 },
+              'seo-optimization': { name: 'SEO Optimization', price: 100 },
+              'analytics-setup': { name: 'Analytics Setup', price: 25 },
+              'social-media': { name: 'Social Media Integration', price: 40 },
+              'payment-integration': { name: 'Payment Integration', price: 75 },
+              'logo-design': { name: 'Logo Design', price: 50 }
+            }
+            selectedAdditionalServices = serviceIds.map(id => serviceMap[id] || { name: id, price: 0 })
+            console.log('Mapped additional services:', selectedAdditionalServices)
           }
+        } catch (e) {
+          console.log('Error parsing additionalServices:', e.message)
+        }
+        
+        try {
           if (consultationData.totalPrice) {
-            totalPrice = parseFloat(consultationData.totalPrice)
+            totalPrice = parseFloat(consultationData.totalPrice) || 0
           }
+        } catch (e) {
+          console.log('Error parsing totalPrice:', e.message)
+        }
+        
+        try {
           if (consultationData.currency) {
             currency = consultationData.currency
           }
         } catch (e) {
-          console.log('Error parsing JSON data:', e)
+          console.log('Error parsing currency:', e.message)
         }
 
-        // Currency conversion helper
-        const convertPrice = (usdPrice, targetCurrency) => {
-          if (targetCurrency === 'KSH') {
-            return Math.round(usdPrice * 130) // Approximate USD to KSH rate
-          }
-          if (targetCurrency === 'ZAR') {
-            return Math.round(usdPrice * 18) // Approximate USD to ZAR rate
-          }
-          return usdPrice
+        // Helper function to format prices
+        const formatPrice = (price, currency) => {
+          if (!price || price === 0) return 'Contact for Pricing'
+          const symbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$'
+          return `${symbol}${price.toFixed(2)}`
         }
 
-        const getCurrencySymbol = (targetCurrency) => {
-          if (targetCurrency === 'KSH') return 'KSh'
-          if (targetCurrency === 'ZAR') return 'R'
-          return '$'
-        }
-
-        const formatPrice = (price, targetCurrency) => {
-          if (price === 0 || price === null || price === undefined) {
-            return 'Contact for Pricing'
-          }
-          const convertedPrice = convertPrice(price, targetCurrency)
-          return `${getCurrencySymbol(targetCurrency)}${convertedPrice.toLocaleString()}`
-        }
-
-        adminEmailResult = await sgMail.send({
+        // Send admin email
+        const adminEmail = {
+          from: 'admin@atarwebb.com',
           to: 'admin@atarwebb.com',
-          from: SENDGRID_FROM_EMAIL,
-          subject: 'New Consultation Request - AtarWebb',
-          text: `NEW CONSULTATION REQUEST - ATARWEBB
-=====================================
+          subject: `New Consultation Request - ${consultationId}`,
+          text: `NEW CONSULTATION REQUEST
+====================
 
 CLIENT INFORMATION:
 ------------------
@@ -311,37 +272,29 @@ Name: ${consultationData.name}
 Email: ${consultationData.email}
 Phone: ${consultationData.phone || 'Not provided'}
 Company: ${consultationData.company || 'Not provided'}
-Preferred Time: ${formattedDateTime}
+
+CONSULTATION DETAILS:
+--------------------
+Preferred Date: ${consultationData.preferredDate}
+Preferred Time: ${consultationData.preferredTime}
+Formatted Time: ${formattedDateTime}
 
 PROJECT DETAILS:
----------------
+----------------
 ${consultationData.projectDetails || 'No details provided'}
 
-QUOTE DETAILS:
--------------
-Base Service: ${consultationData.serviceType || 'Not specified'}
-Tier: ${consultationData.serviceTier || 'Not specified'}
-Description: ${consultationData.serviceDescription || 'Custom service package'}
-Price: ${formatPrice(parseFloat(consultationData.servicePrice || 0), currency)}
+SERVICE SELECTION:
+------------------
+Service Type: ${consultationData.serviceType || 'Not specified'}
+Service Tier: ${consultationData.serviceTier || 'Not specified'}
+Service Price: ${formatPrice(parseFloat(consultationData.servicePrice || 0), currency)}
+Service Description: ${consultationData.serviceDescription || 'Not provided'}
 
-${selectedAddOns.length > 0 ? `Selected Add-ons:
+${selectedAddOns.length > 0 ? `SELECTED ADD-ONS:
 ${selectedAddOns.map(addon => `- ${addon.name}: ${formatPrice(addon.price, currency)}`).join('\n')}
 
-` : ''}${selectedAdditionalServices.length > 0 ? `Additional Services:
-${selectedAdditionalServices.map(serviceId => {
-  const serviceNames = {
-    'logo-design': 'Logo Design',
-    'domain-registration': 'Domain Registration', 
-    'hosting': 'Hosting Service',
-    'email-service': 'Email Service',
-    'seo-optimization': 'SEO Optimization',
-    'social-media-setup': 'Social Media Setup',
-    'analytics-setup': 'Analytics Setup',
-    'automation-workflow': 'Automation Workflow'
-  }
-  const serviceName = serviceNames[serviceId] || `Service: ${serviceId}`
-  return `- ${serviceName}: Contact for Pricing`
-}).join('\n')}
+` : ''}${selectedAdditionalServices.length > 0 ? `ADDITIONAL SERVICES:
+${selectedAdditionalServices.map(service => `- ${service.name}: ${formatPrice(service.price, currency)}`).join('\n')}
 
 ` : ''}TOTAL QUOTE: ${formatPrice(totalPrice, currency)}
 ${currency !== 'USD' ? `Approximate USD: $${totalPrice.toFixed(2)}
@@ -351,20 +304,22 @@ ${currency !== 'USD' ? `Approximate USD: $${totalPrice.toFixed(2)}
 Please contact the client to confirm the consultation time and discuss project details.
 
 Consultation ID: ${consultationId}
-Submitted: ${new Date().toLocaleString()}`,
-          attachments: []
-        }).then(() => {
-           console.log('Admin email sent successfully')
-           return { success: true }
-         }).catch(error => {
-           console.error('Admin email failed:', error)
-           return { success: false, error: error.message }
-         })
+Submitted: ${new Date().toLocaleString()}
 
-         // Send confirmation email to client using SendGrid
-        clientEmailResult = await sgMail.send({
+CONTACT INFORMATION:
+-------------------
+Visit our contact page: https://atarwebb.com/contact`
+        }
+        
+        console.log('Sending admin email...')
+        await transporter.sendMail(adminEmail)
+        adminEmailResult = { success: true }
+        console.log('Admin email sent successfully')
+        
+        // Send client email
+        const clientEmail = {
+          from: 'admin@atarwebb.com',
           to: consultationData.email,
-          from: SENDGRID_FROM_EMAIL,
           subject: 'AtarWebb - Your Consultation Request & Quote',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -385,82 +340,80 @@ Submitted: ${new Date().toLocaleString()}`,
               </div>
               <p>We have received your consultation request and will contact you soon to confirm the details and prepare for our discussion.</p>
               <p>If you have any questions or need to reschedule, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
+              <p>You can also visit our <a href="https://atarwebb.com/contact" style="color: #2563eb;">contact page</a> for more information.</p>
               <p>We look forward to working with you!</p>
               <p>Best regards,<br>The AtarWebb Team</p>
             </div>
-          `,
-          attachments: []
-         }).then(() => {
-           console.log('Client email sent successfully')
-           return { success: true }
-         }).catch(error => {
-           console.error('Client email failed:', error)
-           return { success: false, error: error.message }
-         })
-
-         console.log('Emails sent successfully:', { adminEmailResult, clientEmailResult })
+          `
+        }
+        
+        console.log('Sending client email...')
+        await transporter.sendMail(clientEmail)
+        clientEmailResult = { success: true }
+        console.log('Client email sent successfully')
+        
+        console.log('Emails sent successfully:', { adminEmailResult, clientEmailResult })
       } catch (error) {
         console.error('Email sending error:', error)
-        console.error('Error details:', {
-          message: error.message,
-          response: error.response?.body,
-          statusCode: error.code
-        })
         adminEmailResult = { success: false, error: error.message }
         clientEmailResult = { success: false, error: error.message }
       }
-     } else {
-       console.log('=== SENDGRID API KEY NOT FOUND ===')
-       console.log('SendGrid API key not configured, skipping email sending')
-       console.log('Available environment variables:', Object.keys(process.env).filter(key => key.includes('SENDGRID')))
-       console.log('SENDGRID_API_KEY value:', SENDGRID_API_KEY)
-       
-       // Log email content for testing purposes
-       console.log('=== EMAIL CONTENT (FOR TESTING) ===')
-       console.log('ADMIN EMAIL WOULD BE SENT TO: admin@atarwebb.com')
-       console.log('CLIENT EMAIL WOULD BE SENT TO:', consultationData.email)
-       console.log('CONSULTATION ID:', consultationId)
-       console.log('CLIENT NAME:', consultationData.name)
-       console.log('SERVICE TYPE:', consultationData.serviceType)
-       console.log('PREFERRED DATE/TIME:', formattedDateTime)
-       console.log('FILE UPLOADED:', consultationData.uploadedFile ? `${consultationData.uploadedFile.name} (${consultationData.uploadedFile.size} bytes)` : 'No file')
-       console.log('=== END EMAIL CONTENT ===')
-     }
+    } else {
+      console.log('=== BREVO SMTP CREDENTIALS NOT FOUND ===')
+      console.log('Brevo SMTP credentials not configured, skipping email sending')
+      console.log('Available environment variables:', Object.keys(process.env).filter(key => key.includes('BREVO')))
+      
+      adminEmailResult = { success: false, error: 'Brevo SMTP credentials not configured' }
+      clientEmailResult = { success: false, error: 'Brevo SMTP credentials not configured' }
+    }
 
-    if (!adminEmailResult.success || !clientEmailResult.success) {
-      console.error('Email sending failed:', { adminEmailResult, clientEmailResult })
-      // Don't fail the request if email fails, just log it
+    // Create booking if date and time are provided
+    if (consultationData.preferredDate && consultationData.preferredTime) {
+      try {
+        console.log('Creating booking for consultation...')
+        
+        // Import supabaseDb for booking creation
+        const { supabaseDb } = await import('@/lib/supabase-db')
+        
+        const booking = await supabaseDb.booking.create({
+          name: consultationData.name,
+          email: consultationData.email,
+          phone: consultationData.phone || '',
+          date: consultationData.preferredDate,
+          time: consultationData.preferredTime,
+          duration: 30, // Default 30 minutes
+          type: 'CONSULTATION',
+          status: 'PENDING',
+          notes: `Consultation for: ${consultationData.serviceType || 'General Inquiry'}\nProject Details: ${consultationData.projectDetails}`
+        })
+        
+        console.log('Booking created successfully:', booking.id)
+      } catch (bookingError) {
+        console.error('Error creating booking:', bookingError)
+        // Don't fail the request if booking creation fails
+      }
     }
 
     // Return success response
-    console.log('=== RETURNING SUCCESS RESPONSE ===')
-    console.log('Consultation ID:', consultationId)
-    console.log('Admin email result:', adminEmailResult)
-    console.log('Client email result:', clientEmailResult)
-    
     return NextResponse.json({
       success: true,
-      message: 'Consultation request submitted successfully',
-      consultationId: consultationId
+      message: 'Consultation request submitted successfully!',
+      consultationId: consultationId,
+      emailSent: adminEmailResult.success && clientEmailResult.success,
+      emailErrors: {
+        admin: adminEmailResult.error,
+        client: clientEmailResult.error
+      }
     })
 
   } catch (error) {
     console.error('Consultation submission error:', error)
     return NextResponse.json(
-      { error: 'Failed to submit consultation request' },
+      { 
+        error: 'Failed to submit consultation request',
+        details: error.message 
+      },
       { status: 500 }
     )
   }
-}
-
-// Handle OPTIONS request for CORS
-export async function OPTIONS(req) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
 }

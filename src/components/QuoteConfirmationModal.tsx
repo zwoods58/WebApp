@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Download, Calendar, CheckCircle, FileText, Mail, Globe, Phone, Palette, Database, Monitor, Zap, Workflow, User, MessageSquare, Clock } from 'lucide-react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+import DynamicCalendar from './DynamicCalendar'
 
 interface QuoteConfirmationModalProps {
   isOpen: boolean
@@ -1021,42 +1022,13 @@ export default function QuoteConfirmationModal({
                         <Clock className="h-5 w-5 mr-2 text-blue-600" />
                         Preferred Consultation Time
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
-                          <select
-                            name="preferredDate"
-                            value={consultationData.preferredDate}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            <option value="">Select a date</option>
-                            {dateOptions.map((date) => (
-                              <option key={date.value} value={date.value}>
-                                {date.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
-                          <select
-                            name="preferredTime"
-                            value={consultationData.preferredTime}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            <option value="">Select a time</option>
-                            {timeSlots.map((slot) => (
-                              <option key={slot.value} value={slot.value}>
-                                {slot.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
+                      <DynamicCalendar
+                        selectedDate={consultationData.preferredDate}
+                        selectedTime={consultationData.preferredTime}
+                        onDateChange={(date) => setConsultationData(prev => ({ ...prev, preferredDate: date }))}
+                        onTimeChange={(time) => setConsultationData(prev => ({ ...prev, preferredTime: time }))}
+                        className="max-w-4xl"
+                      />
                       <p className="text-sm text-gray-500 mt-2">
                         * All times are in Central Time (Dallas, Texas). We'll confirm the exact time with you.
                       </p>

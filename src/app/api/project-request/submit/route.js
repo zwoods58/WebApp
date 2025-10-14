@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server'
-import sgMail from '@sendgrid/mail'
+import nodemailer from 'nodemailer'
 
-// Initialize SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+// Initialize Brevo SMTP
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: 'smtp-relay.brevo.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.BREVO_SMTP_USER,
+      pass: process.env.BREVO_SMTP_PASSWORD
+    }
+  })
 }
-
 
 // Rate limiting storage
 const rateLimitStore = new Map()
@@ -31,29 +38,22 @@ function checkRateLimit(ip) {
   return data.count <= maxRequests
 }
 
-function getClientIP(req) {
-  return req.ip || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1'
-}
-
 export async function POST(req) {
   try {
     // Get client IP for rate limiting
-    const clientIP = getClientIP(req)
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown'
     
-    // Check rate limit
+    // Check rate limiting
     if (!checkRateLimit(clientIP)) {
       return NextResponse.json(
-        { 
-          error: 'Too many project requests. Please try again later.'
-        },
-        { 
-          status: 429
-        }
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       )
     }
 
     // Parse form data
     const formData = await req.formData()
+    
     const projectData = {
       name: formData.get('name'),
       email: formData.get('email'),
@@ -66,123 +66,145 @@ export async function POST(req) {
       requirements: formData.get('requirements')
     }
 
-    console.log('Received project request data:', projectData)
-
     // Validate required fields
-    if (!projectData.name || !projectData.email || !projectData.projectType || !projectData.description) {
+    if (!projectData.name || !projectData.email || !projectData.description) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Generate a simple project ID
+    // Generate project ID
     const projectId = `PROJ-${Date.now().toString().slice(-6)}`
-    console.log('Generated project ID:', projectId)
 
-    // Send email to admin using SendGrid
-    console.log('Starting email sending process...')
+    // Send emails using Brevo SMTP
+    console.log('Starting email sending process with Brevo...')
     let adminEmailResult = { success: true }
     let clientEmailResult = { success: true }
     
-    if (process.env.SENDGRID_API_KEY) {
-      console.log('SendGrid API key found, sending emails...')
-      console.log('SendGrid API key (first 10 chars):', process.env.SENDGRID_API_KEY.substring(0, 10) + '...')
-      console.log('SendGrid FROM email:', process.env.SENDGRID_FROM_EMAIL)
+    console.log('=== BREVO EMAIL SENDING DEBUG ===')
+    console.log('Environment check:')
+    console.log('BREVO_SMTP_USER exists:', !!process.env.BREVO_SMTP_USER)
+    console.log('BREVO_SMTP_PASSWORD exists:', !!process.env.BREVO_SMTP_PASSWORD)
+    
+    if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+      console.log('Brevo SMTP credentials found, sending emails...')
+      
       try {
-        // Send email to admin
-        adminEmailResult = await sgMail.send({
+        const transporter = createTransporter()
+        
+        // Send admin email
+        const adminEmail = {
+          from: 'admin@atarwebb.com',
           to: 'admin@atarwebb.com',
-          from: process.env.SENDGRID_FROM_EMAIL || 'admin@atarwebb.com',
-          subject: 'New Project Request - AtarWebb',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #2563eb;">New Project Request - AtarWebb</h2>
-              <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <p><strong>Name:</strong> ${projectData.name}</p>
-                <p><strong>Email:</strong> ${projectData.email}</p>
-                <p><strong>Phone:</strong> ${projectData.phone || 'Not provided'}</p>
-                <p><strong>Company:</strong> ${projectData.company || 'Not provided'}</p>
-                <p><strong>Project Type:</strong> ${projectData.projectType}</p>
-                <p><strong>Budget:</strong> ${projectData.budget || 'Not specified'}</p>
-                <p><strong>Timeline:</strong> ${projectData.timeline || 'Not specified'}</p>
-                <p><strong>Description:</strong></p>
-                <p style="background: white; padding: 10px; border-radius: 4px; border-left: 4px solid #2563eb;">${projectData.description}</p>
-                ${projectData.requirements ? `<p><strong>Requirements:</strong></p><p style="background: white; padding: 10px; border-radius: 4px; border-left: 4px solid #2563eb;">${projectData.requirements}</p>` : ''}
-              </div>
-              <p style="color: #64748b;">Please review this project request in your admin dashboard.</p>
-            </div>
-          `
-        }).then(() => ({ success: true })).catch(error => ({ success: false, error: error.message }))
+          subject: `New Project Request - ${projectId}`,
+          text: `NEW PROJECT REQUEST
+==================
 
-        // Send confirmation email to client
-        clientEmailResult = await sgMail.send({
+CLIENT INFORMATION:
+------------------
+Name: ${projectData.name}
+Email: ${projectData.email}
+Phone: ${projectData.phone || 'Not provided'}
+Company: ${projectData.company || 'Not provided'}
+
+PROJECT DETAILS:
+----------------
+Project Type: ${projectData.projectType || 'Not specified'}
+Budget: ${projectData.budget || 'Not specified'}
+Timeline: ${projectData.timeline || 'Not specified'}
+
+DESCRIPTION:
+------------
+${projectData.description}
+
+REQUIREMENTS:
+-------------
+${projectData.requirements || 'No specific requirements provided'}
+
+ACTION REQUIRED:
+---------------
+Please contact the client to discuss project details and provide a quote.
+
+Project ID: ${projectId}
+Submitted: ${new Date().toLocaleString()}
+
+CONTACT INFORMATION:
+-------------------
+Visit our contact page: https://atarwebb.com/contact`
+        }
+        
+        console.log('Sending admin email...')
+        await transporter.sendMail(adminEmail)
+        adminEmailResult = { success: true }
+        console.log('Admin email sent successfully')
+        
+        // Send client email
+        const clientEmail = {
+          from: 'admin@atarwebb.com',
           to: projectData.email,
-          from: process.env.SENDGRID_FROM_EMAIL || 'admin@atarwebb.com',
-          subject: 'Project Request Received - AtarWebb',
+          subject: 'Thank you for your project request - AtarWebb',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #2563eb;">Project Request Received!</h2>
+              <h2 style="color: #2563eb;">Thank You for Your Project Request!</h2>
               <p>Dear ${projectData.name},</p>
-              <p>Thank you for your project request for <strong>${projectData.projectType}</strong>.</p>
-              <p>We have received your request and will review it carefully. Our team will contact you within 24 hours to discuss your project requirements and next steps.</p>
+              <p>Thank you for reaching out to AtarWebb. We have received your project request and are excited to learn more about your vision.</p>
               <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #2563eb; margin-bottom: 15px;">Your Project Details:</h3>
-                <p><strong>Project Type:</strong> ${projectData.projectType}</p>
-                <p><strong>Budget:</strong> ${projectData.budget || 'To be discussed'}</p>
-                <p><strong>Timeline:</strong> ${projectData.timeline || 'To be discussed'}</p>
-                <p><strong>Company:</strong> ${projectData.company || 'Not provided'}</p>
-                <p><strong>Phone:</strong> ${projectData.phone || 'Not provided'}</p>
+                <p><strong>Project Type:</strong> ${projectData.projectType || 'Not specified'}</p>
+                <p><strong>Budget:</strong> ${projectData.budget || 'Not specified'}</p>
+                <p><strong>Timeline:</strong> ${projectData.timeline || 'Not specified'}</p>
+                <p><strong>Description:</strong> ${projectData.description}</p>
+                ${projectData.requirements ? `<p><strong>Requirements:</strong> ${projectData.requirements}</p>` : ''}
               </div>
-              <p>If you have any immediate questions, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
+              <p>We will review your project details and contact you within 24 hours to discuss next steps and provide a detailed quote.</p>
+              <p>If you have any questions or need to provide additional information, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
+              <p>You can also visit our <a href="https://atarwebb.com/contact" style="color: #2563eb;">contact page</a> for more information.</p>
               <p>We look forward to working with you!</p>
               <p>Best regards,<br>The AtarWebb Team</p>
             </div>
           `
-        }).then(() => ({ success: true })).catch(error => ({ success: false, error: error.message }))
-
+        }
+        
+        console.log('Sending client email...')
+        await transporter.sendMail(clientEmail)
+        clientEmailResult = { success: true }
+        console.log('Client email sent successfully')
+        
         console.log('Emails sent successfully:', { adminEmailResult, clientEmailResult })
       } catch (error) {
         console.error('Email sending error:', error)
-        console.error('SendGrid error details:', error.response?.body || error.message)
         adminEmailResult = { success: false, error: error.message }
         clientEmailResult = { success: false, error: error.message }
       }
     } else {
-      console.log('SendGrid API key not configured, skipping email sending')
-    }
-
-    if (!adminEmailResult.success || !clientEmailResult.success) {
-      console.error('Email sending failed:', { adminEmailResult, clientEmailResult })
-      console.log('⚠️  WARNING: Emails failed to send, but form submission succeeded')
-      // Don't fail the request if email fails, just log it
-      // TODO: Fix SendGrid sender verification
+      console.log('=== BREVO SMTP CREDENTIALS NOT FOUND ===')
+      console.log('Brevo SMTP credentials not configured, skipping email sending')
+      
+      adminEmailResult = { success: false, error: 'Brevo SMTP credentials not configured' }
+      clientEmailResult = { success: false, error: 'Brevo SMTP credentials not configured' }
     }
 
     // Return success response
-        return NextResponse.json({
-          success: true,
-          message: 'Project request submitted successfully',
-          projectId: projectId
-        })
+    return NextResponse.json({
+      success: true,
+      message: 'Project request submitted successfully!',
+      projectId: projectId,
+      emailSent: adminEmailResult.success && clientEmailResult.success,
+      emailErrors: {
+        admin: adminEmailResult.error,
+        client: clientEmailResult.error
+      }
+    })
 
   } catch (error) {
     console.error('Project request submission error:', error)
     return NextResponse.json(
-      { error: 'Failed to submit project request' },
+      { 
+        error: 'Failed to submit project request',
+        details: error.message 
+      },
       { status: 500 }
     )
   }
-}
-
-// Handle OPTIONS request for CORS
-export async function OPTIONS(req) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
 }

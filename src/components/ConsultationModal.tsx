@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, Calendar, Clock, Upload, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react'
+import DynamicCalendar from './DynamicCalendar'
 
 interface ConsultationModalProps {
   isOpen: boolean
@@ -60,40 +61,6 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
     }
   }, [isOpen])
 
-  // Generate time slots for 7am-5pm Central Time
-  const generateTimeSlots = () => {
-    const slots = []
-    for (let hour = 7; hour <= 17; hour++) {
-      const time12 = hour > 12 ? hour - 12 : hour
-      const ampm = hour >= 12 ? 'PM' : 'AM'
-      const timeString = `${time12}:00 ${ampm} CT`
-      slots.push({ value: `${hour}:00`, label: timeString })
-    }
-    return slots
-  }
-
-  const timeSlots = generateTimeSlots()
-
-  // Generate next 30 days for date selection
-  const generateDateOptions = () => {
-    const dates = []
-    const today = new Date()
-    for (let i = 1; i <= 30; i++) {
-      const date = new Date(today)
-      date.setDate(today.getDate() + i)
-      const dateString = date.toISOString().split('T')[0]
-      const displayDate = date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
-      dates.push({ value: dateString, label: displayDate })
-    }
-    return dates
-  }
-
-  const dateOptions = generateDateOptions()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -330,42 +297,13 @@ export default function ConsultationModal({ isOpen, onClose, onSuccess, selected
                     <Clock className="h-5 w-5 mr-2 text-blue-600" />
                     Preferred Consultation Time
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
-                      <select
-                        name="preferredDate"
-                        value={formData.preferredDate}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select a date</option>
-                        {dateOptions.map((date) => (
-                          <option key={date.value} value={date.value}>
-                            {date.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Time *</label>
-                      <select
-                        name="preferredTime"
-                        value={formData.preferredTime}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select a time</option>
-                        {timeSlots.map((slot) => (
-                          <option key={slot.value} value={slot.value}>
-                            {slot.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+                  <DynamicCalendar
+                    selectedDate={formData.preferredDate}
+                    selectedTime={formData.preferredTime}
+                    onDateChange={(date) => setFormData(prev => ({ ...prev, preferredDate: date }))}
+                    onTimeChange={(time) => setFormData(prev => ({ ...prev, preferredTime: time }))}
+                    className="max-w-4xl"
+                  />
                   <p className="text-sm text-gray-500 mt-2">
                     * All times are in Central Time (Dallas, Texas). We'll confirm the exact time with you.
                   </p>

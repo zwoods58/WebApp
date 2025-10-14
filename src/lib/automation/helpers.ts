@@ -4,7 +4,22 @@ import nodemailer from 'nodemailer'
 
 // Create fresh transporter each time to ensure env vars are loaded
 function getEmailTransporter() {
-  // Option 1: Check for custom SMTP settings (Neo.space or any provider)
+  // Option 1: Check for Brevo SMTP settings (primary for all email sending)
+  if (process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASSWORD) {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_SMTP_USER,
+        pass: process.env.BREVO_SMTP_PASSWORD
+      }
+    })
+    console.log('[EMAIL]: ✅ Nodemailer initialized with Brevo SMTP')
+    return transporter
+  }
+  
+  // Option 2: Fallback to custom SMTP settings (Neo.space or any provider)
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
     const isSecure = process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465'
     const transporter = nodemailer.createTransport({
@@ -16,21 +31,7 @@ function getEmailTransporter() {
         pass: process.env.SMTP_PASSWORD
       }
     })
-    console.log(`[EMAIL]: ✅ Nodemailer initialized with Neo.space SMTP (${process.env.SMTP_HOST}:${process.env.SMTP_PORT})`)
-    return transporter
-  }
-  
-  // Option 2: Fallback to SendGrid SMTP (for CRM automation if SMTP not configured)
-  if (process.env.SENDGRID_API_KEY) {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.sendgrid.net',
-      port: 587,
-      auth: {
-        user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY
-      }
-    })
-    console.log('[EMAIL]: ✅ Nodemailer initialized with SendGrid SMTP (fallback)')
+    console.log(`[EMAIL]: ✅ Nodemailer initialized with custom SMTP (${process.env.SMTP_HOST}:${process.env.SMTP_PORT})`)
     return transporter
   }
   

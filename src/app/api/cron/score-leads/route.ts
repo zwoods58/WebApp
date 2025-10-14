@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { scoreAllLeads } from '@/lib/automation/lead-management'
+import { updateAllLeadScores } from '@/lib/automation/lead-management'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     }
 
     console.log('[CRON] Running lead scoring automation...')
-    await scoreAllLeads()
+    await updateAllLeadScores()
     
     return NextResponse.json({ 
       success: true, 
