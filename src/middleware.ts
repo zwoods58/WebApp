@@ -67,9 +67,9 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/api/admin/:path*',
-    // Temporarily disable API protection for testing
+    // Disable all authentication protection for now
+    // '/admin/:path*',
+    // '/api/admin/:path*',
     // '/api/leads/:path*',
     // '/api/tasks/:path*',
     '/api/cron/:path*',
