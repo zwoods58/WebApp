@@ -9,14 +9,4 @@
     }
   },
   "regions": ["iad1"],
-  "crons": [
-    {
-      "path": "/api/cron/score-leads",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/daily-report",
-      "schedule": "0 18 * * *"
-    }
-  ]
 }
