@@ -52,6 +52,8 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
   const [columnMapping, setColumnMapping] = useState<ColumnMapping>({})
   const [availableColumns, setAvailableColumns] = useState<string[]>([])
   const [showMapping, setShowMapping] = useState(false)
+  const [importMode, setImportMode] = useState<'file' | 'text'>('file')
+  const [textData, setTextData] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Define the expected lead fields and their possible column names
@@ -82,6 +84,59 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
       parseFile(file)
     } else {
       alert('Please select a valid CSV or Excel file.')
+    }
+  }
+
+  const handleTextDataChange = (value: string) => {
+    setTextData(value)
+    setImportResult(null)
+    if (value.trim()) {
+      parseTextData(value)
+    } else {
+      setPreviewData([])
+      setShowPreview(false)
+      setShowMapping(false)
+      setAvailableColumns([])
+      setColumnMapping({})
+    }
+  }
+
+  const parseTextData = (text: string) => {
+    try {
+      // Try to detect if it's tab-separated (Google Sheets) or comma-separated
+      const lines = text.trim().split('\n')
+      if (lines.length < 2) return
+
+      // Check if first line has tabs (Google Sheets format)
+      const hasTabs = lines[0].includes('\t')
+      const delimiter = hasTabs ? '\t' : ','
+
+      const headers = lines[0].split(delimiter).map(h => h.trim().replace(/"/g, ''))
+      const data: any[] = []
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (!line) continue
+
+        const values = line.split(delimiter).map(v => v.trim().replace(/"/g, ''))
+        if (values.length === headers.length) {
+          const row: any = {}
+          headers.forEach((header, index) => {
+            row[header] = values[index] || ''
+          })
+          data.push(row)
+        }
+      }
+
+      if (data.length > 0) {
+        setPreviewData(data)
+        setAvailableColumns(headers)
+        setShowPreview(true)
+        setShowMapping(true)
+        setColumnMapping(autoMapColumns(headers))
+      }
+    } catch (error) {
+      console.error('Error parsing text data:', error)
     }
   }
 
@@ -318,7 +373,7 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
   }
 
   const handleImport = async () => {
-    if (!selectedFile || previewData.length === 0) return
+    if (previewData.length === 0) return
 
     setIsImporting(true)
     setImportResult(null)
@@ -332,17 +387,72 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         return
       }
 
-      // Call the import API
-      const response = await fetch('/api/leads/import', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          leads: transformedData,
-          assignedTo: 'sales'
-        }),
-      })
+      let response;
+      
+      if (importMode === 'file' && selectedFile) {
+        // File import - use the existing multipart form data approach
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+        formData.append('assignedTo', 'sales')
+        
+        response = await fetch('/api/leads/import', {
+          method: 'POST',
+          body: formData,
+        })
+      } else {
+        // Text import - use direct API calls
+        const results = []
+        let imported = 0
+        let duplicates = 0
+        let errors: string[] = []
+        
+        for (const lead of transformedData) {
+          try {
+            const leadResponse = await fetch('/api/leads', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(lead),
+            })
+            
+            if (leadResponse.ok) {
+              imported++
+            } else {
+              const errorData = await leadResponse.json()
+              errors.push(`Failed to import ${lead.firstName} ${lead.lastName}: ${errorData.error || 'Unknown error'}`)
+            }
+          } catch (error) {
+            errors.push(`Failed to import ${lead.firstName} ${lead.lastName}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          }
+        }
+        
+        const result = {
+          success: errors.length === 0,
+          message: `Successfully imported ${imported} leads and assigned to sales team`,
+          imported,
+          duplicates,
+          errors
+        }
+        
+        setImportResult(result)
+        
+        if (result.success) {
+          setShowPreview(false)
+          setShowMapping(false)
+          setPreviewData([])
+          setColumnMapping({})
+          setAvailableColumns([])
+          setTextData('')
+        }
+
+        if (onImportComplete) {
+          onImportComplete(result)
+        }
+        
+        setIsImporting(false)
+        return
+      }
 
       const result = await response.json()
       setImportResult(result)
@@ -353,6 +463,7 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         setPreviewData([])
         setColumnMapping({})
         setAvailableColumns([])
+        setTextData('')
       }
 
       if (onImportComplete) {
@@ -420,6 +531,7 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         <h2 className="text-xl font-semibold text-white mb-4">Import Leads</h2>
         <div className="text-slate-300 space-y-2">
           <p>• Upload a CSV or Excel file with lead information</p>
+          <p>• Or paste data directly from Google Sheets</p>
           <p>• The system will automatically detect and map columns</p>
           <p>• You can manually adjust column mappings if needed</p>
           <p>• Required: At least First Name or Last Name</p>
@@ -434,9 +546,76 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         </button>
       </div>
 
-      {/* File Upload Area */}
+      {/* Import Mode Toggle */}
       <div className="card">
-        <h2 className="text-xl font-semibold text-white mb-4">Upload File</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">Choose Import Method</h2>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setImportMode('file')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              importMode === 'file'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+            }`}
+          >
+            Upload File
+          </button>
+          <button
+            onClick={() => setImportMode('text')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              importMode === 'text'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+            }`}
+          >
+            Paste from Google Sheets
+          </button>
+        </div>
+      </div>
+
+      {/* Text Area for Google Sheets */}
+      {importMode === 'text' && (
+        <div className="card">
+          <h2 className="text-xl font-semibold text-white mb-4">Paste Data from Google Sheets</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Instructions:
+              </label>
+              <div className="text-sm text-slate-400 space-y-1">
+                <p>1. Select your data in Google Sheets (including headers)</p>
+                <p>2. Copy the data (Ctrl+C or Cmd+C)</p>
+                <p>3. Paste it in the text area below</p>
+                <p>4. The system will automatically detect columns and map them</p>
+              </div>
+            </div>
+            <textarea
+              value={textData}
+              onChange={(e) => handleTextDataChange(e.target.value)}
+              placeholder="Paste your Google Sheets data here...
+firstName	lastName	email	company	phone
+John	Doe	john@example.com	Acme Corp	555-0123
+Jane	Smith	jane@example.com	Tech Inc	555-0456"
+              className="w-full h-48 px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={10}
+            />
+            {textData && (
+              <div className="text-sm text-slate-400">
+                {previewData.length > 0 ? (
+                  <span className="text-green-400">✓ {previewData.length} rows detected</span>
+                ) : (
+                  <span className="text-yellow-400">⚠ No valid data detected</span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* File Upload Area */}
+      {importMode === 'file' && (
+        <div className="card">
+          <h2 className="text-xl font-semibold text-white mb-4">Upload File</h2>
         
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
@@ -499,7 +678,8 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Column Mapping */}
       {showMapping && availableColumns.length > 0 && (
