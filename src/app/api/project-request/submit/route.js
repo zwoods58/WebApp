@@ -63,7 +63,11 @@ export async function POST(req) {
       budget: formData.get('budget'),
       timeline: formData.get('timeline'),
       description: formData.get('description'),
-      requirements: formData.get('requirements')
+      requirements: formData.get('requirements'),
+      // Appointment booking data
+      wantsAppointment: formData.get('wantsAppointment') === 'true',
+      preferredDate: formData.get('preferredDate'),
+      preferredTime: formData.get('preferredTime')
     }
 
     // Validate required fields
@@ -122,9 +126,15 @@ REQUIREMENTS:
 -------------
 ${projectData.requirements || 'No specific requirements provided'}
 
+APPOINTMENT BOOKING:
+-------------------
+Wants Consultation: ${projectData.wantsAppointment ? 'YES' : 'NO'}
+${projectData.wantsAppointment && projectData.preferredDate ? `Preferred Date: ${projectData.preferredDate}` : ''}
+${projectData.wantsAppointment && projectData.preferredTime ? `Preferred Time: ${projectData.preferredTime}` : ''}
+
 ACTION REQUIRED:
 ---------------
-Please contact the client to discuss project details and provide a quote.
+${projectData.wantsAppointment ? 'Client has requested a consultation call. Please confirm the appointment time and contact them.' : 'Please contact the client to discuss project details and provide a quote.'}
 
 Project ID: ${projectId}
 Submitted: ${new Date().toLocaleString()}
@@ -156,8 +166,16 @@ Visit our contact page: https://atarwebb.com/contact`
                 <p><strong>Timeline:</strong> ${projectData.timeline || 'Not specified'}</p>
                 <p><strong>Description:</strong> ${projectData.description}</p>
                 ${projectData.requirements ? `<p><strong>Requirements:</strong> ${projectData.requirements}</p>` : ''}
+                ${projectData.wantsAppointment ? `
+                  <div style="background: #e0f2fe; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #0284c7;">
+                    <h4 style="color: #0284c7; margin: 0 0 10px 0;">📅 Consultation Requested</h4>
+                    <p style="margin: 5px 0;"><strong>Preferred Date:</strong> ${projectData.preferredDate || 'Not specified'}</p>
+                    <p style="margin: 5px 0;"><strong>Preferred Time:</strong> ${projectData.preferredTime || 'Not specified'}</p>
+                    <p style="margin: 5px 0; font-size: 14px; color: #666;">We'll confirm the exact time with you shortly.</p>
+                  </div>
+                ` : ''}
               </div>
-              <p>We will review your project details and contact you within 24 hours to discuss next steps and provide a detailed quote.</p>
+              <p>${projectData.wantsAppointment ? 'We will review your project details and confirm your consultation appointment within 24 hours.' : 'We will review your project details and contact you within 24 hours to discuss next steps and provide a detailed quote.'}</p>
               <p>If you have any questions or need to provide additional information, please don't hesitate to contact us at <a href="mailto:admin@atarwebb.com">admin@atarwebb.com</a>.</p>
               <p>You can also visit our <a href="https://atarwebb.com/contact" style="color: #2563eb;">contact page</a> for more information.</p>
               <p>We look forward to working with you!</p>
@@ -185,16 +203,48 @@ Visit our contact page: https://atarwebb.com/contact`
       clientEmailResult = { success: false, error: 'Brevo SMTP credentials not configured' }
     }
 
+    // Create booking if appointment is requested
+    let bookingResult = { success: true }
+    if (projectData.wantsAppointment && projectData.preferredDate && projectData.preferredTime) {
+      try {
+        console.log('Creating booking for project request...')
+        
+        // Import fileDb for booking creation
+        const { fileDb } = await import('@/lib/file-db')
+        
+        const booking = await fileDb.booking.create({
+          name: projectData.name,
+          email: projectData.email,
+          phone: projectData.phone || '',
+          date: projectData.preferredDate,
+          time: projectData.preferredTime,
+          duration: 30, // Default 30 minutes
+          type: 'CONSULTATION',
+          status: 'PENDING',
+          notes: `Project Request Consultation\nProject Type: ${projectData.projectType || 'Not specified'}\nBudget: ${projectData.budget || 'Not specified'}\nTimeline: ${projectData.timeline || 'Not specified'}\nDescription: ${projectData.description}`
+        })
+        
+        console.log('Booking created successfully:', booking.id)
+        bookingResult = { success: true, bookingId: booking.id }
+      } catch (bookingError) {
+        console.error('Error creating booking:', bookingError)
+        bookingResult = { success: false, error: bookingError.message }
+        // Don't fail the request if booking creation fails
+      }
+    }
+
     // Return success response
     return NextResponse.json({
       success: true,
       message: 'Project request submitted successfully!',
       projectId: projectId,
       emailSent: adminEmailResult.success && clientEmailResult.success,
+      bookingCreated: bookingResult.success,
       emailErrors: {
         admin: adminEmailResult.error,
         client: clientEmailResult.error
-      }
+      },
+      bookingError: bookingResult.error
     })
 
   } catch (error) {

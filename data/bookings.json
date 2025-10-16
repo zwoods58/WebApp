@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "name": "Zebulun",
+    "email": "woodszebulun502@gmail.com",
+    "phone": "",
+    "date": "2025-10-21",
+    "time": "07:30",
+    "duration": 30,
+    "type": "CONSULTATION",
+    "status": "PENDING",
+    "notes": "Project Request Consultation\nProject Type: Business Website\nBudget: Under $1,000\nTimeline: Within 1 month\nDescription: greggr",
+    "id": "booking-1760593793543-55fqn1ra0",
+    "createdAt": "2025-10-16T05:49:53.543Z",
+    "updatedAt": "2025-10-16T05:49:53.543Z"
+  }
+]

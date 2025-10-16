@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Send, CheckCircle } from 'lucide-react'
+import { Mail, Send, CheckCircle, Calendar, Clock } from 'lucide-react'
+import DynamicCalendar from './DynamicCalendar'
 // Removed client-side imports - now using server-side API
 
 const contactInfo = [
@@ -48,16 +49,30 @@ export default function Contact() {
     budget: '',
     timeline: '',
     description: '',
-    requirements: ''
+    requirements: '',
+    // Appointment booking fields
+    wantsAppointment: false,
+    preferredDate: '',
+    preferredTime: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }))
+  }
+
+  const handleAppointmentToggle = (wantsAppointment: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      wantsAppointment,
+      // Clear appointment data if toggling off
+      preferredDate: wantsAppointment ? prev.preferredDate : '',
+      preferredTime: wantsAppointment ? prev.preferredTime : ''
     }))
   }
 
@@ -77,6 +92,10 @@ export default function Contact() {
       submitData.append('timeline', formData.timeline)
       submitData.append('description', formData.description)
       submitData.append('requirements', formData.requirements)
+      // Appointment booking data
+      submitData.append('wantsAppointment', formData.wantsAppointment.toString())
+      submitData.append('preferredDate', formData.preferredDate)
+      submitData.append('preferredTime', formData.preferredTime)
 
       console.log('Submitting project request...')
 
@@ -105,7 +124,10 @@ export default function Contact() {
             budget: '',
             timeline: '',
             description: '',
-            requirements: ''
+            requirements: '',
+            wantsAppointment: false,
+            preferredDate: '',
+            preferredTime: ''
           })
         }, 3000)
       } else {
@@ -340,6 +362,49 @@ export default function Contact() {
                     className="input-field"
                     placeholder="Any specific technical requirements, integrations, or constraints..."
                   />
+                </div>
+
+                {/* Appointment Booking Section */}
+                <div className="border-t border-slate-700 pt-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Calendar className="h-6 w-6 text-blue-400" />
+                    <h4 className="text-lg font-semibold text-white">Schedule a Consultation</h4>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 mb-4">
+                    <input
+                      type="checkbox"
+                      id="wantsAppointment"
+                      name="wantsAppointment"
+                      checked={formData.wantsAppointment}
+                      onChange={(e) => handleAppointmentToggle(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 bg-slate-800 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <label htmlFor="wantsAppointment" className="text-sm font-medium text-gray-300">
+                      I'd like to schedule a free consultation call to discuss my project
+                    </label>
+                  </div>
+
+                  {formData.wantsAppointment && (
+                    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-600">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Clock className="h-5 w-5 text-blue-400" />
+                        <span className="text-sm font-medium text-gray-300">Select your preferred consultation time</span>
+                      </div>
+                      
+                      <DynamicCalendar
+                        selectedDate={formData.preferredDate}
+                        selectedTime={formData.preferredTime}
+                        onDateChange={(date) => setFormData(prev => ({ ...prev, preferredDate: date }))}
+                        onTimeChange={(time) => setFormData(prev => ({ ...prev, preferredTime: time }))}
+                        className="max-w-2xl"
+                      />
+                      
+                      <p className="text-xs text-gray-400 mt-2">
+                        * All times are in Central Time (Dallas, Texas). We'll confirm the exact time with you.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <button
