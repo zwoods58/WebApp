@@ -262,7 +262,14 @@ const comboDeals = [
     description: 'Complete business package with professional setup',
     badge: 'Most Popular',
     services: ['basic-launchpad', 'logo-design', 'domain-registration', 'hosting', 'email-service', 'ad-copies'],
-    features: ['Lead capture forms', 'Email marketing setup', 'Professional branding']
+    features: [
+      'Workflow 1',
+      'Social Media marketing setup (5 ads, social media setup (Facebook, TikTok, LinkedIn)',
+      'Professional Branding (colors, Logo)',
+      'Basic Landing Page',
+      'Domain (monthly)',
+      'Hosting (monthly)'
+    ]
   },
   {
     id: 'business-automation-bundle',
@@ -270,7 +277,12 @@ const comboDeals = [
     description: 'Multi-channel marketing and customer management',
     badge: 'Best Value',
     services: ['standard-optimizer', 'logo-design', 'domain-hosting-combo', 'email-service', 'ad-copies'],
-    features: ['Customer journey optimization', 'Multi-page website', 'Professional setup']
+    features: [
+      'Smart launch package',
+      '+1 workflow',
+      '+5 ads',
+      'Email setup (monthly)'
+    ]
   },
   {
     id: 'enterprise-automation-suite',
@@ -278,7 +290,14 @@ const comboDeals = [
     description: 'Complete business growth ecosystem',
     badge: 'Complete',
     services: ['premium-accelerator', 'logo-design', 'domain-hosting-combo', 'email-service', 'supabase-connect', 'api-usage', 'automation-workflow'],
-    features: ['Complete business ecosystem', 'Advanced features', 'Custom integrations']
+    features: [
+      'Workflow',
+      'The Standard Optimizer',
+      'Social Media Marketing setup (20 ads, social media setup (Facebook, TikTok, LinkedIn)',
+      'Email',
+      'Domain',
+      'Hosting'
+    ]
   }
 ]
 
