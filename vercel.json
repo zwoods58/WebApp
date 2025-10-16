@@ -11,26 +11,6 @@
   "regions": ["iad1"],
   "crons": [
     {
-      "path": "/api/cron/score-leads",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/assign-leads", 
-      "schedule": "15 * * * *"
-    },
-    {
-      "path": "/api/cron/update-metrics",
-      "schedule": "30 * * * *"
-    },
-    {
-      "path": "/api/cron/follow-up-leads",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/escalate-leads",
-      "schedule": "0 10 * * *"
-    },
-    {
       "path": "/api/cron/daily-report",
       "schedule": "0 18 * * *"
     },
