@@ -1,0 +1,4 @@
+firstName,lastName,email,company,phone,source,industry
+Alice,Johnson,alice.j@freshcorp.com,Fresh Corp,555-1001,Website,Technology
+Bob,Williams,bob.w@newstart.com,NewStart Inc,555-1002,Referral,Software
+Carol,Davis,carol.d@innovate.io,Innovate LLC,555-1003,LinkedIn,Fintech

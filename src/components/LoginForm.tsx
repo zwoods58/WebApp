@@ -21,16 +21,28 @@ export default function LoginForm() {
     setError('')
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       })
 
-      if (error) {
-        setError(error.message)
+      const data = await response.json()
+
+      if (response.ok) {
+        // Store the token in a cookie
+        document.cookie = `auth-token=${data.token}; path=/; max-age=${24 * 60 * 60}; secure; samesite=strict`
+        
+        // Get redirect URL from query params
+        const urlParams = new URLSearchParams(window.location.search)
+        const redirectUrl = urlParams.get('redirect') || '/admin'
+        
+        // Redirect to the appropriate dashboard
+        window.location.href = redirectUrl
       } else {
-        // Redirect to admin dashboard
-        window.location.href = '/admin'
+        setError(data.error || 'Login failed')
       }
     } catch (err) {
       setError('An unexpected error occurred')

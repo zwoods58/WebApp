@@ -122,3 +122,4 @@ If you're still getting 401 errors after following these steps:
 4. **Test each endpoint individually** to isolate the problem
 
 The most common issue is the `CRON_SECRET` not being set in the Production environment in Vercel.
+

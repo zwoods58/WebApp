@@ -94,5 +94,65 @@
     "id": "task-1760464658667-ulruy5rl2",
     "createdAt": "2025-10-14T17:57:38.668Z",
     "updatedAt": "2025-10-14T17:57:38.668Z"
+  },
+  {
+    "title": "Call undefined undefined",
+    "description": "Initial outreach call for new lead from Import",
+    "dueDate": "2025-10-15",
+    "priority": "HIGH",
+    "status": "PENDING",
+    "category": "Sales",
+    "assignedTo": "2",
+    "id": "task-1760469170404-966q6ee7m",
+    "createdAt": "2025-10-14T19:12:50.404Z",
+    "updatedAt": "2025-10-14T19:12:50.404Z"
+  },
+  {
+    "title": "Call undefined undefined",
+    "description": "Initial outreach call for new lead from Import",
+    "dueDate": "2025-10-15",
+    "priority": "HIGH",
+    "status": "PENDING",
+    "category": "Sales",
+    "assignedTo": "2",
+    "id": "task-1760469172960-ebqnvpvhk",
+    "createdAt": "2025-10-14T19:12:52.960Z",
+    "updatedAt": "2025-10-14T19:12:52.960Z"
+  },
+  {
+    "title": "Call undefined undefined",
+    "description": "Initial outreach call for new lead from Import",
+    "dueDate": "2025-10-15",
+    "priority": "MEDIUM",
+    "status": "PENDING",
+    "category": "Sales",
+    "assignedTo": "2",
+    "id": "task-1760469174703-j461mnuy2",
+    "createdAt": "2025-10-14T19:12:54.703Z",
+    "updatedAt": "2025-10-14T19:12:54.703Z"
+  },
+  {
+    "title": "Call undefined undefined",
+    "description": "Initial outreach call for new lead from Import",
+    "dueDate": "2025-10-15",
+    "priority": "HIGH",
+    "status": "PENDING",
+    "category": "Sales",
+    "assignedTo": "2",
+    "id": "task-1760469176445-cvwawk421",
+    "createdAt": "2025-10-14T19:12:56.445Z",
+    "updatedAt": "2025-10-14T19:12:56.445Z"
+  },
+  {
+    "title": "Call undefined undefined",
+    "description": "Initial outreach call for new lead from Import",
+    "dueDate": "2025-10-15",
+    "priority": "MEDIUM",
+    "status": "PENDING",
+    "category": "Sales",
+    "assignedTo": "2",
+    "id": "task-1760469178348-ykqojm6lq",
+    "createdAt": "2025-10-14T19:12:58.348Z",
+    "updatedAt": "2025-10-14T19:12:58.348Z"
   }
 ]

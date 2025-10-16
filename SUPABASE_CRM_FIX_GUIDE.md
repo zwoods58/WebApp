@@ -177,3 +177,5 @@ If you're still having issues after following this guide:
 4. **Make sure you ran the complete SQL script** in Supabase
 
 The most common issue is not running the complete SQL script or having environment variables set incorrectly.
+
+

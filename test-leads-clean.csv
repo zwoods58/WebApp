@@ -1,0 +1,7 @@
+firstName,lastName,email,company,phone,source,industry
+John,Doe,john.doe@example.com,Acme Corporation,555-0123,Website,Technology
+Jane,Smith,jane.smith@techcorp.com,TechCorp Inc,555-0456,Referral,Software
+Mike,Johnson,mike.j@startup.io,StartupCo,555-0789,LinkedIn,Fintech
+Sarah,Williams,sarah.w@bigcorp.com,BigCorp LLC,555-0321,Email,Healthcare
+David,Brown,david.b@consulting.com,Consulting Pro,555-0654,Website,Consulting
+

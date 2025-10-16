@@ -5,202 +5,254 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Database types for CRM system
+// Database types
 export interface Database {
   public: {
     Tables: {
-      leads: {
+      clients: {
         Row: {
           id: string
-          first_name: string
-          last_name: string
-          email: string | null
+          created_at: string
+          updated_at: string
+          name: string
+          email: string
           phone: string | null
           company: string | null
-          title: string | null
+          status: 'lead' | 'client' | 'inactive'
           source: string | null
-          industry: string | null
-          website: string | null
-          address: string | null
-          city: string | null
-          state: string | null
-          zip_code: string | null
-          time_zone: string | null
-          status: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
-          status_detail: string | null
-          score: number
           notes: string | null
-          last_contact: string | null
-          user_id: string | null
-          unsubscribed: boolean
-          created_at: string
-          updated_at: string
+          user_id: string
         }
         Insert: {
           id?: string
-          first_name: string
-          last_name: string
-          email?: string | null
-          phone?: string | null
-          company?: string | null
-          title?: string | null
-          source?: string | null
-          industry?: string | null
-          website?: string | null
-          address?: string | null
-          city?: string | null
-          state?: string | null
-          zip_code?: string | null
-          time_zone?: string | null
-          status?: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
-          status_detail?: string | null
-          score?: number
-          notes?: string | null
-          last_contact?: string | null
-          user_id?: string | null
-          unsubscribed?: boolean
           created_at?: string
           updated_at?: string
+          name: string
+          email: string
+          phone?: string | null
+          company?: string | null
+          status?: 'lead' | 'client' | 'inactive'
+          source?: string | null
+          notes?: string | null
+          user_id: string
         }
         Update: {
           id?: string
-          first_name?: string
-          last_name?: string
-          email?: string | null
-          phone?: string | null
-          company?: string | null
-          title?: string | null
-          source?: string | null
-          industry?: string | null
-          website?: string | null
-          address?: string | null
-          city?: string | null
-          state?: string | null
-          zip_code?: string | null
-          time_zone?: string | null
-          status?: 'NEW' | 'NOT_INTERESTED' | 'FOLLOW_UP' | 'QUALIFIED' | 'APPOINTMENT_BOOKED' | 'CLOSED_WON'
-          status_detail?: string | null
-          score?: number
-          notes?: string | null
-          last_contact?: string | null
-          user_id?: string | null
-          unsubscribed?: boolean
           created_at?: string
           updated_at?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          company?: string | null
+          status?: 'lead' | 'client' | 'inactive'
+          source?: string | null
+          notes?: string | null
+          user_id?: string
         }
       }
-      users: {
+      projects: {
         Row: {
           id: string
-          email: string
-          password: string
-          name: string
-          role: 'ADMIN' | 'SALES'
           created_at: string
           updated_at: string
+          title: string
+          description: string
+          status: 'planning' | 'in_progress' | 'review' | 'completed' | 'on_hold'
+          priority: 'low' | 'medium' | 'high' | 'urgent'
+          budget: number | null
+          start_date: string | null
+          end_date: string | null
+          client_id: string
+          user_id: string
         }
         Insert: {
           id?: string
-          email: string
-          password: string
-          name: string
-          role: 'ADMIN' | 'SALES'
           created_at?: string
           updated_at?: string
+          title: string
+          description: string
+          status?: 'planning' | 'in_progress' | 'review' | 'completed' | 'on_hold'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          budget?: number | null
+          start_date?: string | null
+          end_date?: string | null
+          client_id: string
+          user_id: string
         }
         Update: {
           id?: string
-          email?: string
-          password?: string
-          name?: string
-          role?: 'ADMIN' | 'SALES'
           created_at?: string
           updated_at?: string
+          title?: string
+          description?: string
+          status?: 'planning' | 'in_progress' | 'review' | 'completed' | 'on_hold'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          budget?: number | null
+          start_date?: string | null
+          end_date?: string | null
+          client_id?: string
+          user_id?: string
         }
       }
       tasks: {
         Row: {
           id: string
-          title: string
-          description: string | null
-          due_date: string
-          priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-          status: 'PENDING' | 'COMPLETED' | 'OVERDUE'
-          category: string
-          assigned_to: string | null
-          lead_id: string | null
-          lead_name: string | null
           created_at: string
           updated_at: string
+          title: string
+          description: string | null
+          status: 'todo' | 'in_progress' | 'review' | 'completed'
+          priority: 'low' | 'medium' | 'high' | 'urgent'
+          due_date: string | null
+          project_id: string
+          user_id: string
         }
         Insert: {
           id?: string
-          title: string
-          description?: string | null
-          due_date: string
-          priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-          status?: 'PENDING' | 'COMPLETED' | 'OVERDUE'
-          category: string
-          assigned_to?: string | null
-          lead_id?: string | null
-          lead_name?: string | null
           created_at?: string
           updated_at?: string
+          title: string
+          description?: string | null
+          status?: 'todo' | 'in_progress' | 'review' | 'completed'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          due_date?: string | null
+          project_id: string
+          user_id: string
         }
         Update: {
           id?: string
-          title?: string
-          description?: string | null
-          due_date?: string
-          priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-          status?: 'PENDING' | 'COMPLETED' | 'OVERDUE'
-          category?: string
-          assigned_to?: string | null
-          lead_id?: string | null
-          lead_name?: string | null
           created_at?: string
           updated_at?: string
+          title?: string
+          description?: string | null
+          status?: 'todo' | 'in_progress' | 'review' | 'completed'
+          priority?: 'low' | 'medium' | 'high' | 'urgent'
+          due_date?: string | null
+          project_id?: string
+          user_id?: string
+        }
+      }
+      project_requests: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          name: string
+          email: string
+          phone: string | null
+          company: string | null
+          project_type: string
+          budget: string | null
+          timeline: string | null
+          description: string
+          requirements: string | null
+          status: 'new' | 'contacted' | 'quoted' | 'accepted' | 'rejected'
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name: string
+          email: string
+          phone?: string | null
+          company?: string | null
+          project_type: string
+          budget?: string | null
+          timeline?: string | null
+          description: string
+          requirements?: string | null
+          status?: 'new' | 'contacted' | 'quoted' | 'accepted' | 'rejected'
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          company?: string | null
+          project_type?: string
+          budget?: string | null
+          timeline?: string | null
+          description?: string
+          requirements?: string | null
+          status?: 'new' | 'contacted' | 'quoted' | 'accepted' | 'rejected'
+          notes?: string | null
+        }
+      }
+      analytics: {
+        Row: {
+          id: string
+          created_at: string
+          page: string
+          event: string
+          user_id: string | null
+          session_id: string | null
+          metadata: any | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          page: string
+          event: string
+          user_id?: string | null
+          session_id?: string | null
+          metadata?: any | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          page?: string
+          event?: string
+          user_id?: string | null
+          session_id?: string | null
+          metadata?: any | null
         }
       }
       bookings: {
         Row: {
           id: string
+          created_at: string
+          updated_at: string
           name: string
           email: string
           phone: string | null
           date: string
           time: string
           duration: number
-          type: 'CONSULTATION' | 'CONTACT'
-          status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+          type: string
+          status: string
           notes: string | null
-          created_at: string
         }
         Insert: {
           id?: string
+          created_at?: string
+          updated_at?: string
           name: string
           email: string
           phone?: string | null
           date: string
           time: string
           duration?: number
-          type?: 'CONSULTATION' | 'CONTACT'
-          status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+          type?: string
+          status?: string
           notes?: string | null
-          created_at?: string
         }
         Update: {
           id?: string
+          created_at?: string
+          updated_at?: string
           name?: string
           email?: string
           phone?: string | null
           date?: string
           time?: string
           duration?: number
-          type?: 'CONSULTATION' | 'CONTACT'
-          status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+          type?: string
+          status?: string
           notes?: string | null
-          created_at?: string
         }
       }
     }

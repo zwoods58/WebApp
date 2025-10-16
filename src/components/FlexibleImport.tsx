@@ -134,7 +134,7 @@ export default function FlexibleImport({ onImportComplete }: FlexibleImportProps
         setAvailableColumns(headers)
         setShowPreview(true)
         setShowMapping(true)
-        setColumnMapping(autoMapColumns(headers))
+        setColumnMapping(autoDetectColumns(headers))
       }
     } catch (error) {
       console.error('Error parsing text data:', error)

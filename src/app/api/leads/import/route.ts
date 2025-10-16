@@ -150,9 +150,7 @@ export async function POST(request: Request) {
         console.log('Parsed lead data:', {
           firstName: leadData.firstName,
           lastName: leadData.lastName,
-          email: leadData.email,
-          rawValues: values,
-          headers: headers
+          email: leadData.email
         })
         
         // Validate required fields
