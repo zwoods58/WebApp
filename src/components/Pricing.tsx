@@ -39,7 +39,7 @@ const pricingPlans = [
     price: '$250',
     priceUSD: 250,
     description: 'Ideal for growing businesses needing credibility and better conversion rates',
-    idealFor: 'Growing businesses needing credibility, better conversion rates, and basic automation across multiple content areas.',
+    idealFor: 'Growing businesses needing credibility and better conversion rates across multiple content areas.',
     coreStructure: 'Three pages (Home, About, Contact).',
     designApproach: 'Semi-Custom Design. Template structure with tailored colors, typography, and section reordering.',
     includedSections: [

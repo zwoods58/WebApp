@@ -69,7 +69,7 @@ const pricingPlans: PricingPlan[] = [
     name: 'The Basic Launchpad',
     tier: 'Basic (Single Page)',
     price: 150,
-    description: 'Professional website with automated lead capture and conversion optimization',
+    description: 'Professional website with lead capture and conversion optimization',
     idealFor: 'Startups, lead capture, single product launches, budget-focused campaigns.',
     coreStructure: 'One single-scroll page (no navigation bar).',
     designApproach: 'Template-Based. Design chosen from a curated list of modern, proven layouts.',
@@ -100,8 +100,8 @@ const pricingPlans: PricingPlan[] = [
     name: 'The Standard Optimizer',
     tier: 'Standard (Multi-Page)',
     price: 250,
-    description: 'Multi-page website with customer management and automation capabilities',
-    idealFor: 'Growing businesses needing credibility, better conversion rates, and basic automation across multiple content areas.',
+    description: 'Multi-page website with customer management capabilities',
+    idealFor: 'Growing businesses needing credibility and better conversion rates across multiple content areas.',
     coreStructure: 'Three pages (Home, About, Contact).',
     designApproach: 'Semi-Custom Design. Template structure with tailored colors, typography, and section reordering.',
     includedSections: [
@@ -136,7 +136,7 @@ const pricingPlans: PricingPlan[] = [
     name: 'The Premium Accelerator',
     tier: 'Premium (Advanced Multi-Page)',
     price: 600,
-    description: 'Advanced website with complete business automation ecosystem and custom integrations',
+    description: 'Advanced website with custom integrations and advanced features',
     idealFor: 'High-traffic campaigns, established brands requiring unique visual identity and complex data capture.',
     coreStructure: 'Up to Five pages (custom structure with deep component reuse).',
     designApproach: 'Semi-Custom but with more control over design. Deep customization of template components and user flows.',
@@ -259,26 +259,26 @@ const comboDeals = [
   {
     id: 'smart-launch-package',
     name: 'Smart Launch Package',
-    description: 'Complete business package with automation built-in',
+    description: 'Complete business package with professional setup',
     badge: 'Most Popular',
     services: ['basic-launchpad', 'logo-design', 'domain-registration', 'hosting', 'email-service', 'ad-copies'],
-    features: ['Automated lead capture', 'Email marketing setup', 'Professional branding']
+    features: ['Lead capture forms', 'Email marketing setup', 'Professional branding']
   },
   {
     id: 'business-automation-bundle',
-    name: 'Business Automation Bundle',
-    description: 'Multi-channel automation and customer management',
+    name: 'Business Growth Bundle',
+    description: 'Multi-channel marketing and customer management',
     badge: 'Best Value',
     services: ['standard-optimizer', 'logo-design', 'domain-hosting-combo', 'email-service', 'ad-copies'],
-    features: ['Customer journey automation', 'Multi-page website', 'Professional setup']
+    features: ['Customer journey optimization', 'Multi-page website', 'Professional setup']
   },
   {
     id: 'enterprise-automation-suite',
-    name: 'Enterprise Automation Suite',
-    description: 'Complete business automation ecosystem',
+    name: 'Enterprise Growth Suite',
+    description: 'Complete business growth ecosystem',
     badge: 'Complete',
     services: ['premium-accelerator', 'logo-design', 'domain-hosting-combo', 'email-service', 'supabase-connect', 'api-usage', 'automation-workflow'],
-    features: ['Full automation ecosystem', 'Advanced features', 'Custom integrations']
+    features: ['Complete business ecosystem', 'Advanced features', 'Custom integrations']
   }
 ]
 

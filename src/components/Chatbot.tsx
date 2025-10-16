@@ -16,14 +16,12 @@ const websiteContent = {
     'The Standard Optimizer - Multi-page websites for growing businesses ($250)',
     'The Premium Accelerator - Advanced websites with custom features ($600)',
     'Complete Business Packages - Contact for custom pricing',
-    'Automation Workflow - Contact for custom pricing'
   ],
   pricing: [
     'The Basic Launchpad: $150 - Perfect for startups and budget-focused campaigns',
     'The Standard Optimizer: $250 - Ideal for growing businesses (Most Popular)',
     'The Premium Accelerator: $600 - Advanced features and custom functionality',
     'Complete Business Packages: Contact for pricing - Custom packages available',
-    'Automation Workflow: Contact for pricing - Custom automation solutions',
     'All packages include 7-day delivery with professional development standards',
     'Transparent pricing with no hidden fees or surprises'
   ],
