@@ -1,0 +1,123 @@
+{
+  "theme": {
+    "primaryColor": "blue-600",
+    "secondaryColor": "slate-900",
+    "accentColor": "blue-500",
+    "fontFamily": "Inter, sans-serif"
+  },
+  "nav": {
+    "logo": "💻",
+    "businessName": "SaaS Platform",
+    "links": [
+      { "label": "Home", "href": "#home" },
+      { "label": "Features", "href": "#features" },
+      { "label": "Pricing", "href": "#pricing" },
+      { "label": "About", "href": "#about" },
+      { "label": "Contact", "href": "#contact" }
+    ],
+    "ctaText": "Get Started",
+    "ctaLink": "#pricing"
+  },
+  "hero": {
+    "title": "Powerful Software Solutions for Your Business",
+    "subtitle": "Streamline your workflow with our cutting-edge SaaS platform designed to scale with your needs.",
+    "ctaPrimary": "Start Free Trial",
+    "ctaPrimaryLink": "#pricing",
+    "ctaSecondary": "Watch Demo",
+    "ctaSecondaryLink": "#demo",
+    "backgroundImage": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop"
+  },
+  "features": [
+    {
+      "title": "Cloud-Based",
+      "description": "Access your data from anywhere, anytime with our secure cloud infrastructure.",
+      "icon": "☁️",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop"
+    },
+    {
+      "title": "Scalable Architecture",
+      "description": "Grows with your business from startup to enterprise without missing a beat.",
+      "icon": "📈",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
+    },
+    {
+      "title": "24/7 Support",
+      "description": "Round-the-clock customer support to help you succeed every step of the way.",
+      "icon": "💬",
+      "image": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop"
+    }
+  ],
+  "plans": [
+    {
+      "name": "Starter",
+      "price": "$29",
+      "billingPeriod": "per month",
+      "isFeatured": false,
+      "features": ["Up to 5 Users", "Basic Features", "Email Support", "10GB Storage"],
+      "ctaText": "Get Started"
+    },
+    {
+      "name": "Professional",
+      "price": "$99",
+      "billingPeriod": "per month",
+      "isFeatured": true,
+      "features": ["Up to 25 Users", "All Features", "Priority Support", "100GB Storage", "API Access"],
+      "ctaText": "Most Popular"
+    },
+    {
+      "name": "Enterprise",
+      "price": "Custom",
+      "billingPeriod": "per month",
+      "isFeatured": false,
+      "features": ["Unlimited Users", "Custom Features", "Dedicated Support", "Unlimited Storage", "Custom Integrations"],
+      "ctaText": "Contact Sales"
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "This platform transformed how we work. The automation features saved us hours every week.",
+      "name": "Alex Thompson",
+      "rating": 5,
+      "position": "CEO",
+      "company": "TechCorp",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+    },
+    {
+      "quote": "Best SaaS solution we've used. The support team is incredible and the platform just works.",
+      "name": "Maria Garcia",
+      "rating": 5,
+      "position": "CTO",
+      "company": "InnovateLabs",
+      "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+    }
+  ],
+  "footer": {
+    "businessName": "SaaS Platform",
+    "description": "Empowering businesses with innovative software solutions.",
+    "businessEmail": "info@saasplatform.com",
+    "businessPhone": "+1 (555) 123-4567",
+    "businessAddress": "123 Tech Street, Silicon Valley, CA 94000",
+    "socialLinks": {
+      "facebook": "https://facebook.com/saasplatform",
+      "twitter": "https://twitter.com/saasplatform",
+      "linkedin": "https://linkedin.com/company/saasplatform"
+    },
+    "quickLinks": [
+      { "label": "About", "href": "#about" },
+      { "label": "Features", "href": "#features" },
+      { "label": "Pricing", "href": "#pricing" },
+      { "label": "Contact", "href": "#contact" }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

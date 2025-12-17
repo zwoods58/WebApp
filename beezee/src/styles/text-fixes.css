@@ -1,0 +1,57 @@
+/* Text Visibility Fixes - Ensure all text is visible */
+
+/* Global text color fallback */
+* {
+  color: inherit;
+}
+
+/* Ensure all headings are visible */
+h1, h2, h3, h4, h5, h6 {
+  color: #2C2C2E !important; /* Deep Charcoal */
+}
+
+/* Ensure all paragraphs and text are visible */
+p, span, div, a, label, li {
+  color: inherit;
+}
+
+/* Ensure buttons have visible text */
+button {
+  color: inherit;
+}
+
+/* Ensure inputs have visible text */
+input, textarea, select {
+  color: #2C2C2E !important; /* Deep Charcoal */
+}
+
+/* Dashboard specific fixes */
+.dashboard-greeting-text,
+.dashboard-date,
+.hero-balance-label,
+.hero-balance-stat-label,
+.quick-action-text,
+.recent-transactions-title,
+.insights-header-title,
+.reports-title {
+  color: #2C2C2E !important; /* Deep Charcoal */
+}
+
+/* Secondary text */
+.dashboard-date,
+.hero-balance-label,
+.hero-balance-stat-label {
+  color: #6C6C70 !important; /* Secondary text */
+}
+
+/* Balance amount - dark text on light gradient background */
+.hero-balance-amount {
+  color: #2C2C2E !important; /* Deep Charcoal - visible on light gradient */
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* Subtle shadow for depth */
+}
+
+/* Ensure icons are visible */
+svg {
+  color: inherit;
+}
+

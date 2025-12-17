@@ -1,0 +1,242 @@
+/* Reports Page Styles */
+
+.reports-container {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  padding-bottom: calc(72px + var(--spacing-medium) + var(--safe-area-bottom));
+  background: linear-gradient(to bottom, #F0F8FB, #FFFFFF);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-theme="dark"] .reports-container {
+  background: linear-gradient(to bottom, #1A2529, #1C1C1E);
+}
+
+.reports-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-medium);
+  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  margin-bottom: var(--spacing-medium);
+}
+
+.reports-back-button {
+  padding: var(--spacing-xsmall);
+  min-width: 44px; /* Minimum touch target */
+  min-height: 44px; /* Minimum touch target */
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  border-radius: var(--radius-tight);
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reports-back-button:active {
+  background: var(--color-subtle-gray);
+}
+
+.reports-title {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  width: 100%;
+}
+
+.period-selector {
+  display: flex;
+  gap: var(--spacing-small);
+  padding: var(--spacing-medium);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.period-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.period-chip {
+  padding: 10px var(--spacing-large);
+  border-radius: var(--radius-pill);
+  border: 2px solid #E5E7EB;
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  transition: var(--transition-normal);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.period-chip.active {
+  background: var(--gradient-primary-button);
+  border-color: transparent;
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+.summary-card {
+  margin: 0 var(--spacing-medium) var(--spacing-large);
+  padding: var(--spacing-large);
+  border-radius: var(--radius-card);
+  background: var(--gradient-morning-mist);
+  box-shadow: var(--shadow-level-2);
+  width: calc(100% - 32px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.summary-period-label {
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-medium);
+}
+
+.summary-stats-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-large);
+}
+
+.summary-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-micro);
+}
+
+.summary-stat-label {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.summary-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+}
+
+.summary-stat-value.income {
+  color: var(--color-success-green);
+}
+
+.summary-stat-value.expense {
+  color: var(--color-warning-coral);
+}
+
+.breakdown-card {
+  margin: 0 var(--spacing-medium) var(--spacing-large);
+  padding: var(--spacing-xlarge); /* Increased padding */
+  border-radius: var(--radius-card);
+  background: white;
+  box-shadow: var(--shadow-level-1);
+  width: calc(100% - 32px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.breakdown-title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  color: #2C2C2E !important; /* Deep Charcoal - explicit color */
+  margin-bottom: var(--spacing-large); /* Increased spacing below title */
+}
+
+.insights-card {
+  margin: 0 var(--spacing-medium) var(--spacing-large);
+  padding: var(--spacing-xlarge); /* Increased padding */
+  border-radius: var(--radius-card);
+  background: white;
+  box-shadow: var(--shadow-level-1);
+  width: calc(100% - 32px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.insight-item {
+  display: flex;
+  gap: var(--spacing-medium); /* Increased gap between bullet and text */
+  padding: var(--spacing-medium) 0; /* Increased padding */
+  border-bottom: 1px solid var(--color-subtle-gray);
+}
+
+.insight-item:last-child {
+  border-bottom: none;
+}
+
+.insight-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-powder-blue);
+  flex-shrink: 0;
+}
+
+.insight-text {
+  font-size: var(--font-size-body-regular);
+  color: #2C2C2E !important; /* Deep Charcoal - explicit color for visibility */
+  line-height: 1.6; /* Increased line height for readability */
+  flex: 1;
+  font-weight: var(--font-weight-regular);
+}
+
+.reports-action-buttons {
+  margin: 0 var(--spacing-medium) calc(100px + var(--spacing-medium));
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: var(--spacing-medium); /* Increased spacing between buttons */
+  width: calc(100% - 32px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.reports-download-button {
+  width: 100%; /* Full width for stacked buttons */
+  height: 56px; /* Increased height for better touch target */
+  border-radius: var(--radius-card);
+  background: white;
+  border: 2px solid var(--color-powder-blue);
+  font-size: var(--font-size-body-regular);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-powder-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-small);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.reports-download-button:active {
+  transform: scale(0.98);
+}
+
+.reports-share-button {
+  width: 100%; /* Full width for stacked buttons */
+  height: 56px; /* Increased height for better touch target */
+  border-radius: var(--radius-card);
+  background: var(--gradient-primary-button);
+  font-size: var(--font-size-body-regular);
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-small);
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-normal);
+}
+
+.reports-share-button:active {
+  transform: scale(0.98);
+}
+

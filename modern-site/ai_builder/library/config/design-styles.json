@@ -1,0 +1,176 @@
+{
+  "designStyles": {
+    "modern": {
+      "description": "Clean, minimalist design with lots of white space",
+      "characteristics": ["minimal", "clean", "spacious", "simple"],
+      "colorPalette": ["white", "gray-50", "gray-900", "teal-600"],
+      "typography": "sans-serif",
+      "borderRadius": "rounded-lg",
+      "shadows": "subtle"
+    },
+    "luxury": {
+      "description": "Premium, elegant design with rich colors and sophisticated layouts",
+      "characteristics": ["elegant", "premium", "sophisticated", "refined"],
+      "colorPalette": ["black", "gold", "navy", "white"],
+      "typography": "serif",
+      "borderRadius": "rounded-xl",
+      "shadows": "dramatic"
+    },
+    "bold": {
+      "description": "Vibrant, energetic design with bright colors and strong contrasts",
+      "characteristics": ["vibrant", "energetic", "bold", "dynamic"],
+      "colorPalette": ["purple-600", "pink-600", "orange-600", "yellow-400"],
+      "typography": "bold-sans",
+      "borderRadius": "rounded-2xl",
+      "shadows": "strong"
+    },
+    "professional": {
+      "description": "Corporate, trustworthy design suitable for business",
+      "characteristics": ["corporate", "trustworthy", "professional", "formal"],
+      "colorPalette": ["blue-600", "gray-700", "white", "teal-600"],
+      "typography": "sans-serif",
+      "borderRadius": "rounded-md",
+      "shadows": "moderate"
+    },
+    "creative": {
+      "description": "Artistic, unique design with creative layouts and animations",
+      "characteristics": ["artistic", "unique", "creative", "playful"],
+      "colorPalette": ["purple-500", "pink-500", "teal-500", "yellow-400"],
+      "typography": "display",
+      "borderRadius": "varied",
+      "shadows": "creative"
+    },
+    "minimal": {
+      "description": "Ultra-minimal design with focus on content",
+      "characteristics": ["minimal", "simple", "content-focused", "sparse"],
+      "colorPalette": ["white", "gray-100", "black"],
+      "typography": "thin-sans",
+      "borderRadius": "minimal",
+      "shadows": "none"
+    },
+    "warm": {
+      "description": "Cozy, inviting design with warm color tones",
+      "characteristics": ["cozy", "inviting", "warm", "comfortable"],
+      "colorPalette": ["orange-400", "red-400", "yellow-300", "brown-600"],
+      "typography": "friendly-sans",
+      "borderRadius": "rounded-xl",
+      "shadows": "soft"
+    },
+    "tech": {
+      "description": "Futuristic, tech-forward design with gradients and modern effects",
+      "characteristics": ["futuristic", "tech", "modern", "innovative"],
+      "colorPalette": ["blue-600", "purple-600", "cyan-500", "black"],
+      "typography": "tech-sans",
+      "borderRadius": "rounded-lg",
+      "shadows": "glow"
+    }
+  },
+  "colorSchemes": {
+    "teal": {
+      "primary": "teal-600",
+      "secondary": "blue-600",
+      "accent": "cyan-500",
+      "neutral": "gray-900"
+    },
+    "blue": {
+      "primary": "blue-600",
+      "secondary": "indigo-600",
+      "accent": "sky-500",
+      "neutral": "gray-900"
+    },
+    "purple": {
+      "primary": "purple-600",
+      "secondary": "pink-600",
+      "accent": "violet-500",
+      "neutral": "gray-900"
+    },
+    "pink": {
+      "primary": "pink-600",
+      "secondary": "rose-600",
+      "accent": "fuchsia-500",
+      "neutral": "gray-900"
+    },
+    "green": {
+      "primary": "green-600",
+      "secondary": "emerald-600",
+      "accent": "lime-500",
+      "neutral": "gray-900"
+    },
+    "orange": {
+      "primary": "orange-600",
+      "secondary": "red-600",
+      "accent": "amber-500",
+      "neutral": "gray-900"
+    },
+    "red": {
+      "primary": "red-600",
+      "secondary": "rose-600",
+      "accent": "pink-500",
+      "neutral": "gray-900"
+    },
+    "yellow": {
+      "primary": "yellow-500",
+      "secondary": "amber-600",
+      "accent": "orange-500",
+      "neutral": "gray-900"
+    },
+    "indigo": {
+      "primary": "indigo-600",
+      "secondary": "purple-600",
+      "accent": "blue-500",
+      "neutral": "gray-900"
+    },
+    "navy": {
+      "primary": "navy-900",
+      "secondary": "blue-900",
+      "accent": "teal-500",
+      "neutral": "white"
+    },
+    "black": {
+      "primary": "black",
+      "secondary": "gray-900",
+      "accent": "white",
+      "neutral": "gray-100"
+    },
+    "gold": {
+      "primary": "yellow-600",
+      "secondary": "amber-600",
+      "accent": "orange-500",
+      "neutral": "gray-900"
+    },
+    "brown": {
+      "primary": "brown-600",
+      "secondary": "amber-800",
+      "accent": "orange-500",
+      "neutral": "gray-100"
+    }
+  },
+  "layoutStyles": {
+    "centered": {
+      "description": "Content centered with max-width container",
+      "maxWidth": "max-w-4xl",
+      "alignment": "center"
+    },
+    "full-width": {
+      "description": "Content spans full viewport width",
+      "maxWidth": "max-w-full",
+      "alignment": "stretch"
+    },
+    "split": {
+      "description": "Two-column split layout",
+      "maxWidth": "max-w-7xl",
+      "alignment": "grid"
+    },
+    "asymmetric": {
+      "description": "Asymmetric, creative layout",
+      "maxWidth": "max-w-7xl",
+      "alignment": "varied"
+    },
+    "card-grid": {
+      "description": "Grid of card-based content",
+      "maxWidth": "max-w-7xl",
+      "alignment": "grid"
+    }
+  }
+}
+

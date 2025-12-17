@@ -1,0 +1,130 @@
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import { formatCurrency } from '../utils/i18n';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+/**
+ * Hero Balance Card Component
+ * Displays the main business balance with income/expense breakdown
+ */
+export default function HeroBalanceCard({ 
+  balance = 0, 
+  income = 0, 
+  expenses = 0,
+  trend = null, // { value: 12, isPositive: true }
+  sparklineData = [], // Array of numbers for mini chart
+  accountNumber = null // WhatsApp or phone number to display
+}) {
+  const [animatedBalance, setAnimatedBalance] = useState(0);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    // Count-up animation
+    const duration = 800;
+    const steps = 60;
+    const increment = balance / steps;
+    let current = 0;
+    
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= balance) {
+        setAnimatedBalance(balance);
+        clearInterval(timer);
+      } else {
+        setAnimatedBalance(current);
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [balance]);
+
+  return (
+    <div className="hero-balance-card">
+      <div className="hero-balance-header">
+        <div className="hero-balance-header-left">
+          <span className="hero-balance-icon">💰</span>
+          <span className="hero-balance-label">{t('dashboard.totalBalance', 'Your Business Balance')}</span>
+        </div>
+        {accountNumber && (
+          <div className="hero-balance-account-number">
+            {accountNumber}
+          </div>
+        )}
+      </div>
+
+      <div className="hero-balance-amount">
+        {formatCurrency(animatedBalance)}
+      </div>
+
+      <div className="hero-balance-stats">
+        <div className="hero-balance-stat-card income">
+          <div className="hero-balance-stat-icon">
+            <TrendingUp size={16} />
+          </div>
+          <div className="hero-balance-stat-content">
+            <div className="hero-balance-stat-amount income">
+              {formatCurrency(income)}
+            </div>
+            <div className="hero-balance-stat-label">{t('dashboard.income', 'Money In')}</div>
+          </div>
+        </div>
+
+        <div className="hero-balance-stat-card expense">
+          <div className="hero-balance-stat-icon">
+            <TrendingDown size={16} />
+          </div>
+          <div className="hero-balance-stat-content">
+            <div className="hero-balance-stat-amount expense">
+              {formatCurrency(expenses)}
+            </div>
+            <div className="hero-balance-stat-label">{t('dashboard.expense', 'Money Out')}</div>
+          </div>
+        </div>
+      </div>
+
+      {trend && (
+        <div className="hero-balance-trend">
+          {sparklineData.length > 0 && (
+            <div className="hero-balance-sparkline">
+              <svg width="100%" height="32" viewBox="0 0 100 32" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="sparklineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#A8D5E2" stopOpacity="0.1" />
+                    <stop offset="100%" stopColor="#A8D5E2" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d={generateSparklinePath(sparklineData)}
+                  fill="url(#sparklineGradient)"
+                  stroke="#A8D5E2"
+                  strokeWidth="2"
+                  className="sparkline-path"
+                />
+              </svg>
+            </div>
+          )}
+          <div className={`hero-balance-trend-indicator ${trend.isPositive ? 'positive' : 'negative'}`}>
+            <TrendingUp size={14} />
+            <span>{trend.isPositive ? '+' : ''}{trend.value}% this week</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function generateSparklinePath(data) {
+  if (!data || data.length === 0) return '';
+  
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  
+  const points = data.map((value, index) => {
+    const x = (index / (data.length - 1)) * 100;
+    const y = 32 - ((value - min) / range) * 28;
+    return `${x},${y}`;
+  });
+  
+  return `M ${points.join(' L ')}`;
+}

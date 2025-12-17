@@ -1,0 +1,276 @@
+/* ============================================
+   RECEIPT SCANNER MODAL STYLES
+   ============================================ */
+
+.receipt-scanner-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 85vh;
+  border-radius: var(--radius-modal) var(--radius-modal) 0 0;
+  background: white;
+  box-shadow: 0 -8px 32px rgba(44, 44, 46, 0.15);
+  padding: var(--spacing-large);
+  z-index: var(--z-modal);
+  animation: slide-up var(--duration-slow) var(--easing-standard);
+  overflow-y: auto;
+  padding-bottom: calc(var(--spacing-large) + var(--safe-area-bottom));
+}
+
+/* Options Screen */
+.receipt-scanner-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: var(--spacing-xlarge) 0;
+}
+
+.receipt-scanner-options-content {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xlarge);
+}
+
+.receipt-scanner-instruction {
+  text-align: center;
+  font-size: var(--font-size-body-large);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-medium);
+}
+
+.receipt-scanner-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-medium);
+}
+
+.receipt-scanner-button {
+  background: white;
+  border-radius: var(--radius-card);
+  padding: var(--spacing-xlarge);
+  box-shadow: var(--shadow-level-1);
+  border: 2px solid transparent;
+  transition: var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-medium);
+  cursor: pointer;
+  min-height: 120px;
+}
+
+.receipt-scanner-button:hover {
+  border-color: var(--color-powder-blue);
+  box-shadow: var(--shadow-level-2);
+  transform: translateY(-2px);
+}
+
+.receipt-scanner-button:active {
+  transform: translateY(0);
+}
+
+.receipt-scanner-button-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.receipt-scanner-button.primary .receipt-scanner-button-icon {
+  background: linear-gradient(135deg, rgba(168, 213, 226, 0.15) 0%, rgba(196, 181, 216, 0.15) 100%);
+  color: var(--color-powder-blue);
+}
+
+.receipt-scanner-button.secondary .receipt-scanner-button-icon {
+  background: rgba(168, 213, 226, 0.1);
+  color: var(--color-powder-blue);
+}
+
+.receipt-scanner-button-text {
+  font-size: var(--font-size-body-regular);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.receipt-scanner-tips {
+  background: rgba(168, 213, 226, 0.1);
+  border-radius: var(--radius-card);
+  padding: var(--spacing-medium);
+  margin-top: var(--spacing-medium);
+}
+
+.receipt-scanner-tips-text {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.receipt-scanner-offline-notice {
+  position: absolute;
+  bottom: calc(var(--spacing-large) + var(--safe-area-bottom));
+  left: var(--spacing-medium);
+  right: var(--spacing-medium);
+  background: var(--color-warning-coral);
+  color: white;
+  padding: var(--spacing-medium);
+  border-radius: var(--radius-default);
+  text-align: center;
+  font-size: var(--font-size-body-small);
+  box-shadow: var(--shadow-level-2);
+}
+
+/* Camera View */
+.receipt-camera-view {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  background: black;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-top: var(--spacing-medium);
+}
+
+.receipt-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.receipt-frame-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.receipt-frame-border {
+  width: 80%;
+  aspect-ratio: 4/3;
+  border: 4px dashed white;
+  border-radius: var(--radius-default);
+  opacity: 0.5;
+}
+
+.receipt-camera-guide {
+  position: absolute;
+  top: var(--spacing-large);
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding-top: var(--safe-area-top);
+}
+
+.receipt-camera-guide-text {
+  color: white;
+  font-size: var(--font-size-body-large);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  padding: var(--spacing-small) var(--spacing-large);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(8px);
+}
+
+.receipt-camera-controls {
+  position: absolute;
+  top: var(--spacing-large);
+  left: var(--spacing-medium);
+  right: var(--spacing-medium);
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--safe-area-top);
+}
+
+.receipt-camera-control-button {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: var(--spacing-medium);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.receipt-camera-control-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.receipt-camera-capture {
+  position: absolute;
+  bottom: var(--spacing-xlarge);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.receipt-camera-capture-button {
+  width: 80px;
+  height: 80px;
+  background: var(--color-success-green);
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.receipt-camera-capture-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.receipt-camera-capture-button:active {
+  transform: scale(0.95);
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .receipt-scanner-modal {
+  background: #1C1C1E;
+}
+
+[data-theme="dark"] .receipt-scanner-button {
+  background: #2C2C2E;
+  border-color: #3C3C3E;
+}
+
+[data-theme="dark"] .receipt-scanner-tips {
+  background: rgba(168, 213, 226, 0.15);
+}
+
+/* Animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+
+

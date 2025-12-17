@@ -1,0 +1,736 @@
+{
+  "blockTypes": {
+    "header": {
+      "category": "navigation",
+      "required": true,
+      "position": "top",
+      "variants": ["generic/header.html"],
+      "description": "Site navigation and header",
+      "parameters": {
+        "required": ["businessName"],
+        "optional": ["logoUrl", "navLinks", "ctaText", "ctaLink"]
+      }
+    },
+    "hero": {
+      "category": "hero",
+      "required": true,
+      "position": "top",
+      "variants": [
+        "generic/hero.html",
+        "signature/hero-cinematic.html",
+        "signature/hero-glass.html",
+        "signature/parallax-hero.html",
+        "signature/video-hero.html"
+      ],
+      "description": "Main hero section with call-to-action",
+      "parameters": {
+        "required": ["heroTitle", "heroSubtitle"],
+        "optional": ["heroImage", "heroAlt", "ctaPrimaryText", "ctaPrimaryLink", "ctaSecondaryText", "ctaSecondaryLink", "backgroundColor", "primaryColor"]
+      },
+      "variantDetails": {
+        "generic/hero.html": {
+          "style": "standard",
+          "useCase": "General purpose, works for all industries"
+        },
+        "signature/hero-cinematic.html": {
+          "style": "premium",
+          "useCase": "High-end, luxury brands, restaurants, hotels",
+          "requires": ["heroImage"]
+        },
+        "signature/hero-glass.html": {
+          "style": "modern",
+          "useCase": "Tech startups, creative agencies, modern brands"
+        },
+        "signature/parallax-hero.html": {
+          "style": "interactive",
+          "useCase": "Portfolio sites, creative agencies, high-impact pages",
+          "requires": ["heroImage", "JavaScript for parallax"]
+        }
+      }
+    },
+    "features": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/features.html",
+        "signature/interactive-feature-grid.html",
+        "signature/floating-elements.html"
+      ],
+      "description": "Features or services showcase",
+      "parameters": {
+        "required": ["features"],
+        "optional": ["sectionTitle", "sectionDescription", "columns", "primaryColor"]
+      }
+    },
+    "text-section": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/text-section.html"],
+      "description": "Text content section"
+    },
+    "image-section": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/image-section.html"],
+      "description": "Image with text content"
+    },
+    "testimonial": {
+      "category": "social-proof",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/testimonial.html",
+        "signature/testimonial-slider.html",
+        "signature/premium-testimonials.html",
+        "signature/video-testimonial.html"
+      ],
+      "description": "Customer testimonials and reviews"
+    },
+    "gallery": {
+      "category": "media",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/gallery.html",
+        "generic/portfolio-grid.html",
+        "signature/masonry-gallery.html"
+      ],
+      "description": "Image or media gallery"
+    },
+    "contact-form": {
+      "category": "form",
+      "required": false,
+      "position": "bottom",
+      "variants": [
+        "generic/contact-form.html",
+        "signature/premium-contact-form.html"
+      ],
+      "description": "Contact form"
+    },
+    "footer": {
+      "category": "navigation",
+      "required": true,
+      "position": "bottom",
+      "variants": ["generic/footer.html"],
+      "description": "Site footer with links and info"
+    },
+    "cta": {
+      "category": "conversion",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/cta.html",
+        "signature/animated-cta.html"
+      ],
+      "description": "Call-to-action section"
+    },
+    "card": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["signature/luxury-card.html", "signature/3d-card-stack.html"],
+      "description": "Card-based content display"
+    },
+    "split-screen": {
+      "category": "layout",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "signature/dynamic-split-screen.html",
+        "signature/split-content-animated.html"
+      ],
+      "description": "Split screen layout"
+    },
+    "faq": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/faq.html",
+        "generic/accordion.html",
+        "signature/interactive-faq.html"
+      ],
+      "description": "Frequently asked questions"
+    },
+    "pricing": {
+      "category": "conversion",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/pricing.html",
+        "signature/premium-pricing.html"
+      ],
+      "description": "Pricing plans and packages"
+    },
+    "stats": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/stats.html",
+        "signature/animated-stats.html"
+      ],
+      "description": "Statistics and metrics display"
+    },
+    "team": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/team.html",
+        "signature/animated-team.html"
+      ],
+      "description": "Team member showcase"
+    },
+    "process": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/process.html",
+        "signature/animated-process.html",
+        "signature/interactive-timeline.html"
+      ],
+      "description": "Process steps or workflow"
+    },
+    "video": {
+      "category": "media",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/video.html"],
+      "description": "Video content embed"
+    },
+    "newsletter": {
+      "category": "conversion",
+      "required": false,
+      "position": "middle or bottom",
+      "variants": [
+        "generic/newsletter.html",
+        "signature/premium-newsletter.html"
+      ],
+      "description": "Newsletter signup form"
+    },
+    "client-logos": {
+      "category": "social-proof",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/client-logos.html"],
+      "description": "Client or partner logos"
+    },
+    "blog": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/blog-card.html",
+        "signature/premium-blog-layout.html"
+      ],
+      "description": "Blog post display"
+    },
+    "about": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/about.html"],
+      "description": "About section"
+    },
+    "service-cards": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/service-cards.html"],
+      "description": "Service cards display"
+    },
+    "comparison-table": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/comparison-table.html"],
+      "description": "Comparison table"
+    },
+    "trust-badges": {
+      "category": "social-proof",
+      "required": false,
+      "position": "middle or bottom",
+      "variants": ["generic/trust-badges.html"],
+      "description": "Trust badges and certifications"
+    },
+    "tabs": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": ["generic/tabs.html"],
+      "description": "Tabbed content interface"
+    },
+    "map": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "generic/map.html",
+        "signature/interactive-map.html"
+      ],
+      "description": "Location map"
+    },
+    "breadcrumbs": {
+      "category": "navigation",
+      "required": false,
+      "position": "top",
+      "variants": ["generic/breadcrumbs.html"],
+      "description": "Breadcrumb navigation"
+    },
+    "search": {
+      "category": "navigation",
+      "required": false,
+      "position": "top",
+      "variants": ["generic/search.html"],
+      "description": "Search bar"
+    },
+    "pagination": {
+      "category": "navigation",
+      "required": false,
+      "position": "bottom",
+      "variants": ["generic/pagination.html"],
+      "description": "Pagination controls"
+    },
+    "product-showcase": {
+      "category": "content",
+      "required": false,
+      "position": "middle",
+      "variants": [
+        "signature/interactive-product-showcase.html"
+      ],
+      "description": "Interactive product showcase"
+    },
+    "calculator": {
+      "category": "interactive",
+      "required": false,
+      "position": "middle",
+      "variants": ["signature/interactive-calculator.html"],
+      "description": "Interactive calculator widget"
+    },
+    "error-404": {
+      "category": "page",
+      "required": false,
+      "position": "full-page",
+      "variants": ["generic/404.html"],
+      "description": "404 error page"
+    },
+    "coming-soon": {
+      "category": "page",
+      "required": false,
+      "position": "full-page",
+      "variants": ["generic/coming-soon.html"],
+      "description": "Coming soon page"
+    }
+  },
+  "industryBlocks": {
+    "restaurant": [
+      "industry/restaurant/menu.html",
+      "industry/restaurant/reservation-form.html",
+      "industry/restaurant/chef-highlight.html",
+      "industry/restaurant/dish-gallery.html",
+      "industry/restaurant/restaurant-hero.html",
+      "industry/restaurant/location-map.html"
+    ],
+    "ecommerce": [
+      "industry/ecommerce/product-grid.html",
+      "industry/ecommerce/product-card.html",
+      "industry/ecommerce/checkout-summary.html",
+      "industry/ecommerce/product-filters.html",
+      "industry/ecommerce/cart-widget.html",
+      "industry/ecommerce/review-carousel.html"
+    ],
+    "saas": [
+      "industry/saas/pricing-table.html",
+      "industry/saas/dashboard-widget.html",
+      "industry/saas/signup-form.html",
+      "industry/saas/integration-logos.html",
+      "industry/saas/feature-comparison.html"
+    ],
+    "real-estate": [
+      "industry/real-estate/property-grid.html",
+      "industry/real-estate/property-card.html",
+      "industry/real-estate/agent-profile.html",
+      "industry/real-estate/mortgage-calculator.html",
+      "industry/real-estate/map-listing.html"
+    ],
+    "beauty-salon": [
+      "industry/beauty-salon/service-list.html",
+      "industry/beauty-salon/appointment-form.html",
+      "industry/beauty-salon/stylist-profile.html",
+      "industry/beauty-salon/before-after-gallery.html"
+    ],
+    "fitness": [
+      "industry/fitness/class-schedule.html",
+      "industry/fitness/membership-plans.html",
+      "industry/fitness/trainer-profile.html",
+      "industry/fitness/transformation-gallery.html"
+    ],
+    "medical": [
+      "industry/medical/doctor-profile.html",
+      "industry/medical/appointment-booking.html",
+      "industry/medical/insurance-info.html",
+      "industry/medical/services-overview.html"
+    ],
+    "construction": [
+      "industry/construction/project-gallery.html",
+      "industry/construction/service-packages.html",
+      "industry/construction/quote-form.html",
+      "industry/construction/team-profiles.html"
+    ],
+    "education": [
+      "industry/education/course-list.html",
+      "industry/education/course-card.html",
+      "industry/education/enrollment-form.html",
+      "industry/education/instructor-profile.html"
+    ],
+    "hospitality": [
+      "industry/hospitality/hotel-room.html",
+      "industry/hospitality/booking-widget.html",
+      "industry/hospitality/amenities-list.html",
+      "industry/hospitality/location-map.html"
+    ],
+    "portfolio": [
+      "industry/portfolio/project-case-study.html",
+      "industry/portfolio/portfolio-grid.html",
+      "industry/portfolio/skills-section.html"
+    ],
+    "finance": [
+      "industry/finance/loan-calculator.html",
+      "industry/finance/financial-services.html",
+      "industry/finance/advisor-profile.html",
+      "industry/finance/schedule-consultation.html"
+    ],
+    "coffee-shop": [
+      "industry/coffee-shop/menu.html",
+      "industry/coffee-shop/location-hours.html",
+      "industry/coffee-shop/specials.html",
+      "industry/coffee-shop/order-online.html"
+    ],
+    "bakery": [
+      "industry/bakery/product-showcase.html",
+      "industry/bakery/custom-orders.html"
+    ],
+    "brewery": [
+      "industry/brewery/beer-list.html",
+      "industry/brewery/brewery-tour.html"
+    ],
+    "tattoo-parlor": [
+      "industry/tattoo-parlor/artist-profiles.html",
+      "industry/tattoo-parlor/portfolio-gallery.html",
+      "industry/tattoo-parlor/booking-form.html",
+      "industry/tattoo-parlor/aftercare-info.html"
+    ],
+    "event-planning": [
+      "industry/event-planning/service-packages.html",
+      "industry/event-planning/portfolio.html"
+    ],
+    "wedding-services": [
+      "industry/wedding-services/wedding-packages.html",
+      "industry/wedding-services/wedding-gallery.html"
+    ],
+    "sports-club": [
+      "industry/sports-club/membership-plans.html",
+      "industry/sports-club/facilities.html"
+    ],
+    "yoga-studio": [
+      "industry/yoga-studio/class-schedule.html",
+      "industry/yoga-studio/instructor-profiles.html"
+    ],
+    "tech-startup": [
+      "industry/tech-startup/product-showcase.html",
+      "industry/tech-startup/team-section.html"
+    ],
+    "gaming-esports": [
+      "industry/gaming-esports/team-roster.html",
+      "industry/gaming-esports/tournaments.html"
+    ],
+    "auto-repair": [
+      "industry/auto-repair/services.html"
+    ],
+    "car-dealership": [
+      "industry/car-dealership/inventory.html",
+      "industry/car-dealership/financing.html"
+    ],
+    "travel-agency": [
+      "industry/travel-agency/destinations.html"
+    ],
+    "tour-operator": [
+      "industry/tour-operator/tour-packages.html"
+    ],
+    "it-services": [
+      "industry/it-services/services.html"
+    ],
+    "coworking-space": [
+      "industry/coworking-space/membership-plans.html"
+    ],
+    "corporate-training": [
+      "industry/corporate-training/course-list.html",
+      "industry/corporate-training/course-card.html"
+    ],
+    "security-services": [
+      "industry/security-services/service-list.html",
+      "industry/security-services/service-packages.html"
+    ],
+    "architecture-firm": [
+      "industry/architecture-firm/portfolio.html"
+    ],
+    "bookstore": [
+      "industry/bookstore/product-grid.html",
+      "industry/bookstore/product-card.html"
+    ],
+    "art-craft-supplies": [
+      "industry/art-craft-supplies/product-grid.html",
+      "industry/art-craft-supplies/product-card.html"
+    ],
+    "toy-store": [
+      "industry/toy-store/product-grid.html",
+      "industry/toy-store/product-card.html"
+    ],
+    "sporting-goods": [
+      "industry/sporting-goods/product-grid.html",
+      "industry/sporting-goods/product-card.html"
+    ],
+    "luxury-goods": [
+      "industry/luxury-goods/product-grid.html",
+      "industry/luxury-goods/luxury-product-card.html"
+    ],
+    "home-appliances": [
+      "industry/home-appliances/product-grid.html",
+      "industry/home-appliances/product-card.html"
+    ],
+    "automotive-accessories": [
+      "industry/automotive-accessories/product-grid.html",
+      "industry/automotive-accessories/product-card.html"
+    ],
+    "subscription-boxes": [
+      "industry/subscription-boxes/product-card.html",
+      "industry/subscription-boxes/pricing-table.html"
+    ],
+    "vape-shop": [
+      "industry/vape-shop/product-grid.html",
+      "industry/vape-shop/product-card.html"
+    ],
+    "music-instruments": [
+      "industry/music-instruments/product-grid.html",
+      "industry/music-instruments/product-card.html"
+    ],
+    "stationery-office-supplies": [
+      "industry/stationery-office-supplies/product-grid.html",
+      "industry/stationery-office-supplies/product-card.html"
+    ],
+    "wine-spirits": [
+      "industry/wine-spirits/product-grid.html",
+      "industry/wine-spirits/product-card.html"
+    ],
+    "wine-bar": [
+      "industry/wine-bar/menu.html",
+      "industry/wine-bar/location-hours.html"
+    ],
+    "nightclub": [
+      "industry/nightclub/events-calendar.html"
+    ],
+    "catering-service": [
+      "industry/catering-service/service-packages.html",
+      "industry/catering-service/menu.html"
+    ],
+    "food-beverage-delivery": [
+      "industry/food-beverage-delivery/menu-grid.html",
+      "industry/food-beverage-delivery/order-now-banner.html"
+    ],
+    "event-venues": [
+      "industry/event-venues/service-packages.html",
+      "industry/event-venues/gallery.html"
+    ],
+    "casino": [
+      "industry/casino/service-list.html",
+      "industry/casino/events-calendar.html"
+    ],
+    "cruise-yacht-services": [
+      "industry/cruise-yacht-services/service-packages.html",
+      "industry/cruise-yacht-services/gallery.html"
+    ],
+    "golf-club": [
+      "industry/golf-club/membership-plans.html",
+      "industry/golf-club/facilities.html"
+    ],
+    "ice-cream-dessert-shop": [
+      "industry/ice-cream-dessert-shop/product-showcase.html",
+      "industry/ice-cream-dessert-shop/menu.html"
+    ],
+    "nutritionist": [
+      "industry/nutritionist/service-list.html",
+      "industry/nutritionist/appointment-form.html"
+    ],
+    "wellness-center": [
+      "industry/wellness-center/services.html"
+    ],
+    "mental-health-therapy": [
+      "industry/mental-health-therapy/service-list.html",
+      "industry/mental-health-therapy/appointment-booking.html"
+    ],
+    "cosmetic-surgery": [
+      "industry/cosmetic-surgery/service-list.html",
+      "industry/cosmetic-surgery/before-after-gallery.html"
+    ],
+    "optometry": [
+      "industry/optometry/service-list.html",
+      "industry/optometry/appointment-booking.html"
+    ],
+    "physiotherapy": [
+      "industry/physiotherapy/service-list.html",
+      "industry/physiotherapy/appointment-booking.html"
+    ],
+    "chiropractor": [
+      "industry/chiropractor/service-list.html",
+      "industry/chiropractor/appointment-booking.html"
+    ],
+    "acupuncture": [
+      "industry/acupuncture/service-list.html",
+      "industry/acupuncture/appointment-booking.html"
+    ],
+    "hearing-aid-audiology": [
+      "industry/hearing-aid-audiology/service-list.html",
+      "industry/hearing-aid-audiology/appointment-booking.html"
+    ],
+    "school-academy": [
+      "industry/school-academy/course-list.html",
+      "industry/school-academy/enrollment-form.html"
+    ],
+    "music-school": [
+      "industry/music-school/courses.html"
+    ],
+    "language-school": [
+      "industry/language-school/course-list.html",
+      "industry/language-school/enrollment-form.html"
+    ],
+    "driving-school": [
+      "industry/driving-school/course-list.html",
+      "industry/driving-school/appointment-form.html"
+    ],
+    "vocational-training": [
+      "industry/vocational-training/course-list.html",
+      "industry/vocational-training/enrollment-form.html"
+    ],
+    "university-college": [
+      "industry/university-college/course-catalog.html",
+      "industry/university-college/enrollment-form.html"
+    ],
+    "interior-design": [
+      "industry/interior-design/portfolio.html"
+    ],
+    "home-renovation": [
+      "industry/home-renovation/project-gallery.html",
+      "industry/home-renovation/quote-form.html"
+    ],
+    "hvac": [
+      "industry/hvac/service-list.html",
+      "industry/hvac/quote-form.html"
+    ],
+    "pool-installation-maintenance": [
+      "industry/pool-installation-maintenance/service-packages.html",
+      "industry/pool-installation-maintenance/project-gallery.html"
+    ],
+    "moving-storage": [
+      "industry/moving-storage/service-packages.html",
+      "industry/moving-storage/quote-form.html"
+    ],
+    "security-alarm-installation": [
+      "industry/security-alarm-installation/service-list.html",
+      "industry/security-alarm-installation/quote-form.html"
+    ],
+    "smart-home-automation": [
+      "industry/smart-home-automation/service-list.html",
+      "industry/smart-home-automation/product-showcase.html"
+    ],
+    "appliance-repair": [
+      "industry/appliance-repair/service-list.html",
+      "industry/appliance-repair/quote-form.html"
+    ],
+    "graphic-design-branding": [
+      "industry/graphic-design-branding/portfolio.html"
+    ],
+    "animation-motion-graphics": [
+      "industry/animation-motion-graphics/portfolio-grid.html",
+      "industry/animation-motion-graphics/reel-showcase.html"
+    ],
+    "film-video-production": [
+      "industry/film-video-production/reel-showcase.html",
+      "industry/film-video-production/project-list.html"
+    ],
+    "theater-performing-arts": [
+      "industry/theater-performing-arts/event-calendar.html",
+      "industry/theater-performing-arts/portfolio.html"
+    ],
+    "community-center": [
+      "industry/community-center/event-calendar.html",
+      "industry/community-center/service-list.html"
+    ],
+    "volunteer-organization": [
+      "industry/volunteer-organization/volunteer-form.html",
+      "industry/volunteer-organization/impact-stats.html"
+    ],
+    "environmental-sustainability": [
+      "industry/environmental-sustainability/mission-section.html",
+      "industry/environmental-sustainability/impact-stats.html"
+    ],
+    "animal-rescue-shelter": [
+      "industry/animal-rescue-shelter/adoptable-pets.html"
+    ],
+    "social-services": [
+      "industry/social-services/service-list.html",
+      "industry/social-services/contact-form.html"
+    ],
+    "advocacy-groups": [
+      "industry/advocacy-groups/mission-section.html",
+      "industry/advocacy-groups/donation-banner.html"
+    ],
+    "cultural-heritage-organization": [
+      "industry/cultural-heritage-organization/mission-section.html",
+      "industry/cultural-heritage-organization/gallery.html"
+    ],
+    "motorcycle-shop": [
+      "industry/motorcycle-shop/product-grid.html",
+      "industry/motorcycle-shop/inventory.html"
+    ],
+    "car-wash-detailing": [
+      "industry/car-wash-detailing/services.html"
+    ],
+    "martial-arts-boxing": [
+      "industry/martial-arts-boxing/class-schedule.html",
+      "industry/martial-arts-boxing/membership-plans.html"
+    ],
+    "dance-studio": [
+      "industry/dance-studio/classes.html"
+    ],
+    "drone-services": [
+      "industry/drone-services/service-packages.html",
+      "industry/drone-services/portfolio.html"
+    ],
+    "3d-printing-makerspace": [
+      "industry/3d-printing-makerspace/service-list.html",
+      "industry/3d-printing-makerspace/portfolio.html"
+    ],
+    "printing-publishing": [
+      "industry/printing-publishing/service-list.html",
+      "industry/printing-publishing/portfolio.html"
+    ],
+    "photography-videography-gear": [
+      "industry/photography-videography-gear/product-grid.html",
+      "industry/photography-videography-gear/product-card.html"
+    ],
+    "courier-delivery-services": [
+      "industry/courier-delivery-services/service-list.html",
+      "industry/courier-delivery-services/tracking-widget.html"
+    ],
+    "shipping-freight": [
+      "industry/shipping-freight/service-routes.html",
+      "industry/shipping-freight/quote-form.html"
+    ]
+  }
+}
+

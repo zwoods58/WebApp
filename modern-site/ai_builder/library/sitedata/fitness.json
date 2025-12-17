@@ -1,0 +1,113 @@
+{
+  "theme": {
+    "primaryColor": "red-600",
+    "secondaryColor": "black",
+    "accentColor": "red-500",
+    "fontFamily": "Inter, sans-serif"
+  },
+  "nav": {
+    "logo": "🔥",
+    "businessName": "FitZone Gym",
+    "links": [
+      { "label": "Home", "href": "#home" },
+      { "label": "Services", "href": "#services" },
+      { "label": "Pricing", "href": "#pricing" },
+      { "label": "Testimonials", "href": "#testimonials" },
+      { "label": "Contact", "href": "#contact" }
+    ],
+    "ctaText": "Start Free Trial",
+    "ctaLink": "#pricing"
+  },
+  "hero": {
+    "title": "Transform Your Body, Elevate Your Life",
+    "subtitle": "Join the premier 24/7 destination for elite fitness coaching and state-of-the-art equipment.",
+    "ctaPrimary": "Start Free Trial",
+    "ctaPrimaryLink": "#pricing",
+    "ctaSecondary": "View Pricing",
+    "ctaSecondaryLink": "#pricing",
+    "backgroundImage": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=600&fit=crop"
+  },
+  "features": [
+    {
+      "title": "24/7 Access",
+      "description": "Train on your schedule with round-the-clock secure entry to our state-of-the-art facility.",
+      "icon": "🔑",
+      "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
+    },
+    {
+      "title": "Elite Coaching",
+      "description": "Work with certified trainers to reach your performance goals with personalized workout plans.",
+      "icon": "💪",
+      "image": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&h=400&fit=crop"
+    },
+    {
+      "title": "Premium Equipment",
+      "description": "Access top-tier fitness equipment and cutting-edge training technology.",
+      "icon": "🏋️",
+      "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop"
+    }
+  ],
+  "plans": [
+    {
+      "name": "Basic",
+      "price": "$29",
+      "billingPeriod": "per month",
+      "isFeatured": false,
+      "features": ["24/7 Access", "Locker Room", "Cardio Area", "Free Wi-Fi"],
+      "ctaText": "Get Started"
+    },
+    {
+      "name": "Premium",
+      "price": "$59",
+      "billingPeriod": "per month",
+      "isFeatured": true,
+      "features": ["All Basic Features", "Group Classes", "Personal Trainer Session", "Nutrition Planning"],
+      "ctaText": "Most Popular"
+    },
+    {
+      "name": "Elite",
+      "price": "$99",
+      "billingPeriod": "per month",
+      "isFeatured": false,
+      "features": ["All Premium Features", "Unlimited Personal Training", "Recovery Services", "Priority Booking"],
+      "ctaText": "Go Elite"
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "FitZone transformed my fitness journey. The 24/7 access and expert trainers made all the difference.",
+      "name": "Sarah Johnson",
+      "rating": 5,
+      "position": "Member",
+      "company": "FitZone",
+      "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+    },
+    {
+      "quote": "Best gym I've ever been to. The equipment is top-notch and the community is amazing.",
+      "name": "Michael Chen",
+      "rating": 5,
+      "position": "Elite Member",
+      "company": "FitZone",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+    }
+  ],
+  "footer": {
+    "businessName": "FitZone Gym",
+    "description": "Your premier destination for fitness and wellness.",
+    "businessEmail": "info@fitzone.com",
+    "businessPhone": "+1 (555) 123-4567",
+    "businessAddress": "123 Fitness Street, Health City, HC 12345",
+    "socialLinks": {
+      "facebook": "https://facebook.com/fitzone",
+      "instagram": "https://instagram.com/fitzone",
+      "twitter": "https://twitter.com/fitzone"
+    },
+    "quickLinks": [
+      { "label": "About", "href": "#about" },
+      { "label": "Services", "href": "#services" },
+      { "label": "Pricing", "href": "#pricing" },
+      { "label": "Contact", "href": "#contact" }
+    ]
+  }
+}
+

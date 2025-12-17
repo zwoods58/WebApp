@@ -1,0 +1,322 @@
+/* Design Tokens - BeeZee Finance App
+ * Complete design system variables
+ */
+
+:root {
+  /* ============================================
+     PRIMARY COLORS
+     ============================================ */
+  --color-white: #FFFFFF;
+  --color-powder-blue: #A8D5E2;
+  --color-powder-purple: #C4B5D8;
+  --color-deep-charcoal: #2C2C2E;
+
+  /* ============================================
+     GRADIENT COLORS
+     ============================================ */
+  --gradient-soft-blue-start: #F0F8FB;
+  --gradient-soft-blue-end: #FFFFFF;
+  --gradient-gentle-purple-start: #F5F2F9;
+  --gradient-gentle-purple-end: #FFFFFF;
+  --gradient-morning-mist-start: #F0F8FB;
+  --gradient-morning-mist-middle: #F5F2F9;
+  --gradient-morning-mist-end: #FFFFFF;
+
+  /* ============================================
+     SEMANTIC COLORS
+     ============================================ */
+  --color-success-green: #67C4A7;
+  --color-warning-coral: #FF9B9B;
+  --color-info-blue: #6BA8D9;
+  --color-subtle-gray: #F7F7F8;
+  --color-warning-yellow: #F59E0B;
+  --color-warning-yellow-light: #FFF4E6;
+
+  /* ============================================
+     TEXT COLORS
+     ============================================ */
+  --color-text-primary: #2C2C2E;
+  --color-text-secondary: #6C6C70;
+  --color-text-tertiary: #AEAEB2;
+  --color-text-disabled: #C7C7CC;
+  --color-text-inverse: #FFFFFF;
+
+  /* ============================================
+     BORDER COLORS
+     ============================================ */
+  --color-border-light: rgba(168, 213, 226, 0.2);
+  --color-border-medium: #E5E7EB;
+  --color-border-dark: rgba(44, 44, 46, 0.1);
+
+  /* ============================================
+     GRADIENTS
+     ============================================ */
+  --gradient-soft-blue: linear-gradient(135deg, var(--gradient-soft-blue-start), var(--gradient-soft-blue-end));
+  --gradient-gentle-purple: linear-gradient(135deg, var(--gradient-gentle-purple-start), var(--gradient-gentle-purple-end));
+  --gradient-morning-mist: linear-gradient(135deg, var(--gradient-morning-mist-start), var(--gradient-morning-mist-middle), var(--gradient-morning-mist-end));
+  --gradient-primary-button: linear-gradient(135deg, var(--color-powder-blue), var(--color-powder-purple));
+  --gradient-card-background: linear-gradient(135deg, var(--gradient-soft-blue-start), var(--gradient-gentle-purple-start), var(--color-white));
+
+  /* ============================================
+     SHADOWS
+     ============================================ */
+  --shadow-level-1: 0 2px 8px rgba(44, 44, 46, 0.04);
+  --shadow-level-2: 0 4px 16px rgba(44, 44, 46, 0.08);
+  --shadow-level-3: 0 8px 24px rgba(44, 44, 46, 0.12);
+  --shadow-level-4: 0 -4px 16px rgba(44, 44, 46, 0.08);
+  --shadow-glow: 0 4px 20px rgba(168, 213, 226, 0.3);
+  --shadow-glow-purple: 0 4px 20px rgba(196, 181, 216, 0.3);
+  --shadow-error: 0 4px 12px rgba(255, 155, 155, 0.3);
+
+  /* ============================================
+     SPACING (8px base)
+     ============================================ */
+  --spacing-micro: 4px;
+  --spacing-xsmall: 8px;
+  --spacing-small: 12px;
+  --spacing-medium: 16px;
+  --spacing-large: 24px;
+  --spacing-xlarge: 32px;
+  --spacing-xxlarge: 48px;
+  --spacing-massive: 64px;
+
+  /* ============================================
+     BORDER RADIUS
+     ============================================ */
+  --radius-tight: 4px;
+  --radius-default: 12px;
+  --radius-card: 20px;
+  --radius-modal: 28px;
+  --radius-bubble: 32px;
+  --radius-pill: 999px;
+  --radius-full: 50%;
+
+  /* ============================================
+     TYPOGRAPHY - FONT SIZES
+     ============================================ */
+  --font-size-display: 48px;
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
+  --font-size-h3: 20px;
+  --font-size-body-large: 18px;
+  --font-size-body-regular: 16px;
+  --font-size-body-small: 14px;
+  --font-size-caption: 12px;
+  --font-size-micro: 10px;
+
+  /* ============================================
+     TYPOGRAPHY - LINE HEIGHTS
+     ============================================ */
+  --line-height-display: 1.1;
+  --line-height-h1: 1.2;
+  --line-height-h2: 1.3;
+  --line-height-h3: 1.4;
+  --line-height-body-large: 1.5;
+  --line-height-body-regular: 1.5;
+  --line-height-body-small: 1.4;
+  --line-height-caption: 1.3;
+  --line-height-micro: 1.2;
+
+  /* ============================================
+     TYPOGRAPHY - LETTER SPACING
+     ============================================ */
+  --letter-spacing-display: -0.015em;
+  --letter-spacing-h1: -0.01em;
+  --letter-spacing-h2: -0.005em;
+  --letter-spacing-h3: 0;
+  --letter-spacing-micro: 0.01em;
+
+  /* ============================================
+     TYPOGRAPHY - FONT WEIGHTS
+     ============================================ */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ============================================
+     ANIMATION DURATIONS
+     ============================================ */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  --duration-count-up: 800ms;
+  --duration-shimmer: 1.5s;
+
+  /* ============================================
+     ANIMATION EASING
+     ============================================ */
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0.0, 0, 0.2, 1);
+  --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --easing-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --easing-ease-out: ease-out;
+  --easing-ease-in: ease-in;
+
+  /* ============================================
+     Z-INDEX LAYERS
+     ============================================ */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+  --z-offline-banner: 900;
+
+  /* ============================================
+     BREAKPOINTS (for responsive design)
+     ============================================ */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* ============================================
+     SAFE AREA INSETS (for mobile devices)
+     ============================================ */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* ============================================
+     TRANSITION PRESETS
+     ============================================ */
+  --transition-fast: all var(--duration-fast) var(--easing-standard);
+  --transition-normal: all var(--duration-normal) var(--easing-standard);
+  --transition-slow: all var(--duration-slow) var(--easing-standard);
+  --transition-bounce: all var(--duration-slow) var(--easing-bounce);
+}
+
+/* ============================================
+   DARK MODE TOKENS
+   ============================================ */
+[data-theme="dark"] {
+  --color-white: #1C1C1E;
+  --color-deep-charcoal: #F2F2F7;
+  --color-text-primary: #F2F2F7;
+  --color-text-secondary: #AEAEB2;
+  --color-text-tertiary: #8E8E93;
+  --color-subtle-gray: #2C2C2E;
+  
+  /* Adjusted gradients for dark mode */
+  --gradient-soft-blue-start: #1A2529;
+  --gradient-gentle-purple-start: #1F1A25;
+  --gradient-morning-mist-start: #1A2529;
+  --gradient-morning-mist-middle: #1F1A25;
+  --gradient-morning-mist-end: #1C1C1E;
+  
+  /* Dark mode backgrounds */
+  --gradient-soft-blue-fade: linear-gradient(to bottom, #1A2529, #1C1C1E);
+  --gradient-morning-mist: linear-gradient(135deg, #1A2529, #1F1A25, #1C1C1E);
+  
+  /* Dark mode shadows */
+  --shadow-level-1: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-level-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  
+  /* Dark mode card backgrounds */
+  background: #1C1C1E;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-white: #1C1C1E;
+    --color-deep-charcoal: #F2F2F7;
+    --color-text-primary: #F2F2F7;
+    --color-text-secondary: #AEAEB2;
+    --color-text-tertiary: #8E8E93;
+    --color-subtle-gray: #2C2C2E;
+    
+    /* Adjusted gradients for dark mode */
+    --gradient-soft-blue-start: #1A2529;
+    --gradient-gentle-purple-start: #1F1A25;
+    --gradient-morning-mist-start: #1A2529;
+    --gradient-morning-mist-middle: #1F1A25;
+    
+    /* Adjusted shadows for dark mode */
+    --shadow-level-1: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-level-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION (Accessibility)
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+    --duration-count-up: 0ms;
+    --duration-shimmer: 0ms;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   FOCUS VISIBLE (Accessibility)
+   ============================================ */
+:focus-visible {
+  outline: 2px solid var(--color-powder-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-default);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.gradient-text {
+  background: var(--gradient-primary-button);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-subtle-gray) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    var(--color-subtle-gray) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer var(--duration-shimmer) linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
