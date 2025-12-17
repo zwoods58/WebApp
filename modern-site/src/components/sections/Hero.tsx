@@ -6,6 +6,7 @@ import { Menu as MenuIcon, User, LogOut } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 
+// Production trigger: Dec 17, 2025
 export function Hero() {
   const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
