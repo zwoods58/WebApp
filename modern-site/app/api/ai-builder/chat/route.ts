@@ -4,10 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseClient } from '../../../src/lib/supabase'
-import { registerAllTools, getAllToolsForAI } from '../../../ai_builder/lib/ai/tools/register-all'
-import { getToolRegistry } from '../../../ai_builder/lib/ai/tools/index'
-import { ToolCall, ToolResult } from '../../../ai_builder/lib/ai/tools/index'
+import { getSupabaseClient } from '../../../../src/lib/supabase'
+import { registerAllTools, getAllToolsForAI } from '../../../../ai_builder/lib/ai/tools/register-all'
+import { getToolRegistry } from '../../../../ai_builder/lib/ai/tools/index'
+import { ToolCall, ToolResult } from '../../../../ai_builder/lib/ai/tools/index'
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'

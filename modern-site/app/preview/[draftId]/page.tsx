@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
 import { ToastProvider } from '../../../ai_builder/lib/ux/toast-notifications'
 import { ThemeProvider } from '../../../ai_builder/lib/theme/dark-mode'
-import { I18nProvider } from '../../../ai_builder/lib/i18n/i18n'
 
 // Dynamically import the component renderer from ai_builder/preview (client-side only)
 // Fix: Ensure default export is properly handled for self-healing error boundary
@@ -165,15 +164,13 @@ export default function PreviewPage() {
 
   return (
     <ThemeProvider>
-      <I18nProvider>
-        <ToastProvider>
-          <ComponentRenderer 
-            componentCode={componentCode} 
-            onCodeUpdate={handleCodeUpdate}
-            draftId={draftId}
-          />
-        </ToastProvider>
-      </I18nProvider>
+      <ToastProvider>
+        <ComponentRenderer 
+          componentCode={componentCode} 
+          onCodeUpdate={handleCodeUpdate}
+          draftId={draftId}
+        />
+      </ToastProvider>
     </ThemeProvider>
   )
 }

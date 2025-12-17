@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { optimizeImage, generateThumbnail, getImageDimensions } from '../../../../ai_builder/lib/assets/image-optimizer'
+import { optimizeImage, generateThumbnail, getImageDimensions } from '../../../../../ai_builder/lib/assets/image-optimizer'
 
 export async function POST(request: NextRequest) {
   try {
