@@ -17,10 +17,21 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storageKey: 'supabase.auth.token',
     flowType: 'pkce',
   },
-  // Enable detailed logging in development
   global: {
     headers: {
       'x-client-info': 'atarwebb-web-app',
     },
   },
 })
+
+/**
+ * Get a Supabase client for server-side usage with service role key
+ */
+export function getSupabaseClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!serviceKey) {
+    // Fallback to anon client if service key is missing (for basic auth)
+    return supabase
+  }
+  return createClient(supabaseUrl, serviceKey)
+}

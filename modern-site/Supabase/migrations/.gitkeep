@@ -1,7 +1,0 @@
-# Supabase Migrations Folder
-
-This folder contains sequential database migrations for the AtarWebb application.
-
-Run migrations in order (001 through 010) via Supabase Dashboard SQL Editor.
-
-See README.md for detailed instructions.

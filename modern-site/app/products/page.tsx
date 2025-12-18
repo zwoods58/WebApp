@@ -328,34 +328,6 @@ export default function Products() {
             </div>
           )}
 
-          {/* Custom Services - AI Builder */}
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-2xl p-8 md:p-12 mb-8 shadow-lg"
-            style={{ 
-              fontFamily: 'Encode Sans, sans-serif',
-            }}
-          >
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-black mb-4" style={{ fontFamily: 'Encode Sans, sans-serif' }}>
-                Build Your Website in Minutes with AI
-              </h2>
-              <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
-                Try our new AI-powered website builder. Create a professional website tailored to your business—no coding required.
-              </p>
-              <a
-                href="/ai-builder"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-teal-600 text-white rounded-xl font-semibold hover:bg-teal-700 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
-                style={{
-                  boxShadow: '0 8px 32px 0 rgba(13, 148, 136, 0.37), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                }}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Launch AI Website Builder
-              </a>
-            </div>
-          </div>
-
           {/* Note */}
           <div className="text-center">
             <p className="text-gray-700 text-sm">

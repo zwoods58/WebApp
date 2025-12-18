@@ -16,10 +16,6 @@ const nextConfig = {
   // Performance optimizations
   swcMinify: true,
   compress: true,
-  // Enable experimental features if needed
-  experimental: {
-    // optimizeCss: true, // Disabled - requires critters package
-  },
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -35,4 +31,3 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
-

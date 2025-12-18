@@ -2,18 +2,14 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { Menu as MenuIcon, User, LogOut } from 'lucide-react'
-import { supabase } from '../../lib/supabase'
+import { Menu as MenuIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-// Production trigger: Dec 17, 2025
 export function Hero() {
   const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
-  const [user, setUser] = useState<any>(null)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   
@@ -92,57 +88,9 @@ export function Hero() {
     return () => clearInterval(interval)
   }, [words.length])
 
-  // Check auth state
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        setUser(session.user)
-      } else {
-        setUser(null)
-      }
-    }
-
-    checkAuth()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        setUser(session.user)
-      } else {
-        setUser(null)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Close user menu when clicking outside
-  useEffect(() => {
-    if (!userMenuOpen) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element
-      if (!target.closest('.user-menu-container')) {
-        setUserMenuOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [userMenuOpen])
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    setUserMenuOpen(false)
-    router.push('/')
-  }
-
-
   return (
     <>
-      {/* Fixed Header with Transparent/Solid Background - Outside section for proper fixed positioning */}
+      {/* Fixed Header with Transparent/Solid Background */}
       <header 
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-300 ${
           isScrolled 
@@ -219,76 +167,10 @@ export function Hero() {
           ))}
         </div>
 
-        {/* Right Section - Login/User Menu & Mobile Menu */}
+        {/* Right Section - Mobile Menu Button */}
         <div 
           className="flex-1 text-right px-4 sm:px-6 md:px-10 flex items-center justify-end gap-4"
         >
-          {/* Desktop Login/User Menu */}
-          {isDesktop && (
-            <div className="relative user-menu-container">
-              {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 text-white hover:text-gray-300 transition-colors"
-                    style={{
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      fontWeight: '500',
-                      fontSize: '16px',
-                    }}
-                  >
-                    <User className="w-5 h-5" />
-                    <span>{user.email?.split('@')[0] || 'Account'}</span>
-                  </button>
-                  {userMenuOpen && (
-                    <div
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden"
-                      style={{ top: '100%' }}
-                    >
-                      <a
-                        href="/ai-builder/dashboard"
-                        className="flex items-center gap-3 px-4 py-3 text-gray-900 hover:bg-gray-100 transition-colors text-left"
-                        onClick={() => setUserMenuOpen(false)}
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <User className="w-4 h-4 text-gray-600" />
-                        <span>Dashboard</span>
-                      </a>
-                      <div className="border-t border-gray-200"></div>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 text-left px-4 py-3 text-gray-900 hover:bg-gray-100 transition-colors"
-                        style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-                      >
-                        <LogOut className="w-4 h-4 text-gray-600" />
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <a
-                  href="/ai-builder/login"
-                  className="text-white hover:text-gray-300 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 hover:shadow-lg"
-                  style={{
-                    padding: '12px 24px',
-                    borderRadius: '6px',
-                    fontWeight: '600',
-                    fontSize: '16px',
-                    textDecoration: 'none',
-                    minWidth: '120px',
-                    textAlign: 'center',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                  }}
-                >
-                  Login
-                </a>
-              )}
-            </div>
-          )}
-          
-          {/* Mobile Menu Button */}
           {!isDesktop && (
             <button
               aria-label="Open menu"
@@ -346,7 +228,7 @@ export function Hero() {
             height: '50%',
           }}
         />
-        {/* Subtle Portfolio Background - Very Low Opacity */}
+        {/* Subtle Portfolio Background */}
         <div 
           className="absolute inset-0 opacity-[0.08] pointer-events-none"
           style={{
@@ -399,30 +281,28 @@ export function Hero() {
           </AnimatePresence>
         </motion.h1>
         
-        {/* Get Started Button - Mobile Only */}
-        {!isDesktop && (
-          <motion.a
-            href="/contact"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
-            className="bg-teal-600 text-white hover:bg-teal-700 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 hover:shadow-lg lg:hidden"
-            style={{
-              padding: '14px 32px',
-              minHeight: '48px',
-              borderRadius: '6px',
-              fontWeight: '700',
-              fontSize: '16px',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '1.5rem',
-            }}
-          >
-            Get Started
-          </motion.a>
-        )}
+        {/* Get Started Button */}
+        <motion.a
+          href="/contact"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          className="bg-teal-600 text-white hover:bg-teal-700 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 hover:shadow-lg"
+          style={{
+            padding: '14px 32px',
+            minHeight: '48px',
+            borderRadius: '6px',
+            fontWeight: '700',
+            fontSize: '16px',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: '1.5rem',
+          }}
+        >
+          Get Started
+        </motion.a>
       </div>
 
       {/* Mobile Menu */}
@@ -473,45 +353,6 @@ export function Hero() {
                       </motion.li>
                     ))}
                   </ul>
-                  <div className="mt-12 space-y-4">
-                    {user ? (
-                      <>
-                        <a 
-                          href="/ai-builder/dashboard" 
-                          onClick={() => setMenuOpen(false)}
-                          className="w-full block text-center py-4 bg-teal-600 text-white font-bold text-lg rounded-lg hover:bg-teal-700 transition-colors"
-                        >
-                          Dashboard
-                        </a>
-                        <button
-                          onClick={() => {
-                            handleLogout()
-                            setMenuOpen(false)
-                          }}
-                          className="w-full py-4 bg-gray-200 text-gray-900 font-bold text-lg rounded-lg hover:bg-gray-300 transition-colors"
-                        >
-                          Logout
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <a 
-                          href="/ai-builder/login" 
-                          onClick={() => setMenuOpen(false)}
-                          className="w-full block text-center py-4 bg-teal-600 text-white font-bold text-lg rounded-lg hover:bg-teal-700 transition-colors"
-                        >
-                          Login
-                        </a>
-                        <a 
-                          href="/contact" 
-                          onClick={() => setMenuOpen(false)}
-                          className="w-full block text-center py-4 bg-gray-200 text-gray-900 font-bold text-lg rounded-lg hover:bg-gray-300 transition-colors"
-                        >
-                          Get Started
-                        </a>
-                      </>
-                    )}
-                  </div>
                 </nav>
               </div>
             </motion.div>
@@ -519,7 +360,7 @@ export function Hero() {
         )}
       </AnimatePresence>
 
-      {/* Black gradient fade at bottom of hero - smooth transition */}
+      {/* Black gradient fade at bottom of hero */}
       <div
         aria-hidden
         className="absolute bottom-0 left-0 w-full pointer-events-none"
@@ -533,5 +374,3 @@ export function Hero() {
     </>
   )
 }
-
-
