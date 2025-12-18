@@ -20,12 +20,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Format phone number for South Africa (+27)
-      const formattedPhone = phoneNumber.startsWith('+')
-        ? phoneNumber
-        : phoneNumber.startsWith('0')
-        ? `+27${phoneNumber.slice(1)}`
-        : `+27${phoneNumber}`;
+      // Use normalizePhoneNumber to handle any country code
+      const formattedPhone = normalizePhoneNumber(phoneNumber);
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: formattedPhone,
@@ -76,13 +72,13 @@ export default function Login() {
                   type="tel"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="0812345678"
+                  placeholder="+1234567890"
                   className="input pl-10"
                   disabled={loading}
                 />
               </div>
               <p className="mt-2 text-xs text-gray-500">
-                Enter your South African phone number
+                Enter your phone number with country code
               </p>
             </div>
 

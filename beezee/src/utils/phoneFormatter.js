@@ -99,21 +99,20 @@ export function normalizePhoneNumber(phone) {
     return `+${digits}`;
   }
   
-  // Handle US/Canada numbers (11 digits starting with 1)
-  // If user types 11 digits starting with 1, it's likely a US number without country code
+  // Handle common cases
   if (digits.length === 11 && digits.startsWith('1')) {
-    // Already has country code, just add +
     return `+${digits}`;
   }
   
-  // Handle US/Canada numbers (10 digits) - add country code
-  if (digits.length === 10) {
-    // Assume US/Canada, add +1
-    return `+1${digits}`;
+  if (digits.length === 10 && !digits.startsWith('0')) {
+    // Possibly US number without country code, but we shouldn't assume anymore
+    // Let's just return with +
+    return `+${digits}`;
   }
+
+  // If user typed a number starting with 0, it's likely a local number
+  // but we don't know which country. We should encourage full international format.
   
-  // Otherwise, assume it needs a + prefix
-  // For testing: accept any length, but minimum 7 digits
   return `+${digits}`;
 }
 

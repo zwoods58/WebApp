@@ -233,16 +233,16 @@ export default function OnboardingFlow() {
 
             <div className="auth-form-field">
               <div className="auth-phone-input-container">
-                <div className="auth-country-code">+27</div>
                 <input
                   type="tel"
                   value={whatsappNumber}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/[^\d]/g, '');
+                    const value = e.target.value.replace(/[^\d+]/g, '');
                     setWhatsappNumber(value);
                   }}
-                  placeholder="XX XXX XXXX"
+                  placeholder="+1234567890"
                   className="auth-phone-input"
+                  style={{ paddingLeft: '16px' }}
                   inputMode="tel"
                   autoFocus
                   onKeyPress={(e) => {

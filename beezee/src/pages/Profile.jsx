@@ -164,7 +164,7 @@ export default function Profile() {
                 type="tel"
                 value={whatsappNumber}
                 onChange={(e) => setWhatsappNumber(e.target.value)}
-                placeholder="+27812345678"
+                placeholder="+1234567890"
                 className="input pl-10"
               />
             </div>
