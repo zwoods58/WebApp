@@ -30,7 +30,7 @@ export default function ReportCard({ title, amount, icon, color = 'primary', hig
         <div>
           <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
           <p className={`text-3xl font-bold ${colors.amount}`}>
-            R{amount.toFixed(2)}
+            R{(Number(amount) || 0).toFixed(2)}
           </p>
         </div>
         <div className={`w-12 h-12 ${colors.bg} rounded-full flex items-center justify-center`}>

@@ -27,6 +27,14 @@
   border-color: #334155;
 }
 
+[data-theme="dark"] .coach-text-input {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .coach-text-input::placeholder {
+  color: #94A3B8;
+}
+
 .coach-header {
   display: flex;
   align-items: center;

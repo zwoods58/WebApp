@@ -9,25 +9,6 @@ import './i18n';
 import { initTheme } from './utils/darkMode';
 import { createSkipLink } from './utils/accessibility';
 
-// Register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registered:', registration);
-        
-        // Check for updates periodically
-        setInterval(() => {
-          registration.update();
-        }, 60000); // Check every minute
-      })
-      .catch((error) => {
-        console.error('Service Worker registration failed:', error);
-      });
-  });
-}
-
 // Initialize IndexedDB on app load
 import { initDB } from './utils/offlineSync';
 initDB().catch(console.error);

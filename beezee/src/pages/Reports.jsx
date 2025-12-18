@@ -108,10 +108,12 @@ export default function Reports() {
       const isEmptyState = 
         result.error === 'empty_state' || 
         (result.success === false && result.message?.toLowerCase().includes('no transactions')) ||
-        (result.report && result.report.metrics?.transactionCount === 0);
+        (result.report && result.report.metrics?.transactionCount === 0) ||
+        (result.metrics && result.metrics.transactionCount === 0);
 
       if (isEmptyState) {
         setReportData({ transactionCount: 0 });
+        setError(null); // Clear error on empty state
         return;
       }
 
@@ -121,12 +123,18 @@ export default function Reports() {
       // The edge function returns the report in result.report
       const finalData = result.report || result;
       setReportData(finalData);
+      setError(null); // Success! Clear any error
       if (!skipCache) {
         saveReportToCache(cacheKey, result);
       }
     } catch (error) {
       console.error('Error loading report:', error);
-      setError(error.message);
+      if (error.message === 'empty_state') {
+        setReportData({ transactionCount: 0 });
+        setError(null);
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }

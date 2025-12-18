@@ -527,6 +527,19 @@
   color: #CBD5E1;
 }
 
+[data-theme="dark"] .description-input,
+[data-theme="dark"] select,
+[data-theme="dark"] input:not(.auth-otp-box) {
+  background: #1E293B;
+  color: #F8FAFC;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .description-input::placeholder,
+[data-theme="dark"] input::placeholder {
+  color: #94A3B8;
+}
+
 .transaction-skeleton {
   padding: var(--spacing-medium);
   border-radius: var(--radius-card);

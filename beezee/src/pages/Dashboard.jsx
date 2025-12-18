@@ -13,6 +13,7 @@ import ProactiveInsights from '../components/ProactiveInsights';
 import TransactionEntryModal from '../components/TransactionEntryModal';
 import ReceiptEntryModal from '../components/ReceiptEntryModal';
 import ReceiptScanner from '../components/ReceiptScanner';
+import { SuccessModal, LoadingModal } from '../components/ConfirmationModals';
 import { PageSkeleton, BalanceCardSkeleton, ListSkeleton, Skeleton } from '../components/LoadingSkeleton';
 import OfflineBanner from '../components/OfflineBanner';
 import SwipeToRefresh from '../components/SwipeToRefresh';
