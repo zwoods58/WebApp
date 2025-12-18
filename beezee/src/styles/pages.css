@@ -5,7 +5,7 @@
 /* Profile Page */
 .profile-container {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
 }
 
 .profile-header {
@@ -15,7 +15,7 @@
 /* Subscription Page */
 .subscription-container {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
 }
 
 .subscription-header {
@@ -25,7 +25,7 @@
 /* Add Transaction Page */
 .add-transaction-container {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
 }
 
 .add-transaction-header {
@@ -35,7 +35,7 @@
 /* Transactions Page */
 .transactions-container {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
 }
 
 .transactions-header {
@@ -45,7 +45,7 @@
 /* Notifications Page */
 .notifications-container {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
 }
 
 .notifications-header {

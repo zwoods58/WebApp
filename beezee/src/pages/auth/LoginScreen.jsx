@@ -346,6 +346,24 @@ export default function LoginScreen() {
             ))}
           </div>
 
+          <button
+            onClick={() => handleOTPSubmit()}
+            disabled={loading || otp.some(digit => !digit)}
+            className="auth-cta-button mt-6"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={20} />
+                Verifying...
+              </>
+            ) : (
+              <>
+                Verify & Login
+                <ArrowRight size={20} />
+              </>
+            )}
+          </button>
+
           <div className="auth-resend-text">
             {resendCountdown > 0 ? (
               <p>Didn't get it? Resend in {resendCountdown}s</p>

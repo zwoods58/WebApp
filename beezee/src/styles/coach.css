@@ -14,7 +14,17 @@
 }
 
 [data-theme="dark"] .coach-container {
-  background: linear-gradient(to bottom, #1A2529, #1C1C1E);
+  background: #0F172A;
+}
+
+[data-theme="dark"] .message-bubble.assistant {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .coach-input-container {
+  background: #1E293B;
+  border-color: #334155;
 }
 
 .coach-header {
@@ -23,7 +33,7 @@
   justify-content: center;
   gap: var(--spacing-small);
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
   margin-bottom: var(--spacing-medium);
   position: relative;
 }

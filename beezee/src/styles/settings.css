@@ -17,7 +17,7 @@
 
 .settings-header {
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
   margin-bottom: var(--spacing-medium);
   display: flex;
   align-items: center;

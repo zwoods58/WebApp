@@ -91,27 +91,27 @@ export function toggleTheme() {
  */
 export const darkModeColors = {
   // Adjusted primary colors
-  white: '#1C1C1E',
-  deepCharcoal: '#F2F2F7',
+  white: '#1E293B',
+  deepCharcoal: '#F8FAFC',
   
   // Adjusted gradients
-  gradientSoftBlueStart: '#1A2529',
-  gradientGentlePurpleStart: '#1F1A25',
-  gradientMorningMistStart: '#1A2529',
-  gradientMorningMistMiddle: '#1F1A25',
+  gradientSoftBlueStart: '#0F172A',
+  gradientGentlePurpleStart: '#1E1B4B',
+  gradientMorningMistStart: '#0F172A',
+  gradientMorningMistMiddle: '#1E293B',
   
   // Adjusted text colors
-  textPrimary: '#F2F2F7',
-  textSecondary: '#AEAEB2',
-  textTertiary: '#8E8E93',
+  textPrimary: '#F8FAFC',
+  textSecondary: '#CBD5E1',
+  textTertiary: '#94A3B8',
   
   // Adjusted backgrounds
-  subtleGray: '#2C2C2E',
+  subtleGray: '#334155',
   
   // Adjusted shadows (darker)
-  shadowLevel1: '0 2px 8px rgba(0, 0, 0, 0.3)',
-  shadowLevel2: '0 4px 16px rgba(0, 0, 0, 0.4)',
-  shadowLevel3: '0 8px 24px rgba(0, 0, 0, 0.5)',
+  shadowLevel1: '0 4px 12px rgba(0, 0, 0, 0.5)',
+  shadowLevel2: '0 8px 24px rgba(0, 0, 0, 0.6)',
+  shadowLevel3: '0 12px 32px rgba(0, 0, 0, 0.7)',
 };
 
 /**

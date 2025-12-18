@@ -13,14 +13,15 @@ import ProactiveInsights from '../components/ProactiveInsights';
 import TransactionEntryModal from '../components/TransactionEntryModal';
 import ReceiptEntryModal from '../components/ReceiptEntryModal';
 import ReceiptScanner from '../components/ReceiptScanner';
-import { SuccessModal, LoadingModal } from '../components/ConfirmationModals';
-import { BalanceCardSkeleton, ListSkeleton, Skeleton } from '../components/LoadingSkeleton';
+import { PageSkeleton, BalanceCardSkeleton, ListSkeleton, Skeleton } from '../components/LoadingSkeleton';
 import OfflineBanner from '../components/OfflineBanner';
 import SwipeToRefresh from '../components/SwipeToRefresh';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalIncome: 0,

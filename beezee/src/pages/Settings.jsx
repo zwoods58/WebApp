@@ -106,7 +106,7 @@ export default function Settings() {
     await loadUserData();
   };
 
-  const userName = userData?.business_name || userData?.full_name || 'Business Owner';
+  const userName = userData?.business_name || userData?.full_name || t('settings.businessOwner', 'Business Owner');
   const phoneNumber = userData?.whatsapp_number || user?.phone || 'No phone';
   const subscriptionStatus = getSubscriptionStatus();
 

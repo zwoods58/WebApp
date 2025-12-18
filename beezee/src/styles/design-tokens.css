@@ -184,6 +184,9 @@
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-left: env(safe-area-inset-left, 0px);
   --safe-area-right: env(safe-area-inset-right, 0px);
+  
+  /* Added specific page padding for better spacing */
+  --page-top-padding: calc(var(--safe-area-top) + 64px);
 
   /* ============================================
      TRANSITION PRESETS
@@ -195,55 +198,53 @@
 }
 
 /* ============================================
-   DARK MODE TOKENS
+   DARK MODE TOKENS - Refined for professional look and readability
    ============================================ */
 [data-theme="dark"] {
-  --color-white: #1C1C1E;
-  --color-deep-charcoal: #F2F2F7;
-  --color-text-primary: #F2F2F7;
-  --color-text-secondary: #AEAEB2;
-  --color-text-tertiary: #8E8E93;
-  --color-subtle-gray: #2C2C2E;
+  --color-white: #1E293B; /* Slate 800 */
+  --color-deep-charcoal: #F8FAFC; /* Slate 50 */
+  --color-text-primary: #F8FAFC; /* Slate 50 */
+  --color-text-secondary: #CBD5E1; /* Slate 300 */
+  --color-text-tertiary: #94A3B8; /* Slate 400 */
+  --color-subtle-gray: #334155; /* Slate 700 */
   
-  /* Adjusted gradients for dark mode */
-  --gradient-soft-blue-start: #1A2529;
-  --gradient-gentle-purple-start: #1F1A25;
-  --gradient-morning-mist-start: #1A2529;
-  --gradient-morning-mist-middle: #1F1A25;
-  --gradient-morning-mist-end: #1C1C1E;
+  /* Adjusted gradients for dark mode - softer on eyes */
+  --gradient-soft-blue-start: #0F172A; /* Slate 900 */
+  --gradient-gentle-purple-start: #1E1B4B; /* Navy tint */
+  --gradient-morning-mist-start: #0F172A;
+  --gradient-morning-mist-middle: #1E293B;
+  --gradient-morning-mist-end: #0F172A;
   
   /* Dark mode backgrounds */
-  --gradient-soft-blue-fade: linear-gradient(to bottom, #1A2529, #1C1C1E);
-  --gradient-morning-mist: linear-gradient(135deg, #1A2529, #1F1A25, #1C1C1E);
+  --gradient-soft-blue-fade: linear-gradient(to bottom, #0F172A, #1E293B);
+  --gradient-morning-mist: linear-gradient(135deg, #0F172A, #1E293B, #0F172A);
   
   /* Dark mode shadows */
-  --shadow-level-1: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-level-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-level-1: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-level-2: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-level-3: 0 12px 32px rgba(0, 0, 0, 0.7);
   
   /* Dark mode card backgrounds */
-  background: #1C1C1E;
+  background: #0F172A;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-white: #1C1C1E;
-    --color-deep-charcoal: #F2F2F7;
-    --color-text-primary: #F2F2F7;
-    --color-text-secondary: #AEAEB2;
-    --color-text-tertiary: #8E8E93;
-    --color-subtle-gray: #2C2C2E;
+    --color-white: #1E293B;
+    --color-deep-charcoal: #F8FAFC;
+    --color-text-primary: #F8FAFC;
+    --color-text-secondary: #CBD5E1;
+    --color-text-tertiary: #94A3B8;
+    --color-subtle-gray: #334155;
     
-    /* Adjusted gradients for dark mode */
-    --gradient-soft-blue-start: #1A2529;
-    --gradient-gentle-purple-start: #1F1A25;
-    --gradient-morning-mist-start: #1A2529;
-    --gradient-morning-mist-middle: #1F1A25;
+    --gradient-soft-blue-start: #0F172A;
+    --gradient-gentle-purple-start: #1E1B4B;
+    --gradient-morning-mist-start: #0F172A;
+    --gradient-morning-mist-middle: #1E293B;
     
-    /* Adjusted shadows for dark mode */
-    --shadow-level-1: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-level-2: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-level-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-level-1: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-level-2: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --shadow-level-3: 0 12px 32px rgba(0, 0, 0, 0.7);
   }
 }
 

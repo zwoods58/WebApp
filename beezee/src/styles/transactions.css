@@ -7,7 +7,16 @@
 }
 
 .transactions-header {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
   margin-bottom: var(--spacing-medium);
+  background: white;
+  border-bottom: 1px solid var(--color-subtle-gray);
+}
+
+[data-theme="dark"] .transactions-header {
+  background: #0F172A;
+  border-bottom-color: #1E293B;
 }
 
 /* Transaction Card Styling */
@@ -187,18 +196,18 @@
 
 /* Dark mode adjustments */
 [data-theme="dark"] .transaction-item-card {
-  background: #1C1C1E;
-  border-color: #2C2C2E;
+  background: #1E293B;
+  border-color: #334155;
 }
 
 [data-theme="dark"] .transaction-search-input {
-  background: #1C1C1E;
-  border-color: #2C2C2E;
+  background: #1E293B;
+  border-color: #334155;
   color: var(--color-text-primary);
 }
 
 [data-theme="dark"] .transaction-filter-button:not(.active) {
-  background: #2C2C2E;
+  background: #334155;
   color: var(--color-text-secondary);
 }
 

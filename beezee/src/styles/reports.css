@@ -20,8 +20,20 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-medium);
-  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  padding-top: var(--page-top-padding);
   margin-bottom: var(--spacing-medium);
+}
+
+.reports-header-section {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+  background: white;
+  border-bottom: 1px solid var(--color-subtle-gray);
+}
+
+[data-theme="dark"] .reports-header-section {
+  background: #0F172A;
+  border-bottom-color: #1E293B;
 }
 
 .reports-back-button {
@@ -147,7 +159,7 @@
 .breakdown-title {
   font-size: var(--font-size-h3);
   font-weight: var(--font-weight-semibold);
-  color: #2C2C2E !important; /* Deep Charcoal - explicit color */
+  color: var(--color-text-primary);
   margin-bottom: var(--spacing-large); /* Increased spacing below title */
 }
 
@@ -182,10 +194,18 @@
 
 .insight-text {
   font-size: var(--font-size-body-regular);
-  color: #2C2C2E !important; /* Deep Charcoal - explicit color for visibility */
+  color: var(--color-text-primary);
   line-height: 1.6; /* Increased line height for readability */
   flex: 1;
   font-weight: var(--font-weight-regular);
+}
+
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .breakdown-card,
+[data-theme="dark"] .insights-card,
+[data-theme="dark"] .reports-download-button {
+  background: #1E293B;
+  border-color: #334155;
 }
 
 .reports-action-buttons {

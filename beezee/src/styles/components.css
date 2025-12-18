@@ -506,6 +506,27 @@
   box-shadow: var(--shadow-level-1);
 }
 
+[data-theme="dark"] .card-skeleton,
+[data-theme="dark"] .transaction-skeleton,
+[data-theme="dark"] .sync-queue-retry-all,
+[data-theme="dark"] .sync-queue-item {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .onboarding-progress-step-number {
+  background: #334155;
+  color: #CBD5E1;
+}
+
+[data-theme="dark"] .empty-state-title {
+  color: #F8FAFC;
+}
+
+[data-theme="dark"] .empty-state-description {
+  color: #CBD5E1;
+}
+
 .transaction-skeleton {
   padding: var(--spacing-medium);
   border-radius: var(--radius-card);
