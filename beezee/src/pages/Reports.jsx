@@ -104,6 +104,11 @@ export default function Reports() {
         return;
       }
 
+      if (result.error === 'empty_state') {
+        setReportData({ transactionCount: 0 });
+        return;
+      }
+
       if (result.error) throw new Error(result.error);
 
       setReportData(result);
@@ -260,10 +265,10 @@ export default function Reports() {
             </div>
           ) : !reportData || reportData.transactionCount === 0 ? (
             <EmptyState
-              icon={<FileText size={64} />}
-              title={t('reports.noDataTitle', 'No Transactions Found')}
-              description={t('reports.noDataDesc', "We couldn't find any transactions for this period. Try selecting a different date range or add some transactions.")}
-              actionText={t('transactions.addTransaction', 'Add Transaction')}
+              type="reports"
+              title={t('reports.noDataTitle', 'No Transactions Yet')}
+              description={t('reports.noDataDesc', "Start recording transactions to see your business insights here.")}
+              actionLabel={t('transactions.addTransaction', 'Add Your First Transaction')}
               onAction={() => navigate('/dashboard/transactions/add')}
             />
           ) : (
