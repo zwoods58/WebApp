@@ -19,8 +19,8 @@ export default function GetStarted() {
     <div className="auth-container">
       {/* Logo */}
       <div className="auth-logo-container">
-        <div className="auth-logo">💰</div>
-        <h1 className="auth-app-name">FinanceTracker</h1>
+        <div className="auth-logo">🐝</div>
+        <h1 className="auth-app-name">BeeZee</h1>
       </div>
 
       {/* Headline */}
