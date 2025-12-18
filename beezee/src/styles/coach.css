@@ -176,19 +176,24 @@
 
 .coach-input-container {
   position: fixed;
-  bottom: calc(72px + var(--spacing-medium));
+  bottom: calc(16px + 72px + 8px); /* Navbar margin (16) + height (72) + small gap (8) */
   left: var(--spacing-medium);
   right: var(--spacing-medium);
   max-width: calc(100vw - 32px);
   background: white;
   border-radius: var(--radius-bubble);
   box-shadow: var(--shadow-level-2);
-  padding: var(--spacing-medium); /* Increased padding */
+  padding: 8px var(--spacing-medium); /* Slightly reduced padding to make it slimmer */
   display: flex;
   align-items: center;
-  gap: var(--spacing-medium); /* Increased gap between elements */
+  gap: var(--spacing-small);
   z-index: var(--z-navigation);
   box-sizing: border-box;
+}
+
+[data-theme="dark"] .coach-input-container {
+  background: #1E293B;
+  border-color: #334155;
 }
 
 .coach-voice-button {
@@ -203,16 +208,11 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-normal);
+  flex-shrink: 0;
 }
 
-.coach-voice-button:active:not(:disabled) {
-  background: var(--gradient-primary-button);
-  color: white;
-}
-
-.coach-voice-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+[data-theme="dark"] .coach-voice-button {
+  background: #334155;
 }
 
 .coach-text-input {
@@ -222,17 +222,24 @@
   border: none;
   outline: none;
   background: transparent;
+  padding: 8px 0;
+}
+
+[data-theme="dark"] .coach-text-input {
+  color: #F8FAFC;
 }
 
 .coach-text-input::placeholder {
   color: var(--color-text-tertiary);
 }
 
+[data-theme="dark"] .coach-text-input::placeholder {
+  color: #94A3B8;
+}
+
 .coach-send-button {
-  width: 44px; /* Minimum touch target */
-  height: 44px; /* Minimum touch target */
-  min-width: 44px; /* Ensure minimum size */
-  min-height: 44px; /* Ensure minimum size */
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--gradient-primary-button);
   border: none;
@@ -242,6 +249,7 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-normal);
+  flex-shrink: 0;
 }
 
 .coach-send-button:active:not(:disabled) {

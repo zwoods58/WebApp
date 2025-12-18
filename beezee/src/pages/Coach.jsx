@@ -215,35 +215,39 @@ export default function Coach() {
           </div>
         </div>
 
-        <div className="messages-list pb-32">
+        <div className="coach-messages-container pb-32">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`message-bubble ${message.role === 'user' ? 'user' : 'assistant'}`}
+              className={`coach-message ${message.role === 'user' ? 'user' : 'assistant'}`}
             >
-              <div className="message-content">{message.content}</div>
-              <div className="message-time">
-                {format(new Date(message.timestamp), 'p')}
+              <div className={`message-bubble ${message.role === 'user' ? 'user' : 'assistant'}`}>
+                <div className="message-text">{message.content}</div>
+                <div className="message-timestamp">
+                  {format(new Date(message.timestamp), 'p')}
+                </div>
               </div>
             </div>
           ))}
           {loading && (
-            <div className="message-bubble assistant">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div className="coach-message assistant">
+              <div className="message-bubble assistant">
+                <div className="typing-indicator">
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
               </div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="input-area-container">
-          <form onSubmit={handleSend} className="input-area">
+        <div className="coach-input-container">
+          <form onSubmit={handleSend} className="flex-1 flex items-center gap-2">
             <button
               type="button"
-              className="voice-input-button"
+              className="coach-voice-button"
               onClick={() => setShowVoiceInput(true)}
               aria-label={t('coach.voiceInput', 'Speak your question')}
             >
@@ -252,6 +256,7 @@ export default function Coach() {
             <input
               ref={inputRef}
               type="text"
+              className="coach-text-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={t('coach.placeholder', 'Ask about your profits, expenses...')}
@@ -259,7 +264,7 @@ export default function Coach() {
             />
             <button
               type="submit"
-              className="send-button"
+              className="coach-send-button"
               disabled={!input.trim() || loading || questionsRemaining <= 0}
               aria-label={t('common.send', 'Send message')}
             >
@@ -267,7 +272,7 @@ export default function Coach() {
             </button>
           </form>
           {questionsRemaining <= 0 && (
-            <p className="limit-warning text-center mt-2 text-xs text-red-500">
+            <p className="limit-warning text-center mt-2 text-xs text-red-500 absolute -top-6 left-0 right-0">
               {t('coach.limitReached', "You've reached your daily question limit.")}
             </p>
           )}

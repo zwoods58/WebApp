@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
   const [savedTransaction, setSavedTransaction] = useState(null);
+  const [receiptFile, setReceiptFile] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -184,17 +185,20 @@ export default function Dashboard() {
 
   const handleReceiptTakePhoto = () => {
     setIsReceiptModalOpen(false);
+    setReceiptFile(null); // Ensure no old file
     setShowReceiptScanner(true);
   };
 
   const handleReceiptUpload = (file) => {
     setIsReceiptModalOpen(false);
+    setReceiptFile(file);
     setShowReceiptScanner(true);
     // The ReceiptScanner will handle the file upload
   };
 
   const handleReceiptTransactionCreated = async (transaction) => {
     setShowReceiptScanner(false);
+    setReceiptFile(null); // Clear the file after success
     setIsLoadingModalOpen(true);
     
     try {
