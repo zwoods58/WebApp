@@ -104,14 +104,23 @@ export default function Reports() {
         return;
       }
 
-      if (result.error === 'empty_state') {
+      // Robust check for empty state
+      const isEmptyState = 
+        result.error === 'empty_state' || 
+        (result.success === false && result.message?.toLowerCase().includes('no transactions')) ||
+        (result.report && result.report.metrics?.transactionCount === 0);
+
+      if (isEmptyState) {
         setReportData({ transactionCount: 0 });
         return;
       }
 
       if (result.error) throw new Error(result.error);
+      if (result.success === false) throw new Error(result.message || 'Failed to generate report');
 
-      setReportData(result);
+      // The edge function returns the report in result.report
+      const finalData = result.report || result;
+      setReportData(finalData);
       if (!skipCache) {
         saveReportToCache(cacheKey, result);
       }
@@ -205,13 +214,17 @@ export default function Reports() {
           </div>
 
           {/* Quick Date Range Selection */}
-          <div className="date-range-scroll">
-            <div className="date-range-pills">
+          <div className="date-range-scroll mt-2">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {QUICK_RANGES.map((range) => (
                 <button
                   key={range.id}
                   onClick={() => setSelectedRange(range.id)}
-                  className={`date-range-pill ${selectedRange === range.id ? 'active' : ''}`}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedRange === range.id 
+                      ? 'bg-primary-600 text-white shadow-md' 
+                      : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'
+                  }`}
                 >
                   {range.label}
                 </button>
