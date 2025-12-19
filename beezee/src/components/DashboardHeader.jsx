@@ -31,9 +31,7 @@ export default function DashboardHeader({ notificationCount = 0 }) {
   return (
     <header className="dashboard-header">
       <div className="dashboard-header-left">
-        <div className="mb-2">
-          <BeeZeeLogo />
-        </div>
+        <BeeZeeLogo className="mb-1" />
         <div className="dashboard-greeting">
           <Sparkles size={20} className="dashboard-greeting-icon" strokeWidth={2} />
           <span className="dashboard-greeting-text">
