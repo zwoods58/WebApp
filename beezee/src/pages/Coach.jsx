@@ -18,6 +18,7 @@ export default function Coach() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -35,6 +36,15 @@ export default function Coach() {
       loadUserContext();
     }
   }, [user]);
+
+  // Refresh when sync completes
+  useEffect(() => {
+    if (syncCompleted && user) {
+      console.log('Sync completed - refreshing Coach...');
+      loadCoachingHistory();
+      loadUserContext();
+    }
+  }, [syncCompleted, user]);
 
   useEffect(() => {
     scrollToBottom();

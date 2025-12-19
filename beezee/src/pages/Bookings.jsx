@@ -12,11 +12,13 @@ import AddTaskModal from '../components/AddTaskModal';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '../components/EmptyState';
 import BeeZeeLogo from '../components/BeeZeeLogo';
+import { useOfflineStore } from '../store/offlineStore';
 
 export default function Bookings() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   const [bookings, setBookings] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);

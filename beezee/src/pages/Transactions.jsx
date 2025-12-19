@@ -11,11 +11,13 @@ import FloatingNavBar from '../components/FloatingNavBar';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import EmptyState from '../components/EmptyState';
 import BeeZeeLogo from '../components/BeeZeeLogo';
+import { useOfflineStore } from '../store/offlineStore';
 
 export default function Transactions() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, income, expense
@@ -25,6 +27,14 @@ export default function Transactions() {
   useEffect(() => {
     loadTransactions();
   }, [user]);
+
+  // Refresh when sync completes
+  useEffect(() => {
+    if (syncCompleted) {
+      console.log('Sync completed - refreshing Transactions...');
+      loadTransactions();
+    }
+  }, [syncCompleted]);
 
   const loadTransactions = async () => {
     if (!user) return;

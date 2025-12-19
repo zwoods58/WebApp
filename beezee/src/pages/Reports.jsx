@@ -16,11 +16,13 @@ import SwipeToRefresh from '../components/SwipeToRefresh';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 import BeeZeeLogo from '../components/BeeZeeLogo';
+import { useOfflineStore } from '../store/offlineStore';
 
 export default function Reports() {
   const navigate = useNavigate();
   const { user, clearAuth } = useAuthStore();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   
   const [activeTab, setActiveTab] = useState('financials'); // 'financials' or 'inventory'
   
@@ -46,6 +48,14 @@ export default function Reports() {
   useEffect(() => {
     loadData();
   }, [selectedRange, user, activeTab]);
+
+  // Refresh when sync completes
+  useEffect(() => {
+    if (syncCompleted) {
+      console.log('Sync completed - refreshing Reports...');
+      loadData();
+    }
+  }, [syncCompleted]);
 
   const loadData = async () => {
     if (activeTab === 'financials') {

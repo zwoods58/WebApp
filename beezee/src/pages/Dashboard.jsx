@@ -23,11 +23,13 @@ import OfflineBanner from '../components/OfflineBanner';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import { useTranslation } from 'react-i18next';
 import { createInventoryPurchaseTransaction } from '../utils/inventoryTransactions';
+import { useOfflineStore } from '../store/offlineStore';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalIncome: 0,
@@ -55,6 +57,15 @@ export default function Dashboard() {
     loadDashboardData();
     loadNotificationCount();
   }, [user]);
+
+  // Refresh when sync completes
+  useEffect(() => {
+    if (syncCompleted) {
+      console.log('Sync completed - refreshing Dashboard...');
+      loadDashboardData();
+      loadNotificationCount();
+    }
+  }, [syncCompleted]);
 
   const loadDashboardData = async () => {
     let finalUserId = user?.id || localStorage.getItem('beezee_user_id');

@@ -11,11 +11,13 @@ import { useTranslation } from 'react-i18next';
 import BeeZeeLogo from '../components/BeeZeeLogo';
 import EmptyState from '../components/EmptyState';
 import { createInventoryPurchaseTransaction, createInventorySaleTransaction, handleInventoryQuantityIncrease } from '../utils/inventoryTransactions';
+import { useOfflineStore } from '../store/offlineStore';
 
 export default function Inventory() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { syncCompleted } = useOfflineStore();
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +29,14 @@ export default function Inventory() {
   useEffect(() => {
     if (user) loadInventory();
   }, [user]);
+
+  // Refresh when sync completes
+  useEffect(() => {
+    if (syncCompleted) {
+      console.log('Sync completed - refreshing Inventory...');
+      loadInventory();
+    }
+  }, [syncCompleted]);
 
   const loadInventory = async () => {
     let finalUserId = user?.id || localStorage.getItem('beezee_user_id');

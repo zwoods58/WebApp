@@ -105,6 +105,15 @@ function App() {
           try {
             const result = await syncWithServer(supabase);
             console.log('Sync result:', result);
+            
+            // Mark sync as completed to trigger page refreshes
+            if (result.success && result.synced > 0) {
+              markSyncCompleted();
+              
+              // Show toast notification
+              const { default: toast } = await import('react-hot-toast');
+              toast.success(`${result.synced} item${result.synced !== 1 ? 's' : ''} synced successfully!`);
+            }
           } catch (error) {
             console.error('Sync failed:', error);
           } finally {
