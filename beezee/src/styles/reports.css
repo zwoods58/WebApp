@@ -16,7 +16,7 @@
 
 .reports-header-section {
   padding: var(--spacing-medium) var(--spacing-large);
-  padding-top: var(--page-top-padding);
+  padding-top: calc(var(--page-top-padding) + env(safe-area-inset-top, 0px) + 8px);
   background: white;
   border-bottom: 1px solid #F3F4F6;
   z-index: 50;
@@ -111,19 +111,37 @@
 .report-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px;
   padding: 0 var(--spacing-medium);
+  margin-bottom: var(--spacing-medium);
 }
 
 .report-card {
   background: white;
   border-radius: 28px;
-  padding: 24px;
+  padding: 20px 18px;
   border: 1px solid #F3F4F6;
   box-shadow: 0 10px 25px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 375px) {
+  .report-grid {
+    gap: 10px;
+    padding: 0 calc(var(--spacing-medium) - 4px);
+  }
+  
+  .report-card {
+    padding: 18px 14px;
+  }
+  
+  .report-card-amount {
+    font-size: 20px;
+  }
 }
 
 .report-card.full-width {

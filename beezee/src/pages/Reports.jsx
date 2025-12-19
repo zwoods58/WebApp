@@ -17,6 +17,7 @@ import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 import BeeZeeLogo from '../components/BeeZeeLogo';
 import { useOfflineStore } from '../store/offlineStore';
+import { getAllOfflineTransactions } from '../utils/offlineSync';
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -114,39 +115,72 @@ export default function Reports() {
 
       if (txError) {
         console.warn('[Reports] Transaction Fetch Error (Non-blocking):', txError);
+      }
+
+      // Get offline transactions and merge with online ones (same as Dashboard)
+      let allTransactions = [...(transactions || [])];
+      try {
+        const offlineTransactions = await getAllOfflineTransactions();
+        console.log('[Reports] Found offline transactions:', offlineTransactions.length);
+        
+        // Filter offline transactions by date range and merge
+        const dateFilteredOffline = offlineTransactions.filter(t => {
+          const txDate = t.date;
+          return txDate >= start && txDate <= end;
+        });
+        
+        // Filter out already synced offline transactions and add pending ones
+        const unsyncedOffline = dateFilteredOffline.filter(t => !t.synced);
+        console.log('[Reports] Unsynced offline transactions in range:', unsyncedOffline.length);
+        
+        // Mark offline transactions as pending and merge
+        const pendingTransactions = unsyncedOffline.map(t => ({
+          ...t,
+          pending: true,
+          synced: false,
+          id: t.offline_id || `offline_${t.id}`,
+        }));
+        
+        allTransactions = [...allTransactions, ...pendingTransactions];
+        
+        // Sort by date
+        allTransactions.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA - dateB;
+        });
+      } catch (error) {
+        console.error('[Reports] Error loading offline transactions:', error);
+      }
+
+      if (!allTransactions || allTransactions.length === 0) {
         setReportData({ transactionCount: 0 });
         setLoading(false);
         return;
       }
 
-      if (!transactions || transactions.length === 0) {
-        setReportData({ transactionCount: 0 });
-        setLoading(false);
-        return;
-      }
-
-      // Step 2: Calculate financial metrics on frontend (No AI dependency)
-      const totalIncome = transactions
+      // Step 2: Calculate financial metrics on frontend (No AI dependency) - using allTransactions
+      const totalIncome = allTransactions
         .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
       
-      const totalExpenses = transactions
+      const totalExpenses = allTransactions
         .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + Number(t.amount), 0);
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-      const categoryBreakdown = transactions.reduce((acc, t) => {
+      const categoryBreakdown = allTransactions.reduce((acc, t) => {
         const cat = t.category || 'Other';
         if (!acc[cat]) acc[cat] = { name: cat, income: 0, expense: 0 };
-        if (t.type === 'income') acc[cat].income += Number(t.amount);
-        else acc[cat].expense += Number(t.amount);
+        if (t.type === 'income') acc[cat].income += Number(t.amount || 0);
+        else acc[cat].expense += Number(t.amount || 0);
         return acc;
       }, {});
 
-      const dailyStatsMap = transactions.reduce((acc, t) => {
+      const dailyStatsMap = allTransactions.reduce((acc, t) => {
         const date = t.date;
         if (!acc[date]) acc[date] = { date, income: 0, expense: 0 };
-        if (t.type === 'income') acc[date].income += Number(t.amount);
-        else acc[date].expense += Number(t.amount);
+        if (t.type === 'income') acc[date].income += Number(t.amount || 0);
+        else acc[date].expense += Number(t.amount || 0);
         return acc;
       }, {});
 
@@ -160,7 +194,7 @@ export default function Reports() {
       }
 
       const initialReport = {
-        transactionCount: transactions.length,
+        transactionCount: allTransactions.length,
         totalIncome,
         totalExpenses,
         netProfit: totalIncome - totalExpenses,
@@ -371,11 +405,11 @@ export default function Reports() {
         <OfflineBanner />
         
         {/* Modern Header Section */}
-        <div className="reports-header-section pt-4">
+        <div className="reports-header-section">
           <div className="reports-title-row">
             <div className="flex items-center gap-3 px-4">
               <BeeZeeLogo />
-              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400 ml-2">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>
               <h1 className="reports-title">{t('reports.title', 'Reports')}</h1>
