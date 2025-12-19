@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Bell, MessageCircle, LogOut, User, Shield, Globe, Moon, CreditCard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bell, MessageCircle, LogOut, User, Globe, Moon, CreditCard } from 'lucide-react';
 import { signOut } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../utils/supabase';
 import toast from 'react-hot-toast';
 import FloatingNavBar from '../components/FloatingNavBar';
-import DarkModeToggle from '../components/DarkModeToggle';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import LanguageSelector from '../components/LanguageSelector';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -57,7 +57,10 @@ export default function Settings() {
         <OfflineBanner />
         
         {/* Modern Header */}
-        <div className="reports-header-section">
+        <div className="reports-header-section pt-4">
+          <div className="px-4 pb-2">
+            <BeeZeeLogo />
+          </div>
           <div className="reports-title-row">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400">
@@ -90,18 +93,6 @@ export default function Settings() {
           <div className="space-y-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-2">{t('settings.preferences', 'Preferences')}</h3>
             <div className="bg-white rounded-[32px] border border-gray-50 shadow-sm overflow-hidden">
-              <div className="settings-row-premium">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
-                    <Moon size={18} />
-                  </div>
-                  <span className="text-sm font-black text-gray-900">{t('settings.darkMode', 'Appearance')}</span>
-                </div>
-                <DarkModeToggle />
-              </div>
-              
-              <div className="h-[1px] bg-gray-50 mx-6" />
-              
               <div className="settings-row-premium" onClick={() => navigate('/dashboard/settings/notifications')}>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center">
@@ -145,17 +136,6 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="h-[1px] bg-gray-50 mx-6" />
-
-              <div className="settings-row-premium" onClick={() => navigate('/dashboard/settings/voice-logs')}>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center">
-                    <Shield size={18} />
-                  </div>
-                  <span className="text-sm font-black text-gray-900">{t('settings.voiceLogs', 'Activity Logs')}</span>
-                </div>
-                <ChevronRight size={18} className="text-gray-300" />
-              </div>
             </div>
           </div>
 

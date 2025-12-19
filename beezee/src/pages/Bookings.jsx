@@ -11,6 +11,7 @@ import AddBookingModal from '../components/AddBookingModal';
 import AddTaskModal from '../components/AddTaskModal';
 import { useTranslation } from 'react-i18next';
 import EmptyState from '../components/EmptyState';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 
 export default function Bookings() {
   const { user } = useAuthStore();
@@ -127,7 +128,10 @@ export default function Bookings() {
     <SwipeToRefresh onRefresh={async () => { await loadBookings(); await loadTasks(); }}>
       <div className="bookings-container pb-24">
         {/* Modern Header */}
-        <div className="reports-header-section">
+        <div className="reports-header-section pt-4">
+          <div className="px-4 pb-2">
+            <BeeZeeLogo />
+          </div>
           <div className="reports-title-row">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">

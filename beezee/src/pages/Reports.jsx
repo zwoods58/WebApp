@@ -15,6 +15,7 @@ import EmptyState from '../components/EmptyState';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -280,7 +281,10 @@ export default function Reports() {
         <OfflineBanner />
         
         {/* Modern Header Section */}
-        <div className="reports-header-section">
+        <div className="reports-header-section pt-4">
+          <div className="px-4 pb-2">
+            <BeeZeeLogo />
+          </div>
           <div className="reports-title-row">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">

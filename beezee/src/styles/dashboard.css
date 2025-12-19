@@ -21,9 +21,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-medium) var(--spacing-large);
-  padding-top: var(--page-top-padding);
-  margin-bottom: var(--spacing-small);
+  padding: var(--spacing-small) var(--spacing-large);
+  padding-top: var(--spacing-xsmall);
+  margin-bottom: var(--spacing-xsmall);
 }
 
 .dashboard-header-left {
@@ -101,8 +101,8 @@
    ============================================ */
 .hero-balance-card {
   width: calc(100% - 32px);
-  margin: 0 var(--spacing-medium) var(--spacing-large);
-  padding: 32px 24px;
+  margin: 0 var(--spacing-medium) var(--spacing-medium);
+  padding: 24px 20px;
   border-radius: 32px;
   background: white;
   box-shadow: 0 20px 40px rgba(44, 44, 46, 0.06);
@@ -140,7 +140,7 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .hero-balance-currency-symbol {
@@ -160,7 +160,7 @@
 .hero-balance-stats {
   display: flex;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   position: relative;
   z-index: 2;
 }
@@ -254,19 +254,19 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  padding: 0 var(--spacing-medium) 32px;
+  padding: 0 var(--spacing-medium) var(--spacing-medium);
 }
 
 .quick-action-button {
   background: white;
   border-radius: 28px;
-  padding: 32px var(--spacing-medium);
+  padding: 24px var(--spacing-medium);
   border: 1px solid #F3F4F6;
   box-shadow: 0 10px 30px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   transition: var(--transition-bounce);
 }
 
@@ -301,14 +301,14 @@
    RECENT TRANSACTIONS LIST
    ============================================ */
 .recent-transactions-section {
-  padding: 0 var(--spacing-medium) 100px;
+  padding: 0 var(--spacing-medium) 80px;
 }
 
 .recent-transactions-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   padding: 0 4px;
 }
 
@@ -334,7 +334,7 @@
   color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin: 32px 0 12px 4px;
+  margin: 20px 0 10px 4px;
   opacity: 0.5;
 }
 

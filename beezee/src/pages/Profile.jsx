@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 import FloatingNavBar from '../components/FloatingNavBar';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 
 export default function Profile() {
   const { user, clearAuth } = useAuthStore();
@@ -67,7 +68,10 @@ export default function Profile() {
       <OfflineBanner />
       
       {/* Modern Header */}
-      <div className="reports-header-section">
+      <div className="reports-header-section pt-4">
+        <div className="px-4 pb-2">
+          <BeeZeeLogo />
+        </div>
         <div className="reports-title-row">
           <div className="flex items-center gap-4">
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400">

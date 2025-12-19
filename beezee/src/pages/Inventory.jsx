@@ -8,6 +8,7 @@ import SwipeToRefresh from '../components/SwipeToRefresh';
 import FloatingNavBar from '../components/FloatingNavBar';
 import AddInventoryModal from '../components/AddInventoryModal';
 import { useTranslation } from 'react-i18next';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 import EmptyState from '../components/EmptyState';
 import { createInventoryPurchaseTransaction, createInventorySaleTransaction, handleInventoryQuantityIncrease } from '../utils/inventoryTransactions';
 
@@ -153,7 +154,10 @@ export default function Inventory() {
     <SwipeToRefresh onRefresh={loadInventory}>
       <div className="inventory-container pb-24">
         {/* Modern Header */}
-        <div className="reports-header-section">
+        <div className="reports-header-section pt-4">
+          <div className="px-4 pb-2">
+            <BeeZeeLogo />
+          </div>
           <div className="reports-title-row">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">

@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/authStore';
 import { format, startOfMonth, endOfMonth, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
 import DashboardHeader from '../components/DashboardHeader';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 import HeroBalanceCard from '../components/HeroBalanceCard';
 import QuickActionButtons from '../components/QuickActionButtons';
 import RecentTransactionsList from '../components/RecentTransactionsList';
@@ -385,6 +386,9 @@ export default function Dashboard() {
     <SwipeToRefresh onRefresh={handleRefresh}>
       <div className="dashboard-container">
         <OfflineBanner />
+        <div className="px-4 pt-2 pb-1">
+          <BeeZeeLogo />
+        </div>
         <DashboardHeader notificationCount={notificationCount} />
         
         <HeroBalanceCard
@@ -396,13 +400,15 @@ export default function Dashboard() {
           accountNumber={userData?.whatsapp_number || userData?.phone_number || null}
         />
 
-                  <QuickActionButtons
-                    onVoiceClick={() => setIsTransactionModalOpen(true)}
-                    onReceiptClick={() => setIsReceiptModalOpen(true)}
-                    onInventoryClick={() => setIsInventoryModalOpen(true)}
-                  />
+        <QuickActionButtons
+          onVoiceClick={() => setIsTransactionModalOpen(true)}
+          onReceiptClick={() => setIsReceiptModalOpen(true)}
+          onInventoryClick={() => setIsInventoryModalOpen(true)}
+        />
 
-        <ProactiveInsights />
+        <div className="px-4 -mt-2">
+          <ProactiveInsights />
+        </div>
 
         <RecentTransactionsList transactions={recentTransactions} />
 

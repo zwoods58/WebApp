@@ -6,13 +6,13 @@ import { useAuthStore } from '../store/authStore';
 import { useOfflineStore } from '../store/offlineStore';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import VoiceRecorder from '../components/VoiceRecorder';
+import VoiceToText from '../components/VoiceToText';
 import { getCoachingContext, saveConversation } from '../utils/coachingHelpers';
-import FloatingNavBar from '../components/FloatingNavBar';
 import { PageSkeleton } from '../components/LoadingSkeleton';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
+import BeeZeeLogo from '../components/BeeZeeLogo';
 
 export default function Coach() {
   const navigate = useNavigate();
@@ -141,7 +141,10 @@ export default function Coach() {
 
   if (loadingHistory) return (
     <div className="coach-container pb-24">
-      <div className="reports-header-section">
+      <div className="reports-header-section pt-4">
+        <div className="px-4 pb-2">
+          <BeeZeeLogo />
+        </div>
         <div className="reports-title-row">
           <div className="flex items-center gap-4">
             <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
@@ -152,7 +155,7 @@ export default function Coach() {
         </div>
       </div>
       <PageSkeleton />
-      <FloatingNavBar />
+      {/* Navigation bar hidden on Coach page */}
     </div>
   );
 
@@ -162,7 +165,10 @@ export default function Coach() {
         <OfflineBanner />
         
         {/* Modern Header */}
-        <div className="reports-header-section">
+        <div className="reports-header-section pt-4">
+          <div className="px-4 pb-2">
+            <BeeZeeLogo />
+          </div>
           <div className="reports-title-row">
             <div className="flex items-center gap-4">
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
@@ -178,7 +184,7 @@ export default function Coach() {
         </div>
 
         {/* Chat Area */}
-        <div className="coach-messages-container px-4 pt-4 space-y-6">
+        <div className="coach-messages-container px-4 pt-4 pb-32 space-y-6">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}>
               <div className={`max-w-[85%] p-5 rounded-[28px] shadow-sm ${msg.role === 'user' ? 'bg-[#2C2C2E] text-white rounded-tr-none' : 'bg-white text-gray-900 border border-gray-50 rounded-tl-none'}`}>
@@ -200,7 +206,7 @@ export default function Coach() {
         </div>
 
         {/* Floating Input Area */}
-        <div className="fixed bottom-[88px] left-0 right-0 px-4 animate-slide-up">
+        <div className="fixed bottom-[120px] left-0 right-0 px-4 animate-slide-up">
           <form onSubmit={handleSend} className="bg-white p-3 rounded-[32px] shadow-xl border border-gray-100 flex items-center gap-2">
             <button
               type="button"
@@ -228,10 +234,10 @@ export default function Coach() {
         </div>
 
         {showVoiceInput && (
-          <VoiceRecorder onTranscript={handleVoiceInput} onCancel={() => setShowVoiceInput(false)} />
+          <VoiceToText onTranscript={handleVoiceInput} onCancel={() => setShowVoiceInput(false)} />
         )}
         
-        <FloatingNavBar />
+        {/* Navigation bar hidden on Coach page */}
       </div>
     </SwipeToRefresh>
   );
