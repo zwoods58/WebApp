@@ -48,6 +48,8 @@ export default function Reports() {
 
   useEffect(() => {
     loadData();
+    // Clear AI analysis when date range or tab changes
+    setReportData(prev => prev ? { ...prev, analysis: null } : null);
   }, [selectedRange, user, activeTab]);
 
   // Refresh when sync completes (syncCompleted is a counter that increments)
@@ -55,8 +57,33 @@ export default function Reports() {
     if (syncCompleted > 0) {
       console.log('Sync completed - refreshing Reports...');
       loadData();
+      // Also reload AI analysis when sync completes (after data loads)
+      // Use a longer timeout to ensure reportData is updated
+      setTimeout(() => {
+        if (activeTab === 'financials' && reportData) {
+          const { start, end } = getDateRange();
+          let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+          const calculatedData = {
+            totalIncome: reportData.totalIncome,
+            totalExpenses: reportData.totalExpenses,
+            netProfit: reportData.netProfit,
+            transactionCount: reportData.transactionCount,
+            categoryBreakdown: reportData.categoryBreakdown,
+            dailyStats: reportData.dailyStats
+          };
+          if (!finalUserId) {
+            supabase.auth.getSession().then(({ data: { session } }) => {
+              if (session?.user?.id) {
+                loadAiAnalysis(start, end, session.user.id, calculatedData);
+              }
+            });
+          } else {
+            loadAiAnalysis(start, end, finalUserId, calculatedData);
+          }
+        }
+      }, 2000); // Wait for data to load first
     }
-  }, [syncCompleted]);
+  }, [syncCompleted, reportData]);
 
   const loadData = async () => {
     if (activeTab === 'financials') {
@@ -203,14 +230,28 @@ export default function Reports() {
         analysis: null // Will be filled by AI in background
       };
 
-      setReportData(initialReport);
+      // Clear old analysis when new data loads to show it's updating
+      setReportData(prev => ({
+        ...initialReport,
+        analysis: null // Clear old analysis
+      }));
       setLoading(false);
       
       // Load previous period data for comparison (in background)
       loadPreviousPeriodData(start, end, finalUserId);
 
       // Step 3: Load AI analysis in background (Does NOT block the UI)
-      loadAiAnalysis(start, end, finalUserId);
+      // Pass the calculated values so AI uses the same numbers displayed on the page
+      setTimeout(() => {
+        loadAiAnalysis(start, end, finalUserId, {
+          totalIncome,
+          totalExpenses,
+          netProfit: totalIncome - totalExpenses,
+          transactionCount: allTransactions.length,
+          categoryBreakdown: Object.values(categoryBreakdown),
+          dailyStats: sortedDailyStats
+        });
+      }, 100);
 
     } catch (err) {
       console.error('[Reports] Main Load Error:', err);
@@ -219,28 +260,48 @@ export default function Reports() {
     }
   };
 
-  const loadAiAnalysis = async (start, end, userId) => {
+  const loadAiAnalysis = async (start, end, userId, calculatedData = null) => {
     setAiLoading(true);
     try {
+      console.log('[Reports] Loading AI analysis for date range:', start, 'to', end);
+      if (calculatedData) {
+        console.log('[Reports] Using calculated data:', calculatedData);
+      }
+      
       // Use a safe wrapper for AI calls
-      const result = await generateReport('profit_loss', start, end, userId).catch(err => {
+      // Pass calculated data so AI uses the same numbers displayed on the page
+      const result = await generateReport('profit_loss', start, end, userId, calculatedData).catch(err => {
         console.warn('[Reports] AI Call failed (likely unauthorized or network):', err);
         return { success: false, error: 'AI_OFFLINE' };
       });
 
       if (result.error === 'AI_OFFLINE' || result.error?.includes('User not found')) {
         console.warn('[Reports] AI Analysis skipped to prevent UI crash.');
+        setAiLoading(false);
         return;
       }
       
       if (result.success && result.report?.analysis) {
+        console.log('[Reports] AI Analysis updated:', result.report.analysis);
         setReportData(prev => ({
           ...prev,
           analysis: result.report.analysis
         }));
+      } else {
+        // Clear old analysis if new one failed
+        console.log('[Reports] AI Analysis failed, clearing old analysis');
+        setReportData(prev => ({
+          ...prev,
+          analysis: null
+        }));
       }
     } catch (err) {
       console.warn('[Reports] AI Analysis caught error:', err);
+      // Clear old analysis on error
+      setReportData(prev => ({
+        ...prev,
+        analysis: null
+      }));
     } finally {
       setAiLoading(false);
     }
@@ -407,9 +468,11 @@ export default function Reports() {
         {/* Modern Header Section */}
         <div className="reports-header-section">
           <div className="reports-title-row">
-            <div className="flex items-center gap-3 px-4">
+            <div className="px-4">
               <BeeZeeLogo />
-              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400 ml-2">
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 -ml-2">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>
               <h1 className="reports-title">{t('reports.title', 'Reports')}</h1>
@@ -492,12 +555,14 @@ export default function Reports() {
                     type="income" 
                     transactionCount={reportData.transactionCount}
                     previousAmount={previousReportData?.totalIncome}
+                    isFullWidth
                   />
                   <ReportCard 
                     title="Expenses" 
                     amount={reportData.totalExpenses} 
                     type="expense"
                     previousAmount={previousReportData?.totalExpenses}
+                    isFullWidth
                   />
                   <ReportCard 
                     title="Net Profit" 

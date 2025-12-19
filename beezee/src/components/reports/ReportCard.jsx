@@ -42,9 +42,10 @@ export default function ReportCard({
         </div>
         <div className="report-card-amount" style={{ color: colors.accent }}>
           {isCurrency ? 'R' : ''}
-          {Number(amount || 0).toLocaleString(undefined, { 
+          {Number(amount || 0).toLocaleString('en-ZA', { 
             minimumFractionDigits: isCurrency ? 2 : 0, 
-            maximumFractionDigits: isCurrency ? 2 : 0 
+            maximumFractionDigits: isCurrency ? 2 : 0,
+            useGrouping: true
           })}
         </div>
         <div className="flex items-center justify-between mt-1">

@@ -66,7 +66,8 @@ serve(async (req) => {
       reportType = "custom", 
       startDate, 
       endDate = new Date().toISOString().split("T")[0],
-      user_id
+      user_id,
+      calculatedData = null // Optional: pre-calculated data from Reports page
     } = await req.json();
     
     if (!user_id) {
@@ -168,39 +169,61 @@ serve(async (req) => {
       );
     }
 
-    // Format data for AI analysis
-    const totalIncome = transactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-    const totalExpenses = transactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-    const netProfit = totalIncome - totalExpenses;
+    // Use calculatedData if provided (from Reports page), otherwise calculate from database
+    // This ensures AI analysis matches the exact numbers displayed on the Reports page
+    let totalIncome: number;
+    let totalExpenses: number;
+    let netProfit: number;
+    let categoryBreakdown: any;
+    let sortedDailyStats: any[];
+    let transactionCount: number;
 
-    const categoryBreakdown = transactions.reduce((acc: any, t) => {
-      const cat = t.category || "Uncategorized";
-      if (!acc[cat]) {
-        acc[cat] = { income: 0, expense: 0, total: 0 };
-      }
-      if (t.type === "income") acc[cat].income += Number(t.amount);
-      else acc[cat].expense += Number(t.amount);
-      acc[cat].total = acc[cat].income - acc[cat].expense;
-      return acc;
-    }, {});
+    if (calculatedData) {
+      // Use pre-calculated data from Reports page (includes offline transactions)
+      console.log("Using pre-calculated data from Reports page");
+      totalIncome = calculatedData.totalIncome || 0;
+      totalExpenses = calculatedData.totalExpenses || 0;
+      netProfit = calculatedData.netProfit || 0;
+      transactionCount = calculatedData.transactionCount || transactions.length;
+      categoryBreakdown = calculatedData.categoryBreakdown || {};
+      sortedDailyStats = calculatedData.dailyStats || [];
+    } else {
+      // Calculate from database transactions (fallback)
+      console.log("Calculating from database transactions");
+      totalIncome = transactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      totalExpenses = transactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      netProfit = totalIncome - totalExpenses;
+      transactionCount = transactions.length;
 
-    const dailyStats = transactions.reduce((acc: any, t) => {
-      const date = t.date;
-      if (!acc[date]) {
-        acc[date] = { date, income: 0, expense: 0 };
-      }
-      if (t.type === "income") acc[date].income += Number(t.amount);
-      else acc[date].expense += Number(t.amount);
-      return acc;
-    }, {});
+      categoryBreakdown = transactions.reduce((acc: any, t) => {
+        const cat = t.category || "Uncategorized";
+        if (!acc[cat]) {
+          acc[cat] = { income: 0, expense: 0, total: 0 };
+        }
+        if (t.type === "income") acc[cat].income += Number(t.amount);
+        else acc[cat].expense += Number(t.amount);
+        acc[cat].total = acc[cat].income - acc[cat].expense;
+        return acc;
+      }, {});
 
-    const sortedDailyStats = Object.values(dailyStats).sort((a: any, b: any) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+      const dailyStats = transactions.reduce((acc: any, t) => {
+        const date = t.date;
+        if (!acc[date]) {
+          acc[date] = { date, income: 0, expense: 0 };
+        }
+        if (t.type === "income") acc[date].income += Number(t.amount);
+        else acc[date].expense += Number(t.amount);
+        return acc;
+      }, {});
+
+      sortedDailyStats = Object.values(dailyStats).sort((a: any, b: any) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+    }
 
     // Call AI for analysis
     const systemPrompt = `You are a professional financial analyst for a small business app called BeeZee. 
@@ -216,7 +239,7 @@ serve(async (req) => {
     Total Income: R${totalIncome.toFixed(2)}
     Total Expenses: R${totalExpenses.toFixed(2)}
     Net Profit: R${netProfit.toFixed(2)}
-    Transaction Count: ${transactions.length}
+    Transaction Count: ${transactionCount}
     Category Breakdown: ${JSON.stringify(categoryBreakdown)}
     Daily Stats: ${JSON.stringify(sortedDailyStats)}`;
 

@@ -168,7 +168,7 @@ export async function receiptToTransaction(imageBase64, mimeType = 'image/jpeg')
   return callEdgeFunction('receipts-transaction', { imageBase64, mimeType, user_id: userId });
 }
 
-export async function generateReport(reportType, startDate, endDate, customUserId = null) {
+export async function generateReport(reportType, startDate, endDate, customUserId = null, calculatedData = null) {
   // Get user ID from parameter or localStorage (custom auth system)
   const userId = customUserId || localStorage.getItem('beezee_user_id');
   if (!userId) {
@@ -176,7 +176,14 @@ export async function generateReport(reportType, startDate, endDate, customUserI
   }
   // Use requireAuth = false because we are using custom user_id in the payload
   // and the Edge Function will use the Admin client to verify the user.
-  return callEdgeFunction('Generate-Reports', { reportType, startDate, endDate, user_id: userId }, false);
+  // Pass calculatedData so AI uses the same numbers displayed on the Reports page
+  return callEdgeFunction('Generate-Reports', { 
+    reportType, 
+    startDate, 
+    endDate, 
+    user_id: userId,
+    calculatedData // Pass calculated values to match Reports page display
+  }, false);
 }
 
 export async function askFinancialCoach(question, context = null) {

@@ -10,6 +10,26 @@ export default function ProactiveInsights({ currentIncome = 0, currentExpenses =
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    // Reset dismissed state when data changes significantly (more than 5% change)
+    const lastIncome = localStorage.getItem('last_insight_income');
+    const lastExpenses = localStorage.getItem('last_insight_expenses');
+    
+    if (lastIncome && lastExpenses) {
+      const incomeChange = Math.abs((currentIncome - parseFloat(lastIncome)) / parseFloat(lastIncome));
+      const expensesChange = Math.abs((currentExpenses - parseFloat(lastExpenses)) / parseFloat(lastExpenses));
+      
+      // If significant change (more than 5%), clear dismissed state
+      if (incomeChange > 0.05 || expensesChange > 0.05) {
+        const today = new Date().toISOString().split('T')[0];
+        localStorage.removeItem(`insight_dismissed_${today}`);
+        setDismissed(false);
+      }
+    }
+    
+    // Store current values
+    localStorage.setItem('last_insight_income', currentIncome.toString());
+    localStorage.setItem('last_insight_expenses', currentExpenses.toString());
+    
     loadProactiveInsight();
   }, [user, currentIncome, currentExpenses, currentProfit]);
 
@@ -17,7 +37,7 @@ export default function ProactiveInsights({ currentIncome = 0, currentExpenses =
     try {
       // Check if already dismissed today
       const dismissedToday = localStorage.getItem(`insight_dismissed_${new Date().toISOString().split('T')[0]}`);
-      if (dismissedToday) {
+      if (dismissedToday && !dismissed) {
         return;
       }
 
@@ -45,7 +65,12 @@ export default function ProactiveInsights({ currentIncome = 0, currentExpenses =
 
       // Set the first relevant insight
       if (insights.length > 0) {
+        console.log('[ProactiveInsights] Setting new insight:', insights[0]);
         setInsight(insights[0]);
+      } else {
+        // Clear insight if no relevant insights
+        console.log('[ProactiveInsights] No relevant insights, clearing');
+        setInsight(null);
       }
     } catch (error) {
       console.error('Error loading proactive insight:', error);

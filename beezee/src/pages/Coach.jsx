@@ -155,7 +155,9 @@ export default function Coach() {
         <div className="reports-title-row">
           <div className="flex items-center gap-3 px-4">
             <BeeZeeLogo />
-            <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+          </div>
+          <div className="flex items-center gap-2 px-4">
+            <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400">
               <ChevronLeft size={24} strokeWidth={3} />
             </button>
             <h1 className="reports-title">{t('nav.coach', 'Coach')}</h1>
@@ -175,9 +177,11 @@ export default function Coach() {
         {/* Modern Header */}
         <div className="reports-header-section pt-4">
           <div className="reports-title-row">
-            <div className="flex items-center gap-3 px-4">
+            <div className="px-4">
               <BeeZeeLogo />
-              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 -ml-2">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>
               <h1 className="reports-title">{t('nav.coach', 'Coach')}</h1>
