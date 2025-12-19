@@ -427,6 +427,9 @@
   border-bottom: 1px solid #F8FAFC;
   z-index: 50;
   margin-bottom: 8px;
+  position: relative;
+  min-height: 60px;
+  overflow: visible;
 }
 
 [data-theme="dark"] .reports-header-section {

@@ -21,6 +21,7 @@
 @import './styles/add-transaction.css';
 @import './styles/receipt-scanner.css';
 @import './styles/bookings.css';
+@import './styles/beezee-logo.css';
 
 @tailwind base;
 @tailwind components;
