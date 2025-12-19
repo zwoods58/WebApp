@@ -1,6 +1,6 @@
 {
   "name": "beezee-finance-pwa",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Progressive Web App for South African informal business owners to manage their finances",
   "type": "module",
   "scripts": {
