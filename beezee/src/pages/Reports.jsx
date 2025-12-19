@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, Share2, Loader2, AlertCircle, FileText, ChevronLeft } from 'lucide-react';
+import { Download, Share2, Loader2, AlertCircle, FileText, ChevronLeft, Package, TrendingUp, AlertTriangle, RefreshCcw } from 'lucide-react';
 import { supabase, generateReport } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
-import { format, startOfDay, startOfWeek, startOfMonth, endOfDay, endOfMonth } from 'date-fns';
+import { format, startOfDay, startOfWeek, startOfMonth, endOfDay, endOfMonth, subDays } from 'date-fns';
 import toast from 'react-hot-toast';
 import ReportCard from '../components/reports/ReportCard';
 import CategoryBreakdown from '../components/reports/CategoryBreakdown';
 import TrendChart from '../components/reports/TrendChart';
-import { generateReportPDF, shareReportOnWhatsApp } from '../utils/reportHelpers';
-import { getReportFromCache, saveReportToCache, invalidateReportCache } from '../utils/reportCache';
+import { generateReportPDF, shareReportOnWhatsApp, calculateGrowthRate } from '../utils/reportHelpers';
 import FloatingNavBar from '../components/FloatingNavBar';
 import { PageSkeleton } from '../components/LoadingSkeleton';
 import EmptyState from '../components/EmptyState';
@@ -19,162 +18,255 @@ import { useTranslation } from 'react-i18next';
 
 export default function Reports() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
   const { t } = useTranslation();
+  
+  const [activeTab, setActiveTab] = useState('financials'); // 'financials' or 'inventory'
   
   const QUICK_RANGES = [
     { id: 'today', label: t('common.today', 'Today') },
     { id: 'week', label: t('common.week', 'Week') },
     { id: 'month', label: t('common.month', 'Month') },
-    { id: 'custom', label: t('common.custom', 'Custom') },
   ];
 
-  const [selectedRange, setSelectedRange] = useState('month'); // Default to month to match Dashboard
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
-  
+  const [selectedRange, setSelectedRange] = useState('month');
   const [reportData, setReportData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [previousReportData, setPreviousReportData] = useState(null); // For growth calculations
+  const [inventoryData, setInventoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState(null);
   const [generatingPDF, setGeneratingPDF] = useState(false);
 
-  useEffect(() => {
-    loadReport();
-  }, [selectedRange, user]);
+  // BRAND COLORS
+  const BRAND_BLUE = '#A8D5E2';
+  const BRAND_CHARCOAL = '#2C2C2E';
 
-  const getDateRange = () => {
-    const now = new Date();
-    
-    switch (selectedRange) {
-      case 'today':
-        return {
-          start: format(startOfDay(now), 'yyyy-MM-dd'),
-          end: format(endOfDay(now), 'yyyy-MM-dd'),
-        };
-      case 'week':
-        return {
-          start: format(startOfWeek(now), 'yyyy-MM-dd'),
-          end: format(endOfDay(now), 'yyyy-MM-dd'), // Include full end day
-        };
-      case 'month':
-        return {
-          start: format(startOfMonth(now), 'yyyy-MM-dd'),
-          end: format(endOfDay(now), 'yyyy-MM-dd'), // Include full end day - matches Dashboard
-        };
-      case 'custom':
-        return {
-          start: customStartDate || format(startOfDay(now), 'yyyy-MM-dd'),
-          end: customEndDate || format(endOfDay(now), 'yyyy-MM-dd'),
-        };
-      default:
-        return {
-          start: format(startOfDay(now), 'yyyy-MM-dd'),
-          end: format(endOfDay(now), 'yyyy-MM-dd'),
-        };
+  useEffect(() => {
+    loadData();
+  }, [selectedRange, user, activeTab]);
+
+  const loadData = async () => {
+    if (activeTab === 'financials') {
+      await loadFinancials();
+    } else {
+      await loadInventory();
     }
   };
 
-  const loadReport = async () => {
+  const getDateRange = () => {
+    const now = new Date();
+    switch (selectedRange) {
+      case 'today':
+        return { start: format(startOfDay(now), 'yyyy-MM-dd'), end: format(endOfDay(now), 'yyyy-MM-dd') };
+      case 'week':
+        return { start: format(startOfWeek(now), 'yyyy-MM-dd'), end: format(endOfDay(now), 'yyyy-MM-dd') };
+      case 'month':
+        return { start: format(startOfMonth(now), 'yyyy-MM-dd'), end: format(endOfDay(now), 'yyyy-MM-dd') };
+      default:
+        return { start: format(startOfMonth(now), 'yyyy-MM-dd'), end: format(endOfDay(now), 'yyyy-MM-dd') };
+    }
+  };
+
+  const loadFinancials = async () => {
+    // Robust User Detection
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+
     setLoading(true);
     setError(null);
 
+    if (!finalUserId) {
+      setError('auth_missing');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { start, end } = getDateRange();
-      const skipCache = selectedRange === 'today' || selectedRange === 'month' || selectedRange === 'custom';
-      const cacheKey = `report_${user.id}_${start}_${end}`;
+
+      // Step 1: Fetch raw transactions directly from Supabase (Bypass AI for core data)
+      console.log('[Reports] Loading for user:', finalUserId, 'Date range:', start, 'to', end);
       
-      if (!skipCache) {
-        const cachedReport = getReportFromCache(cacheKey);
-        if (cachedReport) {
-          setReportData(cachedReport);
-          setLoading(false);
-          return;
-        }
-      } else {
-        invalidateReportCache(cacheKey);
-      }
+      const { data: transactions, error: txError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', finalUserId)
+        .gte('date', start)
+        .lte('date', end)
+        .order('date', { ascending: true });
 
-      const result = await generateReport('profit_loss', start, end);
+      console.log('[Reports] Found transactions:', transactions?.length || 0, transactions);
 
-      if (result.error === 'subscription_required') {
-        toast.error(t('common.subscriptionRequired', 'AI features require an active subscription'), { duration: 4000 });
-        setTimeout(() => {
-          navigate('/dashboard/subscription');
-        }, 1500);
+      if (txError) {
+        console.warn('[Reports] Transaction Fetch Error (Non-blocking):', txError);
+        setReportData({ transactionCount: 0 });
+        setLoading(false);
         return;
       }
 
-      // Robust check for empty state
-      const isEmptyState = 
-        result.error === 'empty_state' || 
-        (result.success === false && result.message?.toLowerCase().includes('no transactions')) ||
-        (result.report && result.report.metrics?.transactionCount === 0) ||
-        (result.metrics && result.metrics.transactionCount === 0);
-
-      if (isEmptyState) {
+      if (!transactions || transactions.length === 0) {
         setReportData({ transactionCount: 0 });
-        setError(null); // Clear error on empty state
+        setLoading(false);
         return;
       }
 
-      if (result.error) throw new Error(result.error);
-      if (result.success === false) throw new Error(result.message || 'Failed to generate report');
+      // Step 2: Calculate financial metrics on frontend (No AI dependency)
+      const totalIncome = transactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      
+      const totalExpenses = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      // The edge function returns the report in result.report
-      const finalData = result.report || result;
-      setReportData(finalData);
-      setError(null); // Success! Clear any error
-      if (!skipCache) {
-        saveReportToCache(cacheKey, result);
+      const categoryBreakdown = transactions.reduce((acc, t) => {
+        const cat = t.category || 'Other';
+        if (!acc[cat]) acc[cat] = { name: cat, income: 0, expense: 0 };
+        if (t.type === 'income') acc[cat].income += Number(t.amount);
+        else acc[cat].expense += Number(t.amount);
+        return acc;
+      }, {});
+
+      const dailyStatsMap = transactions.reduce((acc, t) => {
+        const date = t.date;
+        if (!acc[date]) acc[date] = { date, income: 0, expense: 0 };
+        if (t.type === 'income') acc[date].income += Number(t.amount);
+        else acc[date].expense += Number(t.amount);
+        return acc;
+      }, {});
+
+      const sortedDailyStats = Object.values(dailyStatsMap).sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Store current report as previous for next calculation
+      if (reportData) {
+        setPreviousReportData(reportData);
       }
-    } catch (error) {
-      console.error('Error loading report:', error);
-      if (error.message === 'empty_state') {
-        setReportData({ transactionCount: 0 });
-        setError(null);
-      } else {
-        setError(error.message);
+
+      const initialReport = {
+        transactionCount: transactions.length,
+        totalIncome,
+        totalExpenses,
+        netProfit: totalIncome - totalExpenses,
+        categoryBreakdown: Object.values(categoryBreakdown),
+        dailyStats: sortedDailyStats,
+        analysis: null // Will be filled by AI in background
+      };
+
+      setReportData(initialReport);
+      setLoading(false);
+      
+      // Load previous period data for comparison (in background)
+      loadPreviousPeriodData(start, end, finalUserId);
+
+      // Step 3: Load AI analysis in background (Does NOT block the UI)
+      loadAiAnalysis(start, end, finalUserId);
+
+    } catch (err) {
+      console.error('[Reports] Main Load Error:', err);
+      setError(err.message || 'Failed to load core data');
+      setLoading(false);
+    }
+  };
+
+  const loadAiAnalysis = async (start, end, userId) => {
+    setAiLoading(true);
+    try {
+      // Use a safe wrapper for AI calls
+      const result = await generateReport('profit_loss', start, end, userId).catch(err => {
+        console.warn('[Reports] AI Call failed (likely unauthorized or network):', err);
+        return { success: false, error: 'AI_OFFLINE' };
+      });
+
+      if (result.error === 'AI_OFFLINE' || result.error?.includes('User not found')) {
+        console.warn('[Reports] AI Analysis skipped to prevent UI crash.');
+        return;
       }
+      
+      if (result.success && result.report?.analysis) {
+        setReportData(prev => ({
+          ...prev,
+          analysis: result.report.analysis
+        }));
+      }
+    } catch (err) {
+      console.warn('[Reports] AI Analysis caught error:', err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const loadInventory = async () => {
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    if (!finalUserId) {
+      setError('auth_missing');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('inventory')
+        .select('*')
+        .eq('user_id', finalUserId)
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.warn('[Reports] Inventory Fetch Error (Non-blocking):', error);
+        setInventoryData([]);
+        setLoading(false);
+        return;
+      }
+      setInventoryData(data || []);
+    } catch (err) {
+      console.warn('[Reports] Inventory Exception:', err);
+      setInventoryData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRefresh = async () => {
-    await loadReport();
-  };
+  const handleRefresh = () => loadData();
 
   const handleExportPDF = async () => {
     if (!reportData) return;
-    
     setGeneratingPDF(true);
     try {
       const { start, end } = getDateRange();
       await generateReportPDF(reportData, start, end);
       toast.success(t('reports.pdfGenerated', 'Report PDF generated successfully!'));
     } catch (error) {
-      console.error('Error generating PDF:', error);
       toast.error(t('reports.pdfFailed', 'Failed to generate PDF report.'));
     } finally {
       setGeneratingPDF(false);
     }
   };
 
-  const handleShareWhatsApp = () => {
-    if (!reportData) return;
-    const { start, end } = getDateRange();
-    shareReportOnWhatsApp(reportData, start, end);
+  const handleLogoutReset = () => {
+    localStorage.clear();
+    clearAuth();
+    navigate('/login');
   };
 
-  if (loading && !reportData) return (
-    <div className="reports-container">
-      <OfflineBanner />
+  if (loading && !reportData && inventoryData.length === 0) return (
+    <div className="reports-container pb-24">
       <div className="reports-header-section">
-        <div className="flex items-center gap-4 mb-4">
-          <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-600">
-            <ChevronLeft size={24} />
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('reports.title', 'Reports')}</h1>
+        <div className="px-4 flex items-center gap-4 mb-6">
+          <ChevronLeft size={24} onClick={() => navigate('/dashboard')} />
+          <h1 className="text-3xl font-black">{t('reports.title', 'Reports')}</h1>
         </div>
       </div>
       <PageSkeleton />
@@ -187,149 +279,209 @@ export default function Reports() {
       <div className="reports-container pb-24">
         <OfflineBanner />
         
-        {/* Header Section */}
+        {/* Modern Header Section */}
         <div className="reports-header-section">
-          <div className="flex items-center justify-between mb-4">
+          <div className="reports-title-row">
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="p-2 -ml-2 text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label={t('common.back', 'Go back')}
-              >
-                <ChevronLeft size={24} />
+              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+                <ChevronLeft size={24} strokeWidth={3} />
               </button>
-              <h1 className="text-3xl font-bold text-gray-900">{t('reports.title', 'Reports')}</h1>
+              <h1 className="reports-title">{t('reports.title', 'Reports')}</h1>
             </div>
-            {reportData && (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleShareWhatsApp}
-                  className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                  aria-label={t('reports.shareWhatsApp', 'Share on WhatsApp')}
-                >
-                  <Share2 size={22} />
-                </button>
-                <button
-                  onClick={handleExportPDF}
-                  disabled={generatingPDF}
-                  className="p-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
-                  aria-label={t('reports.downloadPDF', 'Download PDF')}
-                >
-                  {generatingPDF ? <Loader2 size={22} className="animate-spin" /> : <Download size={22} />}
-                </button>
-              </div>
+            {activeTab === 'financials' && reportData?.transactionCount > 0 && (
+              <button 
+                onClick={handleExportPDF} 
+                disabled={generatingPDF} 
+                className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400"
+              >
+                {generatingPDF ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
+              </button>
             )}
           </div>
 
-          {/* Quick Date Range Selection */}
-          <div className="date-range-scroll mt-2">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {/* Premium Tabs */}
+          <div className="reports-tabs-container">
+            <button
+              onClick={() => setActiveTab('financials')}
+              className={`reports-tab-button ${activeTab === 'financials' ? 'active' : ''}`}
+            >
+              <TrendingUp size={16} strokeWidth={3} />
+              {t('reports.financials', 'Financials')}
+            </button>
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`reports-tab-button ${activeTab === 'inventory' ? 'active' : ''}`}
+            >
+              <Package size={16} strokeWidth={3} />
+              {t('nav.inventory', 'Inventory')}
+            </button>
+          </div>
+
+          {activeTab === 'financials' && (
+            <div className="date-range-scroll">
               {QUICK_RANGES.map((range) => (
                 <button
                   key={range.id}
                   onClick={() => setSelectedRange(range.id)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    selectedRange === range.id 
-                      ? 'bg-primary-600 text-white shadow-md' 
-                      : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300'
-                  }`}
+                  className={`date-range-pill ${selectedRange === range.id ? 'active' : ''}`}
                 >
                   {range.label}
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Custom Date Inputs (only if custom range selected) */}
-          {selectedRange === 'custom' && (
-            <div className="custom-date-container mt-4 animate-fade-in">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="form-field">
-                  <label className="form-label text-xs">{t('reports.startDate', 'Start Date')}</label>
-                  <input
-                    type="date"
-                    value={customStartDate}
-                    onChange={(e) => setCustomStartDate(e.target.value)}
-                    className="description-input text-sm py-2"
-                  />
-                </div>
-                <div className="form-field">
-                  <label className="form-label text-xs">{t('reports.endDate', 'End Date')}</label>
-                  <input
-                    type="date"
-                    value={customEndDate}
-                    onChange={(e) => setCustomEndDate(e.target.value)}
-                    className="description-input text-sm py-2"
-                  />
-                </div>
-              </div>
-              <button
-                onClick={loadReport}
-                className="btn btn-primary w-full mt-3 py-2 text-sm"
-              >
-                {t('reports.applyRange', 'Apply Range')}
-              </button>
-            </div>
           )}
         </div>
 
-        {/* Report Content */}
-        <div className="reports-content mt-6 px-4">
-          {error ? (
-            <div className="error-card p-6 text-center">
-              <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
-              <p className="text-gray-800 font-semibold mb-2">{t('reports.loadError', 'Error Loading Report')}</p>
-              <p className="text-gray-600 text-sm mb-4">{error}</p>
-              <button onClick={loadReport} className="btn btn-primary btn-sm">
-                {t('common.retry', 'Try Again')}
-              </button>
-            </div>
-          ) : !reportData || reportData.transactionCount === 0 ? (
-            <EmptyState
-              type="reports"
-              title={t('reports.noDataTitle', 'No Transactions Yet')}
-              description={t('reports.noDataDesc', "Start recording transactions to see your business insights here.")}
-              actionLabel={t('transactions.addTransaction', 'Add Your First Transaction')}
-              onAction={() => navigate('/dashboard/transactions/add')}
-            />
+        {/* Main Content */}
+        <div className="pt-2">
+          {activeTab === 'financials' ? (
+            reportData?.transactionCount === 0 ? (
+              <div className="mx-4">
+                <EmptyState
+                  type="reports"
+                  title={t('reports.noDataTitle', 'No Transactions')}
+                  description={t('reports.noDataDesc', "Start recording transactions to see reports.")}
+                  actionLabel={t('transactions.addTransaction', 'Add Transaction')}
+                  onAction={() => navigate('/dashboard/transactions/add')}
+                />
+              </div>
+            ) : reportData ? (
+              <div className="space-y-8">
+                {/* AI Insight Highlight */}
+                {reportData.analysis && (
+                  <div className="mx-4 bg-[#F0F9FF] rounded-[32px] p-6 border border-[#E0F2FE] animate-slide-up">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                      <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">AI Insight</span>
+                    </div>
+                    <p className="text-gray-700 text-sm font-bold leading-relaxed italic">"{reportData.analysis.summary}"</p>
+                  </div>
+                )}
+
+                {/* Scorecards */}
+                <div className="report-grid">
+                  <ReportCard 
+                    title="Revenue" 
+                    amount={reportData.totalIncome} 
+                    type="income" 
+                    transactionCount={reportData.transactionCount}
+                    previousAmount={previousReportData?.totalIncome}
+                  />
+                  <ReportCard 
+                    title="Expenses" 
+                    amount={reportData.totalExpenses} 
+                    type="expense"
+                    previousAmount={previousReportData?.totalExpenses}
+                  />
+                  <ReportCard 
+                    title="Net Profit" 
+                    amount={reportData.netProfit} 
+                    type="profit" 
+                    isFullWidth
+                    previousAmount={previousReportData?.netProfit}
+                  />
+                </div>
+
+                {/* Charts */}
+                <TrendChart data={reportData.dailyStats} title="Cash Flow" />
+                <CategoryBreakdown categories={reportData.categoryBreakdown} />
+              </div>
+            ) : null
           ) : (
-            <div className="space-y-6 animate-slide-up">
-              {/* Summary Cards */}
-              <div className="report-grid">
-                <ReportCard
-                  title={t('reports.revenue', 'Revenue')}
-                  amount={reportData.totalIncome}
-                  type="income"
-                  transactionCount={reportData.transactionCount}
-                />
-                <ReportCard
-                  title={t('reports.expenses', 'Expenses')}
-                  amount={reportData.totalExpenses}
-                  type="expense"
-                />
-                <ReportCard
-                  title={t('reports.profit', 'Net Profit')}
-                  amount={reportData.netProfit}
-                  type="profit"
-                  isFullWidth
-                />
+            /* Inventory Content */
+            inventoryData.length === 0 ? (
+              <div className="mx-4">
+                <EmptyState type="inventory" title="No Stock" description="Add items to track stock value." onAction={() => navigate('/dashboard/inventory')} />
               </div>
+            ) : (
+              <div className="space-y-8">
+                {/* Inventory Scorecards */}
+                <div className="report-grid">
+                  <ReportCard 
+                    title="Stock Value" 
+                    amount={inventoryData.reduce((sum, item) => sum + (Number(item.cost_price) * Number(item.quantity)), 0)} 
+                    type="profit" 
+                  />
+                  <ReportCard 
+                    title="Potential Profit" 
+                    amount={inventoryData.reduce((sum, item) => sum + ((Number(item.selling_price) - Number(item.cost_price)) * Number(item.quantity)), 0)} 
+                    type="income" 
+                  />
+                  <ReportCard 
+                    title="Low Stock Items" 
+                    amount={inventoryData.filter(i => Number(i.quantity) <= Number(i.min_stock_level || i.min_stock || 0)).length} 
+                    isCurrency={false} 
+                    type="expense" 
+                    isFullWidth
+                  />
+                </div>
+                
+                {/* Inventory Category Breakdown (Pie Chart) */}
+                <CategoryBreakdown 
+                  categories={Object.values(inventoryData.reduce((acc, item) => {
+                    const cat = item.category || 'Other';
+                    if (!acc[cat]) acc[cat] = { name: cat, income: 0, expense: 0 };
+                    acc[cat].income += (Number(item.cost_price) * Number(item.quantity));
+                    return acc;
+                  }, {}))} 
+                  title="Stock Value by Category"
+                  type="income"
+                />
 
-              {/* Visualizations */}
-              <TrendChart
-                data={reportData.dailyStats}
-                title={t('reports.trend', 'Income vs Expenses')}
-              />
+                {/* Critical Stock List */}
+                <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 mx-4 animate-slide-up">
+                  <div className="flex items-center justify-between mb-8">
+                    <h3 className="text-lg font-black text-gray-900 tracking-tight">
+                      Critical Stock
+                    </h3>
+                    <div className="bg-red-50 text-red-500 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                      Action Needed
+                    </div>
+                  </div>
 
-              <CategoryBreakdown
-                categories={reportData.categoryBreakdown}
-                title={t('reports.breakdown', 'Category Breakdown')}
-              />
-            </div>
+                  <div className="space-y-3">
+                    {inventoryData
+                      .filter(i => Number(i.quantity) <= Number(i.min_stock_level || i.min_stock || 0))
+                      .sort((a, b) => Number(a.quantity) - Number(b.quantity))
+                      .slice(0, 5)
+                      .map((item) => {
+                        const isOut = Number(item.quantity) === 0;
+                        return (
+                          <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-white">
+                            <div className="flex items-center gap-4">
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isOut ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
+                                <AlertTriangle size={18} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-black text-gray-900">{item.name}</p>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                  {isOut ? 'Out of Stock' : `${item.quantity} ${item.unit} remaining`}
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => navigate('/dashboard/inventory')}
+                              className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-3 py-2 rounded-lg"
+                            >
+                              Restock
+                            </button>
+                          </div>
+                        );
+                      })}
+                    {inventoryData.filter(i => Number(i.quantity) <= Number(i.min_stock_level || i.min_stock || 0)).length === 0 && (
+                      <div className="text-center py-4">
+                        <p className="text-sm font-bold text-gray-400 italic">All stock levels are healthy! ✨</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
           )}
         </div>
+        
+        <FloatingNavBar />
       </div>
-      <FloatingNavBar />
     </SwipeToRefresh>
   );
 }

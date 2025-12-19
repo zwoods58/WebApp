@@ -184,10 +184,18 @@ export default function AddTaskModal({
           >
             <X size={24} />
           </button>
-          <h2 id="task-modal-title" className="modal-title">
+          <h2 id="task-modal-title" className="modal-title flex-1 text-center flex items-center justify-center gap-2">
             <AlertCircle size={28} className="modal-title-icon" />
             {isEditMode ? t('tasks.editTask', 'Edit Task') : t('tasks.addTask', 'Add Task')}
           </h2>
+          <button
+            type="submit"
+            form="task-form"
+            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!title}
+          >
+            {isEditMode ? t('common.update', 'Update') : t('common.save', 'Save')}
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="transaction-form">
@@ -317,14 +325,6 @@ export default function AddTaskModal({
             />
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="save-transaction-button"
-            disabled={!title}
-          >
-            {isEditMode ? t('common.save', 'Update Task') : t('tasks.addTask', 'Save Task')}
-          </button>
         </form>
       </div>
     </>

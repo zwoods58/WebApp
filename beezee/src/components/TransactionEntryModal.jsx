@@ -129,7 +129,15 @@ export default function TransactionEntryModal({
           >
             <X size={24} />
           </button>
-          <h2 id="modal-title" className="modal-title">{t('dashboard.record', 'Record')}</h2>
+          <h2 id="modal-title" className="modal-title flex-1 text-center">{t('dashboard.record', 'Record')}</h2>
+          <button
+            type="submit"
+            form="transaction-form"
+            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!amount || !description || !category}
+          >
+            {t('common.save', 'Save')}
+          </button>
         </div>
 
         <div className="transaction-type-toggle">
@@ -203,13 +211,6 @@ export default function TransactionEntryModal({
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="save-transaction-button"
-            disabled={!amount || !description || !category}
-          >
-            {t('common.save', 'Save Transaction')}
-          </button>
         </form>
       </div>
     </>

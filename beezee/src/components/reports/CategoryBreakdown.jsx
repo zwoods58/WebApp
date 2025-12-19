@@ -1,147 +1,100 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const COLORS = {
-  income: ['#10B981', '#34D399', '#6EE7B7'],
-  expense: ['#EF4444', '#F87171', '#FCA5A5', '#FECACA', '#FEE2E2'],
+  income: ['#67C4A7', '#86D9C1', '#A5EEDB', '#C4F3F5'], // Brand success greens
+  expense: ['#FF9B9B', '#FFB4B4', '#FFCDCD', '#FFE6E6'], // Brand warning corals
+  neutral: ['#A8D5E2', '#BDE3EE', '#D2F1FA', '#E7F9FF'], // Brand blues
 };
 
-export default function CategoryBreakdown({ data }) {
-  if (!data || Object.keys(data).length === 0) {
+export default function CategoryBreakdown({ categories, title, type = 'income' }) {
+  const { t } = useTranslation();
+
+  if (!categories || categories.length === 0) {
     return null;
   }
 
-  // Separate income and expense categories
-  const incomeCategories = Object.entries(data)
-    .filter(([_, value]) => value.type === 'income')
-    .map(([category, value]) => ({
-      category,
-      amount: value.total,
-      count: value.count,
+  // Handle both data formats (array of {name, income, expense} or just {name, value})
+  const chartData = categories
+    .map(c => ({
+      name: c.name,
+      value: c.value || (type === 'expense' ? c.expense : c.income) || 0
     }))
-    .sort((a, b) => b.amount - a.amount);
+    .filter(c => c.value > 0)
+    .sort((a, b) => b.value - a.value);
 
-  const expenseCategories = Object.entries(data)
-    .filter(([_, value]) => value.type === 'expense')
-    .map(([category, value]) => ({
-      category,
-      amount: value.total,
-      count: value.count,
-    }))
-    .sort((a, b) => b.amount - a.amount);
+  if (chartData.length === 0) return null;
+
+  const activeColors = COLORS[type] || COLORS.neutral;
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100">
+          <p className="font-bold text-gray-900 mb-1">{payload[0].name}</p>
+          <p className="text-sm font-black text-blue-500">R{payload[0].value.toLocaleString()}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Expense Breakdown */}
-      {expenseCategories.length > 0 && (
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            💸 Where Your Money Went
+    <div className="animate-slide-up">
+      <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100 mx-4">
+        <div className="flex items-center justify-between mb-8">
+          <h3 className="text-lg font-black text-gray-900 tracking-tight">
+            {title || (type === 'expense' ? t('reports.expenseBreakdown', 'Expense Breakdown') : t('reports.incomeBreakdown', 'Income Sources'))}
           </h3>
+          <div className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${type === 'expense' ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'}`}>
+            {type === 'expense' ? 'Spending' : 'Value'}
+          </div>
+        </div>
+
+        <div className="h-[280px] w-full relative">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={8}
+                stroke="none"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={activeColors[index % activeColors.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
           
-          {/* Bar Chart */}
-          <div className="mb-6">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={expenseCategories.slice(0, 5)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="category" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(value) => `R${value.toFixed(2)}`}
-                  contentStyle={{ borderRadius: '8px' }}
-                />
-                <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
-                  {expenseCategories.slice(0, 5).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS.expense[index % COLORS.expense.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Top 3 List */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-700 mb-2">Top Expenses:</p>
-            {expenseCategories.slice(0, 3).map((cat, index) => (
-              <div
-                key={cat.category}
-                className="flex items-center justify-between p-3 bg-red-50 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</span>
-                  <div>
-                    <p className="font-semibold text-gray-900">{cat.category}</p>
-                    <p className="text-xs text-gray-600">{cat.count} transaction{cat.count !== 1 ? 's' : ''}</p>
-                  </div>
-                </div>
-                <p className="text-lg font-bold text-red-600">R{cat.amount.toFixed(2)}</p>
-              </div>
-            ))}
+          {/* Center Text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total</span>
+            <span className="text-xl font-black text-gray-900">
+              R{chartData.reduce((sum, c) => sum + c.value, 0).toLocaleString()}
+            </span>
           </div>
         </div>
-      )}
 
-      {/* Income Breakdown */}
-      {incomeCategories.length > 0 && (
-        <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            💰 Where Your Money Came From
-          </h3>
-
-          {/* Bar Chart */}
-          <div className="mb-6">
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={incomeCategories.slice(0, 5)}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="category" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(value) => `R${value.toFixed(2)}`}
-                  contentStyle={{ borderRadius: '8px' }}
-                />
-                <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
-                  {incomeCategories.slice(0, 5).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS.income[index % COLORS.income.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Top 3 List */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-700 mb-2">Top Income Sources:</p>
-            {incomeCategories.slice(0, 3).map((cat, index) => (
-              <div
-                key={cat.category}
-                className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</span>
-                  <div>
-                    <p className="font-semibold text-gray-900">{cat.category}</p>
-                    <p className="text-xs text-gray-600">{cat.count} transaction{cat.count !== 1 ? 's' : ''}</p>
-                  </div>
-                </div>
-                <p className="text-lg font-bold text-green-600">R{cat.amount.toFixed(2)}</p>
+        {/* Legend List */}
+        <div className="mt-8 space-y-3">
+          {chartData.slice(0, 5).map((cat, index) => (
+            <div key={cat.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-white">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColors[index % activeColors.length] }} />
+                <span className="text-sm font-bold text-gray-700 truncate max-w-[150px]">{cat.name}</span>
               </div>
-            ))}
-          </div>
+              <span className="text-sm font-black text-gray-900">R{cat.value.toLocaleString()}</span>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
-
-

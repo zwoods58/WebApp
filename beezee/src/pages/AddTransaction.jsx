@@ -4,31 +4,22 @@ import { supabase } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
 import { useOfflineStore } from '../store/offlineStore';
 import { addOfflineTransaction } from '../utils/offlineSync';
-import { receiptToTransaction } from '../utils/supabase';
-import { ArrowLeft, Mic, Camera, Save } from 'lucide-react';
+import { ChevronLeft, Mic, Camera, Save, Loader2, ArrowUpRight, ArrowDownLeft, Calendar, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import VoiceRecorder from '../components/VoiceRecorder';
 import ReceiptScanner from '../components/ReceiptScanner';
+import { useTranslation } from 'react-i18next';
+import FloatingNavBar from '../components/FloatingNavBar';
 
 const CATEGORIES = {
   income: ['Sales', 'Services', 'Other Income'],
-  expense: [
-    'Stock/Inventory',
-    'Rent',
-    'Utilities',
-    'Transport',
-    'Salaries',
-    'Marketing',
-    'Supplies',
-    'Maintenance',
-    'Taxes',
-    'Other Expenses',
-  ],
+  expense: ['Stock/Inventory', 'Rent', 'Utilities', 'Transport', 'Salaries', 'Marketing', 'Supplies', 'Maintenance', 'Taxes', 'Other Expenses'],
 };
 
 export default function AddTransaction() {
   const { user } = useAuthStore();
   const { isOnline } = useOfflineStore();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -42,14 +33,12 @@ export default function AddTransaction() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!amount || !category || !description) {
-      toast.error('Please fill in all fields');
+      toast.error(t('common.fillRequired', 'Please fill in all fields'));
       return;
     }
 
     setLoading(true);
-
     const transaction = {
       user_id: user.id,
       amount: parseFloat(amount),
@@ -62,273 +51,165 @@ export default function AddTransaction() {
 
     try {
       if (isOnline) {
-        // Save directly to Supabase
-        const { data, error } = await supabase
-          .from('transactions')
-          .insert(transaction)
-          .select()
-          .single();
-
+        const { error } = await supabase.from('transactions').insert(transaction).select().single();
         if (error) throw error;
-
-        toast.success('Transaction added!');
+        toast.success(t('transactions.added', 'Added successfully!'));
       } else {
-        // Save to IndexedDB for offline sync
         await addOfflineTransaction(transaction);
-        toast.success('Transaction saved offline. Will sync when online.');
+        toast.success(t('transactions.offlineSaved', 'Saved offline.'));
       }
-
       navigate('/dashboard/transactions');
     } catch (error) {
-      console.error('Error adding transaction:', error);
-      toast.error('Failed to add transaction');
+      toast.error(t('transactions.addFailed', 'Failed to add'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVoiceInput = async () => {
-    try {
-      // Check if browser supports MediaRecorder
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        toast.error('Voice recording not supported on this device');
-        return;
-      }
-
-      setShowVoiceRecorder(true);
-    } catch (error) {
-      console.error('Voice input error:', error);
-      toast.error('Voice recording failed');
-    }
-  };
-
-  const handleVoiceTransactionCreated = async (transaction) => {
-    try {
-      if (isOnline) {
-        // Transaction already saved by VoiceRecorder component
-        navigate('/dashboard/transactions');
-      } else {
-        // Save offline
-        await addOfflineTransaction(transaction);
-        navigate('/dashboard/transactions');
-      }
-    } catch (error) {
-      console.error('Error handling voice transaction:', error);
-      throw error;
-    }
-  };
-
-  const handleReceiptCapture = () => {
-    setShowReceiptScanner(true);
-  };
-
-  const handleReceiptTransactionCreated = async (transaction) => {
-    try {
-      if (isOnline) {
-        // Transaction data from receipt, save to database
-        const { data, error } = await supabase
-          .from('transactions')
-          .insert(transaction)
-          .select()
-          .single();
-
-        if (error) throw error;
-        navigate('/dashboard/transactions');
-      } else {
-        // Save offline
-        await addOfflineTransaction(transaction);
-        navigate('/dashboard/transactions');
-      }
-    } catch (error) {
-      console.error('Error handling receipt transaction:', error);
-      throw error;
-    }
-  };
-
   return (
-    <>
-      {/* Voice Recorder Modal */}
+    <div className="add-transaction-container pb-24">
       {showVoiceRecorder && (
-        <VoiceRecorder
-          onTransactionCreated={handleVoiceTransactionCreated}
-          onCancel={() => setShowVoiceRecorder(false)}
-        />
+        <VoiceRecorder onTransactionCreated={() => navigate('/dashboard/transactions')} onCancel={() => setShowVoiceRecorder(false)} />
       )}
-
-      {/* Receipt Scanner Modal */}
       {showReceiptScanner && (
-        <ReceiptScanner
-          onTransactionCreated={handleReceiptTransactionCreated}
-          onCancel={() => setShowReceiptScanner(false)}
-        />
+        <ReceiptScanner onTransactionCreated={() => navigate('/dashboard/transactions')} onCancel={() => setShowReceiptScanner(false)} />
       )}
 
-      <div className="add-transaction-container">
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="add-transaction-header flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft size={24} />
+      {/* Modern Header */}
+      <div className="reports-header-section">
+        <div className="reports-title-row">
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-400">
+              <ChevronLeft size={24} strokeWidth={3} />
             </button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Add Transaction</h1>
-              <p className="text-gray-600">Record your income or expense</p>
+            <h1 className="reports-title">{t('transactions.addTransaction', 'New Transaction')}</h1>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 mt-6 space-y-8">
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => setShowVoiceRecorder(true)}
+            className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm flex flex-col items-center gap-3 active:scale-95 transition-transform"
+          >
+            <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
+              <Mic size={24} />
             </div>
-          </div>
-
-      {/* Quick Input Methods */}
-      <div className="quick-input-methods">
-        <button
-          onClick={handleVoiceInput}
-          disabled={loading}
-          className="quick-input-button"
-        >
-          <div className="quick-input-icon">
-            <Mic size={28} />
-          </div>
-          <span className="quick-input-text">Voice Input</span>
-        </button>
-        <button
-          onClick={handleReceiptCapture}
-          disabled={loading}
-          className="quick-input-button"
-        >
-          <div className="quick-input-icon">
-            <Camera size={28} />
-          </div>
-          <span className="quick-input-text">Scan Receipt</span>
-        </button>
-      </div>
-
-      {/* Manual Form */}
-      <form onSubmit={handleSubmit} className="manual-transaction-form">
-        <h2 className="manual-form-title">Or enter manually</h2>
-
-        {/* Type Toggle */}
-        <div className="type-toggle-container">
-          <button
-            type="button"
-            onClick={() => {
-              setType('income');
-              setCategory('');
-            }}
-            className={`type-toggle-button income ${type === 'income' ? 'active' : ''}`}
-          >
-            Money In
+            <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Voice</span>
           </button>
           <button
-            type="button"
-            onClick={() => {
-              setType('expense');
-              setCategory('');
-            }}
-            className={`type-toggle-button expense ${type === 'expense' ? 'active' : ''}`}
+            onClick={() => setShowReceiptScanner(true)}
+            className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm flex flex-col items-center gap-3 active:scale-95 transition-transform"
           >
-            Money Out
+            <div className="w-14 h-14 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center">
+              <Camera size={24} />
+            </div>
+            <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Receipt</span>
           </button>
         </div>
 
-        {/* Amount */}
-        <div className="transaction-form-field">
-          <label htmlFor="amount" className="transaction-form-label">
-            Amount
-          </label>
-          <input
-            id="amount"
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="R 0.00"
-            className="transaction-form-input amount-input"
-            required
-          />
-        </div>
+        {/* Manual Form */}
+        <div className="bg-white rounded-[40px] p-8 shadow-sm border border-gray-50 space-y-8 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">{t('common.manual', 'Manual Entry')}</h2>
+            <div className="bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold text-gray-400">Details</div>
+          </div>
 
-        {/* Description */}
-        <div className="transaction-form-field">
-          <label htmlFor="description" className="transaction-form-label">
-            What was it for?
-          </label>
-          <input
-            id="description"
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter description"
-            className="transaction-form-input"
-            required
-          />
-        </div>
-
-        {/* Category */}
-        <div className="transaction-form-field">
-          <label htmlFor="category" className="transaction-form-label">
-            Category
-          </label>
-          <div className="category-pills-container">
-            {CATEGORIES[type].map((cat) => (
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Type Switch */}
+            <div className="reports-tabs-container p-1.5 bg-gray-50">
               <button
-                key={cat}
                 type="button"
-                onClick={() => setCategory(cat)}
-                className={`category-pill ${category === cat ? 'active' : ''}`}
+                onClick={() => { setType('income'); setCategory(''); }}
+                className={`reports-tab-button ${type === 'income' ? 'active shadow-lg' : ''}`}
               >
-                {cat}
+                <ArrowDownLeft size={16} />
+                Money In
               </button>
-            ))}
-          </div>
-        </div>
+              <button
+                type="button"
+                onClick={() => { setType('expense'); setCategory(''); }}
+                className={`reports-tab-button ${type === 'expense' ? 'active shadow-lg' : ''}`}
+              >
+                <ArrowUpRight size={16} />
+                Money Out
+              </button>
+            </div>
 
-        {/* Date */}
-        <div className="transaction-form-field">
-          <label htmlFor="date" className="transaction-form-label">
-            Date
-          </label>
-          <input
-            id="date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="transaction-form-input"
-            required
-          />
-        </div>
+            {/* Amount Input */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Amount</label>
+              <div className="relative">
+                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-gray-300">R</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full pl-12 pr-6 py-6 bg-gray-50 border-none rounded-[28px] text-3xl font-black text-gray-900 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="transaction-submit-button"
-        >
-          {loading ? (
-            <>
-              <div className="spinner"></div>
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save size={20} />
-              Save Transaction
-            </>
-          )}
-        </button>
-      </form>
+            {/* Category Grid */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Category</label>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES[type].map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${category === cat ? 'bg-[#2C2C2E] text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* Offline Notice */}
-      {!isOnline && (
-        <div className="card bg-yellow-50 border-yellow-200">
-          <p className="text-yellow-800 text-sm">
-            📱 You're offline. Transaction will be saved locally and synced when you're back online.
-          </p>
-        </div>
-      )}
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Description</label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What was this for?"
+                className="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+
+            {/* Date */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Date</label>
+              <div className="relative">
+                <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full pl-12 pr-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-5 bg-[#2C2C2E] text-white font-black rounded-[28px] flex items-center justify-center gap-3 shadow-xl active:scale-95 transition-transform"
+            >
+              {loading ? <Loader2 size={24} className="animate-spin" /> : <Save size={24} />}
+              {t('common.save', 'Save Transaction')}
+            </button>
+          </form>
         </div>
       </div>
-    </>
+
+      <FloatingNavBar />
+    </div>
   );
 }
-

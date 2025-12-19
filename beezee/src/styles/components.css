@@ -417,8 +417,146 @@
 }
 
 /* ============================================
-   EMPTY STATE
+   SHARED PREMIUM LAYOUTS
    ============================================ */
+
+.reports-header-section {
+  padding: 24px 20px;
+  padding-top: var(--page-top-padding);
+  background: white;
+  border-bottom: 1px solid #F8FAFC;
+  z-index: 50;
+  margin-bottom: 8px;
+}
+
+[data-theme="dark"] .reports-header-section {
+  background: #0F172A;
+  border-bottom-color: #1E293B;
+}
+
+.reports-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.reports-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-deep-charcoal);
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .reports-title {
+  color: #F8FAFC;
+}
+
+.reports-tabs-container {
+  background: #F8FAFC;
+  padding: 6px;
+  border-radius: 24px;
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+[data-theme="dark"] .reports-tabs-container {
+  background: #1E293B;
+}
+
+.reports-tab-button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 800;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #94A3B8;
+  background: transparent;
+}
+
+.reports-tab-button.active {
+  background: white;
+  color: #0F172A;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .reports-tab-button.active {
+  background: #334155;
+  color: #F8FAFC;
+}
+
+.date-range-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.date-range-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.date-range-pill {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 800;
+  background: white;
+  border: 1px solid #F1F5F9;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.date-range-pill.active {
+  background: #0F172A;
+  color: white;
+  border-color: #0F172A;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .date-range-pill {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .date-range-pill.active {
+  background: #F8FAFC;
+  color: #0F172A;
+  border-color: #F8FAFC;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slide-right {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-right {
+  animation: slide-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 .empty-state {
   display: flex;
   flex-direction: column;

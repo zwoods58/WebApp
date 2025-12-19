@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Mic, MessageCircle, ChevronLeft } from 'lucide-react';
+import { Send, Mic, ChevronLeft, Loader2, Sparkles, MessageCircle, MoreVertical } from 'lucide-react';
 import { supabase, askFinancialCoach } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
 import { useOfflineStore } from '../store/offlineStore';
@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 export default function Coach() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { isOnline } = useOfflineStore();
   const { t } = useTranslation();
   
   const [messages, setMessages] = useState([]);
@@ -29,16 +28,21 @@ export default function Coach() {
   const [questionsRemaining, setQuestionsRemaining] = useState(10);
   
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   useEffect(() => {
-    loadCoachingHistory();
-    loadUserContext();
+    if (user) {
+      loadCoachingHistory();
+      loadUserContext();
+    }
   }, [user]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const loadCoachingHistory = async () => {
     try {
@@ -68,12 +72,8 @@ export default function Coach() {
       ]);
 
       setMessages(formattedMessages);
-
-      if (formattedMessages.length === 0) {
-        showWelcomeMessage();
-      }
+      if (formattedMessages.length === 0) showWelcomeMessage();
     } catch (error) {
-      console.error('Error loading coaching history:', error);
       showWelcomeMessage();
     } finally {
       setLoadingHistory(false);
@@ -84,7 +84,6 @@ export default function Coach() {
     try {
       const context = await getCoachingContext(user.id);
       setUserContext(context);
-
       const today = format(new Date(), 'yyyy-MM-dd');
       const { data: todayQuestions } = await supabase
         .from('coaching_sessions')
@@ -92,71 +91,43 @@ export default function Coach() {
         .eq('user_id', user.id)
         .gte('created_at', `${today}T00:00:00`)
         .lte('created_at', `${today}T23:59:59`);
-
-      const used = todayQuestions?.length || 0;
-      setQuestionsRemaining(Math.max(0, 10 - used));
-    } catch (error) {
-      console.error('Error loading user context:', error);
-    }
+      setQuestionsRemaining(Math.max(0, 10 - (todayQuestions?.length || 0)));
+    } catch (error) {}
   };
 
   const showWelcomeMessage = () => {
-    const welcomeMessage = {
+    setMessages([{
       role: 'assistant',
-      content: t('coach.welcome', "Hello! I'm your BeeZee Financial Coach. How can I help you with your business finances today?"),
+      content: t('coach.welcome', "Hello! I'm your BeeZee AI assistant. Ask me anything about your finances or inventory."),
       timestamp: new Date().toISOString(),
       id: 'welcome',
-    };
-    setMessages([welcomeMessage]);
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }]);
   };
 
   const handleSend = async (e) => {
     e?.preventDefault();
     if (!input.trim() || loading || questionsRemaining <= 0) return;
 
-    const userMessage = {
-      role: 'user',
-      content: input,
-      timestamp: new Date().toISOString(),
-      id: Date.now().toString(),
-    };
-
+    const userMessage = { role: 'user', content: input, timestamp: new Date().toISOString(), id: Date.now().toString() };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
       const result = await askFinancialCoach(input, userContext);
-      
       if (result.error === 'subscription_required') {
-        toast.error(t('common.subscriptionRequired', 'Coach requires an active subscription'), { duration: 4000 });
-        setTimeout(() => {
-          navigate('/dashboard/subscription');
-        }, 1500);
+        toast.error(t('common.subscriptionRequired', 'Active subscription required'));
+        navigate('/dashboard/subscription');
         return;
       }
-
       if (result.error) throw new Error(result.error);
 
-      const assistantMessage = {
-        role: 'assistant',
-        content: result.answer,
-        timestamp: new Date().toISOString(),
-        id: (Date.now() + 1).toString(),
-      };
-
+      const assistantMessage = { role: 'assistant', content: result.answer, timestamp: new Date().toISOString(), id: (Date.now() + 1).toString() };
       setMessages((prev) => [...prev, assistantMessage]);
       setQuestionsRemaining((prev) => Math.max(0, prev - 1));
-      
-      // Save conversation in background
       saveConversation(user.id, input, result.answer).catch(console.error);
     } catch (error) {
-      console.error('Error asking coach:', error);
-      toast.error(t('coach.askError', 'Could not get a response. Please try again.'));
+      toast.error(t('coach.askError', 'Failed to get response.'));
     } finally {
       setLoading(false);
     }
@@ -165,124 +136,99 @@ export default function Coach() {
   const handleVoiceInput = (text) => {
     setInput(text);
     setShowVoiceInput(false);
-    // Auto-send if it's a clear question
-    if (text.length > 5) {
-      setTimeout(() => {
-        handleSend();
-      }, 500);
-    }
+    if (text.length > 5) setTimeout(() => handleSend(), 500);
   };
 
-  const handleRefresh = async () => {
-    await loadCoachingHistory();
-    await loadUserContext();
-  };
-
-  if (loadingHistory) {
-    return (
-      <div className="coach-container">
-        <OfflineBanner />
-        <div className="coach-header">
-          <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-600">
-            <ChevronLeft size={24} />
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('nav.coach', 'Financial Coach')}</h1>
+  if (loadingHistory) return (
+    <div className="coach-container pb-24">
+      <div className="reports-header-section">
+        <div className="reports-title-row">
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+              <ChevronLeft size={24} strokeWidth={3} />
+            </button>
+            <h1 className="reports-title">{t('nav.coach', 'Coach')}</h1>
+          </div>
         </div>
-        <PageSkeleton />
-        <FloatingNavBar />
       </div>
-    );
-  }
+      <PageSkeleton />
+      <FloatingNavBar />
+    </div>
+  );
 
   return (
-    <SwipeToRefresh onRefresh={handleRefresh}>
-      <div className="coach-container">
+    <SwipeToRefresh onRefresh={async () => { await loadCoachingHistory(); await loadUserContext(); }}>
+      <div className="coach-container pb-24">
         <OfflineBanner />
         
-        <div className="coach-header">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="p-2 -ml-2 text-gray-600 hover:text-gray-900 transition-colors"
-              aria-label={t('common.back', 'Go back')}
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <h1 className="text-3xl font-bold text-gray-900">{t('nav.coach', 'Financial Coach')}</h1>
-          </div>
-          <div className="questions-badge">
-            {questionsRemaining} {t('coach.questionsRemaining', 'questions left today')}
+        {/* Modern Header */}
+        <div className="reports-header-section">
+          <div className="reports-title-row">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+                <ChevronLeft size={24} strokeWidth={3} />
+              </button>
+              <h1 className="reports-title">{t('nav.coach', 'Coach')}</h1>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+              <Sparkles size={12} className="text-blue-500" />
+              <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{questionsRemaining} Left</span>
+            </div>
           </div>
         </div>
 
-        <div className="coach-messages-container pb-32">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`coach-message ${message.role === 'user' ? 'user' : 'assistant'}`}
-            >
-              <div className={`message-bubble ${message.role === 'user' ? 'user' : 'assistant'}`}>
-                <div className="message-text">{message.content}</div>
-                <div className="message-timestamp">
-                  {format(new Date(message.timestamp), 'p')}
-                </div>
+        {/* Chat Area */}
+        <div className="coach-messages-container px-4 pt-4 space-y-6">
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}>
+              <div className={`max-w-[85%] p-5 rounded-[28px] shadow-sm ${msg.role === 'user' ? 'bg-[#2C2C2E] text-white rounded-tr-none' : 'bg-white text-gray-900 border border-gray-50 rounded-tl-none'}`}>
+                <p className="text-sm font-bold leading-relaxed">{msg.content}</p>
+                <span className={`text-[8px] font-black uppercase tracking-widest mt-2 block opacity-30 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  {format(new Date(msg.timestamp), 'p')}
+                </span>
               </div>
             </div>
           ))}
           {loading && (
-            <div className="coach-message assistant">
-              <div className="message-bubble assistant">
-                <div className="typing-indicator">
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                  <div className="typing-dot"></div>
-                </div>
+            <div className="flex justify-start animate-pulse">
+              <div className="bg-white p-5 rounded-[28px] rounded-tl-none border border-gray-50">
+                <Loader2 size={16} className="animate-spin text-gray-300" />
               </div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="coach-input-container">
-          <form onSubmit={handleSend} className="flex-1 flex items-center gap-2">
+        {/* Floating Input Area */}
+        <div className="fixed bottom-[88px] left-0 right-0 px-4 animate-slide-up">
+          <form onSubmit={handleSend} className="bg-white p-3 rounded-[32px] shadow-xl border border-gray-100 flex items-center gap-2">
             <button
               type="button"
-              className="coach-voice-button"
               onClick={() => setShowVoiceInput(true)}
-              aria-label={t('coach.voiceInput', 'Speak your question')}
+              className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 active:scale-90 transition-transform"
             >
-              <Mic size={24} />
+              <Mic size={20} />
             </button>
             <input
-              ref={inputRef}
               type="text"
-              className="coach-text-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={t('coach.placeholder', 'Ask about your profits, expenses...')}
+              placeholder={t('coach.placeholder', 'Ask about your business...')}
+              className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold py-3 px-2"
               disabled={loading || questionsRemaining <= 0}
             />
             <button
               type="submit"
-              className="coach-send-button"
               disabled={!input.trim() || loading || questionsRemaining <= 0}
-              aria-label={t('common.send', 'Send message')}
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-white transition-all ${!input.trim() ? 'bg-gray-100' : 'bg-[#2C2C2E] active:scale-90'}`}
             >
-              <Send size={24} />
+              {loading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
             </button>
           </form>
-          {questionsRemaining <= 0 && (
-            <p className="limit-warning text-center mt-2 text-xs text-red-500 absolute -top-6 left-0 right-0">
-              {t('coach.limitReached', "You've reached your daily question limit.")}
-            </p>
-          )}
         </div>
 
         {showVoiceInput && (
-          <VoiceRecorder
-            onTranscript={handleVoiceInput}
-            onCancel={() => setShowVoiceInput(false)}
-          />
+          <VoiceRecorder onTranscript={handleVoiceInput} onCancel={() => setShowVoiceInput(false)} />
         )}
         
         <FloatingNavBar />

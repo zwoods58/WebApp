@@ -196,10 +196,18 @@ export default function AddBookingModal({
           >
             <X size={24} />
           </button>
-          <h2 id="booking-modal-title" className="modal-title">
+          <h2 id="booking-modal-title" className="modal-title flex-1 text-center flex items-center justify-center gap-2">
             <Calendar size={28} className="modal-title-icon" />
             {isEditMode ? t('bookings.editBooking', 'Edit Booking') : t('bookings.addBooking', 'Add Booking')}
           </h2>
+          <button
+            type="submit"
+            form="booking-form"
+            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!clientName || !appointmentDate || !appointmentTime}
+          >
+            {isEditMode ? t('common.update', 'Update') : t('common.save', 'Save')}
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="transaction-form">
@@ -346,14 +354,6 @@ export default function AddBookingModal({
             />
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="save-transaction-button"
-            disabled={!clientName || !appointmentDate || !appointmentTime}
-          >
-            {isEditMode ? t('common.save', 'Update Booking') : t('bookings.addBooking', 'Save Booking')}
-          </button>
         </form>
       </div>
     </>

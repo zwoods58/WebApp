@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Mic, Check, X, Loader2 } from 'lucide-react';
+import { Mic, Check, X, Loader2, RefreshCcw, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { voiceToBooking, supabase } from '../utils/supabase';
 import { useOfflineStore } from '../store/offlineStore';
@@ -11,8 +11,11 @@ const MAX_RECORDING_TIME = 10; // seconds
 export default function VoiceBookingRecorder({ 
   onBookingCreated, 
   onTaskCreated,
+  onInventoryCreated,
+  onSuccess, // General success callback for modal pre-filling
+  onClose,
   onCancel,
-  type = 'booking', // 'booking' or 'task'
+  type = 'booking', // 'booking', 'task', or 'inventory'
   isEditMode = false // For editing existing bookings/tasks
 }) {
   const { user } = useAuthStore();
@@ -207,8 +210,24 @@ export default function VoiceBookingRecorder({
         }
 
         if (result.success && result.confidence >= 0.5) {
-          setExtractedData(type === 'booking' ? result.booking : result.task);
+          let data = null;
+          if (type === 'booking') data = result.booking;
+          else if (type === 'task') data = result.task;
+          else if (type === 'inventory') data = result.inventory;
+          
+          // Fallback if key doesn't match type
+          if (!data) {
+            data = result.inventory || result.task || result.booking;
+          }
+          
+          console.log('[VoiceRecorder] Extracted data:', data);
+          setExtractedData(data);
           setConfidence(result.confidence);
+          
+          if (onSuccess) {
+            onSuccess(data);
+          }
+          
           try {
             const userId = localStorage.getItem('beezee_user_id');
             if (userId) {
@@ -229,7 +248,9 @@ export default function VoiceBookingRecorder({
           toast.error(
             type === 'booking'
               ? errorMsg + " Please say the client name, date, and time."
-              : errorMsg + " Please say the task title and due date."
+              : type === 'task'
+              ? errorMsg + " Please say the task title and due date."
+              : errorMsg + " Please say the item name and quantity."
           );
           if (result.rawResponse) {
             console.warn('Voice parse raw response:', result.rawResponse);
@@ -295,6 +316,8 @@ export default function VoiceBookingRecorder({
         await onBookingCreated(extractedData);
       } else if (type === 'task' && onTaskCreated) {
         await onTaskCreated(extractedData);
+      } else if (type === 'inventory' && onInventoryCreated) {
+        await onInventoryCreated(extractedData);
       }
       // Reset state after successful save
       setExtractedData(null);
@@ -317,100 +340,113 @@ export default function VoiceBookingRecorder({
 
     return (
       <div className="voice-recorder-container">
-        <div className="voice-recorder-header">
-          <h3>Review {type === 'booking' ? 'Booking' : 'Task'}</h3>
-          <button onClick={handleRetake} className="voice-recorder-close">
-            <X size={20} />
+        {/* Modern Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="text-2xl font-black text-gray-900">
+              Review {type === 'booking' ? 'Booking' : type === 'task' ? 'Task' : 'Item'}
+            </h3>
+            <p className="text-gray-500 text-sm font-medium">Verify the details I heard</p>
+          </div>
+          <button 
+            onClick={handleRetake} 
+            className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-all"
+          >
+            <X size={20} strokeWidth={3} />
           </button>
         </div>
 
         {confidenceLevel === 'low' && (
-          <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 text-center mb-4">
-            <p className="text-yellow-800 font-semibold text-sm">
-              I'm not 100% sure. Please check the details below.
+          <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 flex items-center gap-3 mb-6 animate-pulse">
+            <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 flex-shrink-0">
+              <Info size={20} />
+            </div>
+            <p className="text-orange-900 font-bold text-xs leading-tight">
+              I'm not 100% sure. Please double check these details.
             </p>
           </div>
         )}
 
-        <div className="voice-recorder-content">
-          {isProcessing && (
-            <div className="voice-recorder-processing inline mb-3">
-              <Loader2 className="spinner" size={18} />
-              <p className="text-sm text-gray-600">Processing...</p>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto space-y-4 pr-1">
           {type === 'booking' ? (
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Client Name</label>
-                <p className="text-lg font-semibold">{extractedData.client_name || 'Not specified'}</p>
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-5 rounded-[24px]">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Client Name</label>
+                <p className="text-lg font-black text-gray-900">{extractedData.client_name || 'Not specified'}</p>
               </div>
-              {extractedData.appointment_date && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Date</label>
-                  <p className="text-lg">{extractedData.appointment_date}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Date</label>
+                  <p className="text-lg font-black text-gray-900">{extractedData.appointment_date || 'Today'}</p>
                 </div>
-              )}
-              {extractedData.appointment_time && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Time</label>
-                  <p className="text-lg">{extractedData.appointment_time}</p>
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Time</label>
+                  <p className="text-lg font-black text-gray-900">{extractedData.appointment_time || '---'}</p>
                 </div>
-              )}
+              </div>
               {extractedData.service && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Service</label>
-                  <p className="text-lg">{extractedData.service}</p>
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Service</label>
+                  <p className="text-lg font-black text-gray-900">{extractedData.service}</p>
                 </div>
               )}
-              {extractedData.location && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Location</label>
-                  <p className="text-lg">{extractedData.location}</p>
+            </div>
+          ) : type === 'task' ? (
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-5 rounded-[24px]">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Task</label>
+                <p className="text-lg font-black text-gray-900">{extractedData.title || 'Not specified'}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Due Date</label>
+                  <p className="text-lg font-black text-gray-900">{extractedData.due_date || 'No date'}</p>
                 </div>
-              )}
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Priority</label>
+                  <p className="text-lg font-black text-gray-900 capitalize">{extractedData.priority || 'Medium'}</p>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Task Title</label>
-                <p className="text-lg font-semibold">{extractedData.title || 'Not specified'}</p>
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-5 rounded-[24px]">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Item Name</label>
+                <p className="text-lg font-black text-gray-900">{extractedData.name || 'Not specified'}</p>
               </div>
-              {extractedData.description && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Description</label>
-                  <p className="text-lg">{extractedData.description}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Quantity</label>
+                  <p className="text-lg font-black text-gray-900">{extractedData.quantity || '0'}</p>
                 </div>
-              )}
-              {extractedData.due_date && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Due Date</label>
-                  <p className="text-lg">{extractedData.due_date}</p>
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Cost Price</label>
+                  <p className="text-lg font-black text-primary-600">R{extractedData.cost_price || '0'}</p>
                 </div>
-              )}
-              {extractedData.due_time && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Due Time</label>
-                  <p className="text-lg">{extractedData.due_time}</p>
-                </div>
-              )}
-              {extractedData.priority && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Priority</label>
-                  <p className="text-lg capitalize">{extractedData.priority}</p>
+              </div>
+              {extractedData.selling_price && (
+                <div className="bg-gray-50 p-5 rounded-[24px]">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Selling Price</label>
+                  <p className="text-lg font-black text-green-600">R{extractedData.selling_price}</p>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        <div className="voice-recorder-actions">
-          <button onClick={handleRetake} className="voice-recorder-button secondary">
-            <X size={18} />
+        <div className="mt-8 grid grid-cols-2 gap-4 pb-10">
+          <button 
+            onClick={handleRetake} 
+            className="bg-gray-100 text-gray-900 py-4 rounded-2xl font-black text-base active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <RefreshCcw size={18} strokeWidth={3} />
             Retake
           </button>
-          <button onClick={handleConfirm} className="voice-recorder-button primary">
-            <Check size={18} />
+          <button 
+            onClick={handleConfirm} 
+            className="bg-primary-600 text-white py-4 rounded-2xl font-black text-base shadow-lg shadow-primary-200 active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <Check size={18} strokeWidth={3} />
             Confirm
           </button>
         </div>
@@ -420,72 +456,87 @@ export default function VoiceBookingRecorder({
 
   // Show recording interface
   return (
-    <div className="voice-recorder-container">
-      <div className="voice-recorder-header">
-        <h3>Voice {isEditMode ? 'Edit' : ''} {type === 'booking' ? 'Booking' : 'Task'}</h3>
-        <button onClick={onCancel} className="voice-recorder-close">
-          <X size={20} />
+    <div className="voice-recorder-container justify-between">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-2xl font-black text-gray-900">
+            {isEditMode ? 'Voice Edit' : 'Voice Entry'}
+          </h3>
+          <p className="text-gray-500 text-sm font-medium">I'm listening...</p>
+        </div>
+        <button 
+          onClick={onCancel || onClose} 
+          className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 active:scale-90 transition-all"
+        >
+          <X size={20} strokeWidth={3} />
         </button>
       </div>
 
-      <div className="voice-recorder-content">
+      <div className="flex-1 flex flex-col items-center justify-center py-10">
         {isProcessing ? (
-          <div className="voice-recorder-processing">
-            <Loader2 className="spinner" size={32} />
-            <p>Processing your voice...</p>
+          <div className="flex flex-col items-center gap-4 animate-pulse">
+            <div className="w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center">
+              <Loader2 className="animate-spin text-primary-600" size={40} strokeWidth={3} />
+            </div>
+            <p className="text-lg font-black text-gray-900">Thinking...</p>
+            <p className="text-gray-500 text-sm font-medium">Extracting details from your voice</p>
           </div>
         ) : isRecording ? (
-          <div className="voice-recorder-recording">
-            <div className="voice-recorder-mic-container recording">
-              <Mic size={48} />
+          <div className="flex flex-col items-center gap-6 w-full">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary-500 rounded-full animate-ping opacity-20"></div>
+              <div className="relative w-32 h-32 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-xl shadow-primary-200">
+                <Mic size={48} strokeWidth={2.5} />
+              </div>
             </div>
-            <p className="voice-recorder-timer">{MAX_RECORDING_TIME - recordingTime}s</p>
-            <p className="voice-recorder-hint">
-              {type === 'booking'
-                ? 'Say: "Book [name] for [service] on [date] at [time]"'
-                : 'Say: "Remind me to [task] on [date]"'}
-            </p>
+            
+            <div className="text-center">
+              <p className="text-4xl font-black text-gray-900 mb-1">{MAX_RECORDING_TIME - recordingTime}s</p>
+              <p className="text-primary-600 font-bold uppercase tracking-widest text-[10px]">Time Left</p>
+            </div>
+
+            <div className="bg-primary-50 p-6 rounded-[32px] w-full max-w-xs border border-primary-100">
+              <p className="text-primary-900 text-center font-bold text-sm leading-relaxed italic">
+                {type === 'booking'
+                  ? '"Book Sipho for a haircut tomorrow at 2pm"'
+                  : type === 'task'
+                  ? '"Remind me to buy milk tomorrow morning"'
+                  : '"Add 10 cans of Coke costing 10 rand selling for 15"'}
+              </p>
+            </div>
+
             <button 
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                stopRecording();
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isRecording && hasStartedRecording) {
-                  stopRecording();
-                }
-              }}
-              className="voice-recorder-button primary stop"
+              onClick={stopRecording}
+              className="mt-4 w-full max-w-xs bg-[#2C2C2E] text-white py-5 rounded-[24px] font-black text-lg shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              Stop Recording
+              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              Finish Recording
             </button>
           </div>
         ) : (
-          <div className="voice-recorder-idle">
-            <div className="voice-recorder-mic-container">
-              <Mic size={48} />
+          <div className="flex flex-col items-center gap-6 w-full">
+            <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center text-gray-300">
+              <Mic size={48} strokeWidth={2.5} />
             </div>
-            <p className="voice-recorder-hint">
-              {type === 'booking'
-                ? isEditMode ? 'Tap to record booking changes' : 'Tap to record a booking'
-                : isEditMode ? 'Tap to record task changes' : 'Tap to record a task'}
-            </p>
+            
+            <div className="text-center">
+              <p className="text-xl font-black text-gray-900 mb-2">Ready to listen</p>
+              <p className="text-gray-500 text-sm font-medium px-10">Tap the button below and speak clearly into your phone.</p>
+            </div>
+
             <button 
-              onClick={() => {
-                if (!isRecording && !isProcessing) {
-                  startRecording();
-                }
-              }}
-              className="voice-recorder-button primary"
+              onClick={startRecording}
+              className="w-full max-w-xs bg-primary-600 text-white py-5 rounded-[24px] font-black text-lg shadow-xl shadow-primary-200 active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              <Mic size={20} />
-              {isEditMode ? 'Start Recording Changes' : 'Start Recording'}
+              <Mic size={24} strokeWidth={3} />
+              Start Recording
             </button>
           </div>
         )}
+      </div>
+
+      <div className="pb-10 px-6 text-center">
+        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">BeeZee AI Voice Engine</p>
       </div>
     </div>
   );

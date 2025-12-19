@@ -1,12 +1,12 @@
-import { Mic, Camera, Calendar } from 'lucide-react';
+import { Mic, Camera, Calendar, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 /**
  * Quick Action Buttons Component
- * Three large buttons for voice recording, receipt scanning, and bookings
+ * 2x2 grid for common actions
  */
-export default function QuickActionButtons({ onVoiceClick, onReceiptClick }) {
+export default function QuickActionButtons({ onVoiceClick, onReceiptClick, onInventoryClick }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -28,6 +28,14 @@ export default function QuickActionButtons({ onVoiceClick, onReceiptClick }) {
 
   const handleBookingsClick = () => {
     navigate('/dashboard/bookings');
+  };
+
+  const handleInventoryClick = () => {
+    if (onInventoryClick) {
+      onInventoryClick();
+    } else {
+      navigate('/dashboard/inventory');
+    }
   };
 
   return (
@@ -68,6 +76,19 @@ export default function QuickActionButtons({ onVoiceClick, onReceiptClick }) {
         </div>
         <div className="quick-action-text">
           {t('nav.bookings', 'Bookings')}
+        </div>
+      </button>
+
+      <button
+        className="quick-action-button"
+        onClick={handleInventoryClick}
+        aria-label={t('nav.inventory', 'Inventory')}
+      >
+        <div className="quick-action-icon-container">
+          <Package size={28} />
+        </div>
+        <div className="quick-action-text">
+          {t('nav.inventory', 'Inventory')}
         </div>
       </button>
     </div>

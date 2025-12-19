@@ -66,49 +66,38 @@ template = "Your BeeZee verification code is: {{ .Code }}"
 [auth.external.google]
 enabled = false
 
-[edge_functions]
-enabled = true
-
-[[edge_functions.definitions]]
-name = "voice-transaction"
+[functions.voice-booking]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "receipts-transaction"
+[functions.voice-transaction]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "Generate-Reports"
+[functions.receipts-transaction]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "Financial-Coach"
+[functions.Generate-Reports]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "notification-trigger"
+[functions.Financial-Coach]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "Notification-Cron"
+[functions.notification-trigger]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "create-notifications"
+[functions.Notification-Cron]
 verify_jwt = true
 
-[[edge_functions.definitions]]
-name = "send-otp-whatsapp"
+[functions.create-notifications]
+verify_jwt = true
+
+[functions.send-otp-whatsapp]
 verify_jwt = false
 
-[[edge_functions.definitions]]
-name = "verify-OTP-custom"
+[functions.verify-OTP-custom]
 verify_jwt = false
 
-[[edge_functions.definitions]]
-name = "stripe-checkout"
+[functions.stripe-checkout]
 verify_jwt = false
 
-[[edge_functions.definitions]]
-name = "stripe-webhook"
+[functions.stripe-webhook]
 verify_jwt = false

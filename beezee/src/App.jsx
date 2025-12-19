@@ -33,6 +33,7 @@ import NotificationSettings from './pages/NotificationSettings';
 import Notifications from './pages/Notifications';
 import Subscription from './pages/Subscription';
 import Bookings from './pages/Bookings';
+import Inventory from './pages/Inventory';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -179,6 +180,7 @@ function App() {
           <Route path="coach" element={<Coach />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="inventory" element={<Inventory />} />
           <Route path="settings" element={<Settings />} />
           <Route path="settings/notifications" element={<NotificationSettings />} />
           <Route path="subscription" element={<Subscription />} />

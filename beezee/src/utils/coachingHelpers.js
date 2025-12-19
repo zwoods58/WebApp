@@ -25,6 +25,23 @@ export async function getCoachingContext(userId) {
       .eq('user_id', userId)
       .order('date', { ascending: false });
 
+    // Get inventory info
+    const { data: inventoryData } = await supabase
+      .from('inventory')
+      .select('*')
+      .eq('user_id', userId);
+
+    const lowStockItems = inventoryData?.filter(i => Number(i.quantity) <= Number(i.min_stock_level)) || [];
+    const outOfStockItems = inventoryData?.filter(i => Number(i.quantity) === 0) || [];
+
+    // Format inventory summary
+    const inventorySummary = {
+      total_items: inventoryData?.length || 0,
+      low_stock_count: lowStockItems.length,
+      out_of_stock_count: outOfStockItems.length,
+      top_items: inventoryData?.sort((a, b) => b.quantity - a.quantity).slice(0, 3).map(i => `${i.name} (${i.quantity} ${i.unit})`) || [],
+    };
+
     if (!allTransactions || allTransactions.length === 0) {
       return {
         user_name: userData?.phone_number || 'there',
@@ -36,6 +53,7 @@ export async function getCoachingContext(userId) {
         trend: 'No data',
         current_month_profit: 0,
         recent_transactions: [],
+        inventory: inventorySummary,
       };
     }
 
@@ -131,6 +149,7 @@ export async function getCoachingContext(userId) {
       recent_transactions: recentFormatted,
       total_income: totalIncome,
       total_expenses: totalExpenses,
+      inventory: inventorySummary,
     };
   } catch (error) {
     console.error('Error getting coaching context:', error);
@@ -273,6 +292,30 @@ export function formatContextForPrompt(context, history = []) {
     .map(t => `${t.date}: ${t.type === 'income' ? '+' : '-'}R${t.amount} (${t.category}) - ${t.description}`)
     .join('\n');
 
+  const inventoryText = context.inventory
+    ? `\nInventory Summary:
+- Total items: ${context.inventory.total_items}
+- Low stock items: ${context.inventory.low_stock_count}
+- Out of stock: ${context.inventory.out_of_stock_count}
+- Top stock: ${context.inventory.top_items.join(', ')}`
+    : '';
+
+  const appInfo = `
+App Information:
+- App Name: BeeZee
+- Key Features:
+  1. Home: View balance and quick actions.
+  2. Reports: Detailed financial insights and charts.
+  3. Coach: This all-round assistant for business advice and app help.
+  4. Settings: Manage profile, language, and theme.
+  5. Shortcuts (2x2 grid): 
+     - Record: Voice-based transaction entry.
+     - Scan Receipt: Camera-based receipt scanning.
+     - Bookings: Manage client appointments and tasks.
+     - Inventory: Manage stock levels, costs, and selling prices.
+- Shortcuts support both voice and manual entry.
+`;
+
   return `User's Business Summary:
 - Total transactions: ${context.transaction_count}
 - Average daily income: R${context.avg_daily_income.toFixed(2)}
@@ -281,6 +324,8 @@ export function formatContextForPrompt(context, history = []) {
 - Most common income source: ${context.top_income_category}
 - Recent trend: ${context.trend}
 - Current month profit: R${context.current_month_profit.toFixed(2)}
+${inventoryText}
+${appInfo}
 
 Recent Transactions:
 ${recentTxText}${historyText}`;

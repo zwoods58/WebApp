@@ -12,12 +12,16 @@ import FloatingNavBar from '../components/FloatingNavBar';
 import ProactiveInsights from '../components/ProactiveInsights';
 import TransactionEntryModal from '../components/TransactionEntryModal';
 import ReceiptEntryModal from '../components/ReceiptEntryModal';
+import InventoryEntryModal from '../components/InventoryEntryModal';
 import ReceiptScanner from '../components/ReceiptScanner';
+import AddInventoryModal from '../components/AddInventoryModal';
+import VoiceBookingRecorder from '../components/VoiceBookingRecorder';
 import { SuccessModal, LoadingModal } from '../components/ConfirmationModals';
 import { PageSkeleton, BalanceCardSkeleton, ListSkeleton, Skeleton } from '../components/LoadingSkeleton';
 import OfflineBanner from '../components/OfflineBanner';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import { useTranslation } from 'react-i18next';
+import { createInventoryPurchaseTransaction } from '../utils/inventoryTransactions';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -38,6 +42,8 @@ export default function Dashboard() {
   // Modal states
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const [isInventoryVoiceRecording, setIsInventoryVoiceRecording] = useState(false);
   const [showReceiptScanner, setShowReceiptScanner] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
@@ -50,7 +56,13 @@ export default function Dashboard() {
   }, [user]);
 
   const loadDashboardData = async () => {
-    if (!user) {
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+
+    if (!finalUserId) {
       setLoading(false);
       return;
     }
@@ -62,7 +74,7 @@ export default function Dashboard() {
       const { data: userProfile } = await supabase
         .from('users')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', finalUserId)
         .single();
 
       setUserData(userProfile);
@@ -71,15 +83,23 @@ export default function Dashboard() {
       const startDate = format(startOfMonth(new Date()), 'yyyy-MM-dd');
       const endDate = format(endOfMonth(new Date()), 'yyyy-MM-dd');
 
+      console.log('[Dashboard] Loading transactions for user:', finalUserId, 'Date range:', startDate, 'to', endDate);
+
       const { data: transactions, error } = await supabase
         .from('transactions')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', finalUserId)
         .gte('date', startDate)
         .lte('date', endDate)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[Dashboard] Error loading transactions:', error);
+        throw error;
+      }
+
+      console.log('[Dashboard] Loaded transactions:', transactions?.length || 0);
+      console.log('[Dashboard] Transaction details:', transactions);
 
       // Calculate stats
       const income = transactions
@@ -90,6 +110,8 @@ export default function Dashboard() {
         .filter((t) => t.type === 'expense')
         .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
+      console.log('[Dashboard] Calculated income:', income, 'expenses:', expenses);
+
       setStats({
         totalIncome: income,
         totalExpenses: expenses,
@@ -99,9 +121,9 @@ export default function Dashboard() {
 
       setRecentTransactions(transactions.slice(0, 5));
 
-      // Generate sparkline data (last 7 days)
-      const last7Days = Array.from({ length: 7 }, (_, i) => {
-        const date = format(subDays(new Date(), 6 - i), 'yyyy-MM-dd');
+      // Generate sparkline data (last 14 days for trend comparison)
+      const last14Days = Array.from({ length: 14 }, (_, i) => {
+        const date = format(subDays(new Date(), 13 - i), 'yyyy-MM-dd');
         const dayTransactions = transactions.filter(t => t.date === date);
         const dayIncome = dayTransactions
           .filter(t => t.type === 'income')
@@ -109,9 +131,9 @@ export default function Dashboard() {
         const dayExpenses = dayTransactions
           .filter(t => t.type === 'expense')
           .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-        return dayIncome - dayExpenses;
+        return dayIncome - dayExpenses; // Net profit per day
       });
-      setSparklineData(last7Days);
+      setSparklineData(last14Days);
     } catch (error) {
       console.error('Error loading dashboard:', error);
       toast.error('Failed to load dashboard data');
@@ -139,7 +161,12 @@ export default function Dashboard() {
   };
 
   const handleTransactionSubmit = async (transactionData) => {
-    if (!user) return;
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+    if (!finalUserId) return;
 
     setIsLoadingModalOpen(true);
     setIsTransactionModalOpen(false);
@@ -148,7 +175,7 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from('transactions')
         .insert({
-          user_id: user.id,
+          user_id: finalUserId,
           type: transactionData.type,
           amount: transactionData.amount,
           description: transactionData.description,
@@ -197,6 +224,13 @@ export default function Dashboard() {
   };
 
   const handleReceiptTransactionCreated = async (transaction) => {
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+    if (!finalUserId) return;
+
     setShowReceiptScanner(false);
     setReceiptFile(null); // Clear the file after success
     setIsLoadingModalOpen(true);
@@ -206,7 +240,7 @@ export default function Dashboard() {
         .from('transactions')
         .insert({
           ...transaction,
-          user_id: user.id,
+          user_id: finalUserId,
         })
         .select()
         .single();
@@ -226,13 +260,99 @@ export default function Dashboard() {
     }
   };
 
-  // Calculate trend (percentage change from previous week)
+  const handleInventorySubmit = async (inventoryData) => {
+    let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
+    if (!finalUserId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      finalUserId = session?.user?.id;
+    }
+    if (!finalUserId) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
+    setIsLoadingModalOpen(true);
+    setIsInventoryModalOpen(false);
+
+    try {
+      console.log('[Dashboard] Saving inventory:', inventoryData);
+      
+      const { data, error } = await supabase
+        .from('inventory')
+        .insert({
+          ...inventoryData,
+          user_id: finalUserId,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[Dashboard] Inventory insert error:', error);
+        throw error;
+      }
+
+      console.log('[Dashboard] Inventory saved:', data);
+
+      // Create expense transaction for inventory purchase
+      if (data.cost_price > 0) {
+        console.log('[Dashboard] Attempting to create purchase transaction for:', {
+          item: data.name,
+          cost_price: data.cost_price,
+          quantity: data.quantity,
+          userId: finalUserId,
+        });
+        
+        const transaction = await createInventoryPurchaseTransaction(data, finalUserId);
+        if (!transaction) {
+          console.error('[Dashboard] ❌ Failed to create purchase transaction');
+          toast.error('Inventory saved, but failed to create expense transaction. Check console for details.', { duration: 5000 });
+        } else {
+          console.log('[Dashboard] ✅ Purchase transaction created:', transaction);
+          toast.success(`Expense transaction created: R${(data.cost_price * data.quantity).toFixed(2)}`);
+        }
+      } else {
+        console.log('[Dashboard] No cost price, skipping transaction creation');
+      }
+
+      setIsLoadingModalOpen(false);
+      
+      // Reload dashboard data
+      await loadDashboardData();
+    } catch (error) {
+      console.error('[Dashboard] Error saving inventory:', error);
+      setIsLoadingModalOpen(false);
+      throw error; // Re-throw so InventoryEntryModal can show error
+    }
+  };
+
+  // Calculate trend (percentage change in net profit from previous period)
   const calculateTrend = () => {
-    if (sparklineData.length < 7) return null;
-    const thisWeek = sparklineData.slice(-7).reduce((a, b) => a + b, 0);
-    const lastWeek = sparklineData.slice(0, 7).reduce((a, b) => a + b, 0);
-    if (lastWeek === 0) return null;
-    const change = ((thisWeek - lastWeek) / Math.abs(lastWeek)) * 100;
+    if (!stats || sparklineData.length < 14) {
+      // If we don't have enough data, try with 7 days
+      if (sparklineData.length >= 7) {
+        const thisWeekTotal = sparklineData.slice(-7).reduce((a, b) => a + b, 0);
+        // Compare to average of available days
+        const avgPrevious = sparklineData.slice(0, Math.min(7, sparklineData.length)).reduce((a, b) => a + b, 0) / Math.min(7, sparklineData.length);
+        if (avgPrevious === 0) {
+          return thisWeekTotal > 0 ? { value: 100, isPositive: true } : null;
+        }
+        const change = ((thisWeekTotal - avgPrevious) / Math.abs(avgPrevious)) * 100;
+        return {
+          value: Math.round(change),
+          isPositive: change >= 0,
+        };
+      }
+      return null;
+    }
+    
+    // Compare current week (last 7 days) to previous week (7 days before that)
+    const thisWeekNetProfit = sparklineData.slice(-7).reduce((a, b) => a + b, 0);
+    const lastWeekNetProfit = sparklineData.slice(-14, -7).reduce((a, b) => a + b, 0);
+    
+    if (lastWeekNetProfit === 0) {
+      return thisWeekNetProfit > 0 ? { value: 100, isPositive: true } : thisWeekNetProfit < 0 ? { value: -100, isPositive: false } : null;
+    }
+    
+    const change = ((thisWeekNetProfit - lastWeekNetProfit) / Math.abs(lastWeekNetProfit)) * 100;
     return {
       value: Math.round(change),
       isPositive: change >= 0,
@@ -279,6 +399,7 @@ export default function Dashboard() {
                   <QuickActionButtons
                     onVoiceClick={() => setIsTransactionModalOpen(true)}
                     onReceiptClick={() => setIsReceiptModalOpen(true)}
+                    onInventoryClick={() => setIsInventoryModalOpen(true)}
                   />
 
         <ProactiveInsights />
@@ -302,6 +423,31 @@ export default function Dashboard() {
         onTakePhoto={handleReceiptTakePhoto}
         onUploadImage={handleReceiptUpload}
       />
+
+      <InventoryEntryModal
+        isOpen={isInventoryModalOpen}
+        onClose={() => setIsInventoryModalOpen(false)}
+        onSubmit={handleInventorySubmit}
+        onVoiceRecord={() => {
+          setIsInventoryModalOpen(false);
+          setIsInventoryVoiceRecording(true);
+        }}
+      />
+
+      {isInventoryVoiceRecording && (
+        <VoiceBookingRecorder
+          type="inventory"
+          onClose={() => setIsInventoryVoiceRecording(false)}
+          onSuccess={(data) => {
+            // Note: VoiceBookingRecorder handles confirmation UI internally
+            // When user confirms in VoiceBookingRecorder, it calls onInventoryCreated
+          }}
+          onInventoryCreated={async (data) => {
+            await handleInventorySubmit(data);
+            setIsInventoryVoiceRecording(false);
+          }}
+        />
+      )}
 
       {showReceiptScanner && (
         <ReceiptScanner

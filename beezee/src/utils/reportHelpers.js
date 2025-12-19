@@ -218,7 +218,33 @@ export function formatCurrency(amount) {
  */
 export function calculatePercentageChange(current, previous) {
   if (previous === 0) return current > 0 ? 100 : 0;
-  return ((current - previous) / previous) * 100;
+  return ((current - previous) / Math.abs(previous)) * 100;
+}
+
+/**
+ * Calculate percentage of total
+ * @param {number} value - Value to calculate percentage for
+ * @param {number} total - Total value
+ * @returns {number} Percentage (0-100)
+ */
+export function calculatePercentageOfTotal(value, total) {
+  if (total === 0) return 0;
+  return (value / total) * 100;
+}
+
+/**
+ * Calculate growth rate between periods
+ * @param {number} currentPeriod - Current period value
+ * @param {number} previousPeriod - Previous period value
+ * @returns {object} { value: number, isPositive: boolean, formatted: string }
+ */
+export function calculateGrowthRate(currentPeriod, previousPeriod) {
+  const change = calculatePercentageChange(currentPeriod, previousPeriod);
+  return {
+    value: Math.round(change * 10) / 10, // Round to 1 decimal
+    isPositive: change >= 0,
+    formatted: `${change >= 0 ? '+' : ''}${Math.round(change * 10) / 10}%`
+  };
 }
 
 /**

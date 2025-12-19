@@ -186,7 +186,7 @@
   --safe-area-right: env(safe-area-inset-right, 0px);
   
   /* Added specific page padding for better spacing */
-  --page-top-padding: calc(var(--safe-area-top) + 64px);
+  --page-top-padding: calc(var(--safe-area-top) + 80px);
 
   /* ============================================
      TRANSITION PRESETS
@@ -226,6 +226,17 @@
   
   /* Dark mode card backgrounds */
   background: #0F172A;
+}
+
+body {
+  background-color: #F8FBFF;
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] body {
+  background-color: #0F172A;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -320,4 +331,3 @@
     background-position: 200% 0;
   }
 }
-

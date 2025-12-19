@@ -12,3 +12,5 @@ UPDATE public.users SET subscription_tier = 'ai' WHERE subscription_tier IS NULL
 CREATE INDEX IF NOT EXISTS users_subscription_tier_idx ON public.users(subscription_tier);
 
 
+
+

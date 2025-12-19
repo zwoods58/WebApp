@@ -39,7 +39,9 @@ export default function FloatingNavBar() {
               className="floating-nav-center-button"
               aria-label={item.label}
             >
-              <PlusCircle size={32} />
+              <div className="center-button-inner">
+                <PlusCircle size={28} strokeWidth={2.5} />
+              </div>
             </Link>
           );
         }

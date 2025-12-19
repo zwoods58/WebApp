@@ -129,11 +129,14 @@
 
 /* Voice Booking Recorder Styles */
 .voice-recorder-container {
+  position: fixed;
+  inset: 0;
   background: white;
-  border-radius: var(--radius-card);
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
   padding: var(--spacing-large);
-  box-shadow: var(--shadow-level-2);
-  border: 1px solid rgba(168, 213, 226, 0.2);
+  animation: slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] .voice-recorder-container {

@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
-import { Plus, Filter, Search, Trash2, ChevronLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Search, Trash2, ChevronLeft, Calendar, Tag, ArrowUpRight, ArrowDownLeft, X, Filter } from 'lucide-react';
+import { format, isToday } from 'date-fns';
 import toast from 'react-hot-toast';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 import FloatingNavBar from '../components/FloatingNavBar';
+import SwipeToRefresh from '../components/SwipeToRefresh';
+import EmptyState from '../components/EmptyState';
 
 export default function Transactions() {
   const { user } = useAuthStore();
@@ -17,15 +19,16 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, income, expense
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     loadTransactions();
   }, [user]);
 
   const loadTransactions = async () => {
+    if (!user) return;
     try {
       setLoading(true);
-
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
@@ -34,190 +37,182 @@ export default function Transactions() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
       setTransactions(data || []);
     } catch (error) {
       console.error('Error loading transactions:', error);
-      toast.error(t('common.noData', 'Failed to load transactions'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm(t('transactions.confirmDelete', 'Are you sure you want to delete this transaction?'))) {
-      return;
-    }
+    if (!confirm(t('transactions.confirmDelete', 'Delete this transaction?'))) return;
 
     try {
-      const { error } = await supabase
-        .from('transactions')
-        .delete()
-        .eq('id', id);
-
+      const { error } = await supabase.from('transactions').delete().eq('id', id);
       if (error) throw error;
-
       setTransactions(transactions.filter((t) => t.id !== id));
       toast.success(t('transactions.deleted', 'Transaction deleted'));
     } catch (error) {
-      console.error('Error deleting transaction:', error);
       toast.error(t('transactions.deleteFailed', 'Failed to delete transaction'));
     }
   };
 
-  // Filter and search transactions
   const filteredTransactions = transactions.filter((t) => {
     const matchesFilter = filter === 'all' || t.type === filter;
     const matchesSearch = searchQuery === '' || 
       t.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    
     return matchesFilter && matchesSearch;
   });
 
-  // Group transactions by date
   const groupedTransactions = filteredTransactions.reduce((groups, transaction) => {
     const date = transaction.date;
-    if (!groups[date]) {
-      groups[date] = [];
-    }
+    if (!groups[date]) groups[date] = [];
     groups[date].push(transaction);
     return groups;
   }, {});
 
-  if (loading) {
-    return (
-      <div className="transactions-container">
-        <OfflineBanner />
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="spinner"></div>
-        </div>
-        <FloatingNavBar />
-      </div>
-    );
-  }
-
   return (
-    <div className="transactions-container">
-      <OfflineBanner />
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="transactions-header">
-          <div className="flex items-center gap-4 mb-4">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="p-2 -ml-2 text-gray-600 hover:text-gray-900"
-              aria-label={t('common.back', 'Go back')}
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <h1 className="text-3xl font-bold text-gray-900">{t('transactions.title', 'Transactions')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                placeholder={t('common.search', 'Search transactions...')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              />
+    <SwipeToRefresh onRefresh={loadTransactions}>
+      <div className="transactions-container pb-24">
+        <OfflineBanner />
+        
+        {/* Modern Header */}
+        <div className="reports-header-section">
+          <div className="reports-title-row">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
+                <ChevronLeft size={24} strokeWidth={3} />
+              </button>
+              {!isSearchOpen ? (
+                <h1 className="reports-title">{t('transactions.title', 'History')}</h1>
+              ) : (
+                <div className="flex-1 flex items-center bg-gray-50 rounded-2xl px-3 py-1 animate-slide-right">
+                  <Search size={18} className="text-gray-400 mr-2" />
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder={t('common.search', 'Search...')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-transparent border-none focus:ring-0 text-sm font-bold flex-1 py-2"
+                  />
+                  <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}>
+                    <X size={18} className="text-gray-400" />
+                  </button>
+                </div>
+              )}
             </div>
-            <Link
-              to="/dashboard/transactions/add"
-              className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-              aria-label={t('transactions.addTransaction', 'Add Transaction')}
-            >
-              <Plus size={24} />
-            </Link>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-2 px-4 overflow-x-auto pb-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-              filter === 'all' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {t('common.all', 'All')}
-          </button>
-          <button
-            onClick={() => setFilter('income')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-              filter === 'income' ? 'bg-success-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {t('dashboard.income', 'Income')}
-          </button>
-          <button
-            onClick={() => setFilter('expense')}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-              filter === 'expense' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {t('dashboard.expense', 'Expense')}
-          </button>
-        </div>
-
-        {/* Transaction List */}
-        <div className="px-4 space-y-6 pb-20">
-          {Object.keys(groupedTransactions).length === 0 ? (
-            <div className="text-center py-12">
-              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="text-gray-400" size={24} />
+            {!isSearchOpen && (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setIsSearchOpen(true)}
+                  className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400"
+                >
+                  <Search size={20} />
+                </button>
+                <Link
+                  to="/dashboard/transactions/add"
+                  className="w-10 h-10 rounded-full bg-[#2C2C2E] flex items-center justify-center text-white"
+                >
+                  <Plus size={20} strokeWidth={3} />
+                </Link>
               </div>
-              <p className="text-gray-500">{t('transactions.noTransactions', 'No transactions found')}</p>
+            )}
+          </div>
+
+          {/* Premium Filter Tabs */}
+          <div className="reports-tabs-container">
+            <button
+              onClick={() => setFilter('all')}
+              className={`reports-tab-button ${filter === 'all' ? 'active' : ''}`}
+            >
+              {t('common.all', 'All')}
+            </button>
+            <button
+              onClick={() => setFilter('income')}
+              className={`reports-tab-button ${filter === 'income' ? 'active' : ''}`}
+            >
+              <div className="w-2 h-2 rounded-full bg-[#67C4A7] mr-2" />
+              {t('dashboard.income', 'Income')}
+            </button>
+            <button
+              onClick={() => setFilter('expense')}
+              className={`reports-tab-button ${filter === 'expense' ? 'active' : ''}`}
+            >
+              <div className="w-2 h-2 rounded-full bg-[#FF9B9B] mr-2" />
+              {t('dashboard.expense', 'Expense')}
+            </button>
+          </div>
+        </div>
+
+        {/* List Content */}
+        <div className="px-4 mt-6">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 opacity-20">
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin mb-4" />
             </div>
+          ) : filteredTransactions.length === 0 ? (
+            <EmptyState
+              type="transactions"
+              title={t('transactions.noTransactions', 'No Transactions')}
+              description={t('transactions.noDataDesc', 'Your history will appear here.')}
+              actionLabel={t('transactions.addTransaction', 'Add First')}
+              onAction={() => navigate('/dashboard/transactions/add')}
+            />
           ) : (
-            Object.entries(groupedTransactions).map(([date, items]) => (
-              <div key={date} className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  {isToday(new Date(date)) ? t('common.today', 'Today') : format(new Date(date), 'MMMM dd, yyyy')}
-                </h3>
-                <div className="space-y-1">
-                  {items.map((t) => (
-                    <div
-                      key={t.id}
-                      className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-gray-900">{t.description}</span>
-                          <span className={`font-bold ${t.type === 'income' ? 'text-success-600' : 'text-red-600'}`}>
-                            {t.type === 'income' ? '+' : '-'} R{parseFloat(t.amount).toFixed(2)}
-                          </span>
+            <div className="space-y-8 pb-10">
+              {Object.entries(groupedTransactions).map(([date, items]) => (
+                <div key={date} className="space-y-4 animate-slide-up">
+                  <div className="flex items-center justify-between px-2">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                      {isToday(new Date(date)) ? t('common.today', 'Today') : format(new Date(date), 'MMMM dd')}
+                    </h3>
+                    <div className="h-[1px] flex-1 bg-gray-50 ml-4" />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {items.map((tx) => (
+                      <div
+                        key={tx.id}
+                        className="bg-white p-5 rounded-[24px] border border-gray-50 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${tx.type === 'income' ? 'bg-[#F0FDF4] text-[#166534]' : 'bg-[#FEF2F2] text-[#991B1B]'}`}>
+                            {tx.type === 'income' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-black text-gray-900 mb-0.5">{tx.description || tx.category}</p>
+                            <div className="flex items-center gap-2">
+                              <Tag size={10} className="text-gray-400" />
+                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{tx.category}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-md">
-                            {t.category}
+                        
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`text-sm font-black ${tx.type === 'income' ? 'text-[#166534]' : 'text-[#991B1B]'}`}>
+                            {tx.type === 'income' ? '+' : '-'} R{Number(tx.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
                           <button
-                            onClick={() => handleDelete(t.id)}
-                            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                            onClick={() => handleDelete(tx.id)}
+                            className="p-2 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
+        
+        <FloatingNavBar />
       </div>
-      <FloatingNavBar />
-    </div>
+    </SwipeToRefresh>
   );
-}
-
-function isToday(date) {
-  const today = new Date();
-  return date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear();
 }

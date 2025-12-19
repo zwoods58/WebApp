@@ -126,16 +126,20 @@ export async function voiceToBooking(audioBase64, language = 'en', type = 'booki
   try {
     const userId = localStorage.getItem('beezee_user_id');
     if (!userId) {
+      console.error('[voiceToBooking] No user ID found in localStorage');
       return { success: false, error: 'Not authenticated' };
     }
+
+    console.log(`[voiceToBooking] Calling edge function for user: ${userId}, type: ${type}`);
 
     const response = await callEdgeFunction('voice-booking', {
       audioBase64,
       language,
       user_id: userId,
-      type, // 'booking' or 'task'
+      type,
     }, false);
 
+    console.log('[voiceToBooking] Response received:', response);
     return response;
   } catch (error) {
     console.error('Error calling voice-booking function:', error);
@@ -164,26 +168,15 @@ export async function receiptToTransaction(imageBase64, mimeType = 'image/jpeg')
   return callEdgeFunction('receipts-transaction', { imageBase64, mimeType, user_id: userId });
 }
 
-export async function generateReport(reportType, startDate, endDate) {
-  // Get user ID from localStorage (custom auth system)
-  const userId = localStorage.getItem('beezee_user_id');
+export async function generateReport(reportType, startDate, endDate, customUserId = null) {
+  // Get user ID from parameter or localStorage (custom auth system)
+  const userId = customUserId || localStorage.getItem('beezee_user_id');
   if (!userId) {
     throw new Error('Not authenticated. Please log in.');
   }
-  const result = await callEdgeFunction('Generate-Reports', { reportType, startDate, endDate, user_id: userId });
-  
-  // Handle empty state gracefully - don't treat "No transactions" as an error
-  if (result && !result.success && result.message && 
-      (result.message.toLowerCase().includes('no transactions found') || 
-       result.message.toLowerCase().includes('no transactions'))) {
-    return {
-      success: false,
-      error: 'empty_state',
-      message: result.message,
-    };
-  }
-  
-  return result;
+  // Use requireAuth = false because we are using custom user_id in the payload
+  // and the Edge Function will use the Admin client to verify the user.
+  return callEdgeFunction('Generate-Reports', { reportType, startDate, endDate, user_id: userId }, false);
 }
 
 export async function askFinancialCoach(question, context = null) {

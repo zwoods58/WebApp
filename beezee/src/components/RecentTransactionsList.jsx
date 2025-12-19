@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
-import { formatCurrency } from '../utils/i18n';
-import { ShoppingCart, DollarSign, Car, Package } from 'lucide-react';
+import { ShoppingCart, DollarSign, Car, Package, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -19,9 +18,10 @@ export default function RecentTransactionsList({ transactions = [], maxItems = 5
   return (
     <div className="recent-transactions-section">
       <div className="recent-transactions-header">
-        <h2 className="recent-transactions-title">{t('dashboard.recentTransactions', 'Recent Transactions')}</h2>
+        <h2 className="recent-transactions-title">{t('dashboard.recentTransactions', 'Recent Activity')}</h2>
         <Link to="/dashboard/transactions" className="recent-transactions-see-all">
-          {t('dashboard.viewAll', 'See All')} <span>→</span>
+          {t('dashboard.viewAll', 'See All')}
+          <ChevronRight size={14} strokeWidth={3} />
         </Link>
       </div>
 
@@ -53,13 +53,15 @@ function TransactionCard({ transaction }) {
         <div className="transaction-details">
           <div className="transaction-description">{transaction.description}</div>
           <div className="transaction-metadata">
-            {t(`categories.${transaction.category?.toLowerCase()}`, transaction.category)} • {time}
+            <span className="cat-tag">{t(`categories.${transaction.category?.toLowerCase()}`, transaction.category)}</span>
+            <span className="dot">•</span>
+            <span>{time}</span>
           </div>
         </div>
       </div>
       <div className={`transaction-amount ${transaction.type}`}>
         {transaction.type === 'income' ? '+' : '-'}
-        {formatCurrency(transaction.amount)}
+        R{Number(transaction.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
       </div>
     </div>
   );
@@ -73,11 +75,11 @@ function groupTransactionsByDate(transactions, t) {
     let label;
 
     if (isToday(date)) {
-      label = t('common.today', 'TODAY').toUpperCase();
+      label = t('common.today', 'Today');
     } else if (isYesterday(date)) {
-      label = t('common.yesterday', 'YESTERDAY').toUpperCase();
+      label = t('common.yesterday', 'Yesterday');
     } else {
-      label = format(date, 'dd MMMM').toUpperCase();
+      label = format(date, 'd MMMM');
     }
 
     if (!groups[label]) {
@@ -90,11 +92,12 @@ function groupTransactionsByDate(transactions, t) {
 }
 
 function getCategoryIcon(category) {
+  const size = 20;
   const icons = {
-    Sales: <DollarSign size={24} />,
-    Food: <ShoppingCart size={24} />,
-    Transport: <Car size={24} />,
-    Other: <Package size={24} />,
+    Sales: <DollarSign size={size} />,
+    Food: <ShoppingCart size={size} />,
+    Transport: <Car size={size} />,
+    Other: <Package size={size} />,
   };
   return icons[category] || icons.Other;
 }
