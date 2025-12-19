@@ -196,165 +196,173 @@ export default function AddBookingModal({
           >
             <X size={24} />
           </button>
-          <h2 id="booking-modal-title" className="modal-title flex-1 text-center flex items-center justify-center gap-2">
-            <Calendar size={28} className="modal-title-icon" />
+          <h2 id="booking-modal-title" className="modal-title flex-1 text-center">
             {isEditMode ? t('bookings.editBooking', 'Edit Booking') : t('bookings.addBooking', 'Add Booking')}
           </h2>
           <button
             type="submit"
             form="booking-form"
-            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!clientName || !appointmentDate || !appointmentTime}
           >
             {isEditMode ? t('common.update', 'Update') : t('common.save', 'Save')}
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="transaction-form">
-          {/* Voice Option (only for Add mode) */}
-          {!isEditMode && (
-            <div className="form-field">
-              <button
-                type="button"
-                onClick={() => setShowVoiceRecorder(true)}
-                className="voice-prompt-button w-full"
-              >
-                <Mic size={24} />
-                <span>{t('bookings.useVoice', 'Use Voice to Add Booking')}</span>
-              </button>
-              {showVoiceRecorder && (
-                <div className="mt-4">
-                  <VoiceBookingRecorder
-                    onBookingCreated={handleVoiceBookingCreated}
-                    onCancel={() => setShowVoiceRecorder(false)}
-                    type="booking"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Client Name */}
-          <div className="form-field">
-            <label htmlFor="clientName" className="form-label">
-              <User size={16} className="inline mr-2" />
-              {t('bookings.clientName', 'Client Name')} *
-            </label>
-            <input
-              id="clientName"
-              ref={clientNameInputRef}
-              type="text"
-              value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
-              placeholder={t('bookings.enterClientName', 'Enter client name')}
-              className="description-input"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Date */}
-            <div className="form-field">
-              <label htmlFor="appointmentDate" className="form-label">
-                <Calendar size={16} className="inline mr-2" />
-                {t('common.date', 'Date')} *
-              </label>
-              <input
-                id="appointmentDate"
-                type="date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
-                className="description-input"
-                required
-              />
-            </div>
-
-            {/* Time */}
-            <div className="form-field">
-              <label htmlFor="appointmentTime" className="form-label">
-                <Clock size={16} className="inline mr-2" />
-                {t('common.dueTime', 'Time')} *
-              </label>
-              <input
-                id="appointmentTime"
-                type="time"
-                value={appointmentTime}
-                onChange={(e) => setAppointmentTime(e.target.value)}
-                className="description-input"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Service */}
-          <div className="form-field">
-            <label htmlFor="service" className="form-label">
-              <FileText size={16} className="inline mr-2" />
-              {t('common.service', 'Service')}
-            </label>
-            <input
-              id="service"
-              type="text"
-              value={service}
-              onChange={(e) => setService(e.target.value)}
-              placeholder={t('common.servicePlaceholder', 'e.g., Consultation, Haircut')}
-              className="description-input"
-            />
-          </div>
-
-          {/* Location */}
-          <div className="form-field">
-            <label htmlFor="location" className="form-label">
-              <MapPin size={16} className="inline mr-2" />
-              {t('common.location', 'Location')}
-            </label>
-            <input
-              id="location"
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder={t('common.locationPlaceholder', 'Enter address')}
-              className="description-input"
-            />
-          </div>
-
-          {/* Recurrence */}
-          <div className="form-field">
-            <label className="form-label">
-              <Repeat size={16} className="inline mr-2" />
-              {t('common.repeat', 'Repeat')}
-            </label>
-            <div className="category-pills">
-              {['none', 'daily', 'weekly', 'monthly'].map((r) => (
+        <div 
+          className="flex-1 overflow-y-auto"
+          style={{ 
+            WebkitOverflowScrolling: 'touch', 
+            touchAction: 'pan-y',
+            paddingBottom: 'calc(24px + var(--safe-area-bottom, 0px) + 100px)',
+            minHeight: 0
+          }}
+        >
+          <form id="booking-form" onSubmit={handleSubmit} className="transaction-form">
+            {/* Voice Option (only for Add mode) */}
+            {!isEditMode && (
+              <div className="form-field">
                 <button
-                  key={r}
                   type="button"
-                  className={`category-pill ${recurrence === r ? 'active' : ''}`}
-                  onClick={() => setRecurrence(r)}
+                  onClick={() => setShowVoiceRecorder(true)}
+                  className="voice-prompt-button w-full"
                 >
-                  {t(`common.${r}`, r.charAt(0).toUpperCase() + r.slice(1))}
+                  <Mic size={24} />
+                  <span>{t('bookings.useVoice', 'Use Voice to Add Booking')}</span>
                 </button>
-              ))}
+                {showVoiceRecorder && (
+                  <div className="mt-4">
+                    <VoiceBookingRecorder
+                      onBookingCreated={handleVoiceBookingCreated}
+                      onCancel={() => setShowVoiceRecorder(false)}
+                      type="booking"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Client Name */}
+            <div className="form-field">
+              <label htmlFor="clientName" className="form-label">
+                <User size={16} className="inline mr-2" />
+                {t('bookings.clientName', 'Client Name')} *
+              </label>
+              <input
+                id="clientName"
+                ref={clientNameInputRef}
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder={t('bookings.enterClientName', 'Enter client name')}
+                className="description-input"
+                required
+              />
             </div>
-          </div>
 
-          {/* Notes */}
-          <div className="form-field">
-            <label htmlFor="notes" className="form-label">
-              <FileText size={16} className="inline mr-2" />
-              {t('common.notes', 'Notes')}
-            </label>
-            <textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t('common.notesPlaceholder', 'Add details...')}
-              className="description-input"
-              rows={3}
-            />
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Date */}
+              <div className="form-field">
+                <label htmlFor="appointmentDate" className="form-label">
+                  <Calendar size={16} className="inline mr-2" />
+                  {t('common.date', 'Date')} *
+                </label>
+                <input
+                  id="appointmentDate"
+                  type="date"
+                  value={appointmentDate}
+                  onChange={(e) => setAppointmentDate(e.target.value)}
+                  className="description-input"
+                  required
+                />
+              </div>
 
-        </form>
+              {/* Time */}
+              <div className="form-field">
+                <label htmlFor="appointmentTime" className="form-label">
+                  <Clock size={16} className="inline mr-2" />
+                  {t('common.dueTime', 'Time')} *
+                </label>
+                <input
+                  id="appointmentTime"
+                  type="time"
+                  value={appointmentTime}
+                  onChange={(e) => setAppointmentTime(e.target.value)}
+                  className="description-input"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Service */}
+            <div className="form-field">
+              <label htmlFor="service" className="form-label">
+                <FileText size={16} className="inline mr-2" />
+                {t('common.service', 'Service')}
+              </label>
+              <input
+                id="service"
+                type="text"
+                value={service}
+                onChange={(e) => setService(e.target.value)}
+                placeholder={t('common.servicePlaceholder', 'e.g., Consultation, Haircut')}
+                className="description-input"
+              />
+            </div>
+
+            {/* Location */}
+            <div className="form-field">
+              <label htmlFor="location" className="form-label">
+                <MapPin size={16} className="inline mr-2" />
+                {t('common.location', 'Location')}
+              </label>
+              <input
+                id="location"
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder={t('common.locationPlaceholder', 'Enter address')}
+                className="description-input"
+              />
+            </div>
+
+            {/* Recurrence */}
+            <div className="form-field">
+              <label className="form-label">
+                <Repeat size={16} className="inline mr-2" />
+                {t('common.repeat', 'Repeat')}
+              </label>
+              <div className="category-pills">
+                {['none', 'daily', 'weekly', 'monthly'].map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    className={`category-pill ${recurrence === r ? 'active' : ''}`}
+                    onClick={() => setRecurrence(r)}
+                  >
+                    {t(`common.${r}`, r.charAt(0).toUpperCase() + r.slice(1))}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="form-field">
+              <label htmlFor="notes" className="form-label">
+                <FileText size={16} className="inline mr-2" />
+                {t('common.notes', 'Notes')}
+              </label>
+              <textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t('common.notesPlaceholder', 'Add details...')}
+                className="description-input"
+                rows={3}
+              />
+            </div>
+
+          </form>
+        </div>
       </div>
     </>
   );

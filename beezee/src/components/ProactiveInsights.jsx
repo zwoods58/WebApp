@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { checkForProactiveInsights } from '../utils/coachingHelpers';
 import { Sparkles, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function ProactiveInsights() {
+export default function ProactiveInsights({ currentIncome = 0, currentExpenses = 0, currentProfit = 0 }) {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [insight, setInsight] = useState(null);
@@ -12,9 +11,9 @@ export default function ProactiveInsights() {
 
   useEffect(() => {
     loadProactiveInsight();
-  }, [user]);
+  }, [user, currentIncome, currentExpenses, currentProfit]);
 
-  const loadProactiveInsight = async () => {
+  const loadProactiveInsight = () => {
     try {
       // Check if already dismissed today
       const dismissedToday = localStorage.getItem(`insight_dismissed_${new Date().toISOString().split('T')[0]}`);
@@ -22,10 +21,31 @@ export default function ProactiveInsights() {
         return;
       }
 
-      const proactiveInsight = await checkForProactiveInsights(user.id);
-      
-      if (proactiveInsight) {
-        setInsight(proactiveInsight);
+      // Generate insight based on current dashboard stats
+      const insights = [];
+
+      // Warning: Expenses higher than income
+      if (currentProfit < 0 && currentExpenses > 0 && currentIncome > 0) {
+        insights.push({
+          type: 'warning',
+          message: `⚠️ Your expenses (R${currentExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}) were higher than your income (R${currentIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}) this month. Want to look at where the money went?`,
+        });
+      }
+
+      // Positive: Good profit
+      if (currentProfit > 0 && currentIncome > 0) {
+        const profitMargin = ((currentProfit / currentIncome) * 100).toFixed(0);
+        if (profitMargin > 20) {
+          insights.push({
+            type: 'milestone',
+            message: `🎉 Great work! You're making a ${profitMargin}% profit margin this month. That's excellent! Keep it up! 💪`,
+          });
+        }
+      }
+
+      // Set the first relevant insight
+      if (insights.length > 0) {
+        setInsight(insights[0]);
       }
     } catch (error) {
       console.error('Error loading proactive insight:', error);

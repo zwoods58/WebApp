@@ -12,6 +12,8 @@ import SwipeToRefresh from '../components/SwipeToRefresh';
 import EmptyState from '../components/EmptyState';
 import BeeZeeLogo from '../components/BeeZeeLogo';
 import { useOfflineStore } from '../store/offlineStore';
+import { getAllOfflineTransactions } from '../utils/offlineSync';
+import PendingBadge from '../components/PendingBadge';
 
 export default function Transactions() {
   const { user } = useAuthStore();
@@ -28,9 +30,9 @@ export default function Transactions() {
     loadTransactions();
   }, [user]);
 
-  // Refresh when sync completes
+  // Refresh when sync completes (syncCompleted is a counter that increments)
   useEffect(() => {
-    if (syncCompleted) {
+    if (syncCompleted > 0) {
       console.log('Sync completed - refreshing Transactions...');
       loadTransactions();
     }
@@ -48,7 +50,31 @@ export default function Transactions() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTransactions(data || []);
+      
+      // Get offline transactions and merge
+      let allTransactions = [...(data || [])];
+      try {
+        const offlineTransactions = await getAllOfflineTransactions();
+        const unsyncedOffline = offlineTransactions.filter(t => !t.synced);
+        
+        const pendingTransactions = unsyncedOffline.map(t => ({
+          ...t,
+          pending: true,
+          synced: false,
+          id: t.offline_id || `offline_${t.id}`,
+        }));
+        
+        allTransactions = [...allTransactions, ...pendingTransactions];
+        allTransactions.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.date);
+          const dateB = new Date(b.created_at || b.date);
+          return dateB - dateA;
+        });
+      } catch (offlineError) {
+        console.error('Error loading offline transactions:', offlineError);
+      }
+      
+      setTransactions(allTransactions);
     } catch (error) {
       console.error('Error loading transactions:', error);
     } finally {
@@ -91,11 +117,9 @@ export default function Transactions() {
         
         {/* Modern Header */}
         <div className="reports-header-section pt-4">
-          <div className="px-4 pb-2">
-            <BeeZeeLogo />
-          </div>
           <div className="reports-title-row">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4">
+              <BeeZeeLogo />
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>
@@ -189,15 +213,18 @@ export default function Transactions() {
                   <div className="space-y-3">
                     {items.map((tx) => (
                       <div
-                        key={tx.id}
-                        className="bg-white p-5 rounded-[24px] border border-gray-50 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+                        key={tx.id || tx.offline_id || `offline_${tx.created_at}`}
+                        className={`bg-white p-5 rounded-[24px] border border-gray-50 shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all ${tx.pending ? 'opacity-75' : ''}`}
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${tx.type === 'income' ? 'bg-[#F0FDF4] text-[#166534]' : 'bg-[#FEF2F2] text-[#991B1B]'}`}>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${tx.type === 'income' ? 'bg-[#F0FDF4] text-[#166534]' : 'bg-[#FEF2F2] text-[#991B1B]'} ${tx.pending ? 'opacity-60' : ''}`}>
                             {tx.type === 'income' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-gray-900 mb-0.5">{tx.description || tx.category}</p>
+                            <p className="text-sm font-black text-gray-900 mb-0.5 flex items-center gap-2">
+                              {tx.description || tx.category}
+                              {tx.pending && <PendingBadge />}
+                            </p>
                             <div className="flex items-center gap-2">
                               <Tag size={10} className="text-gray-400" />
                               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{tx.category}</span>

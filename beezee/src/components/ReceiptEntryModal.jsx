@@ -104,39 +104,42 @@ export default function ReceiptEntryModal({
           >
             <X size={24} />
           </button>
-          <h2 id="receipt-modal-title" className="modal-title">{t('dashboard.scan', 'Scan Receipt')}</h2>
+          <h2 id="receipt-modal-title" className="modal-title flex-1 text-center">{t('dashboard.scan', 'Scan Receipt')}</h2>
+          <div className="w-10"></div> {/* Spacer for centering */}
         </div>
 
-        <div className="p-6 space-y-4">
-          <button
-            onClick={handleTakePhoto}
-            className="w-full flex items-center justify-between p-4 bg-primary-50 text-primary-700 rounded-xl border-2 border-primary-100 hover:bg-primary-100 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white rounded-lg shadow-sm group-hover:scale-110 transition-transform">
-                <Camera size={24} />
+        <div className="transaction-form">
+          <div className="space-y-3">
+            <button
+              onClick={handleTakePhoto}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 rounded-2xl border-2 border-blue-100 hover:border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 group shadow-sm hover:shadow-md active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Camera size={24} className="text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-base">{t('receipts.takePhoto', 'Take Photo')}</p>
+                  <p className="text-xs text-blue-600 opacity-80 font-semibold">{t('receipts.takePhotoDesc', 'Capture a new receipt')}</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="font-bold">{t('receipts.takePhoto', 'Take Photo')}</p>
-                <p className="text-xs text-primary-600 opacity-80">{t('receipts.takePhotoDesc', 'Capture a new receipt')}</p>
-              </div>
-            </div>
-          </button>
+            </button>
 
-          <button
-            onClick={handleUploadClick}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 text-gray-700 rounded-xl border-2 border-gray-100 hover:bg-gray-100 transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white rounded-lg shadow-sm group-hover:scale-110 transition-transform">
-                <Upload size={24} />
+            <button
+              onClick={handleUploadClick}
+              className="w-full flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-slate-50 text-gray-700 rounded-2xl border-2 border-gray-100 hover:border-gray-200 hover:from-gray-100 hover:to-slate-100 transition-all duration-200 group shadow-sm hover:shadow-md active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm group-hover:scale-110 transition-transform">
+                  <Upload size={24} className="text-gray-600" />
+                </div>
+                <div className="text-left">
+                  <p className="font-black text-base">{t('receipts.upload', 'Upload from Gallery')}</p>
+                  <p className="text-xs text-gray-500 font-semibold">{t('receipts.uploadDesc', 'Select an image file')}</p>
+                </div>
               </div>
-              <div className="text-left">
-                <p className="font-bold">{t('receipts.upload', 'Upload from Gallery')}</p>
-                <p className="text-xs text-gray-500">{t('receipts.uploadDesc', 'Select an image file')}</p>
-              </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
     </>

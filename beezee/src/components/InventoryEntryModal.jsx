@@ -164,7 +164,6 @@ export default function InventoryEntryModal({
           <button
             type="submit"
             form="inventory-form"
-            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!name || !quantity || !name.trim() || isNaN(parseFloat(quantity)) || parseFloat(quantity) <= 0 || isSubmitting}
           >
             {isSubmitting ? (
@@ -175,7 +174,16 @@ export default function InventoryEntryModal({
           </button>
         </div>
 
-        <form id="inventory-form" onSubmit={handleSubmit} className="transaction-form">
+        <div 
+          className="flex-1 overflow-y-auto"
+          style={{ 
+            WebkitOverflowScrolling: 'touch', 
+            touchAction: 'pan-y',
+            paddingBottom: 'calc(24px + var(--safe-area-bottom, 0px) + 100px)',
+            minHeight: 0
+          }}
+        >
+          <form id="inventory-form" onSubmit={handleSubmit} className="transaction-form">
           <div className="form-field">
             <button
               type="button"
@@ -271,8 +279,8 @@ export default function InventoryEntryModal({
               ))}
             </div>
           </div>
-
-        </form>
+          </form>
+        </div>
       </div>
     </>
   );

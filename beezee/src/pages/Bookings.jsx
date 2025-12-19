@@ -36,6 +36,15 @@ export default function Bookings() {
     }
   }, [user]);
 
+  // Refresh when sync completes (syncCompleted is a counter that increments)
+  useEffect(() => {
+    if (syncCompleted > 0 && user) {
+      console.log('Sync completed - refreshing Bookings...');
+      loadBookings();
+      loadTasks();
+    }
+  }, [syncCompleted, user]);
+
   const loadBookings = async () => {
     try {
       setLoading(true);
@@ -131,11 +140,9 @@ export default function Bookings() {
       <div className="bookings-container pb-24">
         {/* Modern Header */}
         <div className="reports-header-section pt-4">
-          <div className="px-4 pb-2">
-            <BeeZeeLogo />
-          </div>
           <div className="reports-title-row">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4">
+              <BeeZeeLogo />
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>

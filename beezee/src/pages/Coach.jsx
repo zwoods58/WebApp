@@ -37,9 +37,9 @@ export default function Coach() {
     }
   }, [user]);
 
-  // Refresh when sync completes
+  // Refresh when sync completes (syncCompleted is a counter that increments)
   useEffect(() => {
-    if (syncCompleted && user) {
+    if (syncCompleted > 0 && user) {
       console.log('Sync completed - refreshing Coach...');
       loadCoachingHistory();
       loadUserContext();
@@ -152,11 +152,9 @@ export default function Coach() {
   if (loadingHistory) return (
     <div className="coach-container pb-24">
       <div className="reports-header-section pt-4">
-        <div className="px-4 pb-2">
-          <BeeZeeLogo />
-        </div>
         <div className="reports-title-row">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 px-4">
+            <BeeZeeLogo />
             <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
               <ChevronLeft size={24} strokeWidth={3} />
             </button>
@@ -176,11 +174,9 @@ export default function Coach() {
         
         {/* Modern Header */}
         <div className="reports-header-section pt-4">
-          <div className="px-4 pb-2">
-            <BeeZeeLogo />
-          </div>
           <div className="reports-title-row">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4">
+              <BeeZeeLogo />
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>

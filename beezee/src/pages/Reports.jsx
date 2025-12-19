@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Download, Share2, Loader2, AlertCircle, FileText, ChevronLeft, Package, TrendingUp, AlertTriangle, RefreshCcw } from 'lucide-react';
 import { supabase, generateReport } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
-import { format, startOfDay, startOfWeek, startOfMonth, endOfDay, endOfMonth, subDays } from 'date-fns';
+import { format, startOfDay, startOfWeek, startOfMonth, endOfDay, endOfMonth, subDays, subWeeks, subMonths, endOfWeek } from 'date-fns';
 import toast from 'react-hot-toast';
 import ReportCard from '../components/reports/ReportCard';
 import CategoryBreakdown from '../components/reports/CategoryBreakdown';
@@ -49,9 +49,9 @@ export default function Reports() {
     loadData();
   }, [selectedRange, user, activeTab]);
 
-  // Refresh when sync completes
+  // Refresh when sync completes (syncCompleted is a counter that increments)
   useEffect(() => {
-    if (syncCompleted) {
+    if (syncCompleted > 0) {
       console.log('Sync completed - refreshing Reports...');
       loadData();
     }
@@ -212,6 +212,86 @@ export default function Reports() {
     }
   };
 
+  const loadPreviousPeriodData = async (currentStart, currentEnd, userId) => {
+    try {
+      // Calculate previous period date range based on current range
+      const currentStartDate = new Date(currentStart);
+      const currentEndDate = new Date(currentEnd);
+      const daysDiff = Math.ceil((currentEndDate - currentStartDate) / (1000 * 60 * 60 * 24)) + 1;
+      
+      let previousStart, previousEnd;
+      
+      if (selectedRange === 'today') {
+        // Previous day
+        const yesterday = subDays(currentStartDate, 1);
+        previousStart = format(startOfDay(yesterday), 'yyyy-MM-dd');
+        previousEnd = format(endOfDay(yesterday), 'yyyy-MM-dd');
+      } else if (selectedRange === 'week') {
+        // Previous week
+        const prevWeekStart = subWeeks(currentStartDate, 1);
+        const prevWeekEnd = subDays(currentStartDate, 1);
+        previousStart = format(startOfWeek(prevWeekStart), 'yyyy-MM-dd');
+        previousEnd = format(endOfDay(prevWeekEnd), 'yyyy-MM-dd');
+      } else {
+        // Previous month
+        const prevMonthStart = subMonths(currentStartDate, 1);
+        const prevMonthEnd = subDays(currentStartDate, 1);
+        previousStart = format(startOfMonth(prevMonthStart), 'yyyy-MM-dd');
+        previousEnd = format(endOfMonth(prevMonthStart), 'yyyy-MM-dd');
+      }
+
+      console.log('[Reports] Loading previous period data:', previousStart, 'to', previousEnd);
+
+      // Fetch transactions for previous period
+      const { data: previousTransactions, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('date', previousStart)
+        .lte('date', previousEnd);
+
+      if (error) {
+        console.warn('[Reports] Error loading previous period data:', error);
+        return;
+      }
+
+      if (!previousTransactions || previousTransactions.length === 0) {
+        console.log('[Reports] No previous period transactions found');
+        setPreviousReportData({
+          totalIncome: 0,
+          totalExpenses: 0,
+          netProfit: 0,
+        });
+        return;
+      }
+
+      // Calculate previous period totals
+      const previousIncome = previousTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      
+      const previousExpenses = previousTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      const previousNetProfit = previousIncome - previousExpenses;
+
+      console.log('[Reports] Previous period totals:', {
+        totalIncome: previousIncome,
+        totalExpenses: previousExpenses,
+        netProfit: previousNetProfit,
+      });
+
+      setPreviousReportData({
+        totalIncome: previousIncome,
+        totalExpenses: previousExpenses,
+        netProfit: previousNetProfit,
+      });
+    } catch (err) {
+      console.error('[Reports] Error loading previous period data:', err);
+    }
+  };
+
   const loadInventory = async () => {
     let finalUserId = user?.id || localStorage.getItem('beezee_user_id');
     if (!finalUserId) {
@@ -292,11 +372,9 @@ export default function Reports() {
         
         {/* Modern Header Section */}
         <div className="reports-header-section pt-4">
-          <div className="px-4 pb-2">
-            <BeeZeeLogo />
-          </div>
           <div className="reports-title-row">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4">
+              <BeeZeeLogo />
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>

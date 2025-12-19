@@ -212,14 +212,18 @@ export function setupOnlineListener(onOnline, onOffline) {
 
 // Sync all pending transactions with server
 export async function syncWithServer(supabaseClient) {
+  console.log('[syncWithServer] Starting sync...');
   if (!isOnline()) {
-    console.log('Offline - skipping sync');
+    console.log('[syncWithServer] Offline - skipping sync');
     return { success: false, message: 'Device is offline' };
   }
 
+  console.log('[syncWithServer] Getting unsynced transactions...');
   const unsyncedTransactions = await getUnsyncedTransactions();
+  console.log(`[syncWithServer] Found ${unsyncedTransactions.length} unsynced transactions`);
   
   if (unsyncedTransactions.length === 0) {
+    console.log('[syncWithServer] No unsynced transactions, returning success');
     return { success: true, synced: 0 };
   }
 

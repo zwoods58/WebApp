@@ -184,148 +184,156 @@ export default function AddTaskModal({
           >
             <X size={24} />
           </button>
-          <h2 id="task-modal-title" className="modal-title flex-1 text-center flex items-center justify-center gap-2">
-            <AlertCircle size={28} className="modal-title-icon" />
+          <h2 id="task-modal-title" className="modal-title flex-1 text-center">
             {isEditMode ? t('tasks.editTask', 'Edit Task') : t('tasks.addTask', 'Add Task')}
           </h2>
           <button
             type="submit"
             form="task-form"
-            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!title}
           >
             {isEditMode ? t('common.update', 'Update') : t('common.save', 'Save')}
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="transaction-form">
-          {/* Voice Option (only for Add mode) */}
-          {!isEditMode && (
-            <div className="form-field">
-              <button
-                type="button"
-                onClick={() => setShowVoiceRecorder(true)}
-                className="voice-prompt-button w-full"
-              >
-                <Mic size={24} />
-                <span>{t('tasks.useVoice', 'Use Voice to Add Task')}</span>
-              </button>
-              {showVoiceRecorder && (
-                <div className="mt-4">
-                  <VoiceBookingRecorder
-                    onTaskCreated={handleVoiceTaskCreated}
-                    onCancel={() => setShowVoiceRecorder(false)}
-                    type="task"
-                  />
-                </div>
-              )}
-            </div>
-          )}
+        <div 
+          className="flex-1 overflow-y-auto"
+          style={{ 
+            WebkitOverflowScrolling: 'touch', 
+            touchAction: 'pan-y',
+            paddingBottom: 'calc(24px + var(--safe-area-bottom, 0px) + 100px)',
+            minHeight: 0
+          }}
+        >
+          <form id="task-form" onSubmit={handleSubmit} className="transaction-form">
+            {/* Voice Option (only for Add mode) */}
+            {!isEditMode && (
+              <div className="form-field">
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceRecorder(true)}
+                  className="voice-prompt-button w-full"
+                >
+                  <Mic size={24} />
+                  <span>{t('tasks.useVoice', 'Use Voice to Add Task')}</span>
+                </button>
+                {showVoiceRecorder && (
+                  <div className="mt-4">
+                    <VoiceBookingRecorder
+                      onTaskCreated={handleVoiceTaskCreated}
+                      onCancel={() => setShowVoiceRecorder(false)}
+                      type="task"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Task Title */}
-          <div className="form-field">
-            <label htmlFor="taskTitle" className="form-label">
-              <FileText size={16} className="inline mr-2" />
-              {t('tasks.taskTitle', 'Task Title')} *
-            </label>
-            <input
-              id="taskTitle"
-              ref={titleInputRef}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t('tasks.enterTaskTitle', 'e.g., Call John')}
-              className="description-input"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Due Date */}
+            {/* Task Title */}
             <div className="form-field">
-              <label htmlFor="dueDate" className="form-label">
-                <Calendar size={16} className="inline mr-2" />
-                {t('common.dueDate', 'Due Date')}
+              <label htmlFor="taskTitle" className="form-label">
+                <FileText size={16} className="inline mr-2" />
+                {t('tasks.taskTitle', 'Task Title')} *
               </label>
               <input
-                id="dueDate"
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                id="taskTitle"
+                ref={titleInputRef}
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t('tasks.enterTaskTitle', 'e.g., Call John')}
                 className="description-input"
+                required
               />
             </div>
 
-            {/* Due Time */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Due Date */}
+              <div className="form-field">
+                <label htmlFor="dueDate" className="form-label">
+                  <Calendar size={16} className="inline mr-2" />
+                  {t('common.dueDate', 'Due Date')}
+                </label>
+                <input
+                  id="dueDate"
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="description-input"
+                />
+              </div>
+
+              {/* Due Time */}
+              <div className="form-field">
+                <label htmlFor="dueTime" className="form-label">
+                  <Clock size={16} className="inline mr-2" />
+                  {t('common.dueTime', 'Time')}
+                </label>
+                <input
+                  id="dueTime"
+                  type="time"
+                  value={dueTime}
+                  onChange={(e) => setDueTime(e.target.value)}
+                  className="description-input"
+                />
+              </div>
+            </div>
+
+            {/* Priority */}
             <div className="form-field">
-              <label htmlFor="dueTime" className="form-label">
-                <Clock size={16} className="inline mr-2" />
-                {t('common.dueTime', 'Time')}
+              <label className="form-label">{t('common.priority', 'Priority')}</label>
+              <div className="category-pills">
+                {priorities.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    className={`category-pill ${priority === p.value ? 'active' : ''}`}
+                    onClick={() => setPriority(p.value)}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Recurrence */}
+            <div className="form-field">
+              <label className="form-label">
+                <Repeat size={16} className="inline mr-2" />
+                {t('common.repeat', 'Repeat')}
               </label>
-              <input
-                id="dueTime"
-                type="time"
-                value={dueTime}
-                onChange={(e) => setDueTime(e.target.value)}
+              <div className="category-pills">
+                {['none', 'daily', 'weekly', 'monthly'].map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    className={`category-pill ${recurrence === r ? 'active' : ''}`}
+                    onClick={() => setRecurrence(r)}
+                  >
+                    {t(`common.${r}`, r.charAt(0).toUpperCase() + r.slice(1))}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="form-field">
+              <label htmlFor="taskDescription" className="form-label">
+                <FileText size={16} className="inline mr-2" />
+                {t('common.description', 'Description')}
+              </label>
+              <textarea
+                id="taskDescription"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t('common.descriptionPlaceholder', 'Add task details...')}
                 className="description-input"
+                rows={3}
               />
             </div>
-          </div>
 
-          {/* Priority */}
-          <div className="form-field">
-            <label className="form-label">{t('common.priority', 'Priority')}</label>
-            <div className="category-pills">
-              {priorities.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  className={`category-pill ${priority === p.value ? 'active' : ''}`}
-                  onClick={() => setPriority(p.value)}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Recurrence */}
-          <div className="form-field">
-            <label className="form-label">
-              <Repeat size={16} className="inline mr-2" />
-              {t('common.repeat', 'Repeat')}
-            </label>
-            <div className="category-pills">
-              {['none', 'daily', 'weekly', 'monthly'].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`category-pill ${recurrence === r ? 'active' : ''}`}
-                  onClick={() => setRecurrence(r)}
-                >
-                  {t(`common.${r}`, r.charAt(0).toUpperCase() + r.slice(1))}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="form-field">
-            <label htmlFor="taskDescription" className="form-label">
-              <FileText size={16} className="inline mr-2" />
-              {t('common.description', 'Description')}
-            </label>
-            <textarea
-              id="taskDescription"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t('common.descriptionPlaceholder', 'Add task details...')}
-              className="description-input"
-              rows={3}
-            />
-          </div>
-
-        </form>
+          </form>
+        </div>
       </div>
     </>
   );

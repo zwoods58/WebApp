@@ -30,9 +30,9 @@ export default function Inventory() {
     if (user) loadInventory();
   }, [user]);
 
-  // Refresh when sync completes
+  // Refresh when sync completes (syncCompleted is a counter that increments)
   useEffect(() => {
-    if (syncCompleted) {
+    if (syncCompleted > 0) {
       console.log('Sync completed - refreshing Inventory...');
       loadInventory();
     }
@@ -165,11 +165,9 @@ export default function Inventory() {
       <div className="inventory-container pb-24">
         {/* Modern Header */}
         <div className="reports-header-section pt-4">
-          <div className="px-4 pb-2">
-            <BeeZeeLogo />
-          </div>
           <div className="reports-title-row">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 px-4">
+              <BeeZeeLogo />
               <button onClick={() => navigate('/dashboard')} className="p-2 -ml-2 text-gray-400">
                 <ChevronLeft size={24} strokeWidth={3} />
               </button>

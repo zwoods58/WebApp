@@ -92,6 +92,7 @@ export default function TransactionEntryModal({
     setAmount('');
     setDescription('');
     setCategory('');
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -133,85 +134,95 @@ export default function TransactionEntryModal({
           <button
             type="submit"
             form="transaction-form"
-            className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!amount || !description || !category}
           >
             {t('common.save', 'Save')}
           </button>
         </div>
 
-        <div className="transaction-type-toggle">
-          <button
-            className={`type-toggle-btn income ${transactionType === 'income' ? 'active' : ''}`}
-            onClick={() => setTransactionType('income')}
-          >
-            {t('dashboard.income', 'Money In')}
-          </button>
-          <button
-            className={`type-toggle-btn expense ${transactionType === 'expense' ? 'active' : ''}`}
-            onClick={() => setTransactionType('expense')}
-          >
-            {t('dashboard.expense', 'Money Out')}
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="transaction-form">
-          <div className="form-field">
-            <button
-              type="button"
-              onClick={handleVoiceClick}
-              className={`voice-prompt-button ${isRecording ? 'recording' : ''}`}
-            >
-              <Mic size={24} />
-              <span>{t('transactions.useVoice', 'Use Voice to Record')}</span>
-            </button>
-          </div>
-
-          <div className="amount-input-container">
-            <span className="currency-symbol">R</span>
-            <input
-              ref={amountInputRef}
-              type="number"
-              pattern="[0-9]*"
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              className="amount-input"
-              required
-            />
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="description" className="form-label">{t('transactions.description', 'Description')}</label>
-            <input
-              id="description"
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t('transactions.descPlaceholder', 'What was this for?')}
-              className="description-input"
-              required
-            />
-          </div>
-
-          <div className="form-field">
-            <label className="form-label">{t('transactions.category', 'Category')}</label>
-            <div className="category-pills">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`category-pill ${category === cat ? 'active' : ''}`}
-                  onClick={() => setCategory(cat)}
-                >
-                  {t(`categories.${cat.toLowerCase()}`, cat)}
-                </button>
-              ))}
+        <div 
+          className="flex-1 overflow-y-auto"
+          style={{ 
+            WebkitOverflowScrolling: 'touch', 
+            touchAction: 'pan-y',
+            paddingBottom: 'calc(24px + var(--safe-area-bottom, 0px) + 100px)',
+            minHeight: 0
+          }}
+        >
+          <form onSubmit={handleSubmit} id="transaction-form" className="transaction-form">
+            <div className="transaction-type-toggle">
+              <button
+                type="button"
+                className={`type-toggle-btn income ${transactionType === 'income' ? 'active' : ''}`}
+                onClick={() => setTransactionType('income')}
+              >
+                {t('dashboard.income', 'Money In')}
+              </button>
+              <button
+                type="button"
+                className={`type-toggle-btn expense ${transactionType === 'expense' ? 'active' : ''}`}
+                onClick={() => setTransactionType('expense')}
+              >
+                {t('dashboard.expense', 'Money Out')}
+              </button>
             </div>
-          </div>
 
-        </form>
+            <div className="form-field">
+              <button
+                type="button"
+                onClick={handleVoiceClick}
+                className={`voice-prompt-button ${isRecording ? 'recording' : ''}`}
+              >
+                <Mic size={24} />
+                <span>{t('transactions.useVoice', 'Use Voice to Record')}</span>
+              </button>
+            </div>
+
+            <div className="amount-input-container">
+              <span className="currency-symbol">R</span>
+              <input
+                ref={amountInputRef}
+                type="number"
+                pattern="[0-9]*"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                className="amount-input"
+                required
+              />
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="description" className="form-label">{t('transactions.description', 'Description')}</label>
+              <input
+                id="description"
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t('transactions.descPlaceholder', 'What was this for?')}
+                className="description-input"
+                required
+              />
+            </div>
+
+            <div className="form-field">
+              <label className="form-label">{t('transactions.category', 'Category')}</label>
+              <div className="category-pills">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`category-pill ${category === cat ? 'active' : ''}`}
+                    onClick={() => setCategory(cat)}
+                  >
+                    {t(`categories.${cat.toLowerCase()}`, cat)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </>
   );

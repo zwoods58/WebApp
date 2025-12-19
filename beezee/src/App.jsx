@@ -56,7 +56,7 @@ function ProtectedRoute({ children }) {
 
 function App() {
   const { user, setUser, setLoading } = useAuthStore();
-  const { isOnline, setOnline, syncPending, setSyncPending } = useOfflineStore();
+  const { isOnline, setOnline, syncPending, setSyncPending, markSyncCompleted } = useOfflineStore();
   const [initializing, setInitializing] = useState(true);
   usePreferredLanguage();
 
@@ -97,28 +97,45 @@ function App() {
     // Setup online/offline listeners
     const cleanup = setupOnlineListener(
       async () => {
-        console.log('Back online - syncing...');
+        console.log('[App] Back online - starting sync...');
         setOnline(true);
         
         if (user) {
           setSyncPending(true);
           try {
+            console.log('[App] Calling syncWithServer...');
             const result = await syncWithServer(supabase);
-            console.log('Sync result:', result);
+            console.log('[App] Sync result:', result);
             
-            // Mark sync as completed to trigger page refreshes
-            if (result.success && result.synced > 0) {
+            // Always mark sync as completed to trigger page refreshes
+            // This ensures UI updates even if no items were synced (data might have changed on server)
+            if (result.success) {
+              console.log('[App] Marking sync as completed, counter will increment...');
               markSyncCompleted();
+              console.log('[App] Sync marked as completed');
               
-              // Show toast notification
-              const { default: toast } = await import('react-hot-toast');
-              toast.success(`${result.synced} item${result.synced !== 1 ? 's' : ''} synced successfully!`);
+              // Show toast notification only if items were synced
+              if (result.synced > 0) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.success(`${result.synced} item${result.synced !== 1 ? 's' : ''} synced successfully!`);
+              } else {
+                // Still show a subtle notification that sync completed
+                const { default: toast } = await import('react-hot-toast');
+                toast.success('Synced with server', { duration: 2000 });
+              }
+            } else {
+              console.warn('[App] Sync was not successful:', result);
             }
           } catch (error) {
-            console.error('Sync failed:', error);
+            console.error('[App] Sync failed:', error);
+            // Even on error, mark sync as completed to refresh UI
+            markSyncCompleted();
           } finally {
             setSyncPending(false);
+            console.log('[App] Sync process completed');
           }
+        } else {
+          console.log('[App] No user, skipping sync');
         }
       },
       () => {
@@ -139,7 +156,11 @@ function App() {
           if (user && isOnline) {
             setSyncPending(true);
             try {
-              await syncWithServer(supabase);
+              const result = await syncWithServer(supabase);
+              // Mark sync as completed to trigger page refreshes
+              if (result.success) {
+                markSyncCompleted();
+              }
             } catch (error) {
               console.error('Service worker sync failed:', error);
             } finally {

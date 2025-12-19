@@ -27,12 +27,18 @@ export default function CategoryBreakdown({ categories, title, type = 'income' }
 
   const activeColors = COLORS[type] || COLORS.neutral;
 
+  // Calculate total for percentage calculations
+  const total = chartData.reduce((sum, c) => sum + c.value, 0);
+
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const value = payload[0].value;
+      const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
       return (
         <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100">
           <p className="font-bold text-gray-900 mb-1">{payload[0].name}</p>
-          <p className="text-sm font-black text-blue-500">R{payload[0].value.toLocaleString()}</p>
+          <p className="text-sm font-black text-blue-500">R{value.toLocaleString()}</p>
+          <p className="text-xs font-bold text-gray-400 mt-1">{percentage}% of total</p>
         </div>
       );
     }
@@ -84,15 +90,21 @@ export default function CategoryBreakdown({ categories, title, type = 'income' }
 
         {/* Legend List */}
         <div className="mt-8 space-y-3">
-          {chartData.slice(0, 5).map((cat, index) => (
-            <div key={cat.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-white">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColors[index % activeColors.length] }} />
-                <span className="text-sm font-bold text-gray-700 truncate max-w-[150px]">{cat.name}</span>
+          {chartData.slice(0, 5).map((cat, index) => {
+            const percentage = total > 0 ? ((cat.value / total) * 100).toFixed(1) : 0;
+            return (
+              <div key={cat.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-white">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeColors[index % activeColors.length] }} />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-700 truncate max-w-[150px]">{cat.name}</span>
+                    <span className="text-[10px] font-bold text-gray-400">{percentage}%</span>
+                  </div>
+                </div>
+                <span className="text-sm font-black text-gray-900">R{cat.value.toLocaleString()}</span>
               </div>
-              <span className="text-sm font-black text-gray-900">R{cat.value.toLocaleString()}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

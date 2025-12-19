@@ -126,11 +126,11 @@ export function ScrollDrivenHero() {
 
       // FRAME 2.5: Desktop Interactions
       tl.to(cursorRef.current, { opacity: 1, x: 0, y: 0, duration: 0.8, ease: "circ.inOut" }, 9.2)
-        .to(cursorRef.current, { scale: 0.9, duration: 0.15, ease: "power2.in" }, 10.2)
-        .to(cursorRef.current, { scale: 1, duration: 0.15, ease: "power2.out" }, 10.35)
-        .to(desktopBrowserRef.current, { scale: 1.05, duration: 1, ease: "power2.out" }, 10.5)
-        .to(desktopBrowserRef.current?.querySelector('.desktop-content') || desktopBrowserRef.current, { y: -2300, duration: 5.5, ease: "power2.inOut" }, 10.5)
-        .to(cursorRef.current, { opacity: 0, duration: 0.4, ease: "power1.in" }, 12.2)
+      .to(cursorRef.current, { scale: 0.9, duration: 0.15, ease: "power2.in" }, 10.2)
+      .to(cursorRef.current, { scale: 1, duration: 0.15, ease: "power2.out" }, 10.35)
+      .to(desktopBrowserRef.current, { scale: 1.05, duration: 1, ease: "power2.out" }, 10.5)
+      .to(desktopBrowserRef.current?.querySelector('.desktop-content') || desktopBrowserRef.current, { y: -2300, duration: 5.5, ease: "power2.inOut" }, 10.5)
+      .to(cursorRef.current, { opacity: 0, duration: 0.4, ease: "power1.in" }, 12.2)
 
       // FRAME 3: Desktop fades, Mobile transition
       tl.call(() => updateProgressDot(2), undefined, 18.5)
@@ -258,10 +258,10 @@ export function ScrollDrivenHero() {
                 {/* Simulated Content */}
                 <div className="h-[550px] bg-[#F8F5FF] flex items-center justify-center">
                   <h1 className="text-4xl font-bold text-[#2C3E50]">Professional Web Design</h1>
-                </div>
+                      </div>
                 <div className="h-[550px] bg-[#F0E8FF] flex items-center justify-center">
                   <h1 className="text-4xl font-bold text-[#2C3E50]">Responsive & Fast</h1>
-                </div>
+                    </div>
                 <div className="h-[550px] bg-[#3498DB] flex items-center justify-center">
                   <h1 className="text-4xl font-bold text-white">Drive Results</h1>
                 </div>
@@ -281,12 +281,12 @@ export function ScrollDrivenHero() {
                 </div>
                 <div className="h-[600px] bg-[#F0E8FF] flex items-center justify-center">
                   <h1 className="text-2xl font-bold text-[#2C3E50]">User Focused</h1>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+                
         {/* Final CTA */}
         <div
           ref={finalCTARef}

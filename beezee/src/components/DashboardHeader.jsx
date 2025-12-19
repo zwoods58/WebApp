@@ -3,10 +3,11 @@ import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useTranslation } from 'react-i18next';
+import BeeZeeLogo from './BeeZeeLogo';
 
 /**
  * Dashboard Header Component
- * Shows greeting, date, and notification bell
+ * Shows logo, greeting, date, and notification bell
  */
 export default function DashboardHeader({ notificationCount = 0 }) {
   const { user } = useAuthStore();
@@ -30,6 +31,7 @@ export default function DashboardHeader({ notificationCount = 0 }) {
   return (
     <header className="dashboard-header">
       <div className="dashboard-header-left">
+        <BeeZeeLogo className="mb-2" />
         <div className="dashboard-greeting">
           <Sparkles size={20} className="dashboard-greeting-icon" strokeWidth={2} />
           <span className="dashboard-greeting-text">

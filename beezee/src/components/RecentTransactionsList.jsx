@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { ShoppingCart, DollarSign, Car, Package, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import PendingBadge from './PendingBadge';
 
 /**
  * Recent Transactions List Component
@@ -29,7 +30,7 @@ export default function RecentTransactionsList({ transactions = [], maxItems = 5
         <div key={dateLabel}>
           <div className="transaction-date-divider">{dateLabel}</div>
           {dayTransactions.map((transaction) => (
-            <TransactionCard key={transaction.id} transaction={transaction} />
+            <TransactionCard key={transaction.id || transaction.offline_id || `offline_${transaction.created_at}`} transaction={transaction} />
           ))}
         </div>
       ))}
@@ -43,15 +44,19 @@ function TransactionCard({ transaction }) {
   const categoryClass = getCategoryClass(transaction.category);
   const transactionDate = parseISO(transaction.date);
   const time = format(transactionDate, 'h:mm a');
+  const isPending = transaction.synced === false || transaction.pending === true || transaction.offline_id;
 
   return (
-    <div className="transaction-card">
+    <div className={`transaction-card ${isPending ? 'opacity-75' : ''}`}>
       <div className="transaction-card-left">
-        <div className={`transaction-icon-container ${categoryClass}`}>
+        <div className={`transaction-icon-container ${categoryClass} ${isPending ? 'opacity-60' : ''}`}>
           {categoryIcon}
         </div>
         <div className="transaction-details">
-          <div className="transaction-description">{transaction.description}</div>
+          <div className="transaction-description flex items-center gap-2">
+            {transaction.description}
+            {isPending && <PendingBadge />}
+          </div>
           <div className="transaction-metadata">
             <span className="cat-tag">{t(`categories.${transaction.category?.toLowerCase()}`, transaction.category)}</span>
             <span className="dot">•</span>

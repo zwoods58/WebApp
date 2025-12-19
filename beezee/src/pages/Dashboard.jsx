@@ -24,6 +24,7 @@ import SwipeToRefresh from '../components/SwipeToRefresh';
 import { useTranslation } from 'react-i18next';
 import { createInventoryPurchaseTransaction } from '../utils/inventoryTransactions';
 import { useOfflineStore } from '../store/offlineStore';
+import { getAllOfflineTransactions } from '../utils/offlineSync';
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -58,12 +59,17 @@ export default function Dashboard() {
     loadNotificationCount();
   }, [user]);
 
-  // Refresh when sync completes
+  // Refresh when sync completes (syncCompleted is a counter that increments)
   useEffect(() => {
-    if (syncCompleted) {
-      console.log('Sync completed - refreshing Dashboard...');
-      loadDashboardData();
-      loadNotificationCount();
+    console.log(`[Dashboard] syncCompleted changed to: ${syncCompleted}`);
+    if (syncCompleted > 0) {
+      console.log(`[Dashboard] Sync completed (counter: ${syncCompleted}) - refreshing Dashboard...`);
+      // Add a small delay to ensure sync is fully complete
+      const timer = setTimeout(() => {
+        loadDashboardData();
+        loadNotificationCount();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [syncCompleted]);
 
@@ -113,25 +119,55 @@ export default function Dashboard() {
       console.log('[Dashboard] Loaded transactions:', transactions?.length || 0);
       console.log('[Dashboard] Transaction details:', transactions);
 
-      // Calculate stats
-      const income = transactions
+      // Get offline transactions and merge with online ones
+      let allTransactions = [...(transactions || [])];
+      try {
+        const offlineTransactions = await getAllOfflineTransactions();
+        console.log('[Dashboard] Found offline transactions:', offlineTransactions.length);
+        
+        // Filter out already synced offline transactions and add pending ones
+        const unsyncedOffline = offlineTransactions.filter(t => !t.synced);
+        console.log('[Dashboard] Unsynced offline transactions:', unsyncedOffline.length);
+        
+        // Mark offline transactions as pending and merge
+        const pendingTransactions = unsyncedOffline.map(t => ({
+          ...t,
+          pending: true,
+          synced: false,
+          id: t.offline_id || `offline_${t.id}`, // Use offline_id as temporary id
+        }));
+        
+        allTransactions = [...allTransactions, ...pendingTransactions];
+        
+        // Sort by date (most recent first)
+        allTransactions.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.date);
+          const dateB = new Date(b.created_at || b.date);
+          return dateB - dateA;
+        });
+      } catch (error) {
+        console.error('[Dashboard] Error loading offline transactions:', error);
+      }
+
+      // Calculate stats including pending transactions
+      const income = allTransactions
         .filter((t) => t.type === 'income')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
 
-      const expenses = transactions
+      const expenses = allTransactions
         .filter((t) => t.type === 'expense')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+        .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
 
-      console.log('[Dashboard] Calculated income:', income, 'expenses:', expenses);
+      console.log('[Dashboard] Calculated income:', income, 'expenses:', expenses, '(including pending)');
 
       setStats({
         totalIncome: income,
         totalExpenses: expenses,
         netProfit: income - expenses,
-        transactionCount: transactions.length,
+        transactionCount: allTransactions.length,
       });
 
-      setRecentTransactions(transactions.slice(0, 5));
+      setRecentTransactions(allTransactions.slice(0, 5));
 
       // Generate sparkline data (last 14 days for trend comparison)
       const last14Days = Array.from({ length: 14 }, (_, i) => {
@@ -418,7 +454,11 @@ export default function Dashboard() {
         />
 
         <div className="px-4 -mt-2">
-          <ProactiveInsights />
+          <ProactiveInsights 
+            currentIncome={stats.totalIncome}
+            currentExpenses={stats.totalExpenses}
+            currentProfit={stats.netProfit}
+          />
         </div>
 
         <RecentTransactionsList transactions={recentTransactions} />
