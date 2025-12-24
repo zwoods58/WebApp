@@ -63,9 +63,6 @@ export default function Settings() {
               <BeeZeeLogo />
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => navigate(-1)} className="p-2 text-gray-400 -ml-2">
-                <ChevronLeft size={24} strokeWidth={3} />
-              </button>
               <h1 className="reports-title">{t('settings.title', 'Settings')}</h1>
             </div>
           </div>

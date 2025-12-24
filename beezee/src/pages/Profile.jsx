@@ -74,9 +74,6 @@ export default function Profile() {
             <BeeZeeLogo />
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate(-1)} className="p-2 text-gray-400 -ml-2">
-              <ChevronLeft size={24} strokeWidth={3} />
-            </button>
             <h1 className="reports-title">{t('profile.title', 'Account')}</h1>
           </div>
           <button onClick={() => { clearAuth(); navigate('/login'); }} className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">

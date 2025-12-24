@@ -13,6 +13,7 @@ import SwipeToRefresh from '../components/SwipeToRefresh';
 import OfflineBanner from '../components/OfflineBanner';
 import { useTranslation } from 'react-i18next';
 import BeeZeeLogo from '../components/BeeZeeLogo';
+import FloatingNavBar from '../components/FloatingNavBar';
 
 export default function Coach() {
   const navigate = useNavigate();
@@ -157,9 +158,6 @@ export default function Coach() {
             <BeeZeeLogo />
           </div>
           <div className="flex items-center gap-2 px-4">
-            <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400">
-              <ChevronLeft size={24} strokeWidth={3} />
-            </button>
             <h1 className="reports-title">{t('nav.coach', 'Coach')}</h1>
           </div>
         </div>
@@ -247,7 +245,7 @@ export default function Coach() {
           <VoiceToText onTranscript={handleVoiceInput} onCancel={() => setShowVoiceInput(false)} />
         )}
         
-        {/* Navigation bar hidden on Coach page */}
+        <FloatingNavBar />
       </div>
     </SwipeToRefresh>
   );

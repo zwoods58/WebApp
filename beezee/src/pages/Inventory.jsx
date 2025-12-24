@@ -170,9 +170,6 @@ export default function Inventory() {
               <BeeZeeLogo />
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 -ml-2">
-                <ChevronLeft size={24} strokeWidth={3} />
-              </button>
               {!isSearchOpen ? (
                 <h1 className="reports-title">{t('nav.inventory', 'Stock')}</h1>
               ) : (

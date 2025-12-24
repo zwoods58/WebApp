@@ -451,7 +451,6 @@ export default function Reports() {
     <div className="reports-container pb-24">
       <div className="reports-header-section">
         <div className="px-4 flex items-center gap-4 mb-6">
-          <ChevronLeft size={24} onClick={() => navigate('/dashboard')} />
           <h1 className="text-3xl font-black">{t('reports.title', 'Reports')}</h1>
         </div>
       </div>
@@ -472,9 +471,6 @@ export default function Reports() {
               <BeeZeeLogo />
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 -ml-2">
-                <ChevronLeft size={24} strokeWidth={3} />
-              </button>
               <h1 className="reports-title">{t('reports.title', 'Reports')}</h1>
             </div>
             {activeTab === 'financials' && reportData?.transactionCount > 0 && (

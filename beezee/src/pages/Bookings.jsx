@@ -145,9 +145,6 @@ export default function Bookings() {
               <BeeZeeLogo />
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => navigate('/dashboard')} className="p-2 text-gray-400 -ml-2">
-                <ChevronLeft size={24} strokeWidth={3} />
-              </button>
               <h1 className="reports-title">{view === 'bookings' ? t('bookings.title', 'Bookings') : t('tasks.title', 'Tasks')}</h1>
             </div>
             <button
