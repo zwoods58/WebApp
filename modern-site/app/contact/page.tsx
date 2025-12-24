@@ -461,7 +461,7 @@ export default function Contact() {
                     </span>
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Encode Sans, sans-serif' }}>
-                    Daevon Welesly Woods
+                    Daevon Wesley Woods
                   </h2>
                   <div className="space-y-4 text-gray-700 leading-relaxed">
                     <p className="text-base md:text-lg">
