@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "supabase/**/*"]
+  "exclude": ["node_modules", "supabase/**/*", "src/app/kenya/app/**/*", "src/app/nigeria/app/**/*", "src/app/south-africa/app/**/*"]
 }
