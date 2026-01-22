@@ -43,8 +43,8 @@ const BeezeeHero = () => {
                     transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 1, 0.5, 1] }}
                     className="text-base md:text-[18px] text-obsidian/60 max-w-2xl mb-12 leading-[1.5]"
                 >
-                    Inventory, transactions, and expert guidance.<br />
-                    Orchestrated in a single, invisible flow.
+                    The business app that manages your inventory, tracks transactions, <br className="hidden md:block" />
+                    and provides expert guidance automatically.
                 </motion.p>
 
                 {/* CTA Buttons */}
