@@ -60,6 +60,7 @@ const GhostFooter = () => {
                         <ul className="space-y-4 text-[13px] text-obsidian/60">
                             <li><Link href="/beezee/terms" className="hover:text-system-blue transition-colors">Terms of Service</Link></li>
                             <li><Link href="/beezee/privacy" className="hover:text-system-blue transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/beezee/refunds" className="hover:text-system-blue transition-colors">Refund & Cancellation</Link></li>
                         </ul>
                     </div>
 
@@ -77,7 +78,8 @@ const GhostFooter = () => {
                 {/* Financial Vault Bar */}
                 <div className="border-t border-glass-border pt-8 pb-12 flex flex-col md:flex-row items-center justify-between gap-6">
                     <p className="text-[11px] text-obsidian/40 max-w-md text-center md:text-left leading-relaxed font-mono uppercase tracking-tighter">
-                        Beezee is built on the bedrock of financial integrity. Your data is your equity. We simply provide the lens to see it clearly.
+                        Beezee is a proprietary SaaS platform owned and operated by Atarwebb Ltd (Rwanda Company Code: 153223137).
+                        Activity Code J6311: AI-driven data processing and financial insights.
                     </p>
                     <div className="flex items-center gap-4 opacity-40 hover:opacity-100 transition-all duration-500">
                         <div className="rotate-[-2deg] px-2 py-1 text-[11px] font-black font-mono text-obsidian/60 tracking-[0.1em] border-2 border-obsidian/20 rounded-sm">SECURE</div>

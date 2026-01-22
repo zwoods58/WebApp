@@ -29,11 +29,11 @@ const BeezeeHero = () => {
                     initial={{ opacity: 0, scale: 1.02, y: 12, filter: 'blur(10px)' }}
                     animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
                     transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 1, 0.5, 1] }}
-                    className="text-4xl sm:text-5xl md:text-[72px] font-bold text-obsidian tracking-[-0.022em] leading-[1.1] mb-6 max-w-5xl px-4"
+                    className="text-4xl sm:text-5xl md:text-[64px] font-bold text-obsidian tracking-[-0.022em] leading-[1.1] mb-6 max-w-5xl px-4"
                 >
-                    Your Business Partner <br />
+                    AI-Powered Bookkeeping <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-obsidian to-ghost-text">
-                        Behind Your Growth.
+                        & Financial Insights for African SMEs.
                     </span>
                 </motion.h1>
 
@@ -64,6 +64,27 @@ const BeezeeHero = () => {
                     <p className="text-sm font-medium text-obsidian/40 tracking-wide uppercase">
                         Start your 7-day free trial
                     </p>
+                </motion.div>
+
+                {/* How it Works Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mb-32 text-left"
+                >
+                    {[
+                        { step: "01", title: "Link Transactions", desc: "Connect your business flow in seconds." },
+                        { step: "02", title: "AI Categorization", desc: "Our engine organizes your income and expenses." },
+                        { step: "03", title: "Instant Reports", desc: "Generate financial statements for tax and growth." }
+                    ].map((item, idx) => (
+                        <div key={idx} className="p-8 bg-white/50 backdrop-blur-sm border border-glass-border rounded-2xl hover:border-system-blue transition-colors">
+                            <div className="font-mono text-[10px] text-system-blue font-black mb-4 tracking-widest">{item.step} // PROCESS</div>
+                            <h3 className="text-xl font-bold text-obsidian mb-2">{item.title}</h3>
+                            <p className="text-sm text-obsidian/60 leading-relaxed">{item.desc}</p>
+                        </div>
+                    ))}
                 </motion.div>
 
                 {/* Floating Phone Visualization */}

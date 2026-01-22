@@ -104,6 +104,12 @@ const BeezeePricing = () => {
                         </motion.div>
                     ))}
                 </div>
+
+                <div className="mt-12 text-center">
+                    <p className="text-[11px] font-mono text-obsidian/40 uppercase tracking-widest">
+                        Payments are securely processed by dLocal, our Merchant of Record.
+                    </p>
+                </div>
             </div>
         </section>
     );

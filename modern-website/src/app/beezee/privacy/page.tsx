@@ -75,7 +75,12 @@ export default function BeezeePrivacyPage() {
 
             <section>
                 <h2>14. Regional Compliance</h2>
-                <p>We comply with the Data Protection Act (Kenya), POPIA (South Africa), and NDPR (Nigeria).</p>
+                <p>We strictly comply with regional data protection laws, including:</p>
+                <ul>
+                    <li><strong>South Africa:</strong> Protection of Personal Information Act (POPIA). We implement strict controls for the collection and processing of data for South African users.</li>
+                    <li><strong>Kenya:</strong> Data Protection Act (Kenya).</li>
+                    <li><strong>Nigeria:</strong> Nigeria Data Protection Regulation (NDPR).</li>
+                </ul>
             </section>
 
             <section>

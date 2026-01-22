@@ -58,6 +58,7 @@ const GlobalFooter = () => {
                         <div className="flex gap-6 font-bold text-obsidian">
                             <Link href="/terms" className="hover:text-system-blue transition-colors">TERMS</Link>
                             <Link href="/privacy" className="hover:text-system-blue transition-colors">PRIVACY</Link>
+                            <Link href="/beezee/refunds" className="hover:text-system-blue transition-colors">REFUNDS</Link>
                         </div>
                         <span className="font-bold text-obsidian">LEGAL</span>
                     </div>
