@@ -1,0 +1,168 @@
+{
+  "common": {
+    "back": "Terug",
+    "confirm": "Bevestig",
+    "retake": "Heropneem",
+    "priority": "Prioriteit",
+    "dueDate": "Sperdatum",
+    "dueTime": "Tyd",
+    "medium": "Medium",
+    "low": "Laag",
+    "high": "Hoog",
+    "urgent": "Dringend",
+    "save": "Stoor",
+    "add": "Voeg by",
+    "edit": "Wysig",
+    "delete": "Vee uit",
+    "cancel": "Kanselleer",
+    "loading": "Laai tans...",
+    "today": "Vandag",
+    "yesterday": "Gister",
+    "upcoming": "Opkomend",
+    "past": "Verlede",
+    "all": "Alles",
+    "noData": "Geen data gevind nie",
+    "notes": "Notas",
+    "service": "Diens",
+    "location": "Ligging",
+    "phone": "Foon",
+    "email": "E-pos"
+  },
+  "nav": {
+    "dashboard": "Tuis",
+    "transactions": "Transaksies",
+    "reports": "Verslae",
+    "coach": "Afrigter",
+    "bookings": "Besprekings",
+    "settings": "Instellings"
+  },
+  "dashboard": {
+    "totalBalance": "Jou Besigheidsbalans",
+    "record": "Rekord",
+    "scan": "Skandeer Kwitansie",
+    "recentTransactions": "Onlangse Transaksies",
+    "viewAll": "Sien Alles",
+    "income": "Geld In",
+    "expense": "Geld Uit",
+    "morning": "Goeiemôre",
+    "afternoon": "Goeiemiddag",
+    "evening": "Goeienaand",
+    "friend": "vriend"
+  },
+  "transactions": {
+    "title": "Transaksies",
+    "addTransaction": "Voeg Transaksie by",
+    "editTransaction": "Wysig Transaksie",
+    "amount": "Bedrag",
+    "category": "Kategorie",
+    "date": "Datum",
+    "description": "Beskrywing",
+    "noTransactions": "Geen transaksies nog nie"
+  },
+  "reports": {
+    "title": "Verslae",
+    "summary": "Opsomming",
+    "profit": "Wins",
+    "revenue": "Inkomste",
+    "expenses": "Uitgawes",
+    "last30Days": "Laaste 30 Dae",
+    "export": "Voer Verslag uit"
+  },
+  "bookings": {
+    "title": "Besprekings",
+    "addBooking": "Voeg Bespreking by",
+    "editBooking": "Wysig Bespreking",
+    "clientName": "Kliëntnaam",
+    "appointmentDate": "Afspraakdatum",
+    "appointmentTime": "Afspraak-tyd",
+    "noBookings": "Geen besprekings nog nie"
+  },
+  "tasks": {
+    "title": "Take",
+    "addTask": "Voeg Taak by",
+    "editTask": "Wysig Taak",
+    "taskTitle": "Taaktitel",
+    "description": "Beskrywing",
+    "complete": "Voltooi",
+    "noTasks": "Geen take nog nie"
+  },
+  "voiceTask": {
+    "title": "Hersien Taak",
+    "taskTitle": "Taaktitel",
+    "description": "Beskrywing"
+  },
+  "settings": {
+    "title": "Instellings",
+    "language": "Taal",
+    "selectLanguage": "Kies jou taal",
+    "languageSaved": "Taal suksesvol gestoor",
+    "languageSaveFailed": "Kon nie taal stoor nie",
+    "profile": "Profiel",
+    "notifications": "Kennisgewings",
+    "help": "Hulp & Ondersteuning",
+    "logout": "Teken uit",
+    "preferences": "VOORKEURE",
+    "support": "ONDERSTEUNING",
+    "voiceLogs": "Stemlogs",
+    "subscribeNow": "Teken Nou In",
+    "confirmLogout": "Is jy seker jy wil uitteken?",
+    "logoutSuccess": "Suksesvol uitgeteken",
+    "logoutFailed": "Kon nie uitteken nie"
+  },
+  "profile": {
+    "title": "Profiel",
+    "subtitle": "Bestuur jou rekeninginligting",
+    "accountInfo": "Rekeninginligting",
+    "memberSince": "Lid Sedert",
+    "whatsappSettings": "WhatsApp-instellings",
+    "whatsappNumber": "WhatsApp-nommer",
+    "whatsappHelp": "Ons sal vir jou transaksie-herinneringe en insigte via WhatsApp stuur",
+    "saveSuccess": "Profiel suksesvol opgedateer",
+    "saveFailed": "Kon nie profiel stoor nie",
+    "upgradeTitle": "Gradeer op na Premium",
+    "upgradeDesc": "Kry onbeperkte toegang tot alle funksies vir slegs R55.50/maand",
+    "dangerZone": "Gevaarsone",
+    "deleteAccount": "Vee Rekening Uit",
+    "deleteSoon": "Rekeningverwydering kom binnekort"
+  },
+  "subscription": {
+    "trial": "Proeflopie",
+    "active": "Aktiewe Intekenaar",
+    "choosePlan": "Kies jou plan",
+    "manual": "Handmatige Inskrywing",
+    "full": "Volle Toegang",
+    "manualPrice": "$1.00 / maand",
+    "fullPrice": "$3.00 / maand",
+    "selectManual": "Kies Handmatige Plan",
+    "selectFull": "Kies Volle Toegang",
+    "recommended": "AANBEVEEL",
+    "features": {
+      "manualEntries": "Onbeperkte handmatige inskrywings",
+      "reports": "Finansiële verslae",
+      "noVoice": "Geen AI Stem-opname",
+      "noCoach": "Geen AI Finansiële Afrigter",
+      "voiceTransactions": "AI Stem Transaksies",
+      "voiceBookings": "AI Stem Besprekings",
+      "coach": "AI Finansiële Afrigter",
+      "receipts": "AI Kwitansie Skandering"
+    }
+  },
+  "categories": {
+    "sales": "Verkope",
+    "food": "Kos",
+    "transport": "Vervoer",
+    "other": "Ander"
+  },
+  "receipts": {
+    "takePhoto": "Neem Foto",
+    "takePhotoDesc": "Vang 'n nuwe kwitansie vas",
+    "upload": "Laai op vanaf Gallery",
+    "uploadDesc": "Kies 'n beeldlêer"
+  },
+  "notifications": {
+    "emptyTitle": "Jy is heeltemal op datum!",
+    "emptyDesc": "Kom later terug vir opdaterings oor jou besigheid, wenke en herinneringe.",
+    "testSent": "Toetskennisgewing gestuur!",
+    "testFailed": "Kon nie toetskennisgewing stuur nie"
+  }
+}

@@ -1,0 +1,108 @@
+/* ============================================
+   PAGE HEADERS - Top Spacing for All Pages
+   ============================================ */
+
+/* Profile Page */
+.profile-container {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+}
+
+.profile-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Subscription Page */
+.subscription-container {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+}
+
+.subscription-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Add Transaction Page */
+.add-transaction-container {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+}
+
+.add-transaction-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Transactions Page */
+.transactions-container {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+}
+
+.transactions-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Notifications Page */
+.notifications-container {
+  padding: var(--spacing-medium);
+  padding-top: var(--page-top-padding);
+}
+
+.notifications-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+.page-header-with-back {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+}
+
+.page-back-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-level-1);
+  color: var(--color-text-primary);
+  transition: var(--transition-normal);
+}
+
+.page-back-button:active {
+  transform: scale(0.97);
+}
+
+[data-theme="dark"] .page-back-button {
+  background: #1f2933;
+  border-color: #2d3748;
+  color: #e5e7eb;
+}
+
+/* Notification Settings Page */
+.notification-settings-container {
+  padding: var(--spacing-medium);
+  padding-top: calc(var(--safe-area-top) + var(--spacing-xlarge));
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.notification-settings-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .profile-container,
+[data-theme="dark"] .subscription-container,
+[data-theme="dark"] .add-transaction-container,
+[data-theme="dark"] .transactions-container,
+[data-theme="dark"] .notifications-container,
+[data-theme="dark"] .notification-settings-container {
+  background: linear-gradient(to bottom, #1A2529, #1C1C1E);
+}
+
+
+

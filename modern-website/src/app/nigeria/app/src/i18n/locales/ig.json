@@ -1,0 +1,152 @@
+{
+    "common": {
+        "back": "Laghachi azụ",
+        "confirm": "Kwenye",
+        "retake": "Sigharịa",
+        "priority": "Ihe kacha mkpa",
+        "dueDate": "Ụbọchị ikpeazụ",
+        "dueTime": "Oge ikpeazụ",
+        "medium": "N'etiti",
+        "low": "Dị ala",
+        "high": "Dị elu",
+        "urgent": "Ngwa ngwa",
+        "save": "Chekwaa",
+        "add": "Tinye",
+        "edit": "Dezie",
+        "delete": "Hichapụ",
+        "cancel": "Wepụ",
+        "loading": "Na-ebunye...",
+        "today": "Taa",
+        "yesterday": "Nnyahụ",
+        "upcoming": "Ihe na-abịa",
+        "past": "Ihe gafeworonụ",
+        "all": "Ha niile",
+        "noData": "Ahụghị ozi",
+        "notes": "Ihe ndetu",
+        "service": "Ọrụ",
+        "location": "Ebe",
+        "phone": "Ekwentị",
+        "email": "Imeelụ"
+    },
+    "nav": {
+        "dashboard": "Ụlọ",
+        "transactions": "Azụmahịa",
+        "reports": "Akụkọ",
+        "coach": "Onye Ozizi",
+        "bookings": "Ndenye",
+        "settings": "Nhazi"
+    },
+    "dashboard": {
+        "totalBalance": "Ego Azụmahịa Gị",
+        "record": "Detuo",
+        "scan": "Nyochaa risiiti",
+        "recentTransactions": "Azụmahịa nso nso a",
+        "viewAll": "Lee ha niile",
+        "income": "Ego na-abata",
+        "expense": "Ego na-apụta",
+        "morning": "Ịbọla chi",
+        "afternoon": "Ndewo",
+        "evening": "Ka chi bọọ",
+        "friend": "enyi"
+    },
+    "transactions": {
+        "title": "Azụmahịa",
+        "addTransaction": "Tinye Azụmahịa",
+        "editTransaction": "Dezie Azụmahịa",
+        "amount": "Ego ole",
+        "category": "Ụdị",
+        "date": "Ụbọchị",
+        "description": "Nkọwa",
+        "noTransactions": "Ọ nwebeghị azụmahịa ọ bụla"
+    },
+    "reports": {
+        "title": "Akụkọ",
+        "summary": "Nchịkọta",
+        "profit": "Uru",
+        "revenue": "Ego nile batara",
+        "expenses": "Ego nile lara",
+        "last30Days": "Ụbọchị 30 gara aga",
+        "export": "Wepụta akụkọ"
+    },
+    "bookings": {
+        "title": "Ndenye",
+        "addBooking": "Tinye ndenye",
+        "editBooking": "Dezie ndenye",
+        "clientName": "Aha onye ahịa",
+        "appointmentDate": "Ụbọchị ọhụhụ",
+        "appointmentTime": "Oge ọhụhụ",
+        "noBookings": "Ọ nwebeghị ndenye ọ bụla"
+    },
+    "settings": {
+        "title": "Nhazi",
+        "language": "Asụsụ",
+        "selectLanguage": "Họrọ asụsụ gị",
+        "languageSaved": "Echekwaala asụsụ nke ọma",
+        "languageSaveFailed": "Enweghị ike ichekwa asụsụ",
+        "profile": "Nkọwa gị",
+        "notifications": "Ọkwa",
+        "help": "Enyemaka",
+        "logout": "Pụọ",
+        "preferences": "IHE KACHA N'OBI",
+        "support": "ENYEMAKA",
+        "voiceLogs": "Ihe ndetu olu",
+        "subscribeNow": "Denye aha ugbu a",
+        "confirmLogout": "Ị doro anya na ị chọrọ ịpụ?",
+        "logoutSuccess": "Ị pụọla nke ọma",
+        "logoutFailed": "Enweghị ike ịpụ"
+    },
+    "profile": {
+        "title": "Nkọwa gị",
+        "subtitle": "Hazie ozi asụsụ gị",
+        "accountInfo": "Ozi asụsụ",
+        "memberSince": "Onye otu kemgbe",
+        "whatsappSettings": "Nhazi WhatsApp",
+        "whatsappNumber": "Nọmba WhatsApp",
+        "whatsappHelp": "Anyị ga-ezitere gị ihe ncheta azụmahịa gị na WhatsApp",
+        "saveSuccess": "Emezigharịrị nkọwa gị nke ọma",
+        "saveFailed": "Enweghị ike ichekwa nkọwa gị",
+        "upgradeTitle": "Gbagoo na Premium",
+        "upgradeDesc": "Nweta ohere na ihe niile maka obere ego",
+        "dangerZone": "Ebe dị ize ndụ",
+        "deleteAccount": "Hichapụ asụsụ",
+        "deleteSoon": "Ihichapụ asụsụ ga-abịa ngwa ngwa"
+    },
+    "subscription": {
+        "trial": "Nnwale",
+        "active": "Onye denyeere aha",
+        "choosePlan": "Họrọ nhọrọ gị",
+        "manual": "Iji aka dee",
+        "full": "Ohere zuru ezu (AI)",
+        "selectManual": "Họrọ nhọrọ iji aka dee",
+        "selectFull": "Họrọ ohere zuru ezu",
+        "recommended": "IHE A TỤRỤ NARỤ",
+        "features": {
+            "manualEntries": "Iji aka dee ihe na-enweghị njedebe",
+            "reports": "Akụkọ ego",
+            "noVoice": "Enweghị ndekọ olu AI",
+            "noCoach": "Enweghị Onye Ozizi ego AI",
+            "voiceTransactions": "Azụmahịa olu AI",
+            "voiceBookings": "Ndenye olu AI",
+            "coach": "Onye Ozizi ego AI",
+            "receipts": "Nyochaa risiiti AI"
+        }
+    },
+    "categories": {
+        "sales": "Ire ahịa",
+        "food": "Nri",
+        "transport": "Ụgbọ",
+        "other": "Ihe ọzọ"
+    },
+    "receipts": {
+        "takePhoto": "Sere Foto",
+        "takePhotoDesc": "Sere foto risiiti ọhụrụ",
+        "upload": "Bulite na Gallery",
+        "uploadDesc": "Họrọ faịlụ onyonyo"
+    },
+    "notifications": {
+        "emptyTitle": "Ihe niile adịla mma!",
+        "emptyDesc": "Lọghachi azụ ma emechaa maka ozi ọhụrụ gbasara azụmahịa gị.",
+        "testSent": "Ezipụla ọkwa nnwale!",
+        "testFailed": "Enweghị ike izipu ọkwa nnwale"
+    }
+}

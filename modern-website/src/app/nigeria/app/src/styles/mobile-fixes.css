@@ -1,0 +1,117 @@
+/* Mobile-First Fixes */
+
+/* Dynamic Viewport Height Handler */
+:root {
+  --vh: 1dvh;
+}
+
+/* Fix for mobile viewport height */
+@supports (height: 100dvh) {
+  html, body, #root {
+    height: 100dvh;
+  }
+}
+
+/* Container Utilities */
+.container-mobile {
+  width: 100%;
+  max-width: 100vw;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+.container-safe {
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Prevent iOS Overscroll */
+.no-overscroll {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch-Friendly Spacing */
+.touch-spacing {
+  padding: 12px 16px;
+  min-height: 44px; /* iOS minimum touch target */
+}
+
+/* Full-Bleed Sections */
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right)));
+}
+
+/* Mobile viewport fix */
+@media (max-width: 768px) {
+  .dashboard-container,
+  .reports-container,
+  .coach-container,
+  .settings-container,
+  .auth-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Ensure cards don't overflow */
+  .hero-balance-card,
+  .summary-card,
+  .breakdown-card,
+  .insights-card,
+  .profile-card,
+  .subscription-card,
+  .settings-row,
+  .auth-card {
+    margin-left: var(--spacing-medium);
+    margin-right: var(--spacing-medium);
+  }
+
+  /* Fix floating nav on small screens */
+  .floating-nav-bar {
+    left: var(--spacing-small);
+    right: var(--spacing-small);
+    max-width: calc(100vw - 16px);
+  }
+
+  /* Fix coach input on small screens */
+  .coach-input-container {
+    left: var(--spacing-small);
+    right: var(--spacing-small);
+    max-width: calc(100vw - 16px);
+  }
+}
+
+/* Touch target sizes for mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  input,
+  select {
+    min-height: 44px; /* iOS recommended touch target */
+  }
+
+  .floating-nav-tab,
+  .floating-nav-center-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+  .dashboard-container,
+  .reports-container,
+  .coach-container,
+  .settings-container {
+    padding-left: max(var(--spacing-medium), env(safe-area-inset-left));
+    padding-right: max(var(--spacing-medium), env(safe-area-inset-right));
+  }
+
+  .floating-nav-bar {
+    left: max(var(--spacing-medium), env(safe-area-inset-left));
+    right: max(var(--spacing-medium), env(safe-area-inset-right));
+  }
+}
+

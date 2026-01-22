@@ -1,0 +1,168 @@
+{
+  "common": {
+    "back": "Emuva",
+    "confirm": "Qinisekisa",
+    "retake": "Thatha futhi",
+    "priority": "Okubalulekile",
+    "dueDate": "Usuku",
+    "dueTime": "Isikhathi",
+    "medium": "Maphakathi",
+    "low": "Phansi",
+    "high": "Phezulu",
+    "urgent": "Kungxamisekile",
+    "save": "Gcina",
+    "add": "Engeza",
+    "edit": "Hlela",
+    "delete": "Susa",
+    "cancel": "Khansela",
+    "loading": "Iyaloda...",
+    "today": "Namuhla",
+    "yesterday": "Izolo",
+    "upcoming": "Okuzayo",
+    "past": "Okudlule",
+    "all": "Konke",
+    "noData": "Ayikho idatha etholakele",
+    "notes": "Amanothi",
+    "service": "Isevisi",
+    "location": "Indawo",
+    "phone": "Ucingo",
+    "email": "I-imeyili"
+  },
+  "nav": {
+    "dashboard": "Ekhaya",
+    "transactions": "Ukuthengiselana",
+    "reports": "Imibiko",
+    "coach": "Umqeqeshi",
+    "bookings": "Ukubhuka",
+    "settings": "Izilungiselelo"
+  },
+  "dashboard": {
+    "totalBalance": "Ibhalansi Yebhizinisi Lakho",
+    "record": "Rekhoda",
+    "scan": "Skena Irisidi",
+    "recentTransactions": "Ukuthengiselana Kwakamuva",
+    "viewAll": "Buka Konke",
+    "income": "Imali Engenayo",
+    "expense": "Imali Ephumayo",
+    "morning": "Sawubona",
+    "afternoon": "Siyakubingelela",
+    "evening": "Sawubona",
+    "friend": "mngane"
+  },
+  "transactions": {
+    "title": "Ukuthengiselana",
+    "addTransaction": "Engeza Ukuthengiselana",
+    "editTransaction": "Hlela Ukuthengiselana",
+    "amount": "Inani",
+    "category": "Isigaba",
+    "date": "Usuku",
+    "description": "Incazelo",
+    "noTransactions": "Abukho ukuthengiselana okwamanje"
+  },
+  "reports": {
+    "title": "Imibiko",
+    "summary": "Isifinyezo",
+    "profit": "Inzuzo",
+    "revenue": "Imali Engenayo",
+    "expenses": "Izindleko",
+    "last30Days": "Izinsuku ezingama-30 ezedlule",
+    "export": "Khipha Umbiko"
+  },
+  "bookings": {
+    "title": "Ukubhuka",
+    "addBooking": "Engeza Ukubhuka",
+    "editBooking": "Hlela Ukubhuka",
+    "clientName": "Igama Lekhasimende",
+    "appointmentDate": "Usuku Lokubhuka",
+    "appointmentTime": "Isikhathi Sokubhuka",
+    "noBookings": "Abukho ukubhuka okwamanje"
+  },
+  "tasks": {
+    "title": "Imisebenzi",
+    "addTask": "Engeza Umsebenzi",
+    "editTask": "Hlela Umsebenzi",
+    "taskTitle": "Isihloko Somsebenzi",
+    "description": "Incazelo",
+    "complete": "Qedela",
+    "noTasks": "Abukho imisebenzi okwamanje"
+  },
+  "voiceTask": {
+    "title": "Bheka Umsebenzi",
+    "taskTitle": "Isihloko somsebenzi",
+    "description": "Incazelo"
+  },
+  "settings": {
+    "title": "Izilungiselelo",
+    "language": "Ulimi",
+    "selectLanguage": "Khetha ulimi lwakho",
+    "languageSaved": "Ulimi lulondolozwe ngempumelelo",
+    "languageSaveFailed": "Yehlulekile ukulondoloza ulimi",
+    "profile": "Iphrofayili",
+    "notifications": "Izaziso",
+    "help": "Usizo nokusekelwa",
+    "logout": "Phuma",
+    "preferences": "IZINTANDOKAZI",
+    "support": "USEKELO",
+    "voiceLogs": "Amalogi Ezwi",
+    "subscribeNow": "Bhalisa Manje",
+    "confirmLogout": "Uqinisekile ukuthi ufuna ukuphuma?",
+    "logoutSuccess": "Uphume ngempumelelo",
+    "logoutFailed": "Yehlulekile ukuphuma"
+  },
+  "profile": {
+    "title": "Iphrofayili",
+    "subtitle": "Phatha imininingwane ye-akhawunti yakho",
+    "accountInfo": "Imininingwane ye-akhawunti",
+    "memberSince": "Ilungu kusukela",
+    "whatsappSettings": "Izilungiselelo ze-WhatsApp",
+    "whatsappNumber": "Inombolo ye-WhatsApp",
+    "whatsappHelp": "Sizokuthumelela izikhumbuzi zokuthengiselana nemininingwane nge-WhatsApp",
+    "saveSuccess": "Iphrofayili ibuyekeziwe ngempumelelo",
+    "saveFailed": "Yehlulekile ukulondoloza iphrofayili",
+    "upgradeTitle": "Thuthukela ku-Premium",
+    "upgradeDesc": "Thola ukufinyelela okungunaphakade kuzo zonke izici ngo-R55.50 nje ngenyanga",
+    "dangerZone": "Indawo Eyingozi",
+    "deleteAccount": "Susa i-akhawunti",
+    "deleteSoon": "Ukususwa kwe-akhawunti kuyeza maduze"
+  },
+  "subscription": {
+    "trial": "Isivivinyo",
+    "active": "Umbhalisile Osebenzayo",
+    "choosePlan": "Khetha uhlelo lwakho",
+    "manual": "Ukufaka Ngesandla",
+    "full": "Ukufinyelela Okugcwele",
+    "manualPrice": "$1.00 / ngenyanga",
+    "fullPrice": "$3.00 / ngenyanga",
+    "selectManual": "Khetha Uhlelo Lokufaka Ngesandla",
+    "selectFull": "Khetha Uhlelo Lokufinyelela Okugcwele",
+    "recommended": "KUNCONYIWE",
+    "features": {
+      "manualEntries": "Okufakiwe okungenamkhawulo ngesandla",
+      "reports": "Imibiko yezezimali",
+      "noVoice": "Akukho ukurekhoda kwezwi kwe-AI",
+      "noCoach": "Akekho umqeqeshi wezezimali we-AI",
+      "voiceTransactions": "Ukuthengiselana Kwezwi kwe-AI",
+      "voiceBookings": "Ukubhuka Kwezwi kwe-AI",
+      "coach": "Umqeqeshi wezezimali we-AI",
+      "receipts": "Ukuskena Irisidi kwe-AI"
+    }
+  },
+  "categories": {
+    "sales": "Ukuthengisa",
+    "food": "Ukudla",
+    "transport": "Ezokuthutha",
+    "other": "Okunye"
+  },
+  "receipts": {
+    "takePhoto": "Thatha Isithombe",
+    "takePhotoDesc": "Thwebula irisidi elisha",
+    "upload": "Layisha kusuka kugalari",
+    "uploadDesc": "Khetha ifayela lesithombe"
+  },
+  "notifications": {
+    "emptyTitle": "Usuqedile konke!",
+    "emptyDesc": "Hlola futhi ngokuhamba kwesikhathi ukuthola izibuyekezo ngebhizinisi lakho, amathiphu, nezikhumbuzi.",
+    "testSent": "Isaziso sokuhlola sithunyelwe!",
+    "testFailed": "Yehlulekile ukuthumela isaziso sokuhlola"
+  }
+}
