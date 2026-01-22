@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/kenya/app/sw.js', { scope: '/kenya/app/' })})}

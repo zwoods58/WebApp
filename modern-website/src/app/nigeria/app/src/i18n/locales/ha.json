@@ -1,0 +1,152 @@
+{
+    "common": {
+        "back": "Koma baya",
+        "confirm": "Tabbatar",
+        "retake": "Sake dauka",
+        "priority": "Muhimmanci",
+        "dueDate": "Ranar karewa",
+        "dueTime": "Lokacin karewa",
+        "medium": "Matsakaici",
+        "low": "Kadan",
+        "high": "Babba",
+        "urgent": "Gaggawa",
+        "save": "Ajiye",
+        "add": "Kara",
+        "edit": "Gyara",
+        "delete": "Goge",
+        "cancel": "Soke",
+        "loading": "Ana lura...",
+        "today": "Yau",
+        "yesterday": "Jiya",
+        "upcoming": "Masu zuwa",
+        "past": "Wadanda suka wuce",
+        "all": "Duka",
+        "noData": "Ba a sami bayanai ba",
+        "notes": "Bayanan kula",
+        "service": "Sabis",
+        "location": "Wuri",
+        "phone": "Waya",
+        "email": "Imel"
+    },
+    "nav": {
+        "dashboard": "Gida",
+        "transactions": "Kasuwanci",
+        "reports": "Rahotanni",
+        "coach": "Koci",
+        "bookings": "Littattafai",
+        "settings": "Saituna"
+    },
+    "dashboard": {
+        "totalBalance": "Kudin Kasuwancin Ku",
+        "record": "Yi rikodin",
+        "scan": "Duba rasit",
+        "recentTransactions": "Kasuwancin kwanan nan",
+        "viewAll": "Duba duka",
+        "income": "Kudin Shiga",
+        "expense": "Kudin Fita",
+        "morning": "Ina kwana",
+        "afternoon": "Barka da rana",
+        "evening": "Barka da yamma",
+        "friend": "aboki"
+    },
+    "transactions": {
+        "title": "Kasuwanci",
+        "addTransaction": "Kara Kasuwanci",
+        "editTransaction": "Gyara Kasuwanci",
+        "amount": "Adadi",
+        "category": "Rukuni",
+        "date": "Rana",
+        "description": "Bayani",
+        "noTransactions": "Ba a yi kasuwanci ba tukuna"
+    },
+    "reports": {
+        "title": "Rahotanni",
+        "summary": "Takaitaccen bayani",
+        "profit": "Riba",
+        "revenue": "Kudin shiga",
+        "expenses": "Kashe kudi",
+        "last30Days": "Kwanaki 30 da suka gabata",
+        "export": "Fitar da rahoton"
+    },
+    "bookings": {
+        "title": "Littattafai",
+        "addBooking": "Kara lissafi",
+        "editBooking": "Gyara lissafi",
+        "clientName": "Sunan abokin ciniki",
+        "appointmentDate": "Ranar ganawa",
+        "appointmentTime": "Lokacin ganawa",
+        "noBookings": "Babu lissafi tukuna"
+    },
+    "settings": {
+        "title": "Saituna",
+        "language": "Harshe",
+        "selectLanguage": "Zabi harshenka",
+        "languageSaved": "An ajiye harshe cikin nasara",
+        "languageSaveFailed": "An kasa ajiye harshe",
+        "profile": "Bayanan martaba",
+        "notifications": "Sanarwa",
+        "help": "Taimako",
+        "logout": "Fita",
+        "preferences": "ABIN DA AKA FI SO",
+        "support": "TAIMAKO",
+        "voiceLogs": "Rikodin murya",
+        "subscribeNow": "Yi rajista yanzu",
+        "confirmLogout": "Shin kun tabbata kuna son fita?",
+        "logoutSuccess": "An fita cikin nasara",
+        "logoutFailed": "An kasa fita"
+    },
+    "profile": {
+        "title": "Bayanan martaba",
+        "subtitle": "Sarrafa bayanan asusunka",
+        "accountInfo": "Bayanin asusu",
+        "memberSince": "Memba tun",
+        "whatsappSettings": "Saitunan WhatsApp",
+        "whatsappNumber": "Lambar WhatsApp",
+        "whatsappHelp": "Za mu aiko muku da saƙwannin tunatarwa da rahotanni ta WhatsApp",
+        "saveSuccess": "An sabunta bayanan martaba",
+        "saveFailed": "An kasa ajiye bayanan martaba",
+        "upgradeTitle": "Haɓaka zuwa Premium",
+        "upgradeDesc": "Sami damar yin amfani da dukkan abubuwa akan farashi kalilan",
+        "dangerZone": "Yankin Hadari",
+        "deleteAccount": "Goge Asusu",
+        "deleteSoon": "Za a fara goge asusu nan ba da jimawa ba"
+    },
+    "subscription": {
+        "trial": "Gwaji",
+        "active": "Mai biyan kudi",
+        "choosePlan": "Zabi shirinka",
+        "manual": "Shigar da hannu",
+        "full": "Kikakken damar (AI)",
+        "selectManual": "Zabi shirin hannu",
+        "selectFull": "Zabi cikakken damar",
+        "recommended": "AN SHAWARCÉ KU",
+        "features": {
+            "manualEntries": "Shigarwar hannu marar iyaka",
+            "reports": "Rahoton kudi",
+            "noVoice": "Babu rikodin muryar AI",
+            "noCoach": "Babu Kocin Kudi na AI",
+            "voiceTransactions": "Kasuwancin Muryar AI",
+            "voiceBookings": "Rikodin Muryar AI",
+            "coach": "Kocin Kudi na AI",
+            "receipts": "Duba rasit na AI"
+        }
+    },
+    "categories": {
+        "sales": "Ciniki",
+        "food": "Abinci",
+        "transport": "Sufuri",
+        "other": "Sauran"
+    },
+    "receipts": {
+        "takePhoto": "Dauki Hoto",
+        "takePhotoDesc": "Dauki hoton sabon rasit",
+        "upload": "Loda daga Gallery",
+        "uploadDesc": "Zabi hoton file"
+    },
+    "notifications": {
+        "emptyTitle": "Komai ya yi daidai!",
+        "emptyDesc": "Ka dawo daga baya don samun sabuntawa game da kasuwancinka.",
+        "testSent": "An aika sanarwar gwaji!",
+        "testFailed": "An kasa aika sanarwar gwaji"
+    }
+}

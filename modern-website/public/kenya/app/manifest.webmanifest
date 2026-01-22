@@ -1,0 +1,30 @@
+{
+    "name": "BeeZee Kenya",
+    "short_name": "BeeZee KE",
+    "start_url": "/kenya/app/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "lang": "en",
+    "scope": "/kenya/app/",
+    "description": "Financial management for Kenyan informal businesses",
+    "theme_color": "#006600",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/bezze.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

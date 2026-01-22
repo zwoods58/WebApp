@@ -1,0 +1,30 @@
+{
+    "name": "BeeZee South Africa",
+    "short_name": "BeeZee ZA",
+    "start_url": "/south-africa/app/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "lang": "en",
+    "scope": "/south-africa/app/",
+    "description": "Financial management for South African informal businesses",
+    "theme_color": "#F59E0B",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/bezze.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

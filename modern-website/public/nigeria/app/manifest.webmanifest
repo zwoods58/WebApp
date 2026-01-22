@@ -1,0 +1,30 @@
+{
+    "name": "BeeZee Nigeria",
+    "short_name": "BeeZee NG",
+    "start_url": "/nigeria/app/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "lang": "en",
+    "scope": "/nigeria/app/",
+    "description": "Financial management for Nigerian informal businesses",
+    "theme_color": "#008751",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/bezze.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/bezze.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

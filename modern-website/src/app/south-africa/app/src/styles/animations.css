@@ -1,0 +1,361 @@
+/* Animations & Microinteractions */
+
+/* ============================================
+   PAGE TRANSITIONS
+   ============================================ */
+@keyframes fadeSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeSlideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+.page-transition-enter {
+  animation: fadeSlideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-transition-exit {
+  animation: fadeSlideOutLeft 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   MODAL ANIMATIONS
+   ============================================ */
+@keyframes modalBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalContentScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-backdrop-enter {
+  animation: modalBackdropFade 0.2s ease-out;
+}
+
+.modal-content-enter {
+  animation: modalContentScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+.modal-bottom-sheet-enter {
+  animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   BUTTON PRESS ANIMATIONS
+   ============================================ */
+@keyframes buttonPress {
+  to {
+    transform: scale(0.95);
+  }
+}
+
+@keyframes buttonRelease {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.button-press {
+  animation: buttonPress 0.1s ease-out;
+}
+
+.button-release {
+  animation: buttonRelease 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(168, 213, 226, 0.3);
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  opacity: 0;
+  animation: ripple 0.6s ease-out;
+}
+
+/* ============================================
+   CARD INTERACTIONS
+   ============================================ */
+@keyframes cardLift {
+  to {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(44, 44, 46, 0.12);
+  }
+}
+
+.card-interactive {
+  transition: all 0.2s ease-out;
+}
+
+.card-interactive:active {
+  animation: cardLift 0.2s ease-out;
+}
+
+/* ============================================
+   NUMBER COUNT-UP
+   ============================================ */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.number-count-up {
+  animation: countUp 0.8s ease-out;
+}
+
+/* ============================================
+   LIST ITEM STAGGER
+   ============================================ */
+@keyframes listItemFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.list-item-enter {
+  animation: listItemFadeUp 0.3s ease-out;
+}
+
+.list-item-enter:nth-child(1) { animation-delay: 0ms; }
+.list-item-enter:nth-child(2) { animation-delay: 50ms; }
+.list-item-enter:nth-child(3) { animation-delay: 100ms; }
+.list-item-enter:nth-child(4) { animation-delay: 150ms; }
+.list-item-enter:nth-child(5) { animation-delay: 200ms; }
+
+/* ============================================
+   SHIMMER LOADING
+   ============================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #F0F0F2 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    #F0F0F2 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* ============================================
+   SUCCESS CHECKMARK
+   ============================================ */
+@keyframes checkmarkCircle {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.checkmark-circle {
+  animation: checkmarkCircle 0.2s ease-out;
+}
+
+.checkmark-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: checkmarkDraw 0.4s ease-out 0.2s forwards;
+}
+
+/* ============================================
+   PULSE ANIMATION
+   ============================================ */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   BOUNCE SUBTLE
+   ============================================ */
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.bounce-subtle {
+  animation: bounceSubtle 3s ease-in-out infinite;
+}
+
+/* ============================================
+   SLIDE DOWN (for toasts/banners)
+   ============================================ */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   SHAKE (for errors)
+   ============================================ */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake-animation {
+  animation: shake 0.3s ease-in-out;
+}
+
+/* ============================================
+   FLOAT (for illustrations)
+   ============================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============================================
+   ROTATE PULSE (for loading spinners)
+   ============================================ */
+@keyframes rotatePulse {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.rotate-pulse {
+  animation: rotatePulse 1s linear infinite;
+}
+
+
+
+
+
+
+

@@ -1,0 +1,152 @@
+{
+    "common": {
+        "back": "Padà",
+        "confirm": "Fidì múlẹ̀",
+        "retake": "Tún ya",
+        "priority": "Pàtàkì",
+        "dueDate": "Ọjọ́ tí ó yẹ",
+        "dueTime": "Àkókò tí ó yẹ",
+        "medium": "Àárín",
+        "low": "Kékeré",
+        "high": "Gíga",
+        "urgent": "Pàjáwìrì",
+        "save": "Pamọ́",
+        "add": "Fi kún",
+        "edit": "Ṣàtúnṣe",
+        "delete": "Pa rẹ́",
+        "cancel": "Fagi lé",
+        "loading": "Ó ń gbé jáde...",
+        "today": "Òní",
+        "yesterday": "Àná",
+        "upcoming": "Tí ń bọ̀",
+        "past": "Tí ó kọjá",
+        "all": "Gbogbo rẹ̀",
+        "noData": "Kò sí àkọsílẹ̀",
+        "notes": "Àkọsílẹ̀",
+        "service": "Iṣẹ́",
+        "location": "Ibì kan",
+        "phone": "Ẹ̀rọ ìbánisọ̀rọ̀",
+        "email": "Ímèlì"
+    },
+    "nav": {
+        "dashboard": "Ojú-iṣẹ́",
+        "transactions": "Ìdókòwò",
+        "reports": "Ìròyìn",
+        "coach": "Olùkọ́",
+        "bookings": "Ìwé-ìpamọ́",
+        "settings": "Ètò"
+    },
+    "dashboard": {
+        "totalBalance": "Iwontunwonsi Iṣowo rẹ",
+        "record": "Gba silẹ",
+        "scan": "Ṣayẹwo iwe-ẹri",
+        "recentTransactions": "Awọn iṣowo aipẹ",
+        "viewAll": "Wo gbogbo rẹ",
+        "income": "Owó Wọlé",
+        "expense": "Owó Jáde",
+        "morning": "Ẹ kú àárọ̀",
+        "afternoon": "Ẹ kú ọ̀sán",
+        "evening": "Ẹ kú ìrọ̀lẹ́",
+        "friend": "ọ̀rẹ́"
+    },
+    "transactions": {
+        "title": "Ìdókòwò",
+        "addTransaction": "Fi Ìdókòwò kún",
+        "editTransaction": "Ṣàtúnṣe Ìdókòwò",
+        "amount": "Iye owó",
+        "category": "Ẹ̀ka",
+        "date": "Ọjọ́",
+        "description": "Àpèjúwe",
+        "noTransactions": "Kò sí ìdókòwò kankan síbẹ̀"
+    },
+    "reports": {
+        "title": "Ìròyìn",
+        "summary": "Àkópọ̀",
+        "profit": "Èrè",
+        "revenue": "Owó tí ó wọlé",
+        "expenses": "Owó tí a lo",
+        "last30Days": "Ọjọ́ ọgbọ̀n sẹ́yìn",
+        "export": "Gbé ìròyìn jáde"
+    },
+    "bookings": {
+        "title": "Ìwé-ìpamọ́",
+        "addBooking": "Fi iṣẹ́ kún",
+        "editBooking": "Ṣàtúnṣe iṣẹ́",
+        "clientName": "Orúkọ oníbàárà",
+        "appointmentDate": "Ọjọ́ ìpàdé",
+        "appointmentTime": "Àkókò ìpàdé",
+        "noBookings": "Kò sí ìwé-ìpamọ́ kankan síbẹ̀"
+    },
+    "settings": {
+        "title": "Ètò",
+        "language": "Èdè",
+        "selectLanguage": "Yan èdè rẹ",
+        "languageSaved": "A ti pamọ́ èdè rẹ",
+        "languageSaveFailed": "Kò ṣeé pamọ́ èdè rẹ",
+        "profile": "Ìrísí rẹ",
+        "notifications": "Ìfitónilétí",
+        "help": "Ìrànlọ́wọ́",
+        "logout": "Jáde",
+        "preferences": "ÀWỌN ÈTÒ",
+        "support": "ÌRÀNLỌ́WỌ́",
+        "voiceLogs": "Àkọsílẹ̀ ohùn",
+        "subscribeNow": "Ṣe àbápàdé nísinsìnyí",
+        "confirmLogout": "Ṣé o dájú pé o fẹ́ jáde?",
+        "logoutSuccess": "O ti jáde ní àṣeyọrí",
+        "logoutFailed": "Kò ṣeé jáde"
+    },
+    "profile": {
+        "title": "Ìrísí rẹ",
+        "subtitle": "Ṣe àkóso ìfitónilétí rẹ",
+        "accountInfo": "Ìfitónilétí àkàùntì",
+        "memberSince": "Ọmọ ẹgbẹ́ láti",
+        "whatsappSettings": "Ètò WhatsApp",
+        "whatsappNumber": "Nọ́mbà WhatsApp",
+        "whatsappHelp": "A óò máa rán ìránnilétí iṣẹ́ rẹ sí ọ lórí WhatsApp",
+        "saveSuccess": "Ìrísí rẹ ti di títúnṣe",
+        "saveFailed": "Kò ṣeé pamọ́ ìrísí rẹ",
+        "upgradeTitle": "Gbé iṣẹ́ rẹ sókè",
+        "upgradeDesc": "Gba gbogbo àǹfààní iṣẹ́ yìí lórí owó díẹ̀",
+        "dangerZone": "Ibì tí ó léwu",
+        "deleteAccount": "Pa àkàùntì rẹ rẹ́",
+        "deleteSoon": "Pípá àkàùntì rẹ rẹ́ ń bọ̀ lọ́nà"
+    },
+    "subscription": {
+        "trial": "Ìdánwò",
+        "active": "Alábápàdé",
+        "choosePlan": "Yan ètò rẹ",
+        "manual": "Ìkọsílẹ̀ pẹ̀lú ọwọ́",
+        "full": "Gbogbo Ìrànlọ́wọ́ (AI)",
+        "selectManual": "Yan ètò ọwọ́",
+        "selectFull": "Yan gbogbo ìrànlọ́wọ́",
+        "recommended": "A GBÀ KHÍ ṢE",
+        "features": {
+            "manualEntries": "Ìkọsílẹ̀ ọwọ́ tí kò ní òpin",
+            "reports": "Ìròyìn owó",
+            "noVoice": "Kò sí àkọsílẹ̀ ohùn AI",
+            "noCoach": "Kò sí Olùkọ́ owó AI",
+            "voiceTransactions": "Ìdókòwò ohùn AI",
+            "voiceBookings": "Ìwé ohùn AI",
+            "coach": "Olùkọ́ owó AI",
+            "receipts": "Ṣíṣàyẹ̀wò iwe-ẹri AI"
+        }
+    },
+    "categories": {
+        "sales": "Títà",
+        "food": "Oúnjẹ",
+        "transport": "Okọ̀",
+        "other": "Omiíràn"
+    },
+    "receipts": {
+        "takePhoto": "Ya fọ́tò",
+        "takePhotoDesc": "Ya fọ́tò iwe-ẹri tuntun",
+        "upload": "Gbé jáde láti ibi ìkójọ fọ́tò",
+        "uploadDesc": "Yan fáìlì àwòrán"
+    },
+    "notifications": {
+        "emptyTitle": "Gbogbo rẹ̀ ti wà ní ètò!",
+        "emptyDesc": "Padà wá lẹ́yìn fún àwọn ìfitónilétí tuntun nípa iṣẹ́ rẹ.",
+        "testSent": "A ti rán ìfitónilétí ìdánwò!",
+        "testFailed": "Kò ṣeé rán ìfitónilétí ìdánwò"
+    }
+}

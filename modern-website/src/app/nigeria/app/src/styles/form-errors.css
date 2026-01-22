@@ -1,0 +1,63 @@
+/* Form Validation Error Styles */
+
+.form-field-error {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+.input-error {
+  border: 2px solid #FF9B9B !important;
+  background: rgba(255, 155, 155, 0.05) !important;
+  animation: shake 0.3s ease-in-out;
+}
+
+.input-error:focus {
+  border-color: #FF9B9B !important;
+  box-shadow: 0 0 0 4px rgba(255, 155, 155, 0.1) !important;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xsmall);
+  margin-top: var(--spacing-xsmall);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  color: #FF9B9B;
+  animation: fade-in 0.2s ease-in-out;
+}
+
+.error-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+
+
+
+

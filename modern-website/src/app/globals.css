@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #1D1D1F;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter-tight);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+@media (prefers-color-scheme: light) {
+
+  /* Optional: Define a light mode or keep it dark-first as requested */
+  /* For now, we enforce the 'Industrial Luxury' dark aesthetic primarily */
+  :root {
+    --background: #F5F5F7;
+    /* Light gray for contrast if needed */
+    --foreground: #1D1D1F;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

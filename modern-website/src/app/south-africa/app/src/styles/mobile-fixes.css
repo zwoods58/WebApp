@@ -1,0 +1,676 @@
+/* ===================================
+   STEP 2A: RESET AND BASE STYLES
+   =================================== */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  /* Remove blue highlight on tap */
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  /* Add safe area padding for notches and gesture bars */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ===================================
+   STEP 2B: CONTAINER FIXES
+   =================================== */
+
+/* Main app container */
+#app,
+.app-container,
+main {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* All page containers */
+.page-container,
+.screen-container {
+  width: 100%;
+  padding: 16px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  /* Space for bottom nav */
+  box-sizing: border-box;
+}
+
+/* Card containers */
+.card,
+.info-card,
+.stat-card {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px 16px;
+  margin: 0 0 16px 0;
+  box-sizing: border-box;
+  border-radius: 16px;
+  overflow: hidden;
+  /* Prevent content overflow */
+}
+
+/* ===================================
+   STEP 2C: HEADER/TITLE FIXES
+   =================================== */
+
+/* Page headers */
+.page-header,
+.screen-title {
+  width: 100%;
+  padding: 20px 16px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.page-header h1,
+.screen-title {
+  font-size: clamp(24px, 6vw, 32px);
+  /* Responsive font size */
+  margin: 0;
+  padding: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* BeeZee logo and title combo */
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  flex-wrap: wrap;
+  /* Allow wrapping on very small screens */
+}
+
+.brand-header img {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+/* ===================================
+   STEP 2D: BOTTOM NAVIGATION FIXES
+   =================================== */
+
+.bottom-navigation,
+.bottom-nav,
+nav[class*="bottom"] {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+
+  /* Safe area support */
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.bottom-navigation-content {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0;
+  max-width: 100%;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 60px;
+  padding: 8px;
+  flex: 1;
+  max-width: 120px;
+}
+
+.nav-item-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-item-label {
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ===================================
+   STEP 2E: TEXT AND NUMBER FIXES
+   =================================== */
+
+/* Large numbers (balance, amounts) */
+.balance-amount,
+.large-number,
+.amount-display {
+  font-size: clamp(32px, 8vw, 48px);
+  font-weight: bold;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
+/* Prevent number overflow in cards */
+.money-in-amount,
+.money-out-amount,
+.stat-value {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Labels */
+.label,
+.stat-label,
+.section-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+/* ===================================
+   STEP 2F: STAT CARDS (Money In/Out)
+   =================================== */
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.stat-card {
+  padding: 16px;
+  border-radius: 12px;
+  min-width: 0;
+  /* Allow shrinking */
+}
+
+.stat-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ===================================
+   STEP 2G: BUTTON FIXES
+   =================================== */
+
+button,
+.button,
+.btn {
+  min-height: 48px;
+  /* Touch-friendly */
+  min-width: 48px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  /* Remove iOS button styling */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Floating action button (Create Invoice) */
+.fab,
+.floating-button {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  right: 16px;
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}
+
+/* ===================================
+   STEP 2H: INPUT FIXES
+   =================================== */
+
+input,
+textarea,
+select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  /* Prevents zoom on iOS */
+  box-sizing: border-box;
+
+  /* Remove iOS styling */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ===================================
+   STEP 2I: SETTINGS PAGE FIXES
+   =================================== */
+
+.settings-section {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.settings-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin-bottom: 12px;
+  padding: 0 16px;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  gap: 12px;
+  min-height: 60px;
+}
+
+.settings-item-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.settings-item-content {
+  flex: 1;
+  min-width: 0;
+  /* Allow text truncation */
+}
+
+.settings-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.settings-item-subtitle {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===================================
+   STEP 2J: REPORTS PAGE FIXES
+   =================================== */
+
+.reports-header {
+  width: 100%;
+  padding: 20px 16px;
+  box-sizing: border-box;
+}
+
+.reports-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Firefox */
+  padding: 0 16px;
+  margin: 16px 0;
+}
+
+.reports-tabs::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari */
+}
+
+.tab-button {
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.time-period-selector {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px;
+  margin: 16px 0;
+}
+
+/* ===================================
+   STEP 2K: CHAT/COACH PAGE FIXES
+   =================================== */
+
+.chat-container {
+  width: 100%;
+  height: calc(100vh - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 16px;
+  background: white;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.message-bubble.sent {
+  align-self: flex-end;
+  background: #007AFF;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.received {
+  align-self: flex-start;
+  background: #F0F0F0;
+  color: black;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-input-container {
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  background: white;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.chat-input {
+  flex: 1;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 12px 16px;
+  border-radius: 22px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  resize: none;
+}
+
+/* ===================================
+   STEP 2L: HOME PAGE SPECIFIC FIXES
+   =================================== */
+
+.greeting-section {
+  padding: 20px 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.greeting-text {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.date-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.balance-card {
+  width: 100%;
+  padding: 24px 20px;
+  border-radius: 16px;
+  background: white;
+  margin: 16px 0;
+  box-sizing: border-box;
+}
+
+.balance-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.demo-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: #E3F2FD;
+  color: #1976D2;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 0 16px;
+  margin: 24px 0;
+}
+
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  border-radius: 16px;
+  background: white;
+  min-height: 120px;
+  text-align: center;
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.action-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ===================================
+   STEP 2M: RESPONSIVE BREAKPOINTS
+   =================================== */
+
+/* Small phones (< 360px) */
+@media (max-width: 359px) {
+  .page-container {
+    padding: 12px;
+  }
+
+  .balance-amount {
+    font-size: 36px !important;
+  }
+
+  .nav-item-label {
+    font-size: 10px;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Medium phones (360px - 428px) */
+@media (min-width: 360px) and (max-width: 428px) {
+  .page-container {
+    padding: 16px;
+  }
+}
+
+/* Large phones (> 428px) */
+@media (min-width: 429px) {
+  .app-container {
+    max-width: 428px;
+    margin: 0 auto;
+  }
+}
+
+/* Landscape mode */
+@media (orientation: landscape) and (max-height: 500px) {
+  .page-container {
+    padding-bottom: 60px;
+  }
+
+  .chat-container {
+    height: calc(100vh - 50px);
+  }
+}
+
+/* ===================================
+   STEP 2N: UTILITY CLASSES
+   =================================== */
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.break-word {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Hide scrollbars but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

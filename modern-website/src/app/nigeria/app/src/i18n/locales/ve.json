@@ -1,0 +1,172 @@
+{
+  "common": {
+    "back": "Murahu",
+    "confirm": "Khwinisa",
+    "retake": "Phinda",
+    "priority": "Zwa ndeme",
+    "dueDate": "Duvha",
+    "dueTime": "Tshifhinga",
+    "medium": "Vhukati",
+    "low": "Fhaṱuṱu",
+    "high": "Nṱha",
+    "urgent": "Zwa u shuma nga u ṱavhanya",
+    "save": "Save",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "all": "All",
+    "noData": "No data found",
+    "notes": "Notes",
+    "service": "Service",
+    "location": "Location",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "nav": {
+    "dashboard": "Home",
+    "transactions": "Transactions",
+    "reports": "Reports",
+    "coach": "Coach",
+    "bookings": "Bookings",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "totalBalance": "Your Business Balance",
+    "record": "Record",
+    "scan": "Scan Receipt",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "income": "Money In",
+    "expense": "Money Out",
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "friend": "friend"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "addTransaction": "Add Transaction",
+    "editTransaction": "Edit Transaction",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "description": "Description",
+    "noTransactions": "No transactions yet"
+  },
+  "reports": {
+    "title": "Reports",
+    "summary": "Summary",
+    "profit": "Profit",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "last30Days": "Last 30 Days",
+    "export": "Export Report"
+  },
+  "bookings": {
+    "title": "Bookings",
+    "addBooking": "Add Booking",
+    "editBooking": "Edit Booking",
+    "clientName": "Client Name",
+    "appointmentDate": "Appointment Date",
+    "appointmentTime": "Appointment Time",
+    "noBookings": "No bookings yet"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "addTask": "Add Task",
+    "editTask": "Edit Task",
+    "taskTitle": "Task Title",
+    "description": "Description",
+    "complete": "Complete",
+    "noTasks": "No tasks yet"
+  },
+  "voiceTask": {
+    "title": "Sedzesa Mushumo",
+    "taskTitle": "Dzina ḽa mushumo",
+    "description": "Mbonalo"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Luambo",
+    "selectLanguage": "Nanga luambo lwau",
+    "languageSaved": "Language saved successfully",
+    "languageSaveFailed": "Failed to save language",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "help": "Help & Support",
+    "logout": "Logout",
+    "preferences": "PREFERENCES",
+    "support": "SUPPORT",
+    "voiceLogs": "Voice Logs",
+    "subscribeNow": "Subscribe Now",
+    "confirmLogout": "Are you sure you want to log out?",
+    "logoutSuccess": "Logged out successfully",
+    "logoutFailed": "Failed to log out"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account information",
+    "accountInfo": "Account Information",
+    "memberSince": "Member Since",
+    "whatsappSettings": "WhatsApp Settings",
+    "whatsappNumber": "WhatsApp Number",
+    "whatsappHelp": "We'll send you transaction reminders and insights via WhatsApp",
+    "saveSuccess": "Profile updated successfully",
+    "saveFailed": "Failed to save profile",
+    "upgradeTitle": "Upgrade to Premium",
+    "upgradeDesc": "Get unlimited access to all features for only R55.50/month",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteSoon": "Account deletion coming soon"
+  },
+  "subscription": {
+    "trial": "Trial",
+    "active": "Active Subscriber",
+    "choosePlan": "Choose your plan",
+    "manual": "Manual Entry",
+    "full": "Full Access",
+    "manualPrice": "$1.00 / month",
+    "fullPrice": "$3.00 / month",
+    "selectManual": "Select Manual Plan",
+    "selectFull": "Select Full Access",
+    "recommended": "RECOMMENDED",
+    "features": {
+      "manualEntries": "Unlimited manual entries",
+      "reports": "Financial reports",
+      "noVoice": "No AI Voice recording",
+      "noCoach": "No AI Financial Coach",
+      "voiceTransactions": "AI Voice Transactions",
+      "voiceBookings": "AI Voice Bookings",
+      "coach": "AI Financial Coach",
+      "receipts": "AI Receipt Scanning"
+    }
+  },
+  "categories": {
+    "sales": "Sales",
+    "food": "Food",
+    "transport": "Transport",
+    "other": "Other"
+  },
+  "receipts": {
+    "takePhoto": "Take Photo",
+    "takePhotoDesc": "Capture a new receipt",
+    "upload": "Upload from Gallery",
+    "uploadDesc": "Select an image file"
+  },
+  "notifications": {
+    "emptyTitle": "You're all caught up!",
+    "emptyDesc": "Check back later for updates about your business, tips, and reminders.",
+    "testSent": "Test notification sent!",
+    "testFailed": "Failed to send test notification"
+  }
+}
+
+
+
+

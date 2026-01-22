@@ -1,0 +1,25 @@
+{
+  "name": "BeeZee Finance South Africa",
+  "short_name": "BeeZee",
+  "description": "Financial management for South African informal businesses",
+  "theme_color": "#FFB800",
+  "background_color": "#F0F8FB",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [],
+  "categories": [
+    "finance",
+    "business",
+    "productivity"
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "Dashboard view showing financial overview"
+    }
+  ]
+}

@@ -1,0 +1,579 @@
+/* 
+  ARCHITECTURAL INTENTIONALITY (System 4.3)
+  Refinement: Stationary & Flipped Hero
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+
+.container {
+  --ink-solid: #111111;
+  --ink-subtle: #555555;
+  --canvas-warm: #F5F5F7;
+  --glass-panel: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --brand-signal: #FFBF00;
+
+  --shadow-float: 0 40px 100px -20px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 4px 24px -4px rgba(0, 0, 0, 0.06);
+
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--canvas-warm);
+  color: var(--ink-solid);
+  min-height: 100vh;
+  margin: 0;
+  /* overflow-x: hidden; REMOVED to fix sticky scroll */
+  padding-bottom: 0px;
+}
+
+/* TYPOGRAPHY */
+.container h1,
+.container h2,
+.container h3 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  color: var(--ink-solid);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.headlineHero {
+  font-size: clamp(3.2rem, 8vw, 5.5rem);
+  line-height: 1;
+  font-style: italic;
+}
+
+.headlineSection {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.textBody {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink-subtle);
+  font-weight: 450;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  font-feature-settings: "tnum";
+}
+
+/* 1. HERO */
+.hero {
+  padding: 100px 20px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 60px;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+}
+
+.labelPill {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--ink-solid);
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.heroVisual {
+  perspective: 1500px;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* STATIONARY HERO IMAGE (Removed animation) */
+.heroImage {
+  width: auto;
+  max-width: 100%;
+  max-height: 600px;
+  filter: drop-shadow(0 40px 80px rgba(0, 0, 0, 0.2));
+  /* Flip if needed via class */
+  border-radius: 40px;
+  /* Slight rounding to soften the background cut */
+}
+
+/* 2. BENTO GRID */
+.bentoSection {
+  padding: 80px 20px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bentoFrame {
+  display: grid;
+  grid-template-columns: 1fr;
+  /* 1x4 Layout: 1 Column */
+  grid-template-rows: repeat(4, 500px);
+  /* 4 Rows */
+  gap: 32px;
+  max-width: 900px;
+  /* Centered width for readability */
+  margin: 0 auto;
+}
+
+.bentoCard {
+  background: var(--glass-panel);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 32px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.bentoCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.bentoCard:active {
+  transform: scale(0.98);
+}
+
+.cardContent {
+  padding: 48px;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.1) 100%);
+  height: 50%;
+  /* Top half for text */
+}
+
+.cardFinance,
+.cardInventory,
+.cardAI,
+.cardOffline {
+  grid-column: span 1;
+  grid-row: auto;
+}
+
+.productPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+
+.bentoCard:hover .productPhoto {
+  transform: scale(1.05);
+}
+
+.bentoTitle {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.bentoText {
+  font-size: 1rem;
+  color: var(--ink-subtle);
+  max-width: 340px;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+}
+
+.cardTag {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brand-signal);
+  margin-bottom: 12px;
+  letter-spacing: 0.1em;
+  display: block;
+}
+
+/* 2. SPLIT SCROLL LAYOUT (Right-Side Sticky) */
+.splitSection {
+  padding: 100px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  /* Context for grid */
+}
+
+.gridBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-size: 20% 20%;
+  /* 5x5 Grid */
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  /* Fade in/out */
+}
+
+.splitFrame {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Text Left | Phone Right */
+  gap: 60px;
+  position: relative;
+  align-items: start;
+}
+
+/* Left: Scrolling Content */
+.scrollColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 90vh;
+  /* Huge gap to "lock" the phone in view longer */
+  padding-bottom: 80vh;
+  /* Ensure last item lingers */
+  padding-top: 30vh;
+  /* Center first item relative to phone */
+  text-align: left;
+  /* Reset towards left */
+}
+
+.featureCard {
+  min-height: 120vh;
+  /* Taller cards for more scroll distance */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Reset alignment */
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+  position: relative;
+}
+
+.featureCard.inactive {
+  opacity: 0.2;
+  filter: blur(2px);
+}
+
+/* Right: Sticky Phone Container (The "Right Half") */
+.stickyColumn {
+  position: sticky;
+  top: 0;
+  /* Sticks to the very top of the viewport */
+  height: 100vh;
+  /* Takes up full screen height */
+  margin-top: 0;
+  transform: none;
+  display: flex;
+  align-items: center;
+  /* Revert to center to ensure full phone is visible */
+  justify-content: center;
+  /* Horizontally Centers the phone in the right half */
+  padding-top: 0;
+  /* Remove heavy padding that caused cutoff */
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+/* PHOTOREALISTIC CSS PHONE MODEL */
+.phoneFrame {
+  width: 320px;
+  /* Compact size */
+  aspect-ratio: 9/19.5;
+  /* iPhone 15 Pro proportions */
+  background: #000;
+  border-radius: 60px;
+  /* Ultra-rounded corners */
+  position: relative;
+  z-index: 10;
+
+  /* Multi-layer frame effect */
+  box-shadow:
+    /* Inner bezel */
+    inset 0 0 0 4px #2a2a2a,
+    inset 0 0 0 5px rgba(0, 0, 0, 0.8),
+    /* Titanium frame layers */
+    0 0 0 6px #1a1a1a,
+    0 0 0 7px #0d0d0d,
+    /* Frame highlight */
+    0 0 0 8px rgba(255, 255, 255, 0.08),
+    /* Deep external shadows for depth */
+    0 30px 60px -10px rgba(0, 0, 0, 0.4),
+    0 50px 100px -20px rgba(0, 0, 0, 0.3),
+    /* Ambient shadow */
+    0 80px 150px -30px rgba(0, 0, 0, 0.2);
+
+  overflow: hidden;
+  /* Clip the scrolling filmstrip */
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Dynamic Island (notch) */
+.phoneFrame::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #000;
+  border-radius: 19px;
+  z-index: 100;
+  /* Subtle inner shadow for depth */
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Realistic Glass Overlay */
+.phoneGloss {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(255, 255, 255, 0.03) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Internal Phone Screen Viewport - Filmstrip Style */
+.phoneScreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Each image should fill the viewport */
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  background: #f8f9fa;
+  /* Match Finance background */
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Smooth easing */
+  will-change: transform;
+}
+
+.phoneScreenImage {
+  width: 100%;
+  height: 100%;
+  /* Fill the phone viewport completely */
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+  /* Show full image without cropping */
+  object-position: center top;
+  /* Align to top */
+}
+
+/* Clear the Dynamic Island on the first screen */
+.phoneScreenImage:first-child {
+  padding-top: 70px;
+  /* Pushes content below notch */
+  box-sizing: border-box;
+}
+
+/* Typography Polish */
+.featureTitle {
+  font-family: 'Instrument Serif', serif;
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 24px;
+  color: var(--ink-solid);
+  letter-spacing: -0.03em;
+}
+
+.featureText {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--ink-subtle);
+  font-weight: 400;
+  max-width: 480px;
+  /* Increased to accommodate more text */
+  margin-bottom: 24px;
+}
+
+.featureBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 100px;
+  background: transparent;
+  color: #111;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.featureBtn:hover {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* Offline Card - Glass Style */
+.cardOffline {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 200px;
+  /* Visual separation for the 'offline' concept */
+}
+
+.iconOffline {
+  color: var(--brand-signal);
+}
+
+/* 3. CTA & GATEWAY CARDS */
+.ctaSection {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+}
+
+.gatewayGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin-top: 60px;
+}
+
+.gatewayCard {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+}
+
+.gatewayCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.gatewayFlag {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.gatewayTitle {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.75rem;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.gatewaySub {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.ctaHeadline {
+  font-family: 'Instrument Serif', serif;
+  font-size: 5rem;
+  line-height: 0.95;
+  margin-bottom: 24px;
+  color: #111;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-top: 60px;
+  }
+
+  .heroVisual {
+    height: 400px;
+    margin-top: 40px;
+    max-width: 80%;
+    margin: 40px auto;
+  }
+
+  .bentoFrame {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .cardFinance,
+  .cardInventory,
+  .cardAI,
+  .cardOffline {
+    grid-column: span 1;
+    grid-row: auto;
+    min-height: 400px;
+  }
+
+  .ctaHeadline {
+    font-size: 2.5rem;
+  }
+
+  .footerGrid {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  .gatewayBtn {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+
+  .flag {
+    margin-bottom: 0;
+    margin-right: 16px;
+    font-size: 2rem;
+  }
+
+  .productPhoto {
+    opacity: 0.6;
+  }
+}
