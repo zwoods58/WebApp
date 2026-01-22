@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -18,7 +19,7 @@ const GlobalNavigation = () => {
             >
                 <div className="flex items-center gap-4">
                     <Link href="/" className="font-mono font-bold text-xl tracking-tight text-obsidian flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-system-blue" />
+                        <Image src="/atarwebb-favicon.png" alt="AtarWebb Logo" width={24} height={24} className="rounded-sm" />
                         AtarWebb
                     </Link>
                 </div>
@@ -81,7 +82,10 @@ const GlobalNavigation = () => {
                                     className="text-3xl font-heading font-bold text-system-blue hover:text-obsidian transition-colors flex items-center gap-4"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
-                                    Beezee
+                                    <div className="flex items-center gap-3">
+                                        <Image src="/bezze.png" alt="Beezee Logo" width={32} height={32} />
+                                        Beezee
+                                    </div>
                                     <span className="text-xs font-mono bg-mist-gray px-2 py-1 rounded text-obsidian">APP</span>
                                 </Link>
                             </motion.div>

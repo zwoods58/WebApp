@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SCROLL_MILESTONES = [
@@ -70,7 +71,8 @@ const GhostSummaryBar = () => {
                 </div>
 
                 {/* Middle: Beezee Branding */}
-                <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none">
+                <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none flex items-center gap-2">
+                    <Image src="/bezze.png" alt="Beezee Logo" width={20} height={20} className="md:w-6 md:h-6" />
                     <span className="text-lg md:text-xl font-bold tracking-[-0.04em] text-obsidian">Beezee</span>
                 </div>
 
