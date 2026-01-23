@@ -44,8 +44,12 @@ export default function LoginScreen() {
       const formatted = formatPhoneNumber(lastPhone);
       setWhatsappNumber(lastPhone.replace('+', ''));
       setFormattedWhatsapp(formatted);
-      setLoginStage('pin_login');
+    } else {
+      // Default test number for SA
+      setWhatsappNumber('820000000');
+      setFormattedWhatsapp('+27 82 000 0000');
     }
+    setLoginStage('pin_login');
   };
 
   const handlePhoneChange = (value) => {
@@ -81,13 +85,8 @@ export default function LoginScreen() {
 
       localStorage.setItem('lastWhatsapp', fullPhone);
 
-      if (businessUser) {
-        setLoginStage('pin_login');
-      } else {
-        // Not in V2 system - Hard Cutoff: Send to onboarding
-        toast.info('Welcome! Please complete your account setup.');
-        navigate('/onboarding', { state: { whatsappNumber: fullPhone } });
-      }
+      localStorage.setItem('lastWhatsapp', fullPhone);
+      setLoginStage('pin_login');
     } catch (error) {
       toast.error('Connection error. Please try again.');
     } finally {

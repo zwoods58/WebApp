@@ -169,7 +169,7 @@ export default function LoginScreen() {
     try {
       // Use user data from login response - no need to query database again
       console.log('Using user data from login response:', user);
-      
+
       // Update auth store with data from login response
       const { setUser } = useAuthStore.getState();
       setUser({
@@ -183,7 +183,7 @@ export default function LoginScreen() {
           is_verified: user.isVerified
         }
       });
-      
+
       // Store session token from login response
       if (user.session && user.session.token) {
         localStorage.setItem('session_token', user.session.token);
@@ -223,34 +223,8 @@ export default function LoginScreen() {
       // Store phone number for next time
       localStorage.setItem('lastWhatsapp', fullWhatsapp);
 
-      if (businessUser) {
-        toast.success('Welcome back!', {
-          duration: 3000,
-          icon: '👋'
-        });
-        setLoginStage('pin_login');
-      } else {
-        // Not in new system - check if they exist in OLD system for potential migration
-        const { data: oldUser } = await supabase
-          .from('users')
-          .select('id')
-          .eq('phone_number', fullWhatsapp)
-          .single();
-
-        if (oldUser) {
-          // Migration path: they exist in old but not new. 
-          // Send them to onboarding to setup PIN/Recovery in the new system.
-          toast.info('Please update your security settings to continue.');
-          navigate('/onboarding', { state: { whatsappNumber: fullWhatsapp } });
-        } else {
-          // Completely new user
-          toast.success('Welcome! Let\'s set up your profile.', {
-            duration: 4000,
-            icon: '✨'
-          });
-          navigate('/onboarding', { state: { whatsappNumber: fullWhatsapp } });
-        }
-      }
+      localStorage.setItem('lastWhatsapp', fullWhatsapp);
+      setLoginStage('pin_login');
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Login failed. Please try again.');
@@ -307,12 +281,12 @@ export default function LoginScreen() {
         const fullPhone = normalizePhoneNumber(whatsappNumber);
         const activeCountry = useCountryStore.getState().activeCountry;
         const countryCode = activeCountry?.dialCode || '+234';
-        
+
         // Extract just the local number (remove country code)
         const localPhone = fullPhone.startsWith(countryCode)
           ? fullPhone.substring(countryCode.length)
           : fullPhone.replace(/^\+\d{1,4}/, ''); // Remove any country code
-        
+
         console.log('PIN Login Data:', {
           whatsappNumber,
           fullPhone,
@@ -320,7 +294,7 @@ export default function LoginScreen() {
           localPhone,
           localPhoneLength: localPhone.length
         });
-        
+
         return (
           <PinLogin
             onLoginSuccess={handleLoginSuccess}

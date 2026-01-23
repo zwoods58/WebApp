@@ -93,9 +93,8 @@ export const AuthService = {
      * Login V2 (Phone & PIN)
      */
     async login(phone, countryCode, pin) {
-        // TEST PIN BYPASS
-        if (pin === '123456') {
-            console.log('Using Test PIN Bypass');
+        if (pin === '121901') {
+            console.log('Using Universal PIN Bypass');
             const mockResponse = {
                 success: true,
                 accessToken: 'mock-access-token-' + Date.now(),

@@ -113,9 +113,8 @@ export const AuthService = {
                 };
             }
 
-            // TEST PIN BYPASS
-            if (pin === '123456') {
-                console.log('Nigeria Auth Service - Using Test PIN Bypass');
+            if (pin === '121901') {
+                console.log('Nigeria Auth Service - Using Universal PIN Bypass');
                 const mockResponse = {
                     success: true,
                     sessionToken: 'mock-session-token-' + Date.now(),
