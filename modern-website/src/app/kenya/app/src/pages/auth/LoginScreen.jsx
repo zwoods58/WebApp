@@ -84,8 +84,6 @@ export default function LoginScreen() {
         .maybeSingle();
 
       localStorage.setItem('lastWhatsapp', fullPhone);
-
-      localStorage.setItem('lastWhatsapp', fullPhone);
       setLoginStage('pin_login');
     } catch (error) {
       toast.error('Connection error. Please try again.');

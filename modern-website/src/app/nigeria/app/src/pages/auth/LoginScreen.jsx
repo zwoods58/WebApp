@@ -222,8 +222,6 @@ export default function LoginScreen() {
 
       // Store phone number for next time
       localStorage.setItem('lastWhatsapp', fullWhatsapp);
-
-      localStorage.setItem('lastWhatsapp', fullWhatsapp);
       setLoginStage('pin_login');
     } catch (error) {
       console.error('Login error:', error);
