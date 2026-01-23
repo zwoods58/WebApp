@@ -6,12 +6,23 @@
 }
 
 /* Ensure all headings are visible */
-h1, h2, h3, h4, h5, h6 {
-  color: #2C2C2E !important; /* Deep Charcoal */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #2C2C2E !important;
+  /* Deep Charcoal */
 }
 
 /* Ensure all paragraphs and text are visible */
-p, span, div, a, label, li {
+p,
+span,
+div,
+a,
+label,
+li {
   color: inherit;
 }
 
@@ -21,8 +32,11 @@ button {
 }
 
 /* Ensure inputs have visible text */
-input, textarea, select {
-  color: #2C2C2E !important; /* Deep Charcoal */
+input,
+textarea,
+select {
+  color: #2C2C2E !important;
+  /* Deep Charcoal */
 }
 
 /* Dashboard specific fixes */
@@ -34,24 +48,40 @@ input, textarea, select {
 .recent-transactions-title,
 .insights-header-title,
 .reports-title {
-  color: #2C2C2E !important; /* Deep Charcoal */
+  color: #2C2C2E !important;
+  /* Deep Charcoal */
 }
 
 /* Secondary text */
 .dashboard-date,
 .hero-balance-label,
 .hero-balance-stat-label {
-  color: #6C6C70 !important; /* Secondary text */
+  color: #6C6C70 !important;
+  /* Secondary text */
 }
 
 /* Balance amount - dark text on light gradient background */
 .hero-balance-amount {
-  color: #2C2C2E !important; /* Deep Charcoal - visible on light gradient */
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* Subtle shadow for depth */
+  color: #2C2C2E !important;
+  /* Deep Charcoal - visible on light gradient */
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  /* Subtle shadow for depth */
 }
 
 /* Ensure icons are visible */
 svg {
   color: inherit;
+  stroke: currentColor;
+  fill: none;
 }
 
+/* Ensure buttons with explicit text colors apply to icons */
+.text-white svg {
+  color: white !important;
+  stroke: white !important;
+}
+
+.text-gray-400 svg {
+  color: #9CA3AF !important;
+  stroke: #9CA3AF !important;
+}

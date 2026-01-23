@@ -159,10 +159,18 @@
     "upload": "Layisha kusuka kugalari",
     "uploadDesc": "Khetha ifayela lesithombe"
   },
-  "notifications": {
-    "emptyTitle": "Usuqedile konke!",
-    "emptyDesc": "Hlola futhi ngokuhamba kwesikhathi ukuthola izibuyekezo ngebhizinisi lakho, amathiphu, nezikhumbuzi.",
-    "testSent": "Isaziso sokuhlola sithunyelwe!",
-    "testFailed": "Yehlulekile ukuthumela isaziso sokuhlola"
+  "coach": {
+    "title": "U-BeeZee Coach",
+    "greeting": "Sawubona! Ngingumsizi wakho we-AI u-BeeZee. Ngibuze noma yini mayelana nezezimali zakho noma yokungaphakathi.",
+    "thinking": "U-BeeZee uyacabanga...",
+    "placeholder": "Buza mayelana nebhizinisi lakho...",
+    "askError": "Yehlulekile ukuthola impendulo.",
+    "questionsLeft": "{{count}} Okusele",
+    "responses": {
+      "profit": "Ibhizinisi lakho lihamba kahle! Inzalo yakho isisonke ingu-{{amount}} kule nyanga, okukhuphuke ngo-{{trend}}% kusukela ngenyanga edlule. Imali yakho eningi ivela ekuthengisweni.",
+      "stock": "Njengamanje une-{{count}} {{unit}} ye-{{name}} esitokisini. Uthengise i-{{sold}} namuhla. Ngokusekelwe kwizinga lakho lokuthengisa, kufanele ugcwalise esikhathini esizalibalelwa kuzinsukwini ezingu-{{days}}.",
+      "identity": "Ngingu-BeeZee, umqeqeshi wakho webhizinisi we-AI! Ngilapha ukuzokusiza ukuphatha isitolo sakho eNingizimu Afrika, ulandelele isitoko sakho, futhi uqonde ezezimali zakho.",
+      "fallback": "Lowo mbuzo omuhle kakhulu! Ngingakusiza ukuhlaziya idatha yebhizinisi lakho. Zama ukubuza mayelana nenzalo yakho noma isitoko sesinkwa!"
+    }
   }
 }

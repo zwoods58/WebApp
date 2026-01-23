@@ -27,9 +27,9 @@ const INITIAL_TASKS = [
 ];
 
 const INITIAL_COACH_SESSIONS = [
-    { id: '1', role: 'assistant', content: "Hello! I'm your BeeZee AI assistant. Ask me anything about your finances or inventory.", timestamp: new Date(Date.now() - 3600000).toISOString() },
+    { id: '1', role: 'assistant', content: "coach.greeting", timestamp: new Date(Date.now() - 3600000).toISOString() },
     { id: '2', role: 'user', content: "How is my business doing?", timestamp: new Date(Date.now() - 3500000).toISOString() },
-    { id: '3', role: 'assistant', content: "Your business is doing well! Your total profit is R22,400 this month, which is up 15% from last month. Most of your revenue is coming from Blue Ribbon Bread sales.", timestamp: new Date(Date.now() - 3400000).toISOString() }
+    { id: '3', role: 'assistant', content: "coach.responses.profit", params: { amount: 'R22,400', trend: '15' }, timestamp: new Date(Date.now() - 3400000).toISOString() }
 ];
 
 const INITIAL_VOICE_LOGS = [
@@ -53,6 +53,12 @@ export function useDemoData() {
         if (!saved) return defaultData;
 
         const parsed = JSON.parse(saved);
+
+        // Migration: If coach sessions are still the old English ones, reset them to use localized keys
+        if (parsed.coachSessions && parsed.coachSessions[0]?.content?.includes('Hello! I\'m your BeeZee AI assistant')) {
+            parsed.coachSessions = INITIAL_COACH_SESSIONS;
+        }
+
         return {
             ...defaultData,
             ...parsed
@@ -171,9 +177,9 @@ export function useDemoData() {
         return Promise.resolve();
     };
 
-    const addCoachSession = (question, answer) => {
+    const addCoachSession = (question, answer, params = null) => {
         const userMsg = { id: `user-${Date.now()}`, role: 'user', content: question, timestamp: new Date().toISOString() };
-        const assistantMsg = { id: `assistant-${Date.now()}`, role: 'assistant', content: answer, timestamp: new Date().toISOString() };
+        const assistantMsg = { id: `assistant-${Date.now()}`, role: 'assistant', content: answer, params, timestamp: new Date().toISOString() };
         setData(prev => ({ ...prev, coachSessions: [...prev.coachSessions, userMsg, assistantMsg] }));
         return Promise.resolve();
     };

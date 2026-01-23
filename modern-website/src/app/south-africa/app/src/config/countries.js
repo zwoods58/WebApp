@@ -26,9 +26,8 @@ export const COUNTRIES = {
     pricing: {
       billingCycle: 'monthly',
       plans: {
-        basic: { price: 299, currency: 'KES', features: ['10_transactions', 'basic_reports'] },
-        pro: { price: 599, currency: 'KES', features: ['unlimited_transactions', 'advanced_reports', 'inventory'] },
-        enterprise: { price: 999, currency: 'KES', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'multi_user', 'api_access'] }
+        manual: { price: 299, currency: 'KES', displayPrice: 'KSh 299', features: ['10_transactions', 'basic_reports'] },
+        ai: { price: 799, currency: 'KES', displayPrice: 'KSh 799', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'coach'] }
       }
     },
     features: {
@@ -75,9 +74,8 @@ export const COUNTRIES = {
     pricing: {
       billingCycle: 'monthly',
       plans: {
-        basic: { price: 49, currency: 'ZAR', features: ['10_transactions', 'basic_reports'] },
-        pro: { price: 99, currency: 'ZAR', features: ['unlimited_transactions', 'advanced_reports', 'inventory'] },
-        enterprise: { price: 199, currency: 'ZAR', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'multi_user', 'api_access'] }
+        manual: { price: 49, currency: 'ZAR', displayPrice: 'R49', features: ['10_transactions', 'basic_reports'] },
+        ai: { price: 149, currency: 'ZAR', displayPrice: 'R149', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'coach'] }
       }
     },
     features: {
@@ -121,9 +119,8 @@ export const COUNTRIES = {
     pricing: {
       billingCycle: 'weekly',
       plans: {
-        basic: { price: 600, currency: 'NGN', features: ['10_transactions', 'basic_reports'] },
-        pro: { price: 1200, currency: 'NGN', features: ['unlimited_transactions', 'advanced_reports', 'inventory'] },
-        enterprise: { price: 2500, currency: 'NGN', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'multi_user', 'api_access'] }
+        manual: { price: 600, currency: 'NGN', displayPrice: '₦600', weeklyDisplay: '₦600/week', features: ['10_transactions', 'basic_reports'] },
+        ai: { price: 1500, currency: 'NGN', displayPrice: '₦1,500', weeklyDisplay: '₦1,500/week', features: ['unlimited_transactions', 'advanced_reports', 'inventory', 'coach'] }
       }
     },
     features: {

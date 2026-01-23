@@ -44,7 +44,7 @@ export default function Bookings() {
     if (!confirm(t('bookings.confirmDelete', 'Delete this booking?'))) return;
     try {
       await deleteBooking(id);
-      toast.success(t('bookings.deleted', 'Deleted (Demo)'));
+      toast.success(t('bookings.deleted', 'Deleted'));
     } catch (error) {
       toast.error(t('bookings.deleteFailed', 'Failed'));
     }
@@ -53,7 +53,7 @@ export default function Bookings() {
   const handleCompleteTask = async (id) => {
     try {
       await updateTask(id, { completed: true, completed_at: new Date().toISOString() });
-      toast.success(t('tasks.completed', 'Completed (Demo)'));
+      toast.success(t('tasks.completed', 'Completed'));
     } catch (error) {
       toast.error(t('tasks.completeFailed', 'Failed'));
     }
@@ -210,9 +210,14 @@ export default function Bookings() {
                         {view === 'bookings' && (
                           <div className="grid grid-cols-1 gap-2">
                             {item.service && (
-                              <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('common.service', 'Service')}</span>
-                                <span className="text-xs font-bold text-gray-700">{item.service}</span>
+                              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-xl">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('common.service', 'Service')}</span>
+                                  <span className="text-xs font-bold text-gray-700">{item.service}</span>
+                                </div>
+                                {item.service_cost && (
+                                  <span className="text-xs font-black text-green-600">R{item.service_cost}</span>
+                                )}
                               </div>
                             )}
                             {item.location && (
@@ -239,10 +244,10 @@ export default function Bookings() {
           onSubmit={async (data) => {
             if (editingBooking) {
               await updateBooking(editingBooking.id, data);
-              toast.success(t('bookings.updated', 'Updated (Demo)'));
+              toast.success(t('bookings.updated', 'Updated'));
             } else {
               await addBooking(data);
-              toast.success(t('bookings.added', 'Added (Demo)'));
+              toast.success(t('bookings.added', 'Added'));
             }
             setIsBookingModalOpen(false);
             setEditingBooking(null);
@@ -255,10 +260,10 @@ export default function Bookings() {
           onSubmit={async (data) => {
             if (editingTask) {
               await updateTask(editingTask.id, data);
-              toast.success(t('tasks.updated', 'Updated (Demo)'));
+              toast.success(t('tasks.updated', 'Updated'));
             } else {
               await addTask(data);
-              toast.success(t('tasks.added', 'Added (Demo)'));
+              toast.success(t('tasks.added', 'Added'));
             }
             setIsTaskModalOpen(false);
             setEditingTask(null);

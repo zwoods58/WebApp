@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Bell, MessageCircle, LogOut, User, Globe, Moon, CreditCard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bell, MessageCircle, LogOut, User, Globe, Moon, CreditCard, Shield } from 'lucide-react';
 import { signOut } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
 import { useCountryStore } from '../store/countryStore.js';
@@ -50,12 +50,13 @@ export default function Settings() {
     try {
       await signOut();
       clearAuth();
-      clearCountry(); // Clear country store on logout
+      clearCountry();
       toast.success(t('settings.logoutSuccess', 'Logged out'));
       navigate('/login', { replace: true });
     } catch (error) {
+      console.warn('Logout error (non-critical):', error);
       clearAuth();
-      clearCountry(); // Clear country store on logout even if error
+      clearCountry();
       toast.success(t('settings.logoutSuccess', 'Logged out'));
       navigate('/login', { replace: true });
     }
@@ -69,15 +70,11 @@ export default function Settings() {
       <div className="settings-container pb-24">
         <OfflineBanner />
 
-        {/* Modern Header */}
-        <div className="reports-header-section pt-4">
-          <div className="reports-title-row">
-            <div className="px-4">
-              <BeeZeeLogo />
-            </div>
-            <div className="flex items-center gap-2">
-              <h1 className="reports-title">{t('settings.title', 'Settings')}</h1>
-            </div>
+        {/* Modern Header - Stacked Layout */}
+        <div className="reports-header-section pt-6 pb-2">
+          <div className="flex flex-col items-start px-4 gap-2">
+            <BeeZeeLogo />
+            <h1 className="reports-title mt-1">{t('settings.title', 'Settings')}</h1>
           </div>
         </div>
 

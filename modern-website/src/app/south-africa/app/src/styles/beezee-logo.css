@@ -1,62 +1,25 @@
-/* BeeZee Logo Styles - Ensure logo always renders */
-
-/* Ensure logo container wrapper is always visible */
-.reports-header-section > div:first-child,
-.reports-header-section .px-4 {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  min-height: 32px;
-  position: relative;
-  z-index: 10;
-}
-
+/* BeeZee Logo Styles - Ensure logo always renders correctly */
 .beezee-logo-container {
   display: flex !important;
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  min-width: 100px;
-  position: relative;
-  z-index: 10;
+  align-items: center !important;
+  gap: 8px !important;
   visibility: visible !important;
   opacity: 1 !important;
-  will-change: auto;
-}
-
-.beezee-logo-container * {
-  display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  background: transparent !important;
 }
 
 .beezee-logo-emoji {
-  font-size: 1.5rem;
-  line-height: 1;
-  display: inline-block !important;
+  font-size: 1.5rem !important;
+  line-height: 1 !important;
   visibility: visible !important;
-  opacity: 1 !important;
+  display: inline-block !important;
 }
 
 .beezee-logo-text {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: #111827;
-  white-space: nowrap;
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+  color: #111827 !important;
+  white-space: nowrap !important;
+  visibility: visible !important;
   display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
 }
-
-/* Prevent any CSS from hiding the logo */
-.beezee-logo-container,
-.beezee-logo-container *,
-.reports-header-section .beezee-logo-container {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
-  width: auto !important;
-  overflow: visible !important;
-}
-

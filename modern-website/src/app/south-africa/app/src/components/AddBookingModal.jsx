@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Calendar, Clock, User, Phone, Mail, MapPin, FileText, Info, Repeat, StopCircle } from 'lucide-react';
+import { X, Calendar, Clock, User, Phone, Mail, MapPin, FileText, Info, Repeat, StopCircle, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -20,6 +20,7 @@ export default function AddBookingModal({
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
   const [service, setService] = useState('');
+  const [serviceCost, setServiceCost] = useState(''); // New field
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [recurrence, setRecurrence] = useState('none'); // none, daily, weekly, monthly
@@ -39,6 +40,7 @@ export default function AddBookingModal({
         setAppointmentDate(initialData.appointment_date || '');
         setAppointmentTime(initialData.appointment_time || '');
         setService(initialData.service || '');
+        setServiceCost(initialData.service_cost || '');
         setLocation(initialData.location || '');
         setNotes(initialData.notes || '');
         setRecurrence(initialData.recurrence_frequency || 'none');
@@ -64,6 +66,7 @@ export default function AddBookingModal({
       setClientPhone('');
       setClientEmail('');
       setService('');
+      setServiceCost('');
       setLocation('');
       setNotes('');
       document.body.style.overflow = '';
@@ -104,6 +107,7 @@ export default function AddBookingModal({
       appointment_date: appointmentDate,
       appointment_time: appointmentTime,
       service: service || null,
+      service_cost: serviceCost || null,
       location: location || null,
       notes: notes || null,
       status: 'scheduled',
@@ -230,19 +234,37 @@ export default function AddBookingModal({
             </div>
 
             {/* Service */}
-            <div className="form-field">
-              <label htmlFor="service" className="form-label">
-                <FileText size={16} className="inline mr-2" />
-                {t('common.service', 'Service')}
-              </label>
-              <input
-                id="service"
-                type="text"
-                value={service}
-                onChange={(e) => setService(e.target.value)}
-                placeholder={t('common.servicePlaceholder', 'e.g., Consultation, Haircut')}
-                className="description-input"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="form-field">
+                <label htmlFor="service" className="form-label">
+                  <FileText size={16} className="inline mr-2" />
+                  {t('common.service', 'Service')}
+                </label>
+                <input
+                  id="service"
+                  type="text"
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  placeholder={t('common.servicePlaceholder', 'e.g., haircut')}
+                  className="description-input"
+                />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="serviceCost" className="form-label">
+                  <DollarSign size={16} className="inline mr-2" />
+                  {t('common.cost', 'Cost (R)')}
+                </label>
+                <input
+                  id="serviceCost"
+                  type="number"
+                  inputMode="decimal"
+                  value={serviceCost}
+                  onChange={(e) => setServiceCost(e.target.value)}
+                  placeholder="0.00"
+                  className="description-input"
+                />
+              </div>
             </div>
 
             {/* Location */}

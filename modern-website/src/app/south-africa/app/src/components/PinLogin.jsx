@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Eye, EyeOff, AlertCircle, RefreshCw } from 'lucide-react';
+import { Shield, Eye, EyeOff, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../utils/supabase';
 import { AuthService } from '../services/AuthService';

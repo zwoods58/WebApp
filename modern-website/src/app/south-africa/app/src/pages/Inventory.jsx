@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { supabase } from '../utils/supabase'; // Disabled for demo
 import { useAuthStore } from '../store/authStore';
-import { Plus, Package, Search, AlertTriangle, ChevronLeft, Edit, Trash2, X, PlusCircle, MinusCircle } from 'lucide-react';
+import { Plus, Minus, Package, Search, AlertTriangle, ChevronLeft, Edit, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import SwipeToRefresh from '../components/SwipeToRefresh';
 import FloatingNavBar from '../components/FloatingNavBar';
@@ -125,9 +125,9 @@ export default function Inventory() {
           onTabChange={setFilter}
           actionButtons={[
             {
-              icon: <><Plus size={18} /> {t('common.add', 'Add')}</>,
+              icon: <div className="flex items-center gap-2 px-1"><Plus size={18} strokeWidth={3} /> <span className="text-xs font-black uppercase tracking-widest">{t('common.add', 'Add')}</span></div>,
               onClick: () => { setEditingItem(null); setIsModalOpen(true); },
-              className: "px-4 py-2 bg-primary-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-transform flex items-center gap-2",
+              className: "h-11 px-5 bg-[#2C2C2E] text-white rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center",
               title: t('inventory.addItem', 'Add Item')
             }
           ]}
@@ -216,15 +216,15 @@ export default function Inventory() {
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => handleUpdateQuantity(item, -1)}
-                          className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 active:scale-95 transition-transform shadow-sm"
+                          className="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-500 active:scale-95 transition-transform shadow-sm hover:bg-red-100"
                         >
-                          <MinusCircle size={20} />
+                          <Minus size={20} strokeWidth={3} />
                         </button>
                         <button
                           onClick={() => handleUpdateQuantity(item, 1)}
-                          className="w-10 h-10 rounded-full bg-[#2C2C2E] flex items-center justify-center text-white active:scale-95 transition-transform shadow-sm"
+                          className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white active:scale-95 transition-transform shadow-lg hover:bg-green-700"
                         >
-                          <PlusCircle size={20} />
+                          <Plus size={20} strokeWidth={3} />
                         </button>
                       </div>
                     </div>

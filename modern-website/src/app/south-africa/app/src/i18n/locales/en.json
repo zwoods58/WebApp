@@ -159,10 +159,18 @@
     "upload": "Upload from Gallery",
     "uploadDesc": "Select an image file"
   },
-  "notifications": {
-    "emptyTitle": "You're all caught up!",
-    "emptyDesc": "Check back later for updates about your business, tips, and reminders.",
-    "testSent": "Test notification sent!",
-    "testFailed": "Failed to send test notification"
+  "coach": {
+    "title": "BeeZee Coach",
+    "greeting": "Hello! I'm your BeeZee AI assistant. Ask me anything about your finances or inventory.",
+    "thinking": "BeeZee is thinking...",
+    "placeholder": "Ask about your business...",
+    "askError": "Failed to get response.",
+    "questionsLeft": "{{count}} Left",
+    "responses": {
+      "profit": "Your business is doing well! Your total profit is {{amount}} this month, which is up {{trend}}% from last month. Most of your revenue is coming from sales.",
+      "stock": "You currently have {{count}} {{unit}} of {{name}} in stock. You've sold {{sold}} today. Based on your sales rate, you should restock in about {{days}} days.",
+      "identity": "I'm BeeZee, your AI business coach! I'm here to help you manage your shop in South Africa, track your inventory, and understand your finances.",
+      "fallback": "That's a great question! I can help you analyze your business data. Try asking about your profit or bread stock!"
+    }
   }
 }

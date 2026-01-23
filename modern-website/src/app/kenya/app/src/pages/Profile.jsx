@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
 import { useAuthStore } from '../store/authStore';
-import { Phone, MessageSquare, Calendar, Crown, ChevronLeft, User, ShieldCheck, Mail, LogOut } from 'lucide-react';
+import { Phone, MessageSquare, Calendar, Crown, ChevronLeft, User, ShieldCheck, Mail, LogOut, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import OfflineBanner from '../components/OfflineBanner';
@@ -66,7 +66,7 @@ export default function Profile() {
   return (
     <div className="profile-container pb-24">
       <OfflineBanner />
-      
+
       {/* Modern Header */}
       <div className="reports-header-section pt-4">
         <div className="reports-title-row">
@@ -80,66 +80,66 @@ export default function Profile() {
             <LogOut size={20} />
           </button>
         </div>
-      
 
-      <div className="px-4 mt-8 space-y-6">
-        {/* Profile Card */}
-        <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 flex flex-col items-center animate-slide-up">
-          <div className="w-24 h-24 bg-blue-50 rounded-[32px] flex items-center justify-center mb-4 text-4xl">
-            👤
-          </div>
-          <h2 className="text-xl font-black text-gray-900 mb-2">{profile.phone_number}</h2>
-          <div className="flex items-center gap-2 px-4 py-1.5 bg-gray-50 rounded-full">
-            <Crown size={14} className="text-blue-500" />
-            <span className="text-xs font-black text-gray-900 uppercase tracking-widest">
-              {profile.subscription_status === 'trial' ? `${daysRemaining} Days Left` : 'Active Member'}
-            </span>
-          </div>
-        </div>
 
-        {/* Info Grid */}
-        <div className="grid grid-cols-1 gap-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <div className="bg-white p-5 rounded-[28px] border border-gray-50 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
-              <ShieldCheck size={20} />
+        <div className="px-4 mt-8 space-y-6">
+          {/* Profile Card */}
+          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 flex flex-col items-center animate-slide-up">
+            <div className="w-24 h-24 bg-blue-50 rounded-[32px] flex items-center justify-center mb-4 text-4xl">
+              👤
             </div>
-            <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('profile.memberSince', 'Joined')}</p>
-              <p className="text-sm font-black text-gray-900">{format(new Date(profile.created_at), 'MMMM dd, yyyy')}</p>
+            <h2 className="text-xl font-black text-gray-900 mb-2">{profile.phone_number}</h2>
+            <div className="flex items-center gap-2 px-4 py-1.5 bg-gray-50 rounded-full">
+              <Crown size={14} className="text-blue-500" />
+              <span className="text-xs font-black text-gray-900 uppercase tracking-widest">
+                {profile.subscription_status === 'trial' ? `${daysRemaining} Days Left` : 'Active Member'}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* WhatsApp Form */}
-        <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-            <MessageSquare size={16} />
-            WhatsApp Notification
-          </h3>
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="relative">
-              <input
-                type="tel"
-                value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
-                placeholder="+1234567890"
-                className="w-full pl-6 pr-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100"
-              />
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 gap-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="bg-white p-5 rounded-[28px] border border-gray-50 shadow-sm flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{t('profile.memberSince', 'Joined')}</p>
+                <p className="text-sm font-black text-gray-900">{format(new Date(profile.created_at), 'MMMM dd, yyyy')}</p>
+              </div>
             </div>
-            <p className="text-[10px] font-bold text-gray-400 leading-relaxed italic">
-              {t('profile.whatsappHelp', "We'll send you transaction reminders and insights via WhatsApp")}
-            </p>
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full py-4 bg-[#2C2C2E] text-white font-black rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
-            >
-              {saving ? <Loader2 size={20} className="animate-spin" /> : t('common.save', 'Update Settings')}
-            </button>
-          </form>
+          </div>
+
+          {/* WhatsApp Form */}
+          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-gray-50 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+              <MessageSquare size={16} />
+              WhatsApp Notification
+            </h3>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="relative">
+                <input
+                  type="tel"
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  placeholder="+1234567890"
+                  className="w-full pl-6 pr-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+              <p className="text-[10px] font-bold text-gray-400 leading-relaxed italic">
+                {t('profile.whatsappHelp', "We'll send you transaction reminders and insights via WhatsApp")}
+              </p>
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full py-4 bg-[#2C2C2E] text-white font-black rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
+                {saving ? <Loader2 size={20} className="animate-spin" /> : t('common.save', 'Update Settings')}
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-      <FloatingNavBar />
+        <FloatingNavBar />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import BeeZeeLogo from './BeeZeeLogo';
 export default function PageHeader({
   title,
   showBack = false,
+  backIcon = 'chevron', // 'chevron' or 'x'
   showSearch = false,
   searchQuery = '',
   onSearchChange,
@@ -23,65 +24,65 @@ export default function PageHeader({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className="reports-header-section pt-4">
-      <div className="reports-title-row">
-        {/* Logo or Back Button */}
-        <div className="px-4">
+    <div className="reports-header-section">
+      {/* Row 1: Logo or Back Button */}
+      <div className="reports-top-bar">
+        <div className="flex items-center">
           {showBack ? (
-            <button 
-              onClick={() => navigate(-1)} 
-              className="p-2 -ml-2 text-gray-400"
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-800 active:scale-95 transition-transform hover:bg-gray-200"
             >
-              <ChevronLeft size={24} strokeWidth={3} />
+              {backIcon === 'x' ? <X size={24} strokeWidth={3} /> : <ChevronLeft size={24} strokeWidth={3} />}
             </button>
           ) : (
             <BeeZeeLogo />
           )}
         </div>
+      </div>
 
-        {/* Title or Search */}
-        <div className="flex items-center gap-2 flex-1">
-          {!isSearchOpen ? (
-            <h1 className="reports-title">{title}</h1>
-          ) : (
-            <div className="flex-1 flex items-center bg-gray-50 rounded-2xl px-3 py-1 animate-slide-right">
-              <Search size={18} className="text-gray-400 mr-2" />
-              <input
-                autoFocus
-                type="text"
-                placeholder={t('common.search', 'Search...')}
-                value={searchQuery}
-                onChange={(e) => onSearchChange?.(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 text-sm font-bold flex-1 py-2"
-              />
-              <button onClick={() => { setIsSearchOpen(false); onSearchChange?.(''); }}>
-                <X size={18} className="text-gray-400" />
-              </button>
+      {/* Row 2: Title or Search Input */}
+      <div className="px-4">
+        {!isSearchOpen ? (
+          <div className="reports-title-container -mx-4 flex items-center justify-between">
+            <h1 className="reports-title truncate">{title}</h1>
+            <div className="flex items-center gap-2 pr-4">
+              {showSearch && (
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 active:scale-95 transition-transform"
+                >
+                  <Search size={20} />
+                </button>
+              )}
+              {actionButtons.map((btn, idx) => (
+                <button
+                  key={idx}
+                  onClick={btn.onClick}
+                  className={btn.className || "w-10 h-10 rounded-full bg-[#2C2C2E] flex items-center justify-center text-white active:scale-95 transition-transform"}
+                  title={btn.title}
+                >
+                  {btn.icon}
+                </button>
+              ))}
             </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          {showSearch && !isSearchOpen && (
-            <button 
-              onClick={() => setIsSearchOpen(true)}
-              className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 active:scale-95 transition-transform"
-            >
-              <Search size={20} />
+          </div>
+        ) : (
+          <div className="flex items-center bg-gray-50 rounded-2xl px-3 py-1 mb-4 animate-slide-right">
+            <Search size={18} className="text-gray-400 mr-2" />
+            <input
+              autoFocus
+              type="text"
+              placeholder={t('common.search', 'Search...')}
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="bg-transparent border-none focus:ring-0 text-sm font-bold flex-1 py-2"
+            />
+            <button onClick={() => { setIsSearchOpen(false); onSearchChange?.(''); }}>
+              <X size={18} className="text-gray-400" />
             </button>
-          )}
-          {actionButtons.map((btn, idx) => (
-            <button
-              key={idx}
-              onClick={btn.onClick}
-              className={btn.className || "w-10 h-10 rounded-full bg-[#2C2C2E] flex items-center justify-center text-white active:scale-95 transition-transform"}
-              title={btn.title}
-            >
-              {btn.icon}
-            </button>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Tabs */}

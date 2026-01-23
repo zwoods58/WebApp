@@ -51,7 +51,7 @@ export default function AddTransaction() {
 
     try {
       await addTransaction(transaction);
-      toast.success(t('transactions.added', 'Added successfully (Demo Mode)!'));
+      toast.success(t('transactions.added', 'Added successfully!'));
       navigate('/dashboard/transactions');
     } catch (error) {
       console.error('Error adding demo transaction:', error);

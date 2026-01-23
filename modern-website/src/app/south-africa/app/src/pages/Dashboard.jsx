@@ -24,6 +24,7 @@ import { PageSkeleton, BalanceCardSkeleton, ListSkeleton, Skeleton } from '../co
 import PWAInstallButton from '../components/PWAInstallButton';
 import OfflineBanner from '../components/OfflineBanner';
 import SwipeToRefresh from '../components/SwipeToRefresh';
+import ScheduleSection from '../components/ScheduleSection';
 import { useTranslation } from 'react-i18next';
 // import { createInventoryPurchaseTransaction } from '../utils/inventoryTransactions'; // Replaced by local logic
 import { useOfflineStore } from '../store/offlineStore';
@@ -37,7 +38,16 @@ export default function Dashboard() {
   const { t } = useTranslation();
 
   // Use Demo Data Hook
-  const { transactions, stats, addTransaction, addInventory, loading: demoLoading } = useDemoData();
+  const {
+    transactions,
+    stats,
+    bookings,
+    addTransaction,
+    addInventory,
+    addBooking,
+    updateBooking,
+    loading: demoLoading
+  } = useDemoData();
 
   const [notificationCount, setNotificationCount] = useState(0); // Mock notification count
   const [sparklineData, setSparklineData] = useState([]); // Mock sparkline
@@ -160,8 +170,48 @@ export default function Dashboard() {
 
   const handleBookingSubmit = async (bookingData) => {
     // For demo, just toast success
-    toast.success('Booking saved (Demo Mode)');
+    await addBooking(bookingData);
+    toast.success('Booking saved');
     setIsBookingModalOpen(false);
+  };
+
+  const handleCompleteBooking = async (booking) => {
+    try {
+      setIsLoadingModalOpen(true);
+
+      // 1. Add to ledger as income if there's a cost
+      if (booking.service_cost && Number(booking.service_cost) > 0) {
+        await addTransaction({
+          type: 'income',
+          amount: Number(booking.service_cost),
+          category: 'Sales',
+          description: `Booking: ${booking.client_name} - ${booking.service}`,
+          date: new Date().toISOString(),
+          method: 'Cash'
+        });
+      }
+
+      // 2. Mark booking as completed
+      await updateBooking(booking.id, { status: 'completed' });
+
+      setIsLoadingModalOpen(false);
+      toast.success(t('bookings.completed', 'Booking completed and added to ledger!'));
+    } catch (error) {
+      console.error('Error completing booking:', error);
+      setIsLoadingModalOpen(false);
+      toast.error('Failed to complete booking');
+    }
+  };
+
+  const handleCancelBooking = async (booking) => {
+    if (confirm(t('bookings.confirmCancel', 'Are you sure you want to cancel this booking?'))) {
+      try {
+        await updateBooking(booking.id, { status: 'cancelled' });
+        toast.success(t('bookings.cancelled', 'Booking cancelled'));
+      } catch (error) {
+        toast.error('Failed to cancel booking');
+      }
+    }
   };
 
   // Mock Trend
@@ -229,7 +279,7 @@ export default function Dashboard() {
             expenses={stats.totalExpenses}
             trend={calculateTrend()}
             sparklineData={sparklineData}
-            accountNumber={user?.user_metadata?.whatsapp_number || "Demo Account"}
+            accountNumber={user?.user_metadata?.whatsapp_number || "Personal Account"}
           />
         </motion.div>
 
@@ -239,6 +289,14 @@ export default function Dashboard() {
             onReceiptClick={() => setIsReceiptModalOpen(true)}
             onInventoryClick={() => setIsInventoryModalOpen(true)}
             onBookingClick={() => setIsBookingModalOpen(true)}
+          />
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <ScheduleSection
+            bookings={bookings}
+            onComplete={handleCompleteBooking}
+            onCancel={handleCancelBooking}
           />
         </motion.div>
 

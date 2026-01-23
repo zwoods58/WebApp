@@ -253,7 +253,8 @@ button,
   /* Touch-friendly */
   min-width: 48px;
   padding: 12px 24px;
-  border-radius: 12px;
+  /* border-radius: 12px; */
+  /* Removed to allow Tailwind overrides */
   font-size: 16px;
   font-weight: 600;
   border: none;

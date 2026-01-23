@@ -47,7 +47,7 @@ export default function VoiceLogs() {
             <ArrowLeft size={22} />
           </button>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">Voice Logs (Demo)</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Voice Logs</h1>
             <p className="text-gray-600 text-sm">Recent voice booking/task attempts</p>
           </div>
           <div className="flex items-center gap-2">

@@ -16,7 +16,7 @@
 
 .reports-header-section {
   /* Using global header standards */
-  padding: 4px var(--spacing-large);
+  padding: 4px var(--spacing-medium);
   padding-top: calc(var(--page-top-padding) + env(safe-area-inset-top, 0px) + 2px);
   background: white;
   border-bottom: 2px solid #E5E7EB;
@@ -43,11 +43,11 @@
   gap: 12px;
 }
 
-.reports-title-row > div:first-child {
+.reports-title-row>div:first-child {
   flex-shrink: 0;
 }
 
-.reports-title-row > div:nth-child(2) {
+.reports-title-row>div:nth-child(2) {
   flex: 1;
   display: flex;
   align-items: center;
@@ -56,12 +56,15 @@
 }
 
 .reports-title {
-  /* Using global header standards */
-  font-size: 32px;
+  /* Using global header standards - Reduced size for mobile-first */
+  font-size: 24px;
   font-weight: 900;
   color: #1F2937;
   letter-spacing: -0.02em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 [data-theme="dark"] .reports-title {
@@ -135,7 +138,9 @@
   scrollbar-width: none;
 }
 
-.date-range-scroll::-webkit-scrollbar { display: none; }
+.date-range-scroll::-webkit-scrollbar {
+  display: none;
+}
 
 .date-range-pill {
   flex-shrink: 0;
@@ -153,7 +158,7 @@
   background: var(--color-deep-charcoal);
   color: white;
   border-color: var(--color-deep-charcoal);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Report Cards - Analytics Style */
@@ -170,7 +175,7 @@
   border-radius: 28px;
   padding: 24px 20px;
   border: 1px solid #F3F4F6;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -184,11 +189,11 @@
     gap: 10px;
     padding: 0 calc(var(--spacing-medium) - 4px);
   }
-  
+
   .report-card {
     padding: 20px 16px;
   }
-  
+
   .report-card-amount {
     font-size: 24px;
   }
@@ -216,8 +221,13 @@
   overflow-wrap: break-word;
 }
 
-.report-card-amount.income { color: #166534; }
-.report-card-amount.expense { color: #991B1B; }
+.report-card-amount.income {
+  color: #166534;
+}
+
+.report-card-amount.expense {
+  color: #991B1B;
+}
 
 [data-theme="dark"] .reports-header-section,
 [data-theme="dark"] .reports-tabs-container,
@@ -229,7 +239,19 @@
   color: #F8FAFC;
 }
 
-[data-theme="dark"] .reports-tabs-container { background: #0F172A; }
-[data-theme="dark"] .reports-tab-button.active { background: #334155; }
-[data-theme="dark"] .date-range-pill.active { background: #F8FAFC; color: #0F172A; }
-[data-theme="dark"] .reports-title { color: #F8FAFC; }
+[data-theme="dark"] .reports-tabs-container {
+  background: #0F172A;
+}
+
+[data-theme="dark"] .reports-tab-button.active {
+  background: #334155;
+}
+
+[data-theme="dark"] .date-range-pill.active {
+  background: #F8FAFC;
+  color: #0F172A;
+}
+
+[data-theme="dark"] .reports-title {
+  color: #F8FAFC;
+}

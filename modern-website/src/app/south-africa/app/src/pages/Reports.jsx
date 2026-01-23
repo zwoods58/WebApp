@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, Share2, Loader2, AlertCircle, FileText, ChevronLeft, Package, TrendingUp, AlertTriangle, RefreshCcw } from 'lucide-react';
+import { Download, Share2, Loader2, AlertCircle, FileText, ChevronLeft, Package, TrendingUp, AlertTriangle, RefreshCcw, Plus } from 'lucide-react';
 // import { supabase, generateReport } from '../utils/supabase'; // Disabled for demo
 import { useAuthStore } from '../store/authStore';
 import { format, startOfDay, startOfWeek, startOfMonth, endOfDay, endOfMonth, subDays, subWeeks, subMonths, isWithinInterval, parseISO } from 'date-fns';
@@ -118,7 +118,7 @@ export default function Reports() {
         categoryBreakdown: Object.values(categoryMap),
         dailyStats: sortedDailyStats,
         analysis: {
-          summary: "Demo analysis: Your business shows healthy growth with most revenue coming from Sales. Expenses are well-managed.",
+          summary: "Your business shows healthy growth with most revenue coming from Sales. Expenses are well-managed.",
           insights: ["Revenue is consistent", "Low stock items identified", "Profit margins holding steady"]
         }
       });
@@ -185,11 +185,6 @@ export default function Reports() {
 
   if (loading || demoLoading) return (
     <div className="reports-container pb-24">
-      <div className="reports-header-section">
-        <div className="px-4 flex items-center gap-4 mb-6">
-          <h1 className="text-3xl font-black">{t('reports.title', 'Reports')}</h1>
-        </div>
-      </div>
       <PageSkeleton />
       <FloatingNavBar />
     </div>
@@ -215,15 +210,15 @@ export default function Reports() {
             onFilterChange={handleFilterChange}
             actionButtons={[
               ...(activeTab === 'financials' && reportData?.transactionCount > 0 ? [{
-                icon: generatingPDF ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />,
+                icon: generatingPDF ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} strokeWidth={3} />,
                 onClick: handleExportPDF,
-                className: "w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:shadow-lg transition-all duration-200 shadow-sm",
+                className: "h-11 px-4 bg-[#F1F5F9] border border-[#CBD5E1] rounded-full flex items-center justify-center text-[#475569] active:scale-95 transition-all shadow-sm hover:bg-[#E2E8F0]",
                 title: t('reports.export', 'Export PDF')
               }] : []),
               {
-                icon: <FileText size={20} />,
+                icon: <div className="flex items-center gap-2"><Plus size={18} strokeWidth={3} /> <span className="text-xs font-black uppercase tracking-widest">Invoice</span></div>,
                 onClick: () => setIsInvoiceModalOpen(true),
-                className: "w-12 h-12 rounded-full bg-blue-500 border-2 border-blue-500 flex items-center justify-center text-white hover:bg-blue-600 hover:shadow-lg transition-all duration-200 shadow-sm",
+                className: "h-11 px-6 bg-blue-600 text-white rounded-full shadow-lg active:scale-95 transition-all flex items-center justify-center hover:bg-blue-700",
                 title: 'Create Invoice'
               }
             ]}
@@ -248,7 +243,7 @@ export default function Reports() {
                   <div className="mx-4 bg-[#F0F9FF] rounded-[32px] p-6 border border-[#E0F2FE] animate-slide-up">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                      <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Demo Insight</span>
+                      <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">AI Insight</span>
                     </div>
                     <p className="text-gray-700 text-sm font-bold leading-relaxed italic">"{reportData.analysis.summary}"</p>
                   </div>

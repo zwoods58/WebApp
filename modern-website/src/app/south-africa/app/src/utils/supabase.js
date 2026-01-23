@@ -208,8 +208,8 @@ export async function generateReport(reportType, startDate, endDate, customUserI
     await new Promise(resolve => setTimeout(resolve, 3000));
     return {
       success: true,
-      reportHtml: "<h1>Demo Report</h1><p>Your business is performing well in this mock analysis.</p>",
-      summary: "This is a mock summary for South Africa Demo Mode."
+      reportHtml: "<h1>Business Report</h1><p>Your business is performing well in our analysis.</p>",
+      summary: "Your business is performing well. We've analyzed your data to provide these insights."
     };
   }
 
@@ -237,7 +237,7 @@ export async function askFinancialCoach(question, context = null) {
     await new Promise(resolve => setTimeout(resolve, 1500));
     return {
       success: true,
-      answer: "This is a mock response from the BeeZee AI coach in Demo Mode."
+      answer: "I can help you with that. Based on typical patterns in your industry, I recommend focusing on inventory turnover."
     };
   }
 

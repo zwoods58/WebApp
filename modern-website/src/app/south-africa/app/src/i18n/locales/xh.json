@@ -159,14 +159,18 @@
     "upload": "Upload from Gallery",
     "uploadDesc": "Select an image file"
   },
-  "notifications": {
-    "emptyTitle": "You're all caught up!",
-    "emptyDesc": "Check back later for updates about your business, tips, and reminders.",
-    "testSent": "Test notification sent!",
-    "testFailed": "Failed to send test notification"
+  "coach": {
+    "title": "U-BeeZee Coach",
+    "greeting": "Molo! Ndingumncedisi wakho we-AI u-BeeZee. Ndibuze nantoni na malunga nezezimali zakho okanye itokwe yakho.",
+    "thinking": "U-BeeZee uyacinga...",
+    "placeholder": "Buza malunga neshishini lakho...",
+    "askError": "Ayiphumelelanga ukufumana impendulo.",
+    "questionsLeft": "{{count}} Okushiyekileyo",
+    "responses": {
+      "profit": "Ishishini lakho lihamba kakuhle! Ingeniso yakho iyonke yi-{{amount}} kule nyanga, enyuke nge-{{trend}}% kwisithuba senyanga ephelileyo. Uninzi lwengeniso yakho luvela kwiintengiso.",
+      "stock": "Okwangoku unama-{{count}} {{unit}} e-{{name}} kwitokwe. Uthengise i-{{sold}} namhlanje. Ngokusekwe kwisantya sakho sokuthengisa, kufuneka ugcwalise kwitokwe malunga neentsuku ezi-{{days}}.",
+      "identity": "Ngingu-BeeZee, umqeqeshi wakho weshishini we-AI! Ndilapha ukukunceda ulawule ivenkile yakho eMzantsi Afrika, ulandelele itokwe yakho, kwaye uqonde ezezimali zakho.",
+      "fallback": "Lowo mbuzo mhle kakhulu! Ndinokukunceda uhlaziye idatha yeshishini lakho. Zama ukubuza malunga nengeniso yakho okanye itokwe yesonka!"
+    }
   }
 }
-
-
-
-

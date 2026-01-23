@@ -159,10 +159,18 @@
     "upload": "Laai op vanaf Gallery",
     "uploadDesc": "Kies 'n beeldlêer"
   },
-  "notifications": {
-    "emptyTitle": "Jy is heeltemal op datum!",
-    "emptyDesc": "Kom later terug vir opdaterings oor jou besigheid, wenke en herinneringe.",
-    "testSent": "Toetskennisgewing gestuur!",
-    "testFailed": "Kon nie toetskennisgewing stuur nie"
+  "coach": {
+    "title": "BeeZee Afrigter",
+    "greeting": "Hallo! Ek is jou BeeZee KI-assistent. Vra my enigiets oor jou finansies of voorraad.",
+    "thinking": "BeeZee dink...",
+    "placeholder": "Vra oor jou besigheid...",
+    "askError": "Kon nie antwoord kry nie.",
+    "questionsLeft": "{{count}} Oor",
+    "responses": {
+      "profit": "Jou besigheid doen goed! Jou totale wins is {{amount}} hierdie maand, wat {{trend}}% meer is as verlede maand. Die meeste van jou inkomste kom uit verkope.",
+      "stock": "Jy het tans {{count}} {{unit}} van {{name}} in voorraad. Jy het vandag {{sold}} verkoop. Gebaseer op jou verkope, behoort jy oor ongeveer {{days}} dae weer voorraad aan te vul.",
+      "identity": "Ek is BeeZee, jou KI-besigheidsafrigter! Ek is hier om jou te help om jou winkel in Suid-Afrika te bestuur, jou voorraad na te spoor en jou finansies te verstaan.",
+      "fallback": "Dit is 'n goeie vraag! Ek kan jou help om jou besigheidsdata te ontleed. Probeer vra oor jou wins of brood voorraad!"
+    }
   }
 }
