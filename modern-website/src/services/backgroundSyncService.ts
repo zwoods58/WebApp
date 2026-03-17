@@ -1,15 +1,17 @@
 /**
- * Background Sync Service
- * Handles synchronization between localStorage and Supabase
+ * Enhanced Background Sync Service
+ * Handles synchronization between localStorage and Supabase for ALL features
  * Provides retry logic, conflict resolution, and sync status tracking
  */
 
 import { localStorageManager } from '@/utils/localStorageManager';
 import { supabase } from '@/lib/supabase';
+import { offlineQueueManager } from '@/utils/offlineQueue';
+import { OfflineOperation, FEATURE_SYNC_ORDER } from '@/types/offlineTypes';
 
 export interface SyncQueueItem {
   id: string;
-  type: 'user' | 'business' | 'cleanup';
+  type: 'user' | 'business' | 'cleanup' | 'beehive' | 'cash' | 'inventory' | 'calendar' | 'credit';
   data: any;
   retryCount: number;
   lastAttempt: number;
@@ -22,6 +24,13 @@ export interface SyncStatus {
   lastSync: number;
   pendingItems: number;
   errors: string[];
+  featureStatus: {
+    beehive: 'online' | 'offline' | 'syncing' | 'error';
+    cash: 'online' | 'offline' | 'syncing' | 'error';
+    inventory: 'online' | 'offline' | 'syncing' | 'error';
+    calendar: 'online' | 'offline' | 'syncing' | 'error';
+    credit: 'online' | 'offline' | 'syncing' | 'error';
+  };
 }
 
 class BackgroundSyncService {
@@ -35,7 +44,14 @@ class BackgroundSyncService {
     isSyncing: false,
     lastSync: 0,
     pendingItems: 0,
-    errors: []
+    errors: [],
+    featureStatus: {
+      beehive: 'online',
+      cash: 'online',
+      inventory: 'online',
+      calendar: 'online',
+      credit: 'online'
+    }
   };
 
   constructor() {
@@ -189,8 +205,295 @@ class BackgroundSyncService {
       case 'cleanup':
         await this.performCleanup(item.data);
         break;
+      case 'beehive':
+        await this.syncBeehive(item.data);
+        break;
+      case 'cash':
+        await this.syncCash(item.data);
+        break;
+      case 'inventory':
+        await this.syncInventory(item.data);
+        break;
+      case 'calendar':
+        await this.syncCalendar(item.data);
+        break;
+      case 'credit':
+        await this.syncCredit(item.data);
+        break;
       default:
         throw new Error(`Unknown sync item type: ${item.type}`);
+    }
+  }
+
+  /**
+   * Sync Beehive data (posts, comments, likes)
+   */
+  private async syncBeehive(beehiveData: any): Promise<void> {
+    try {
+      this.status.featureStatus.beehive = 'syncing';
+      this.updateStatus();
+      
+      switch (beehiveData.operation) {
+        case 'create_post':
+          const { error: postError } = await supabase
+            .from('posts')
+            .insert({
+              user_id: beehiveData.userId,
+              content: beehiveData.content,
+              created_at: new Date(beehiveData.timestamp).toISOString()
+            });
+          if (postError) throw postError;
+          break;
+          
+        case 'comment':
+          const { error: commentError } = await supabase
+            .from('comments')
+            .insert({
+              post_id: beehiveData.postId,
+              user_id: beehiveData.userId,
+              content: beehiveData.content,
+              created_at: new Date(beehiveData.timestamp).toISOString()
+            });
+          if (commentError) throw commentError;
+          break;
+          
+        case 'like':
+          const { error: likeError } = await supabase
+            .from('likes')
+            .insert({
+              post_id: beehiveData.postId,
+              user_id: beehiveData.userId,
+              created_at: new Date(beehiveData.timestamp).toISOString()
+            });
+          if (likeError) throw likeError;
+          break;
+          
+        default:
+          throw new Error(`Unknown Beehive operation: ${beehiveData.operation}`);
+      }
+      
+      this.status.featureStatus.beehive = 'online';
+      this.updateStatus();
+    } catch (error) {
+      this.status.featureStatus.beehive = 'error';
+      this.updateStatus();
+      throw new Error(`Beehive sync failed: ${error}`);
+    }
+  }
+
+  /**
+   * Sync Cash/Transactions data
+   */
+  private async syncCash(cashData: any): Promise<void> {
+    try {
+      this.status.featureStatus.cash = 'syncing';
+      this.updateStatus();
+      
+      switch (cashData.operation) {
+        case 'sale':
+        case 'expense':
+          const { error: transactionError } = await supabase
+            .from('transactions')
+            .insert({
+              user_id: cashData.userId,
+              type: cashData.operation,
+              amount: cashData.amount,
+              category: cashData.category,
+              description: cashData.description,
+              payment_method: cashData.paymentMethod,
+              customer_id: cashData.customerId,
+              created_at: new Date(cashData.timestamp).toISOString()
+            });
+          if (transactionError) throw transactionError;
+          break;
+          
+        case 'transfer':
+          const { error: transferError } = await supabase
+            .from('transfers')
+            .insert({
+              user_id: cashData.userId,
+              from_account: cashData.fromAccount,
+              to_account: cashData.toAccount,
+              amount: cashData.amount,
+              description: cashData.description,
+              created_at: new Date(cashData.timestamp).toISOString()
+            });
+          if (transferError) throw transferError;
+          break;
+          
+        default:
+          throw new Error(`Unknown Cash operation: ${cashData.operation}`);
+      }
+      
+      this.status.featureStatus.cash = 'online';
+      this.updateStatus();
+    } catch (error) {
+      this.status.featureStatus.cash = 'error';
+      this.updateStatus();
+      throw new Error(`Cash sync failed: ${error}`);
+    }
+  }
+
+  /**
+   * Sync Inventory data
+   */
+  private async syncInventory(inventoryData: any): Promise<void> {
+    try {
+      this.status.featureStatus.inventory = 'syncing';
+      this.updateStatus();
+      
+      switch (inventoryData.operation) {
+        case 'add_item':
+        case 'update_stock':
+          const { error: itemError } = await supabase
+            .from('inventory_items')
+            .upsert({
+              user_id: inventoryData.userId,
+              item_name: inventoryData.itemName,
+              stock_level: inventoryData.stockLevel,
+              price: inventoryData.price,
+              category: inventoryData.category,
+              updated_at: new Date(inventoryData.timestamp).toISOString()
+            });
+          if (itemError) throw itemError;
+          break;
+          
+        case 'stock_adjustment':
+          const { error: adjustmentError } = await supabase
+            .from('stock_adjustments')
+            .insert({
+              user_id: inventoryData.userId,
+              item_id: inventoryData.itemId,
+              previous_stock: inventoryData.previousStock,
+              new_stock: inventoryData.stockLevel,
+              reason: inventoryData.adjustmentReason,
+              created_at: new Date(inventoryData.timestamp).toISOString()
+            });
+          if (adjustmentError) throw adjustmentError;
+          break;
+          
+        default:
+          throw new Error(`Unknown Inventory operation: ${inventoryData.operation}`);
+      }
+      
+      this.status.featureStatus.inventory = 'online';
+      this.updateStatus();
+    } catch (error) {
+      this.status.featureStatus.inventory = 'error';
+      this.updateStatus();
+      throw new Error(`Inventory sync failed: ${error}`);
+    }
+  }
+
+  /**
+   * Sync Calendar data
+   */
+  private async syncCalendar(calendarData: any): Promise<void> {
+    try {
+      this.status.featureStatus.calendar = 'syncing';
+      this.updateStatus();
+      
+      switch (calendarData.operation) {
+        case 'create_appointment':
+        case 'reschedule':
+          const { error: appointmentError } = await supabase
+            .from('appointments')
+            .upsert({
+              id: calendarData.appointmentId,
+              user_id: calendarData.userId,
+              customer_id: calendarData.customerId,
+              service: calendarData.service,
+              date_time: calendarData.dateTime,
+              duration: calendarData.duration,
+              notes: calendarData.notes,
+              status: calendarData.status || 'scheduled',
+              updated_at: new Date(calendarData.timestamp).toISOString()
+            });
+          if (appointmentError) throw appointmentError;
+          break;
+          
+        case 'cancel':
+          const { error: cancelError } = await supabase
+            .from('appointments')
+            .update({ 
+              status: 'cancelled',
+              updated_at: new Date(calendarData.timestamp).toISOString()
+            })
+            .eq('id', calendarData.appointmentId);
+          if (cancelError) throw cancelError;
+          break;
+          
+        default:
+          throw new Error(`Unknown Calendar operation: ${calendarData.operation}`);
+      }
+      
+      this.status.featureStatus.calendar = 'online';
+      this.updateStatus();
+    } catch (error) {
+      this.status.featureStatus.calendar = 'error';
+      this.updateStatus();
+      throw new Error(`Calendar sync failed: ${error}`);
+    }
+  }
+
+  /**
+   * Sync Credit data
+   */
+  private async syncCredit(creditData: any): Promise<void> {
+    try {
+      this.status.featureStatus.credit = 'syncing';
+      this.updateStatus();
+      
+      switch (creditData.operation) {
+        case 'issue_credit':
+          const { error: creditError } = await supabase
+            .from('credit_transactions')
+            .insert({
+              user_id: creditData.userId,
+              customer_id: creditData.customerId,
+              type: 'issue',
+              amount: creditData.amount,
+              terms: creditData.terms,
+              created_at: new Date(creditData.timestamp).toISOString()
+            });
+          if (creditError) throw creditError;
+          break;
+          
+        case 'repayment':
+          const { error: repaymentError } = await supabase
+            .from('credit_transactions')
+            .insert({
+              user_id: creditData.userId,
+              customer_id: creditData.customerId,
+              type: 'repayment',
+              amount: creditData.amount,
+              payment_method: creditData.paymentMethod,
+              created_at: new Date(creditData.timestamp).toISOString()
+            });
+          if (repaymentError) throw repaymentError;
+          break;
+          
+        case 'limit_update':
+          const { error: limitError } = await supabase
+            .from('customer_credit')
+            .update({ 
+              credit_limit: creditData.newLimit,
+              updated_at: new Date(creditData.timestamp).toISOString()
+            })
+            .eq('customer_id', creditData.customerId);
+          if (limitError) throw limitError;
+          break;
+          
+        default:
+          throw new Error(`Unknown Credit operation: ${creditData.operation}`);
+      }
+      
+      this.status.featureStatus.credit = 'online';
+      this.updateStatus();
+    } catch (error) {
+      this.status.featureStatus.credit = 'error';
+      this.updateStatus();
+      throw new Error(`Credit sync failed: ${error}`);
     }
   }
 
