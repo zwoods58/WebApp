@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.168.0/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+    "bcryptjs": "https://esm.sh/bcryptjs@2.4.3",
+    "djwt": "https://deno.land/x/djwt@v3.0.1/mod.ts",
+    "zod": "https://deno.land/x/zod@v3.22.4/mod.ts",
+    "shared/": "./_shared/"
+  }
+}

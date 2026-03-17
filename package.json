@@ -1,0 +1,1 @@
+{"name":"bezeefinance-platform","version":"1.0.0","description":"BeeZee Finance - Multi-country financial management platform","scripts":{"dev":"cd modern-website && npm run dev","build":"cd modern-website && npm run build","start":"cd modern-website && npm run start"},"private":true,"dependencies":{"crypto-js":"^4.2.0","otplib":"^12.0.1"}}
