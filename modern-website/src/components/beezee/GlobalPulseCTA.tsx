@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import PWAInstallModal from './PWAInstallModal';
 
 const regions = [
     {
@@ -37,6 +38,7 @@ const regions = [
 
 const GlobalPulseCTA = () => {
     const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+    const [isPWAInstallModalOpen, setIsPWAInstallModalOpen] = useState(false);
 
     return (
         <section id="pwa-selection" className="relative bg-studio-white py-32 overflow-hidden border-t border-glass-border">
@@ -54,9 +56,9 @@ const GlobalPulseCTA = () => {
                         </p>
 
                         <div className="flex flex-col gap-4">
-                            <Link
-                                href="/Beezee-App/auth/signup"
-                                className="group relative"
+                            <div
+                                onClick={() => setIsPWAInstallModalOpen(true)}
+                                className="group relative cursor-pointer"
                             >
                                 <div className="relative z-10 flex items-center justify-between px-8 py-6 bg-white/50 backdrop-blur-md border border-glass-border rounded-xl transition-all duration-300 ease-[0.25,1,0.5,1] group-hover:bg-white/80 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] group-hover:-translate-y-0.5 group-hover:border-system-blue/30">
                                     <div className="flex items-center gap-6">
@@ -82,7 +84,7 @@ const GlobalPulseCTA = () => {
                                     whileHover={{ x: "0%" }}
                                     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                                 />
-                            </Link>
+                            </div>
                         </div>
                     </div>
 
@@ -99,10 +101,10 @@ const GlobalPulseCTA = () => {
                             {/* Overlay Nodes on top of the image */}
                             <div className="absolute inset-0">
                                 {regions.map((region) => (
-                                    <Link
+                                    <div
                                         key={region.id}
-                                        href="/Beezee-App/auth/signup"
-                                        className="absolute text-center"
+                                        onClick={() => setIsPWAInstallModalOpen(true)}
+                                        className="absolute text-center cursor-pointer"
                                         style={{ left: `${region.coords.x}%`, top: `${region.coords.y}%` }}
                                     >
                                         <div className="relative -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
@@ -135,13 +137,18 @@ const GlobalPulseCTA = () => {
                                                 )}
                                             </AnimatePresence>
                                         </div>
-                                    </Link>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <PWAInstallModal
+                isOpen={isPWAInstallModalOpen}
+                onClose={() => setIsPWAInstallModalOpen(false)}
+            />
         </section>
     );
 };
