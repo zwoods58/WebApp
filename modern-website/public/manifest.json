@@ -2,12 +2,12 @@
   "name": "BeeZee",
   "short_name": "BeeZee",
   "description": "Your business notebook that knows your business",
-  "start_url": "/Business OS/app/ke/retail",
+  "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4A8DB8",
   "orientation": "portrait",
-  "scope": "/Business OS/",
+  "scope": "/",
   "icons": [
     {
       "src": "/beezee-icon-72x72.png",
