@@ -405,17 +405,7 @@ function BeezeeSignupContent() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
-      <div className="border-b border-[var(--border)]">
-        <div className="container mx-auto px-6 py-4">
-          <Link
-            href="/beezee"
-            className="inline-flex items-center gap-2 text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
-          >
-            <ArrowLeft size={18} />
-            Back to BeeZee
-          </Link>
-        </div>
-      </div>
+      {/* Header removed - no back navigation */}
 
       {/* Top progress summary */}
       <LiveAccountSummary 
