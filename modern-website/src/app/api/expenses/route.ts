@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
         category,
         description,
         vendor_name,
-        payment_method,
+        // Only include payment_method if it exists in the table
+        ...(payment_method && { payment_method }),
         expense_date,
         currency,
         metadata

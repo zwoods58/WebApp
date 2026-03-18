@@ -20,8 +20,6 @@ import {
   BottomNav, 
   Header,
   DashboardSkeleton,
-  TourProvider,
-  useTour,
   HomepageCalendar
 } from '@/components/universal';
 import BuzzInsights from '@/components/universal/BuzzInsights';
@@ -75,19 +73,6 @@ function IndustryDashboardContent() {
   const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
   const isLoading = transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading;
   
-  // Tour state management
-  const { isTourActive, startTour, completeTour, skipTour } = useTour();
-
-  useEffect(() => {
-    // Check if this is a new user (you can replace this with actual user data)
-    const hasSeenTour = localStorage.getItem('beezee-multi-page-tour-completed');
-    if (!hasSeenTour && !isLoading) {
-      setTimeout(() => {
-        startTour();
-      }, 1000); // Start tour after page loads
-    }
-  }, [isLoading, startTour]);
-
   // Register refresh handler
   useEffect(() => {
     registerRefreshHandler(handleRefresh);
@@ -114,14 +99,6 @@ function IndustryDashboardContent() {
       }
     }
   }, [business]);
-
-  const handleTourComplete = () => {
-    completeTour();
-  };
-
-  const handleTourSkip = () => {
-    skipTour();
-  };
 
   useEffect(() => {
     // Calculate today's totals using hook data
@@ -464,9 +441,5 @@ export default function IndustryDashboard() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
 
-  return (
-    <TourProvider industry={industry} country={country}>
-      <IndustryDashboardContent />
-    </TourProvider>
-  );
+  return <IndustryDashboardContent />;
 }

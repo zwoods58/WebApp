@@ -17,6 +17,8 @@ import { getCurrency, countryConfigs } from '@/utils/currency';
 import { industries } from '@/data/industries';
 import { localStorageManager } from '@/utils/localStorageManager';
 import { setBusinessContext } from '@/lib/supabaseContext';
+import { useAuth } from '@/hooks/useAuth';
+import PINSetup from '@/components/auth/PINSetup';
 
 // Helper function to get flag emoji or fallback
 const getFlagDisplay = (country: { code: string; name: string; flag: string }) => {
@@ -46,10 +48,13 @@ const countries = [
 function BeezeeSignupContent() {
   const router = useRouter();
   const { setProfile } = useBusinessProfile();
+  const { setupBusinessPIN } = useAuth();
   
   // Real signup state management
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
+  const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
+  const [pinSetupError, setPinSetupError] = useState<string | undefined>(undefined);
   
   const createBusinessInDatabase = async (userData: any) => {
     console.log('🔧 Creating business in database:', userData);
@@ -150,33 +155,58 @@ function BeezeeSignupContent() {
     name: '',
     businessName: '',
     phoneNumber: '',
-    inviteCode: '',
     dailyTarget: 0,
-    currency: '',
-    isDataSynced: false,
-    lastSyncTime: Date.now()
+    currency: 'KES',
+    inviteCode: '',
+    pin: '',
   });
 
   const updateFormData = (field: keyof SignupData, value: string | number) => {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       
-      // Auto-set currency when country is selected
+      // Auto-update currency when country changes
       if (field === 'country' && value) {
         updated.currency = getCurrency(value as string);
       }
       
-            
       return updated;
     });
   };
 
   const nextStep = () => {
-    if (currentStep < 7) setCurrentStep(currentStep + 1);
+    if (currentStep < 8) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
+
+  const handlePINSetup = async (pin: string) => {
+    if (!createdBusinessId) {
+      setPinSetupError('Business not created yet');
+      return;
+    }
+
+    setSignupLoading(true);
+    setPinSetupError(undefined);
+
+    try {
+      const { error } = await setupBusinessPIN(createdBusinessId, pin);
+      
+      if (error) {
+        setPinSetupError(error.message);
+      } else {
+        console.log('✅ PIN setup successful');
+        // Continue to final step
+        nextStep();
+      }
+    } catch (error) {
+      console.error('💥 PIN setup error:', error);
+      setPinSetupError('Failed to set PIN. Please try again.');
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
   const handleComplete = async () => {
@@ -189,74 +219,119 @@ function BeezeeSignupContent() {
       businessName: formData.businessName || '',
       phoneNumber: formData.phoneNumber || '',
       dailyTarget: Number(formData.dailyTarget) || 0,
-      currency: formData.currency || getCurrency(formData.country || ''),
+      currency: getCurrency(formData.country || ''),
       inviteCode: formData.inviteCode,
+      pin: formData.pin,
     };
 
+    setSignupLoading(true);
+    setSignupError(null);
+
     try {
-      // Clear previous errors and set loading
-      setSignupError(null);
-      setSignupLoading(true);
-      
-      // Use the real database signup implementation
+      console.log('🚀 Starting signup process...');
       const result = await createBusinessInDatabase(completeProfile);
-      
-      if (result.success) {
-        console.log('User created successfully:', result.data);
+
+      if (result.success && result.data?.business) {
+        console.log('✅ Business created successfully');
+        const business = result.data.business;
+        setCreatedBusinessId(business.id);
         
-        // Save to context for immediate use
-        const profileForContext: SignupData = {
-          ...completeProfile,
-          isDataSynced: true,
-          lastSyncTime: Date.now()
-        };
-        setProfile(profileForContext);
+        // Set up PIN if provided
+        if (formData.pin && formData.pin.length === 6) {
+          console.log('🔐 Setting up PIN for business');
+          try {
+            const pinResponse = await fetch('/api/auth/setup-pin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                businessId: business.id, 
+                pin: formData.pin 
+              })
+            });
+            
+            const pinResult = await pinResponse.json();
+            
+            if (pinResult.error) {
+              console.error('❌ PIN setup failed:', pinResult.error);
+              setSignupError('Business created but PIN setup failed: ' + pinResult.error.message);
+              setSignupLoading(false);
+              return;
+            }
+            
+            console.log('✅ PIN setup successful');
+          } catch (pinError) {
+            console.error('💥 PIN setup error:', pinError);
+            setSignupError('Business created but PIN setup failed');
+            setSignupLoading(false);
+            return;
+          }
+        }
         
-        // Also save to legacy storage for compatibility
-        storage.setUserData({
-          country: formData.country,
-          industry: formData.industry,
-          name: formData.name,
-          businessName: formData.businessName,
-          phoneNumber: formData.phoneNumber,
-          inviteCode: formData.inviteCode,
-          dailyTarget: formData.dailyTarget
-        });
-        
-        // Force a page refresh to ensure auth context picks up the new session
-        // This ensures useAuth and TenantContext properly recognize the authentication
-        const country = formData.country?.toLowerCase() || 'ke';
-        const industry = formData.industry?.toLowerCase() || 'retail';
-        
-        // Add a longer delay to ensure localStorage is set and auth context can initialize
-        setTimeout(() => {
-          console.log('🚀 Redirecting to dashboard after signup:', `/Beezee-App/app/${country}/${industry}`);
-          window.location.href = `/Beezee-App/app/${country}/${industry}`;
-        }, 500);
-        return; // Stop execution here since we're doing a full page redirect
-      } else if (result.existingUser) {
-        console.log('User already exists, redirecting to login');
-        setSignupError('A business with this phone number already exists. Please login instead.');
-        
-        // Store the form data so we can pre-fill login if needed
-        localStorageManager.set('pendingSignup', {
-          phoneNumber: formData.phoneNumber,
-          country: formData.country,
-          industry: formData.industry,
-        });
-        
-        // Don't auto-redirect, let user see the error and decide
-        return;
+        // Route directly to dashboard (skip completion page)
+        handleFinalComplete();
       } else {
-        console.error('Signup failed:', result.error);
-        setSignupError(result.error || 'Failed to create business. Please try again.');
+        console.error('❌ Business creation failed:', result.error);
+        setSignupError(result.error || 'Failed to create business');
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      setSignupError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      console.error('💥 Signup error:', error);
+      setSignupError('An unexpected error occurred during signup');
     } finally {
       setSignupLoading(false);
     }
+  };
+
+  const handleFinalComplete = async () => {
+    // Set up authentication state before redirecting
+    if (createdBusinessId && formData.phoneNumber) {
+      try {
+        console.log('🔐 Setting up authentication after signup...');
+        
+        // Fetch the created business with PIN hash
+        const response = await fetch('/api/auth/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            phone: formData.phoneNumber, 
+            pin: formData.pin 
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.error) {
+          console.error('❌ Failed to verify PIN after signup:', result.error);
+          // Still redirect, but user will need to login
+        } else {
+          console.log('✅ Authentication setup successful');
+          
+          // Store authentication data
+          const business = result.data.business;
+          const sessionData = {
+            phone: formData.phoneNumber,
+            businessId: business.id,
+            timestamp: Date.now()
+          };
+
+          const authData = {
+            session: sessionData,
+            business: business
+          };
+          
+          localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
+          console.log('✅ Stored authentication data after signup');
+        }
+      } catch (error) {
+        console.error('💥 Error setting up authentication:', error);
+      }
+    }
+    
+    // Redirect to dashboard
+    const country = formData.country?.toLowerCase() || 'ke';
+    const industry = formData.industry?.toLowerCase() || 'retail';
+    
+    console.log('🎯 Redirecting to dashboard:', { country, industry });
+    router.push(`/Beezee-App/app/${country}/${industry}`);
   };
 
   const renderStep = () => {
@@ -293,6 +368,21 @@ function BeezeeSignupContent() {
           onPrev={prevStep}
         />;
       case 6:
+        return (
+          <div className="py-12">
+            <PINSetup
+              onPINComplete={(pin) => {
+                // Store PIN in form data for later use
+                updateFormData('pin', pin);
+                nextStep();
+              }}
+              onCancel={prevStep}
+              isLoading={signupLoading}
+              error={signupError || undefined}
+            />
+          </div>
+        );
+      case 7:
         return <HybridDailyTarget 
           country={formData.country || ''}
           selectedTarget={formData.dailyTarget?.toString() || ''}
@@ -300,7 +390,7 @@ function BeezeeSignupContent() {
           onNext={nextStep}
           onPrev={prevStep}
         />;
-      case 7:
+      case 8:
         return <AccountSummaryPreview 
           formData={formData}
           onComplete={handleComplete}
@@ -315,11 +405,23 @@ function BeezeeSignupContent() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
+      <div className="border-b border-[var(--border)]">
+        <div className="container mx-auto px-6 py-4">
+          <Link
+            href="/beezee"
+            className="inline-flex items-center gap-2 text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
+          >
+            <ArrowLeft size={18} />
+            Back to BeeZee
+          </Link>
+        </div>
+      </div>
+
       {/* Top progress summary */}
       <LiveAccountSummary 
         data={formData} 
         currentStep={currentStep} 
-        isVisible={currentStep >= 2 && currentStep <= 6} 
+        isVisible={currentStep >= 2 && currentStep <= 8} 
       />
 
       <div className="flex-1 container mx-auto px-6 py-8">
@@ -330,7 +432,7 @@ function BeezeeSignupContent() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl mx-auto"
+            className="max-w-4xl mx-auto"
           >
             {renderStep()}
           </motion.div>
@@ -340,59 +442,63 @@ function BeezeeSignupContent() {
   );
 }
 
-export default function BeezeeSignup() {
-  return (
-    <BusinessProfileProvider>
-      <BeezeeSignupContent />
-    </BusinessProfileProvider>
-  );
-}
-
+// Welcome Step Component
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="min-h-screen flex flex-col text-center py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex-1 flex flex-col justify-center"
-      >
-        <div className="w-32 h-32 mx-auto mb-6 relative">
-          <Image 
-            src="/beezee-logo.png" 
-            alt="BeeZee Logo" 
-            width={128} 
-            height={128}
-            className="object-contain"
-            priority
-          />
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-1)] mb-6 tracking-[-0.02em]">
-          BeeZee
-        </h1>
-        <p className="text-xl text-[var(--text-2)] max-w-md mx-auto">
-          Your business notebook that knows your business
-        </p>
-      </motion.div>
+    <div className="py-12 text-center min-h-screen flex flex-col">
+      {/* Logo at the top */}
+      <div className="w-24 h-24 flex items-center justify-center mx-auto mb-8">
+        <Image 
+          src="/beezee-logo.png" 
+          alt="BeeZee Logo" 
+          width={96} 
+          height={96}
+          className="h-24 w-auto"
+        />
+      </div>
 
-      <div className="flex flex-col gap-4 max-w-xs mx-auto w-full px-6 pb-8">
-        <button
-          onClick={onNext}
-          className="px-8 py-4 bg-[var(--powder-dark)] text-white font-bold rounded-2xl hover:bg-[var(--powder-mid)] transition-all active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 flex items-center justify-center gap-2"
+      {/* Content centered in the middle */}
+      <div className="flex-1 flex flex-col justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-2xl mx-auto"
         >
-          Get Started
-        </button>
-        
-        <Link
-          href="/Beezee-App/auth/login"
-          className="px-8 py-4 border border-[var(--border)] text-[var(--text-1)] font-medium rounded-2xl hover:bg-[var(--glass-bg)] transition-all flex items-center justify-center"
-        >
-          Login
-        </Link>
+          <h1 className="text-4xl font-bold text-[var(--text-1)] mb-6 tracking-[-0.02em]">
+            Get Started
+          </h1>
+          
+          <p className="text-xl text-[var(--text-2)] mb-8 leading-relaxed">
+            Join thousands of African entrepreneurs managing their business with ease.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Buttons at the very bottom */}
+      <div className="pb-8">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={onNext}
+            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-4 px-8 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-3"
+          >
+            Sign Up
+            <ArrowRight size={20} />
+          </button>
+          
+          <Link
+            href="/Beezee-App/auth/login"
+            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-4 px-8 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-3"
+          >
+            <LogIn size={20} />
+            Login
+          </Link>
+        </div>
       </div>
     </div>
   );
 }
 
+// Country Selection Component
 function CountrySelection({ selected, onSelect, onNext, onPrev }: { 
   selected: string; 
   onSelect: (country: string) => void; 
@@ -402,31 +508,27 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   return (
     <div className="py-12">
       <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
-        Where is your business located?
+        Select Your Country
       </h2>
       <p className="text-[var(--text-2)] text-center mb-8">
-        Select your country to continue
+        Choose where your business operates
       </p>
 
-      <div className="grid gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
         {countries.map((country) => (
           <button
             key={country.code}
             onClick={() => onSelect(country.code)}
-            className={`p-6 rounded-xl border-2 transition-all flex items-center gap-4 ${
+            className={`p-4 rounded-xl border-2 transition-all ${
               selected === country.code
                 ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
                 : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
             }`}
           >
             {getFlagDisplay(country)}
-            <div className="flex-1 text-left">
-              <div className="text-xl font-bold text-[var(--text-1)]">{country.name}</div>
-              <div className="text-lg text-[var(--text-2)]">{country.code}</div>
+            <div className="mt-2 text-sm font-medium text-[var(--text-1)]">
+              {country.name}
             </div>
-            {selected === country.code && (
-              <span className="text-[var(--powder-dark)] font-bold text-xl">✓</span>
-            )}
           </button>
         ))}
       </div>
@@ -441,7 +543,7 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
         <button
           onClick={onNext}
           disabled={!selected}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>
@@ -450,6 +552,7 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   );
 }
 
+// Industry Selection Component
 function IndustrySelection({ selected, onSelect, onNext, onPrev }: { 
   selected: string; 
   onSelect: (industry: string) => void; 
@@ -459,41 +562,26 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   return (
     <div className="py-12">
       <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
-        What type of business do you run?
+        Choose Your Industry
       </h2>
       <p className="text-[var(--text-2)] text-center mb-8">
-        Choose your industry to personalize your experience
+        Select the category that best describes your business
       </p>
 
-      <div className="grid gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {industries.map((industry) => (
           <button
             key={industry.id}
             onClick={() => onSelect(industry.id)}
-            className={`p-6 rounded-xl border-2 transition-all flex items-center gap-4 ${
+            className={`p-6 rounded-xl border-2 transition-all text-left ${
               selected === industry.id
-                ? 'border-[var(--powder-dark)] bg-[var(--powder-light)] shadow-lg'
-                : 'border-[var(--border)] hover:border-[var(--powder-mid)] hover:shadow-md'
+                ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
+                : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
             }`}
           >
-            <div className="w-12 h-12 bg-[var(--powder-light)] rounded-xl flex items-center justify-center text-2xl">
-              {industry.icon === 'Store' && '🏪'}
-              {industry.icon === 'Food' && '🍽️'}
-              {industry.icon === 'Car' && '🚗'}
-              {industry.icon === 'Salon' && '💇'}
-              {industry.icon === 'Thread' && '🧵'}
-              {industry.icon === 'Tools' && '🔧'}
-              {industry.icon === 'Computer' && '💻'}
-            </div>
-            <div className="flex-1 text-left">
-              <div className="text-xl font-bold text-[var(--text-1)]">{industry.name}</div>
-              <div className="text-sm text-[var(--text-2)] mt-1">
-                {industry.sectors.length} sectors available
-              </div>
-            </div>
-            {selected === industry.id && (
-              <span className="text-[var(--powder-dark)] font-bold text-xl">✓</span>
-            )}
+            <div className="text-2xl mb-2">{industry.icon}</div>
+            <div className="font-semibold text-[var(--text-1)] mb-1">{industry.name}</div>
+            <div className="text-sm text-[var(--text-3)]">Manage your {industry.name.toLowerCase()} business efficiently</div>
           </button>
         ))}
       </div>
@@ -508,7 +596,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
         <button
           onClick={onNext}
           disabled={!selected}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>
@@ -517,6 +605,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   );
 }
 
+// Basic Info Component
 function BasicInfo({ formData, onChange, onNext, onPrev }: { 
   formData: Partial<SignupData>; 
   onChange: (field: keyof SignupData, value: string) => void; 
@@ -600,11 +689,19 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
         <button
           onClick={onNext}
           disabled={!formData.name || !formData.phoneNumber}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <BusinessProfileProvider>
+      <BeezeeSignupContent />
+    </BusinessProfileProvider>
   );
 }

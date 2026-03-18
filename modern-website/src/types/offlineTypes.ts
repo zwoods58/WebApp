@@ -11,6 +11,10 @@ export interface BaseOfflineOperation {
   retryCount: number;
   priority: 'high' | 'medium' | 'low';
   userId: string;
+  idempotencyKey: string;
+  syncedAt?: number;
+  errorDetails?: string;
+  retryAfter?: number;
 }
 
 // Beehive offline operations
@@ -20,6 +24,14 @@ export interface BeehiveOfflineOperation extends BaseOfflineOperation {
   data: {
     postId?: string;
     content: string;
+    title?: string;
+    description?: string;
+    category?: string;
+    priority?: string;
+    industry?: string;
+    country?: string;
+    userId?: string;
+    businessId?: string;
     images?: File[];
     commentId?: string;
     profileData?: {
@@ -55,9 +67,13 @@ export interface InventoryOfflineOperation extends BaseOfflineOperation {
     itemName: string;
     stockLevel?: number;
     price?: number;
+    costPrice?: number;
     serviceName?: string;
     availability?: boolean;
     category?: string;
+    unit?: string;
+    threshold?: number;
+    supplier?: string;
     adjustmentReason?: string;
     previousStock?: number;
   };

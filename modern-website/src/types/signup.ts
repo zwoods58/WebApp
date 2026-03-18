@@ -9,6 +9,7 @@ export interface SignupData {
   currency: string; // Country currency (KES, ZAR, NGN, etc.)
   inviteCode?: string;
   businessId?: string; // Unique business ID in format COUNTRY-INDUSTRY-7DIGIT
+  pin?: string; // User's 6-digit PIN for account security
   // Performance optimization flags
   isDataSynced: boolean;
   lastSyncTime: number;

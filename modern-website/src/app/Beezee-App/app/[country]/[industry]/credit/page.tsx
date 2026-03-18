@@ -10,6 +10,7 @@ import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useCredit } from '@/hooks';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
@@ -23,6 +24,7 @@ export default function CreditPage() {
   
   // Use Supabase hook instead of mock data
   const { business } = useBusiness();
+  const { isOnline, isOfflineMode, pendingCount } = useOfflineData();
   const { credit, loading, insert: addCredit, getTotalOwed, getOverdueAmount, getOverdueCredit, getOutstandingCredit, getPartialCredit, markAsPaid, makePartialPayment } = useCredit({ 
     industry,
     businessId: business?.id 
@@ -183,6 +185,26 @@ export default function CreditPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
+        {/* Offline Status Indicator */}
+        {isOfflineMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
+          >
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-red-800">Offline Mode</div>
+              <div className="text-xs text-red-600">All credit operations will be synced when you're back online</div>
+            </div>
+            {pendingCount > 0 && (
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {pendingCount}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -19,6 +19,7 @@ import {
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useAppointments, useTransactions, useServices } from '@/hooks';
 import { useBusiness } from '@/contexts/BusinessContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import Header from './Header';
 import BottomNav from './BottomNav';
@@ -32,6 +33,7 @@ interface CalendarProps {
 export default function Calendar({ industry, country }: CalendarProps) {
   const { t } = useLanguage();
   const { business, loading: businessLoading } = useBusiness();
+  const { isOnline, isOfflineMode, pendingCount, addCalendarOperation, addCashOperation } = useOfflineData();
   const { 
     appointments, 
     loading, 
@@ -62,8 +64,78 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const handleCompleteAppointment = async (appointmentId: string) => {
     setCompletingAppointment(appointmentId);
     try {
-      await completeAppointment(appointmentId, addTransaction, getServiceById);
-      refetch(); // Refresh appointments in calendar
+      const appointment = appointments.find(apt => apt.id === appointmentId);
+      if (!appointment) {
+        throw new Error('Appointment not found');
+      }
+
+      // Get service details for pricing
+      const service = appointment.service_id ? await getServiceById(appointment.service_id) : null;
+      const servicePrice = service?.price || 0;
+
+      if (isOnline) {
+        // Try online first
+        try {
+          await completeAppointment(appointmentId, addTransaction, getServiceById);
+          refetch(); // Refresh appointments in calendar
+        } catch (onlineError) {
+          console.warn('⚠️ Online completion failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          // Queue appointment completion
+          addCalendarOperation('booking_update', {
+            appointmentId: appointmentId,
+            customerId: appointment.customer_name, // Use customer_name as customerId
+            dateTime: new Date(`${appointment.appointment_date} ${appointment.appointment_time}`),
+            service: appointment.service_name,
+            duration: appointment.duration || 30,
+            notes: appointment.notes,
+            status: 'completed'
+          });
+
+          // Queue transaction if service has a price
+          if (servicePrice > 0) {
+            addCashOperation('sale', {
+              amount: servicePrice,
+              category: 'service_payment',
+              description: `Payment for ${appointment.service_name} - ${appointment.customer_name}`,
+              paymentMethod: 'cash',
+              receiptNumber: `APT-${Date.now()}`
+            });
+          }
+
+          console.log(`✅ Appointment completion queued for sync: ${appointment.service_name}`);
+          // Optimistically update local state would go here
+        }
+      } else {
+        // Offline mode - queue operations
+        console.log('📴 Offline mode: Queueing appointment completion for later sync');
+        
+        // Queue appointment completion
+        addCalendarOperation('booking_update', {
+          appointmentId: appointmentId,
+          customerId: appointment.customer_name, // Use customer_name as customerId
+          dateTime: new Date(`${appointment.appointment_date} ${appointment.appointment_time}`),
+          service: appointment.service_name,
+          duration: appointment.duration || 30,
+          notes: appointment.notes,
+          status: 'completed'
+        });
+
+        // Queue transaction if service has a price
+        if (servicePrice > 0) {
+          addCashOperation('sale', {
+            amount: servicePrice,
+            category: 'service_payment',
+            description: `Payment for ${appointment.service_name} - ${appointment.customer_name}`,
+            paymentMethod: 'cash',
+            receiptNumber: `APT-${Date.now()}`
+          });
+        }
+
+        console.log(`✅ Appointment completion queued for sync: ${appointment.service_name}`);
+        // Optimistically update local state would go here
+      }
     } catch (error) {
       console.error('Failed to complete appointment:', error);
       // You could add a toast notification here
@@ -179,6 +251,24 @@ export default function Calendar({ industry, country }: CalendarProps) {
       />
 
       <div className="pb-20 pt-20">
+        {/* Offline Status Indicator */}
+        {isOfflineMode && (
+          <div className="px-4 mb-4">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-red-800">Offline Mode</div>
+                <div className="text-xs text-red-600">All appointments will be synced when you're back online</div>
+              </div>
+              {pendingCount > 0 && (
+                <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {pendingCount}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="p-4 grid grid-cols-2 gap-3">
           <div className="glass-strong rounded-2xl p-4">

@@ -27,6 +27,7 @@ import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useBeehive } from '@/hooks/useBeehive';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
 import BeehiveRequestModal, { RequestFormData } from '@/components/universal/BeehiveRequestModal';
 import BeehiveComments from '@/components/universal/BeehiveComments';
 
@@ -45,6 +46,7 @@ export default function BeehivePage() {
 
   // Use Supabase hook for BeeHive data filtered by industry and country
   const { requests, loading, addRequest, updateRequest, deleteRequest, voteOnRequest, hasVoted } = useBeehive({ industry, country });
+  const { isOnline, isOfflineMode, pendingCount } = useOfflineData();
 
   const filteredRequests = requests.filter(request => {
     const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,6 +141,26 @@ export default function BeehivePage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
+        {/* Offline Status Indicator */}
+        {isOfflineMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
+          >
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-red-800">Offline Mode</div>
+              <div className="text-xs text-red-600">All posts and comments will be synced when you're back online</div>
+            </div>
+            {pendingCount > 0 && (
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {pendingCount}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

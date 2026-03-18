@@ -8,21 +8,38 @@ import { useLanguage } from '@/hooks/LanguageContext';
 export const OfflineBanner: React.FC = () => {
   const { t } = useLanguage();
   const [isOnline, setIsOnline] = useState(true);
+  // const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     // Check initial state safely
     if (typeof window !== 'undefined') {
       setIsOnline(navigator.onLine);
 
-      const handleOnline = () => setIsOnline(true);
+      const handleOnline = () => {
+        setIsOnline(true);
+        // Trigger sync when coming back online
+        if (window.dispatchEvent) {
+          window.dispatchEvent(new Event('sync-status-update'));
+        }
+      };
       const handleOffline = () => setIsOnline(false);
 
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
+      // Listen for sync status updates from our offline system
+      // const handleSyncUpdate = () => {
+      //   // Get pending count from localStorage (fallback if hook not available)
+      //   const syncStatus = JSON.parse(localStorage.getItem('sync_status') || '{}');
+      //   setPendingCount(syncStatus.pendingItems?.total || 0);
+      // };
+
+      // window.addEventListener('sync-status-update', handleSyncUpdate);
+
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
+        // window.removeEventListener('sync-status-update', handleSyncUpdate);
       };
     }
   }, []);
@@ -34,12 +51,33 @@ export const OfflineBanner: React.FC = () => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -50, opacity: 0 }}
-          className="fixed top-0 left-0 right-0 z-[100] bg-orange-500 text-white px-4 py-2 pt-safe flex items-center justify-center gap-2 text-sm font-medium shadow-md"
+          className="fixed top-0 left-0 right-0 z-[100] bg-red-500 text-white px-4 py-2 pt-safe flex items-center justify-center gap-2 text-sm font-medium shadow-md"
         >
           <WifiOff size={16} />
-          {t('pwa.offline_message', 'You are currently offline. Some features may be unavailable.')}
+          <span>{t('pwa.offline_message', 'You are currently offline. All changes will be saved and synced when you reconnect.')}</span>
+          {/* {pendingCount > 0 && (
+            <span className="bg-white text-red-500 text-xs px-2 py-1 rounded-full font-medium">
+              {pendingCount} pending
+            </span>
+          )} */}
         </motion.div>
       )}
+      
+      {/* Show pending indicator when online but have pending items */}
+      {/* {isOnline && pendingCount > 0 && (
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -50, opacity: 0 }}
+          className="fixed top-0 left-0 right-0 z-[100] bg-orange-500 text-white px-4 py-2 pt-safe flex items-center justify-center gap-2 text-sm font-medium shadow-md"
+        >
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <span>{t('pwa.syncing_message', 'Syncing your data...')}</span>
+          <span className="bg-white text-orange-500 text-xs px-2 py-1 rounded-full font-medium">
+            {pendingCount} pending
+          </span>
+        </motion.div>
+      )} */}
     </AnimatePresence>
   );
 };

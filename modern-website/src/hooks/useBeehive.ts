@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { localStorageManager } from '@/utils/localStorageManager';
+import { useOfflineData } from '@/hooks/useOfflineData';
 
 // Helper function to get current user ID from our custom auth
 const getCurrentUserId = (): string | null => {
@@ -172,6 +173,7 @@ interface BeehiveRequest {
   metadata: any;
   created_at: string;
   updated_at: string;
+  syncStatus?: 'synced' | 'pending' | 'error'; // Add sync status for offline support
 }
 
 interface BeehiveVote {
@@ -188,6 +190,7 @@ interface UseBeehiveProps {
 }
 
 export function useBeehive({ industry, country }: UseBeehiveProps) {
+  const { isOnline, addBeehiveOperation } = useOfflineData();
   const [requests, setRequests] = useState<BeehiveRequest[]>([]);
   const [myVotes, setMyVotes] = useState<BeehiveVote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -370,43 +373,88 @@ export function useBeehive({ industry, country }: UseBeehiveProps) {
       
       console.log('🏢 Final business ID:', businessId);
 
-      console.log('🏢 Using business ID:', businessId);
+      // If online, try API route first
+      if (isOnline) {
+        try {
+          const response = await fetch('/api/beehive', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'addRequest',
+              userId,
+              data: {
+                ...requestData,
+                industry,
+                country,
+                user_id: userId,
+                business_id: businessId,
+                status: 'open',
+                upvotes_count: 0,
+                downvotes_count: 0,
+                comments_count: 0,
+                is_featured: false,
+                metadata: {}
+              }
+            })
+          });
 
-      // Use API route to bypass RLS
-      const response = await fetch('/api/beehive', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'addRequest',
-          userId,
-          data: {
-            ...requestData,
-            industry,
-            country,
-            user_id: userId,
-            business_id: businessId,
-            status: 'open',
-            upvotes_count: 0,
-            downvotes_count: 0,
-            comments_count: 0,
-            is_featured: false,
-            metadata: {}
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create request');
           }
-        })
-      });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create request');
+          const result = await response.json();
+          
+          // Refresh requests
+          await fetchRequests();
+          return result.data;
+        } catch (apiError) {
+          console.warn('⚠️ API call failed, falling back to offline queue:', apiError);
+          // Fall through to offline queue
+        }
       }
 
-      const result = await response.json();
-      
-      // Refresh requests
-      await fetchRequests();
-      return result.data;
+      // Queue for offline/sync or as fallback
+      const operationId = addBeehiveOperation('create_post', {
+        content: requestData.description, // Use description as content
+        title: requestData.title,
+        description: requestData.description,
+        category: requestData.category,
+        priority: requestData.priority,
+        industry,
+        country,
+        userId,
+        businessId
+      });
+
+      // Return optimistic update
+      const optimisticRequest = {
+        id: operationId,
+        business_id: businessId,
+        industry,
+        country,
+        user_id: userId,
+        title: requestData.title,
+        description: requestData.description,
+        category: requestData.category,
+        priority: requestData.priority,
+        status: 'open',
+        upvotes_count: 0,
+        downvotes_count: 0,
+        comments_count: 0,
+        is_featured: false,
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        syncStatus: 'pending' as const
+      };
+
+      // Add to local state
+      setRequests(prev => [optimisticRequest, ...prev]);
+      return optimisticRequest;
+
     } catch (err: any) {
       console.error('Error adding request:', err);
       throw err;

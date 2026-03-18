@@ -114,21 +114,107 @@ export function usePullToRefresh({
     }
   }, [disabled, state.isPulling, state.shouldRefresh, state.isRefreshing, threshold, onRefresh, resetState]);
 
-  // Add touch event listeners
+  // Mouse event handlers for desktop
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (disabled) return;
+    
+    const mouse = e as MouseEvent;
+    startY.current = mouse.clientY;
+    currentY.current = mouse.clientY;
+
+    // Only start pull to refresh if we're at the top of the container
+    if (containerRef.current) {
+      const scrollTop = containerRef.current.scrollTop;
+      if (scrollTop > 0) return;
+    }
+
+    setState(prev => ({
+      ...prev,
+      isPulling: true,
+      pullDistance: 0,
+      shouldRefresh: false
+    }));
+  }, [disabled]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (disabled || !state.isPulling) return;
+
+    const mouse = e as MouseEvent;
+    currentY.current = mouse.clientY;
+    const deltaY = currentY.current - startY.current;
+
+    // Only allow pulling down (positive deltaY for mouse)
+    if (deltaY < 0) return;
+
+    const pullDistance = Math.abs(deltaY);
+    const shouldRefresh = pullDistance >= threshold;
+
+    setState(prev => ({
+      ...prev,
+      pullDistance: Math.min(pullDistance, threshold * 1.5),
+      shouldRefresh
+    }));
+
+    // Prevent default scrolling when pulling down
+    if (pullDistance > 10) {
+      e.preventDefault();
+    }
+  }, [disabled, state.isPulling, threshold]);
+
+  const handleMouseUp = useCallback(async () => {
+    if (disabled || !state.isPulling) return;
+
+    if (state.shouldRefresh && !state.isRefreshing) {
+      setState(prev => ({
+        ...prev,
+        isRefreshing: true,
+        pullDistance: threshold
+      }));
+
+      try {
+        await onRefresh();
+      } catch (error) {
+        console.error('Pull to refresh failed:', error);
+      } finally {
+        // Reset after a short delay to show completion
+        setTimeout(() => {
+          resetState();
+        }, 500);
+      }
+    } else {
+      resetState();
+    }
+  }, [disabled, state.isPulling, state.shouldRefresh, state.isRefreshing, threshold, onRefresh, resetState]);
+
+  // Add touch and mouse event listeners
   useEffect(() => {
     const element = containerRef.current;
     if (!element || disabled) return;
 
+    // Touch events
     element.addEventListener('touchstart', handleTouchStart, { passive: false });
     element.addEventListener('touchmove', handleTouchMove, { passive: false });
     element.addEventListener('touchend', handleTouchEnd);
 
+    // Mouse events for desktop
+    element.addEventListener('mousedown', handleMouseDown);
+    element.addEventListener('mousemove', handleMouseMove);
+    element.addEventListener('mouseup', handleMouseUp);
+    element.addEventListener('mouseleave', handleMouseUp);
+
     return () => {
+      // Touch events
       element.removeEventListener('touchstart', handleTouchStart);
       element.removeEventListener('touchmove', handleTouchMove);
       element.removeEventListener('touchend', handleTouchEnd);
+      
+      // Mouse events
+      element.removeEventListener('mousedown', handleMouseDown);
+      element.removeEventListener('mousemove', handleMouseMove);
+      element.removeEventListener('mouseup', handleMouseUp);
+      element.removeEventListener('mouseleave', handleMouseUp);
     };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd, disabled]);
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown, handleMouseMove, handleMouseUp, disabled]);
 
   // Debounce pull distance updates
   useEffect(() => {

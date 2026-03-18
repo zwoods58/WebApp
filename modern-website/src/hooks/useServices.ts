@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { supabase } from '@/lib/supabase';
+import { useOfflineData } from '@/hooks/useOfflineData';
+import { getQueue } from '@/utils/offlineQueue';
 
 export interface Service {
   id: string;
@@ -15,6 +17,7 @@ export interface Service {
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  status?: 'synced' | 'pending' | 'error'; // Add status for offline support
 }
 
 export interface UseServicesOptions {
@@ -31,6 +34,7 @@ export interface UseServicesOptions {
 
 export function useServices(options: UseServicesOptions = {}) {
   const { business } = useBusiness();
+  const { isOnline, addInventoryOperation } = useOfflineData();
   const [data, setData] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,37 +72,139 @@ export function useServices(options: UseServicesOptions = {}) {
 
       if (queryError) throw queryError;
 
-      setData((results as unknown as Service[]) || []);
+      // Load pending operations from IndexedDB queue
+      const queue = await getQueue();
+      const pendingOps = queue.filter(op => op.type === 'inventory');
+      const pendingServices: Service[] = pendingOps
+        .filter(op => op.status === 'pending' && op.operation === 'add_item')
+        .map(op => ({
+          id: op.id?.toString() || '',
+          business_id: business.id,
+          industry: business.industry || 'retail',
+          service_name: (op.payload as any).itemName || '',
+          category: (op.payload as any).category || 'general',
+          price: (op.payload as any).price || 0,
+          duration: (op.payload as any).duration,
+          description: (op.payload as any).description,
+          is_active: (op.payload as any).availability !== false,
+          created_at: new Date(op.timestamp).toISOString(),
+          updated_at: new Date(op.timestamp).toISOString(),
+          status: 'pending' as const
+        }));
+
+      // Merge pending + fetched data
+      const allData = [...pendingServices, ...(results as unknown as Service[]) || []];
+      setData(allData);
     } catch (err) {
       console.error('Error fetching services:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setData([]);
+      
+      // Still load pending items even if fetch fails
+      if (business?.id) {
+        const queue = await getQueue();
+        const pendingOps = queue.filter(op => op.type === 'inventory');
+        const pendingServices: Service[] = pendingOps
+          .filter(op => op.status === 'pending' && op.operation === 'add_item')
+          .map(op => ({
+            id: op.id?.toString() || '',
+            business_id: business.id,
+            industry: business.industry || 'retail',
+            service_name: (op.payload as any).itemName || '',
+            category: (op.payload as any).category || 'general',
+            price: (op.payload as any).price || 0,
+            duration: (op.payload as any).duration,
+            description: (op.payload as any).description,
+            is_active: (op.payload as any).availability !== false,
+            created_at: new Date(op.timestamp).toISOString(),
+            updated_at: new Date(op.timestamp).toISOString(),
+            status: 'pending' as const
+          }));
+        setData(pendingServices);
+      } else {
+        setData([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [business?.id, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
+  }, [business?.id, business?.industry, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  // Listen for force refresh events
+  useEffect(() => {
+    const handleForceRefresh = () => {
+      fetchData();
+    };
+
+    // Listen for sync completion events
+    const handleSyncComplete = (event: Event) => {
+      const customEvent = event as CustomEvent<{ operationId: string; feature: string }>;
+      if (customEvent.detail.feature === 'inventory') {
+        fetchData(); // Refresh data when inventory operations sync
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('force-refresh-data', handleForceRefresh);
+      window.addEventListener('offline-sync-complete', handleSyncComplete);
+      return () => {
+        window.removeEventListener('force-refresh-data', handleForceRefresh);
+        window.removeEventListener('offline-sync-complete', handleSyncComplete);
+      };
+    }
   }, [fetchData]);
 
   const insert = async (newData: any) => {
     if (!business) throw new Error('No business context');
 
     try {
-      const { data: result, error } = await supabase
-        .from('services')
-        .insert({
-          ...newData,
-          business_id: business.id
-        })
-        .select()
-        .single();
+      const serviceData = {
+        ...newData,
+        business_id: business.id
+      };
 
-      if (error) throw error;
+      // If online, try direct API call first
+      if (isOnline) {
+        try {
+          const { data: result, error } = await supabase
+            .from('services')
+            .insert(serviceData)
+            .select()
+            .single();
 
-      setData(prev => [result, ...prev]);
-      return result;
+          if (error) throw error;
+
+          setData(prev => [result, ...prev]);
+          return result;
+        } catch (apiError) {
+          console.warn('⚠️ API call failed, falling back to offline queue:', apiError);
+          // Fall through to offline queue
+        }
+      }
+
+      // Always queue for offline/sync or as fallback
+      const operationId = addInventoryOperation('add_item', {
+        itemName: serviceData.service_name,
+        stockLevel: 1, // Services are typically "in stock" by default
+        price: serviceData.price,
+        category: serviceData.category || 'general',
+        availability: serviceData.is_active !== false
+      });
+
+      // Return optimistic update
+      const optimisticService = {
+        ...serviceData,
+        id: operationId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: 'pending' // Add status field for pending items
+      } as Service;
+
+      setData(prev => [optimisticService, ...prev]);
+      return optimisticService;
+
     } catch (err) {
       await fetchData();
       throw err;

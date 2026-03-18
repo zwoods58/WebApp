@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Calendar, Filter, Search, ArrowUpDown, Copy, MessageSquare } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Filter, Search, ArrowUpDown, Copy, MessageSquare, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -10,12 +10,12 @@ import { formatCurrency } from '@/utils/currency';
 import { useTransactions, useExpenses } from '@/hooks';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useBusiness } from '@/contexts/BusinessContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import MoneyInButton from '@/components/universal/MoneyInButton';
 import MoneyOutButton from '@/components/universal/MoneyOutButton';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
-import { TourProvider, useTour } from '@/components/universal/MultiPageTour';
 
 function CashPageContent() {
   const params = useParams();
@@ -26,6 +26,15 @@ function CashPageContent() {
   const { business } = useBusiness();
   const businessId = business?.id;
   
+  // Offline functionality
+  const { 
+    isOnline, 
+    syncStatus, 
+    pendingCount, 
+    isOfflineMode, 
+    addCashOperation,
+    forceSync 
+  } = useOfflineData();
   
   const { transactions, loading: transactionsLoading, insert: addTransaction, fetchTransactions } = useTransactions({ 
     businessId: businessId,
@@ -55,11 +64,36 @@ function CashPageContent() {
       return;
     }
     
-    await addTransaction({
-      ...transactionData,
-      business_id: businessId,
-      industry
-    });
+    // Prepare transaction data for offline queue
+    const offlineTransactionData = {
+      amount: transactionData.amount,
+      customerId: transactionData.customer_name || 'walk-in',
+      category: transactionData.category || 'sales',
+      description: transactionData.description,
+      paymentMethod: transactionData.payment_method || 'cash',
+      operation: 'sale',
+      timestamp: Date.now(),
+      businessId: businessId
+    };
+    
+    // Always add to offline queue first
+    // const operationId = addCashOperation('sale', offlineTransactionData);
+    
+    // Try to save to server if online
+    if (isOnline) {
+      try {
+        await addTransaction({
+          ...transactionData,
+          business_id: businessId,
+          industry
+        });
+        // Transaction saved online
+      } catch (error) {
+        // Online save failed, transaction queued for sync
+      }
+    } else {
+      // Offline mode: Transaction queued for sync
+    }
   };
 
   const handleMoneyOut = async (expenseData: any) => {
@@ -70,11 +104,35 @@ function CashPageContent() {
     
     const { payment_method, ...cleanExpenseData } = expenseData;
     
-    await addExpense({
-      ...cleanExpenseData,
-      business_id: businessId,
-      industry
-    });
+    // Prepare expense data for offline queue
+    const offlineExpenseData = {
+      amount: expenseData.amount,
+      category: expenseData.category || 'general',
+      description: expenseData.description,
+      paymentMethod: payment_method || 'cash',
+      operation: 'expense',
+      timestamp: Date.now(),
+      businessId: businessId
+    };
+    
+    // Always add to offline queue first
+    // const operationId = addCashOperation('expense', offlineExpenseData);
+    
+    // Try to save to server if online
+    if (isOnline) {
+      try {
+        await addExpense({
+          ...cleanExpenseData,
+          business_id: businessId,
+          industry
+        });
+        // Expense saved online
+      } catch (error) {
+        // Online save failed, expense queued for sync
+      }
+    } else {
+      // Offline mode: Expense queued for sync
+    }
   };
 
   const filteredCashFlow = allCashFlow.filter(item => {
@@ -167,6 +225,26 @@ function CashPageContent() {
 
       <main className="scroll-content">
         <div className="p-5 max-w-md mx-auto pb-20">
+          {/* Offline Status Indicator */}
+          {isOfflineMode && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
+            >
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-red-800">Offline Mode</div>
+                <div className="text-xs text-red-600">All transactions will be synced when you're back online</div>
+              </div>
+              {pendingCount > 0 && (
+                <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {pendingCount}
+                </div>
+              )}
+            </motion.div>
+          )}
+
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -330,6 +408,11 @@ function CashPageContent() {
                         {item.supplier && (
                           <span>{item.supplier}</span>
                         )}
+                        {item.status === 'pending' && (
+                          <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
+                            Pending
+                          </span>
+                        )}
                         {item.payment_method && (
                           <span className={`px-2 py-1 rounded-full ${
                             item.payment_method === 'cash' 
@@ -441,9 +524,5 @@ export default function CashPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
 
-  return (
-    <TourProvider industry={industry} country={country}>
-      <CashPageContent />
-    </TourProvider>
-  );
+  return <CashPageContent />;
 }

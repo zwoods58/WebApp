@@ -19,6 +19,9 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
   const pathname = usePathname();
   const basePath = `/Beezee-App/app/${country}/${industry}`;
 
+  // Debug logging
+  console.log('BottomNav Debug:', { industry, country, pathname, basePath });
+
   // Retail and food use stock page instead of services
   const inventoryPath = (industry === 'retail' || industry === 'food') ? '/stock' : '/services';
   
@@ -62,8 +65,8 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-[var(--border)] pb-safe" style={{ zIndex: 9999 }}>
-      <div className="flex justify-around items-center max-w-md mx-auto h-18 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 min-h-[64px]">
+      <div className="flex justify-around items-center max-w-md mx-auto h-16 px-2">
         {navItems.map((item) => {
           const active = isActive(item.path);
           const Icon = item.icon;

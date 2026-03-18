@@ -13,6 +13,7 @@ import {
   DollarSign,
   Settings,
   Edit,
+  RefreshCw,
   Trash2,
   AlertTriangle,
   Box,
@@ -26,6 +27,7 @@ import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useServices, useInventory, useTransactions } from '@/hooks';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 
@@ -44,9 +46,11 @@ export default function ServicesPage() {
   
   // Use Supabase hooks instead of mock data
   const { business } = useBusiness();
+  const { isOnline, isOfflineMode, pendingCount, forceSync, addCashOperation, addInventoryOperation } = useOfflineData();
   const { services, loading: servicesLoading, insert: addService, update: updateService, remove: deleteService } = useServices({ industry });
   const inventoryHook = useInventory({ industry });
   const { inventory, loading: inventoryLoading } = inventoryHook;
+  
   const addInventoryItem = industry === 'transport' ? 
     () => {} : 
     inventoryHook.insert;
@@ -269,13 +273,58 @@ export default function ServicesPage() {
         }
       };
 
-      await addTransaction(transactionData);
-      
-      // Update inventory quantity
-      const updatedQuantity = selectedInventoryItem.quantity - quantity;
-      await updateInventoryItem(selectedInventoryItem.id, { quantity: updatedQuantity });
-      
-      console.log(`Sold ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name} for ${formatCurrency(totalPrice, country)}`);
+      if (isOnline) {
+        // Try online first
+        try {
+          await addTransaction(transactionData);
+          
+          // Update inventory quantity
+          const updatedQuantity = selectedInventoryItem.quantity - quantity;
+          await updateInventoryItem(selectedInventoryItem.id, { quantity: updatedQuantity });
+          
+          console.log(`Sold ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name} for ${formatCurrency(totalPrice, country)}`);
+        } catch (onlineError) {
+          console.warn('⚠️ Online sale failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          const cashOperationId = addCashOperation('sale', {
+            amount: totalPrice,
+            category: 'inventory_sale',
+            description: transactionData.description,
+            paymentMethod: sellData.paymentMethod || 'cash',
+            receiptNumber: `INV-${Date.now()}`
+          });
+
+          addInventoryOperation('stock_adjustment', {
+            itemName: selectedInventoryItem.item_name,
+            stockLevel: selectedInventoryItem.quantity - quantity,
+            previousStock: selectedInventoryItem.quantity,
+            adjustmentReason: `Sale: ${quantity} ${selectedInventoryItem.unit} sold`
+          });
+
+          console.log(`✅ Sale queued for sync: ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name}`);
+        }
+      } else {
+        // Offline mode - queue operations
+        console.log('📴 Offline mode: Queueing sale for later sync');
+        
+        const cashOperationId = addCashOperation('sale', {
+          amount: totalPrice,
+          category: 'inventory_sale',
+          description: transactionData.description,
+          paymentMethod: sellData.paymentMethod || 'cash',
+          receiptNumber: `INV-${Date.now()}`
+        });
+
+        addInventoryOperation('stock_adjustment', {
+          itemName: selectedInventoryItem.item_name,
+          stockLevel: selectedInventoryItem.quantity - quantity,
+          previousStock: selectedInventoryItem.quantity,
+          adjustmentReason: `Sale: ${quantity} ${selectedInventoryItem.unit} sold`
+        });
+
+        console.log(`✅ Sale queued for sync: ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name}`);
+      }
       
       // Close modal and reset selection
       setShowSellModal(false);
@@ -359,7 +408,7 @@ export default function ServicesPage() {
         description: location ? 
           `${service.service_name} (${location})${useBase ? ' (Base only)' : ` (${km} km)`}${tips ? ' + tips' : ''}` :
           `${service.service_name}${useBase ? ' (Base only)' : ` (${km} km)`}${tips ? ' + tips' : ''}`,
-        customer_name: 'Walk-in Customer', // Could be made configurable
+        customer_name: 'Walk-in Customer',
         payment_method: 'cash' as const,
         transaction_date: new Date().toISOString().split('T')[0],
         metadata: {
@@ -377,15 +426,43 @@ export default function ServicesPage() {
 
       console.log('Creating transport transaction:', transactionData);
       
-      await addTransaction(transactionData);
-      console.log('Transport transaction created successfully');
-      
-      // Show success message or navigate to transactions
-      // You could add a toast notification here
+      if (isOnline) {
+        // Try online first
+        try {
+          await addTransaction(transactionData);
+          console.log('Transport transaction created successfully');
+        } catch (onlineError) {
+          console.warn('⚠️ Online transaction failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          addCashOperation('sale', {
+            amount: totalFare,
+            category: 'transport_trip',
+            description: transactionData.description,
+            paymentMethod: 'cash',
+            receiptNumber: `TRIP-${Date.now()}`
+          });
+
+          console.log(`✅ Transport trip queued for sync: ${service.service_name}`);
+        }
+      } else {
+        // Offline mode - queue operations
+        console.log('📴 Offline mode: Queueing transport trip for later sync');
+        
+        addCashOperation('sale', {
+          amount: totalFare,
+          category: 'transport_trip',
+          description: transactionData.description,
+          paymentMethod: 'cash',
+          receiptNumber: `TRIP-${Date.now()}`
+        });
+
+        console.log(`✅ Transport trip queued for sync: ${service.service_name}`);
+      }
       
     } catch (error) {
       console.error('Failed to create transport transaction:', error);
-      // Show error message
+      alert('Failed to complete trip. Please try again.');
     }
     
     setShowKmModal(null);
@@ -396,6 +473,26 @@ export default function ServicesPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
+        {/* Offline Status Indicator */}
+        {isOfflineMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
+          >
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-red-800">Offline Mode</div>
+              <div className="text-xs text-red-600">All changes will be synced when you're back online</div>
+            </div>
+            {pendingCount > 0 && (
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {pendingCount}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

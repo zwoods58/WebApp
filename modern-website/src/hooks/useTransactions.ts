@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { supabase } from '@/lib/supabase';
+import { useOfflineData } from '@/hooks/useOfflineData';
+import { getQueue } from '@/utils/offlineQueue';
 
 export interface Transaction {
   id: string;
@@ -15,6 +17,7 @@ export interface Transaction {
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  status?: 'synced' | 'pending' | 'error'; // Add status for offline support
 }
 
 export interface UseTransactionsOptions {
@@ -32,13 +35,13 @@ export interface UseTransactionsOptions {
 
 export function useTransactions(options: UseTransactionsOptions = {}) {
   const { business } = useBusiness();
+  const { isOnline, addCashOperation } = useOfflineData();
   const [data, setData] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!business?.id) {
-      console.log('🔍 useTransactions: No business ID, skipping fetch');
       setData([]);
       setLoading(false);
       return;
@@ -47,9 +50,6 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-
-      console.log('🔍 useTransactions: Fetching with business_id:', business.id);
-      console.log('🔍 useTransactions: Options:', { select: options.select, filters: options.filters, limit: options.limit });
 
       let query = supabase
         .from('transactions')
@@ -71,26 +71,80 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
 
       const { data: results, error: queryError } = await query;
 
-      console.log('🔍 useTransactions: Query result:', { 
-        resultsCount: results?.length || 0, 
-        error: queryError,
-        firstResult: results?.[0]
-      });
-
       if (queryError) throw queryError;
 
-      setData((results as unknown as Transaction[]) || []);
+      // Load pending operations from IndexedDB queue
+      const queue = await getQueue();
+      const pendingOps = queue.filter(op => op.type === 'cash');
+      const pendingTransactions: Transaction[] = pendingOps
+        .filter(op => op.status === 'pending' && op.operation === 'sale')
+        .map(op => ({
+          id: op.id?.toString() || '',
+          business_id: business.id,
+          industry: business.industry || 'retail',
+          amount: (op.payload as any).amount || 0,
+          category: (op.payload as any).category,
+          description: (op.payload as any).description,
+          customer_name: (op.payload as any).customerName,
+          payment_method: (op.payload as any).paymentMethod,
+          transaction_date: (op.payload as any).transactionDate || new Date(op.timestamp).toISOString().split('T')[0],
+          created_at: new Date(op.timestamp).toISOString(),
+          updated_at: new Date(op.timestamp).toISOString(),
+          status: 'pending' as const
+        }));
+
+      // Merge pending + fetched data
+      const allData = [...pendingTransactions, ...(results as unknown as Transaction[]) || []];
+      setData(allData);
     } catch (err) {
       console.error('❌ Error fetching transactions:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setData([]);
+      
+      // Still load pending items even if fetch fails
+      if (business?.id) {
+        const queue = await getQueue();
+        const pendingOps = queue.filter(op => op.type === 'cash');
+        const pendingTransactions: Transaction[] = pendingOps
+          .filter(op => op.status === 'pending' && op.operation === 'sale')
+          .map(op => ({
+            id: op.id?.toString() || '',
+            business_id: business.id,
+            industry: business.industry || 'retail',
+            amount: (op.payload as any).amount || 0,
+            category: (op.payload as any).category,
+            description: (op.payload as any).description,
+            customer_name: (op.payload as any).customerName,
+            payment_method: (op.payload as any).paymentMethod,
+            transaction_date: (op.payload as any).transactionDate || new Date(op.timestamp).toISOString().split('T')[0],
+            created_at: new Date(op.timestamp).toISOString(),
+            updated_at: new Date(op.timestamp).toISOString(),
+            status: 'pending' as const
+          }));
+        setData(pendingTransactions);
+      } else {
+        setData([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [business?.id, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
+  }, [business?.id, business?.industry, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  // Listen for force refresh events
+  useEffect(() => {
+    const handleForceRefresh = () => {
+      fetchData();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('force-refresh-data', handleForceRefresh);
+      return () => {
+        window.removeEventListener('force-refresh-data', handleForceRefresh);
+      };
+    }
   }, [fetchData]);
 
   const insert = async (newData: any) => {
@@ -102,22 +156,53 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
         business_id: business.id
       };
 
-      const response = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transactionData)
-      });
+      // If online, try direct API call first
+      if (isOnline) {
+        try {
+          const response = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(transactionData)
+          });
 
-      const result = await response.json();
+          const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to insert transaction');
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to insert transaction');
+          }
+
+          setData(prev => [result.data, ...prev]);
+          return result.data;
+        } catch (apiError) {
+          console.warn('⚠️ API call failed, falling back to offline queue:', apiError);
+          // Fall through to offline queue
+        }
       }
 
-      setData(prev => [result.data, ...prev]);
-      return result.data;
+      // Always queue for offline/sync or as fallback
+      const operationId = addCashOperation('sale', {
+        amount: transactionData.amount,
+        category: transactionData.category || 'general',
+        description: transactionData.description,
+        paymentMethod: transactionData.payment_method || 'cash',
+        customerId: transactionData.customer_id,
+        receiptNumber: transactionData.receipt_number
+      });
+
+      // Return optimistic update
+      const optimisticTransaction = {
+        ...transactionData,
+        id: operationId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: 'pending' // Add status field for pending items
+      } as Transaction;
+
+      setData(prev => [optimisticTransaction, ...prev]);
+      return optimisticTransaction;
+
     } catch (err) {
       await fetchData();
       throw err;

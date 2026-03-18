@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { supabase } from '@/lib/supabase';
+import { useOfflineData } from '@/hooks/useOfflineData';
 
 interface Comment {
   id: string;
@@ -81,6 +82,7 @@ const getCurrentUserId = (): string | null => {
 
 export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
   const { t } = useLanguage();
+  const { addBeehiveOperation, isOnline } = useOfflineData();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
@@ -301,29 +303,67 @@ export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
       const userId = getCurrentUserId();
       if (!userId) throw new Error('User not authenticated');
 
-      // Use API route to bypass RLS and handle foreign key constraints
-      const response = await fetch('/api/beehive', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'addComment',
-          userId,
-          data: {
-            requestId,
-            comment_text: newComment.trim()
-          }
-        })
-      });
+      // Create optimistic comment for immediate UI feedback
+      const optimisticComment: Comment = {
+        id: `temp-comment-${Date.now()}`,
+        request_id: requestId,
+        business_id: userId,
+        comment_text: newComment.trim(),
+        created_at: new Date().toISOString()
+      };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to add comment');
+      if (isOnline) {
+        // Online: Try to sync immediately
+        try {
+          const response = await fetch('/api/beehive', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'addComment',
+              userId,
+              data: {
+                requestId,
+                comment_text: newComment.trim()
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to add comment');
+          }
+
+          // If successful, refresh comments
+          await fetchComments();
+        } catch (error) {
+          console.error('Online sync failed, queuing for offline:', error);
+          // Queue for offline sync if online sync fails
+          addBeehiveOperation('comment', {
+            postId: requestId,
+            content: newComment.trim(),
+            userId,
+            businessId: userId
+          });
+          
+          // Show optimistic comment
+          setComments(prev => [optimisticComment, ...prev]);
+        }
+      } else {
+        // Offline: Queue operation and show optimistic comment
+        addBeehiveOperation('comment', {
+          postId: requestId,
+          content: newComment.trim(),
+          userId,
+          businessId: userId
+        });
+        
+        // Show optimistic comment immediately
+        setComments(prev => [optimisticComment, ...prev]);
       }
 
       setNewComment('');
-      await fetchComments(); // Refresh comments
     } catch (error) {
       console.error('Error adding comment:', error);
     } finally {

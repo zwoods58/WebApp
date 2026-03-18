@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
+import ServiceWorkerRegistration from './ServiceWorkerRegistration';
+import OfflineIndicator from '@/components/ui/OfflineIndicator';
 
 interface BodyWrapperProps {
   children: React.ReactNode;
@@ -12,6 +15,7 @@ interface BodyWrapperProps {
 export default function BodyWrapper({ children, className = '' }: BodyWrapperProps) {
   const [isClient, setIsClient] = useState(false);
   const { performGlobalRefresh } = useGlobalRefresh();
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsClient(true);
@@ -25,14 +29,21 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
     });
   };
 
+  // Only show OfflineIndicator on non-BeeZee pages (BeeZee has its own)
+  const isBeezeePage = pathname?.startsWith('/Beezee-App');
+
   return (
-    <body 
-      className={`${className} ${isClient ? 'hydrated' : ''}`}
-      suppressHydrationWarning
-    >
-      <AppLayout>
-        {children}
-      </AppLayout>
-    </body>
+    <>
+      <ServiceWorkerRegistration />
+      <body 
+        className={`${className} ${isClient ? 'hydrated' : ''}`}
+        suppressHydrationWarning
+      >
+        <AppLayout>
+          {!isBeezeePage && <OfflineIndicator />}
+          {children}
+        </AppLayout>
+      </body>
+    </>
   );
 }

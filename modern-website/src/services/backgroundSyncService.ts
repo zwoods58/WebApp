@@ -6,7 +6,7 @@
 
 import { localStorageManager } from '@/utils/localStorageManager';
 import { supabase } from '@/lib/supabase';
-import { offlineQueueManager } from '@/utils/offlineQueue';
+import { getQueue, addToQueue, removeFromQueue } from '@/utils/offlineQueue';
 import { OfflineOperation, FEATURE_SYNC_ORDER } from '@/types/offlineTypes';
 
 export interface SyncQueueItem {
@@ -40,7 +40,7 @@ class BackgroundSyncService {
   private retryDelays = [1000, 2000, 5000, 10000, 30000]; // Exponential backoff
   private maxRetries = 5;
   private status: SyncStatus = {
-    isOnline: navigator.onLine,
+    isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
     isSyncing: false,
     lastSync: 0,
     pendingItems: 0,
@@ -64,16 +64,19 @@ class BackgroundSyncService {
    * Initialize event listeners for online/offline status
    */
   private initializeEventListeners(): void {
-    window.addEventListener('online', () => {
-      this.status.isOnline = true;
-      console.log('Network restored, resuming sync');
-      this.processQueue();
-    });
+    // Only add event listeners on client side
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        this.status.isOnline = true;
+        console.log('Network restored, resuming sync');
+        this.processQueue();
+      });
 
-    window.addEventListener('offline', () => {
-      this.status.isOnline = false;
-      console.log('Network lost, pausing sync');
-    });
+      window.addEventListener('offline', () => {
+        this.status.isOnline = false;
+        console.log('Network lost, pausing sync');
+      });
+    }
   }
 
   /**

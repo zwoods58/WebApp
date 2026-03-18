@@ -1,6 +1,6 @@
 /**
  * Offline Data Hook
- * Provides offline-first functionality for all app features
+ * Provides offline-first functionality for all app features using new PWA architecture
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -14,8 +14,8 @@ import {
   CreditOfflineOperation,
   SYNC_PRIORITY
 } from '@/types/offlineTypes';
-import { offlineQueueManager } from '@/utils/offlineQueue';
-import { localStorageManager } from '@/utils/localStorageManager';
+import { addToQueue, getPendingCount, getPendingCountByType } from '@/utils/offlineQueue';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export interface UseOfflineDataReturn {
   isOnline: boolean;
@@ -37,176 +37,181 @@ export interface UseOfflineDataReturn {
 }
 
 export const useOfflineData = (): UseOfflineDataReturn => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>(offlineQueueManager.getSyncStatus());
+  const { isOnline } = useNetworkStatus();
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [pendingByType, setPendingByType] = useState<Record<string, number>>({});
 
-  // Update online status
+  // Set client flag on mount
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      setIsOfflineMode(false);
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      setIsOfflineMode(true);
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
+    setIsClient(true);
   }, []);
 
-  // Update sync status periodically
+  // Update offline mode based on network status
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSyncStatus(offlineQueueManager.getSyncStatus());
-    }, 1000);
+    setIsOfflineMode(!isOnline);
+  }, [isOnline]);
 
+  // Update pending counts from IndexedDB
+  useEffect(() => {
+    if (!isClient) return;
+
+    const updateCounts = async () => {
+      try {
+        const total = await getPendingCount();
+        const byType = await getPendingCountByType();
+        
+        setPendingCount(total);
+        setPendingByType(byType);
+      } catch (error) {
+        console.error('Failed to get pending counts:', error);
+      }
+    };
+
+    updateCounts();
+
+    // Update counts every 2 seconds
+    const interval = setInterval(updateCounts, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isClient]);
 
-  // Listen for sync status updates
-  useEffect(() => {
-    const handleSyncUpdate = () => {
-      setSyncStatus(offlineQueueManager.getSyncStatus());
-    };
-
-    window.addEventListener('sync-status-update', handleSyncUpdate);
-    return () => window.removeEventListener('sync-status-update', handleSyncUpdate);
-  }, []);
-
-  // Get total pending count
-  const pendingCount = useCallback(() => {
-    return offlineQueueManager.getPendingCount();
-  }, []);
+  // Create a simple sync status object for compatibility
+  const syncStatus: SyncStatus = {
+    isOnline,
+    isSyncing: false,
+    lastSync: Date.now(),
+    pendingItems: {
+      total: pendingCount,
+      beehive: pendingByType.beehive || 0,
+      cash: pendingByType.cash || 0,
+      inventory: pendingByType.inventory || 0,
+      calendar: pendingByType.calendar || 0,
+      credit: pendingByType.credit || 0
+    },
+    errors: [],
+    featureStatus: {
+      beehive: isOnline ? 'online' : 'offline',
+      cash: isOnline ? 'online' : 'offline',
+      inventory: isOnline ? 'online' : 'offline',
+      calendar: isOnline ? 'online' : 'offline',
+      credit: isOnline ? 'online' : 'offline'
+    }
+  };
 
   // Beehive operations
   const addBeehiveOperation = useCallback((
     type: BeehiveOfflineOperation['type'], 
     data: BeehiveOfflineOperation['data']
   ): string => {
-    const sessionData = localStorageManager.get('sessionData') as any;
-    const userId = sessionData?.userId || 'anonymous';
+    if (!isClient) return '';
     
-    const operation: Omit<BeehiveOfflineOperation, 'id' | 'timestamp' | 'retryCount'> = {
-      feature: 'beehive',
-      type,
-      data,
-      status: 'pending',
-      priority: type === 'profile_update' ? SYNC_PRIORITY.HIGH : SYNC_PRIORITY.MEDIUM,
-      userId
-    };
-
-    return offlineQueueManager.addOperation(operation);
-  }, []);
+    // Fire and forget - the queue handles async internally
+    addToQueue('beehive', type, data).then(result => {
+      console.log('Beehive operation queued:', result.idempotencyKey);
+    }).catch(err => {
+      console.error('Failed to queue beehive operation:', err);
+    });
+    
+    return 'pending';
+  }, [isClient]);
 
   // Cash operations
   const addCashOperation = useCallback((
     type: CashOfflineOperation['type'], 
     data: CashOfflineOperation['data']
   ): string => {
-    const sessionData = localStorageManager.get('sessionData') as any;
-    const userId = sessionData?.userId || 'anonymous';
+    if (!isClient) return '';
     
-    const operation: Omit<CashOfflineOperation, 'id' | 'timestamp' | 'retryCount'> = {
-      feature: 'cash',
-      type,
-      data,
-      status: 'pending',
-      priority: SYNC_PRIORITY.HIGH, // Financial operations are highest priority
-      userId
-    };
-
-    return offlineQueueManager.addOperation(operation);
-  }, []);
+    // Fire and forget - the queue handles async internally
+    addToQueue('cash', type, data).then(result => {
+      console.log('Cash operation queued:', result.idempotencyKey);
+    }).catch(err => {
+      console.error('Failed to queue cash operation:', err);
+    });
+    
+    return 'pending';
+  }, [isClient]);
 
   // Inventory operations
   const addInventoryOperation = useCallback((
     type: InventoryOfflineOperation['type'], 
     data: InventoryOfflineOperation['data']
   ): string => {
-    const sessionData = localStorageManager.get('sessionData') as any;
-    const userId = sessionData?.userId || 'anonymous';
+    if (!isClient) return '';
     
-    const operation: Omit<InventoryOfflineOperation, 'id' | 'timestamp' | 'retryCount'> = {
-      feature: 'inventory',
-      type,
-      data,
-      status: 'pending',
-      priority: SYNC_PRIORITY.HIGH, // Inventory is critical for business
-      userId
-    };
-
-    return offlineQueueManager.addOperation(operation);
-  }, []);
+    // Fire and forget - the queue handles async internally
+    addToQueue('inventory', type, data).then(result => {
+      console.log('Inventory operation queued:', result.idempotencyKey);
+    }).catch(err => {
+      console.error('Failed to queue inventory operation:', err);
+    });
+    
+    return 'pending';
+  }, [isClient]);
 
   // Calendar operations
   const addCalendarOperation = useCallback((
     type: CalendarOfflineOperation['type'], 
     data: CalendarOfflineOperation['data']
   ): string => {
-    const sessionData = localStorageManager.get('sessionData') as any;
-    const userId = sessionData?.userId || 'anonymous';
+    if (!isClient) return '';
     
-    const operation: Omit<CalendarOfflineOperation, 'id' | 'timestamp' | 'retryCount'> = {
-      feature: 'calendar',
-      type,
-      data,
-      status: 'pending',
-      priority: type === 'create_appointment' ? SYNC_PRIORITY.HIGH : SYNC_PRIORITY.MEDIUM,
-      userId
-    };
-
-    return offlineQueueManager.addOperation(operation);
-  }, []);
+    // Fire and forget - the queue handles async internally
+    addToQueue('calendar', type, data).then(result => {
+      console.log('Calendar operation queued:', result.idempotencyKey);
+    }).catch(err => {
+      console.error('Failed to queue calendar operation:', err);
+    });
+    
+    return 'pending';
+  }, [isClient]);
 
   // Credit operations
   const addCreditOperation = useCallback((
     type: CreditOfflineOperation['type'], 
     data: CreditOfflineOperation['data']
   ): string => {
-    const sessionData = localStorageManager.get('sessionData') as any;
-    const userId = sessionData?.userId || 'anonymous';
+    if (!isClient) return '';
     
-    const operation: Omit<CreditOfflineOperation, 'id' | 'timestamp' | 'retryCount'> = {
-      feature: 'credit',
-      type,
-      data,
-      status: 'pending',
-      priority: type === 'issue_credit' ? SYNC_PRIORITY.HIGH : SYNC_PRIORITY.MEDIUM,
-      userId
-    };
+    // Fire and forget - the queue handles async internally
+    addToQueue('credit', type, data).then(result => {
+      console.log('Credit operation queued:', result.idempotencyKey);
+    }).catch(err => {
+      console.error('Failed to queue credit operation:', err);
+    });
+    
+    return 'pending';
+  }, [isClient]);
 
-    return offlineQueueManager.addOperation(operation);
-  }, []);
-
-  // Force sync
+  // Force sync - trigger Background Sync
   const forceSync = useCallback(() => {
-    if (isOnline) {
-      offlineQueueManager.processQueue();
+    if (isOnline && isClient) {
+      // Import dynamically to avoid SSR issues
+      import('@/utils/registerSW').then(({ registerSync }) => {
+        registerSync();
+      });
     }
-  }, [isOnline]);
+  }, [isOnline, isClient]);
 
   // Clear pending operations
   const clearPending = useCallback(() => {
-    offlineQueueManager.clearQueue();
-  }, []);
+    if (isClient) {
+      import('@/utils/offlineQueue').then(({ clearQueue }) => {
+        clearQueue();
+      });
+    }
+  }, [isClient]);
 
   // Get pending count by feature
   const getPendingByFeature = useCallback((feature: string): number => {
-    return offlineQueueManager.getPendingCount(feature);
-  }, []);
+    return pendingByType[feature] || 0;
+  }, [pendingByType]);
 
   return {
     isOnline,
     syncStatus,
-    pendingCount: pendingCount(),
+    pendingCount,
     isOfflineMode,
     
     // Feature-specific operations

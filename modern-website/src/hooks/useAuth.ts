@@ -163,7 +163,7 @@ export function useAuth() {
     }
   };
 
-  const signInDirect = async (phone: string) => {
+  const signInDirect = async (phone: string, pin?: string) => {
     // Validate phone format
     const validation = validatePhone(phone);
     if (!validation.valid) {
@@ -197,6 +197,53 @@ export function useAuth() {
 
       console.log('✅ Found business:', business);
 
+      // Check if PIN is required and provided
+      if (business.pin_hash && !pin) {
+        console.log('🔐 PIN required for this business');
+        return { 
+          error: { 
+            message: 'PIN_REQUIRED',
+            requiresPin: true,
+            businessId: business.id
+          } 
+        };
+      }
+
+      // Verify PIN if provided
+      if (business.pin_hash && pin) {
+        const response = await fetch('/api/auth/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, pin, businessId: business.id })
+        });
+        
+        const result = await response.json();
+        
+        if (result.error) {
+          if (result.error.message === 'ACCOUNT_LOCKED') {
+            return result;
+          } else if (result.error.message === 'Invalid PIN. Please try again.') {
+            return result;
+          } else {
+            return { error: { message: result.error.message } };
+          }
+        }
+        
+        console.log('✅ PIN verification successful');
+      }
+
+      // Check for account lockout
+      if (business.pin_locked_until && business.pin_locked_until > Date.now()) {
+        const lockoutRemaining = Math.ceil((business.pin_locked_until - Date.now()) / 1000);
+        return { 
+          error: { 
+            message: 'ACCOUNT_LOCKED',
+            lockoutTime: lockoutRemaining,
+            remainingAttempts: 0
+          } 
+        };
+      }
+
       // Set business context for RLS policies
       try {
         await setBusinessContext(business.id, business.country, business.industry);
@@ -210,7 +257,8 @@ export function useAuth() {
         businessName: business.business_name,
         country: business.country,
         industry: business.industry,
-        phone: phone
+        phone: phone,
+        hasPin: !!business.pin_hash
       };
 
       // Store simple authentication data
@@ -228,7 +276,7 @@ export function useAuth() {
         business_name: business.business_name,
         country: business.country,
         default_industry: business.industry,
-        auth_method: 'phone_direct',
+        auth_method: business.pin_hash ? 'phone_pin' : 'phone_direct',
         business: business
       };
 
@@ -243,7 +291,7 @@ export function useAuth() {
       return { 
         error: null, 
         data: { 
-          message: 'Access granted successfully!',
+          message: business.pin_hash ? 'Access granted with PIN!' : 'Access granted successfully!',
           business: authData.business
         } 
       };
@@ -265,6 +313,52 @@ export function useAuth() {
           message: errorMessage 
         } 
       };
+    }
+  };
+
+  const setupBusinessPIN = async (businessId: string, pin: string) => {
+    try {
+      const response = await fetch('/api/auth/setup-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId, pin })
+      });
+      
+      const result = await response.json();
+      
+      if (result.error) {
+        return { error: { message: result.error.message } };
+      }
+
+      console.log('✅ PIN set successfully for business:', businessId);
+      return { error: null, data: result.data };
+    } catch (error) {
+      console.error('💥 PIN setup error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to set PIN';
+      return { error: { message: errorMessage } };
+    }
+  };
+
+  const changeBusinessPIN = async (businessId: string, currentPin: string, newPin: string) => {
+    try {
+      const response = await fetch('/api/auth/change-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId, currentPin, newPin })
+      });
+      
+      const result = await response.json();
+      
+      if (result.error) {
+        return { error: { message: result.error.message } };
+      }
+
+      console.log('✅ PIN changed successfully for business:', businessId);
+      return { error: null, data: result.data };
+    } catch (error) {
+      console.error('💥 PIN change error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change PIN';
+      return { error: { message: errorMessage } };
     }
   };
 
@@ -310,6 +404,8 @@ export function useAuth() {
   return {
     ...authState,
     signInDirect,
+    setupBusinessPIN,
+    changeBusinessPIN,
     signOut,
     refreshUserData,
     validatePhone,

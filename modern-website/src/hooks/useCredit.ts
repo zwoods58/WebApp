@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { supabase } from '@/lib/supabase';
+import { useOfflineData } from '@/hooks/useOfflineData';
+import { getQueue } from '@/utils/offlineQueue';
 
 export interface Credit {
   id: string;
@@ -17,6 +19,7 @@ export interface Credit {
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  syncStatus?: 'synced' | 'pending' | 'error'; // Add sync status for offline support
 }
 
 export interface UseCreditOptions {
@@ -33,6 +36,7 @@ export interface UseCreditOptions {
 
 export function useCredit(options: UseCreditOptions = {}) {
   const { business } = useBusiness();
+  const { isOnline, addCreditOperation } = useOfflineData();
   const [data, setData] = useState<Credit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,15 +74,63 @@ export function useCredit(options: UseCreditOptions = {}) {
 
       if (queryError) throw queryError;
 
-      setData((results as unknown as Credit[]) || []);
+      // Load pending operations from IndexedDB queue
+      const queue = await getQueue();
+      const pendingOps = queue.filter(op => op.type === 'credit');
+      const pendingCredit: Credit[] = pendingOps
+        .filter(op => op.status === 'pending' && op.operation === 'issue_credit')
+        .map(op => ({
+          id: op.id?.toString() || '',
+          business_id: business.id,
+          industry: business.industry || 'retail',
+          customer_name: (op.payload as any).customerData?.name || (op.payload as any).customerId || 'Unknown',
+          customer_phone: (op.payload as any).customerData?.phone,
+          amount: (op.payload as any).amount || 0,
+          paid_amount: 0,
+          status: 'outstanding' as const,
+          date_given: new Date(op.timestamp).toISOString().split('T')[0],
+          notes: (op.payload as any).terms,
+          created_at: new Date(op.timestamp).toISOString(),
+          updated_at: new Date(op.timestamp).toISOString(),
+          syncStatus: 'pending' as const
+        }));
+
+      // Merge pending + fetched data
+      const allData = [...pendingCredit, ...(results as unknown as Credit[]) || []];
+      setData(allData);
     } catch (err) {
       console.error('Error fetching credit:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setData([]);
+      
+      // Still load pending items even if fetch fails
+      if (business?.id) {
+        const queue = await getQueue();
+        const pendingOps = queue.filter(op => op.type === 'credit');
+        const pendingCredit: Credit[] = pendingOps
+          .filter(op => op.status === 'pending' && op.operation === 'issue_credit')
+          .map(op => ({
+            id: op.id?.toString() || '',
+            business_id: business.id,
+            industry: business.industry || 'retail',
+            customer_name: (op.payload as any).customerData?.name || (op.payload as any).customerId || 'Unknown',
+            customer_phone: (op.payload as any).customerData?.phone,
+            amount: (op.payload as any).amount || 0,
+            paid_amount: 0,
+            status: 'outstanding' as const,
+            date_given: new Date(op.timestamp).toISOString().split('T')[0],
+            notes: (op.payload as any).terms,
+            created_at: new Date(op.timestamp).toISOString(),
+            updated_at: new Date(op.timestamp).toISOString(),
+            syncStatus: 'pending' as const
+          }));
+        setData(pendingCredit);
+      } else {
+        setData([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [business?.id, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
+  }, [business?.id, business?.industry, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
 
   useEffect(() => {
     fetchData();
@@ -88,19 +140,54 @@ export function useCredit(options: UseCreditOptions = {}) {
     if (!business) throw new Error('No business context');
 
     try {
-      const { data: result, error } = await supabase
-        .from('credit')
-        .insert({
-          ...newData,
-          business_id: business.id
-        })
-        .select()
-        .single();
+      const creditData = {
+        ...newData,
+        business_id: business.id
+      };
 
-      if (error) throw error;
+      // If online, try direct API call first
+      if (isOnline) {
+        try {
+          const { data: result, error } = await supabase
+            .from('credit')
+            .insert(creditData)
+            .select()
+            .single();
 
-      setData(prev => [result, ...prev]);
-      return result;
+          if (error) throw error;
+
+          setData(prev => [result, ...prev]);
+          return result;
+        } catch (apiError) {
+          console.warn('⚠️ API call failed, falling back to offline queue:', apiError);
+          // Fall through to offline queue
+        }
+      }
+
+      // Always queue for offline/sync or as fallback
+      const operationId = addCreditOperation('issue_credit', {
+        customerId: creditData.customer_name, // Using customer name as ID for now
+        amount: creditData.amount,
+        creditType: creditData.terms || 'standard',
+        terms: creditData.terms,
+        customerData: {
+          name: creditData.customer_name,
+          phone: creditData.customer_phone
+        }
+      });
+
+      // Return optimistic update
+      const optimisticCredit = {
+        ...creditData,
+        id: operationId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        syncStatus: 'pending' // Add sync status field for pending items
+      } as Credit;
+
+      setData(prev => [optimisticCredit, ...prev]);
+      return optimisticCredit;
+
     } catch (err) {
       await fetchData();
       throw err;

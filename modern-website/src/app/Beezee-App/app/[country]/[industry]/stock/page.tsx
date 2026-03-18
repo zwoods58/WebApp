@@ -2,16 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Plus, AlertTriangle, Search, Filter, TrendingDown, DollarSign } from 'lucide-react';
+import { Package, Plus, AlertTriangle, Search, Filter, TrendingDown, DollarSign, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
-import BottomNav from '@/components/universal/BottomNav';
 import { useInventory, useTransactions } from '@/hooks';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useOfflineData } from '@/hooks/useOfflineData';
+import { useToast } from '@/hooks/useToast';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function StockPage() {
   const params = useParams();
@@ -21,6 +23,7 @@ export default function StockPage() {
   
   // Use Supabase hook instead of mock data
   const { business, loading: businessLoading } = useBusiness();
+  const { isOnline, isOfflineMode, pendingCount, addInventoryOperation, addCashOperation } = useOfflineData();
   const { inventory, loading, insert: addInventoryItem, update: updateInventoryItem, remove: deleteInventoryItem } = useInventory({ 
     industry,
     businessId: business?.id 
@@ -29,12 +32,18 @@ export default function StockPage() {
     industry,
     businessId: business?.id 
   });
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  const { refresh: refreshInventory } = useInventory({ industry, businessId: business?.id });
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSellModal, setShowSellModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = ['all', ...Array.from(new Set(inventory.map(item => item.category || 'uncategorized')))];
   
@@ -63,49 +72,274 @@ export default function StockPage() {
         last_ordered: new Date().toISOString().split('T')[0]
       });
       setShowAddModal(false);
+      showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}" to inventory`));
     } catch (error) {
       console.error('Failed to add inventory item:', error);
+      showError(t('inventory.add_error', 'Failed to add item. Please try again.'));
     }
   };
 
   const handleSellItem = (item: any) => {
     if (!business?.id) {
-      alert('Please set up your business profile first before selling items.');
+      showWarning(t('business.setup_required', 'Please set up your business profile first before selling items.'));
       return;
     }
     setSelectedItem(item);
     setShowSellModal(true);
   };
 
+  const handleEditItem = (item: any) => {
+    setSelectedItem(item);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteItem = (item: any) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteItem = async () => {
+    if (!itemToDelete) return;
+    
+    setIsDeleting(true);
+    
+    try {
+      // Debug: Log the item ID to understand the format
+      console.log('🔍 Deleting item with ID:', itemToDelete.id, 'Type:', typeof itemToDelete.id);
+      
+      // Check if the ID is a valid UUID format
+      const isValidUUID = (id: string) => {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(id);
+      };
+      
+      if (!isValidUUID(itemToDelete.id)) {
+        // This is likely an offline-created item with a string ID
+        // Remove it from local state only since it doesn't exist in the database
+        showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
+        console.log(`🗑️ Removing offline item: ${itemToDelete.item_name}`);
+        
+        // Remove from local state without calling the API
+        const { refresh: refreshInventory } = useInventory({ industry, businessId: business?.id });
+        refreshInventory();
+        
+        setIsDeleting(false);
+        setShowDeleteModal(false);
+        setItemToDelete(null);
+        return;
+      }
+      
+      if (isOnline) {
+        // Try online first - actually delete from database
+        try {
+          // Call the API to delete the item from database
+          await deleteInventoryItem(itemToDelete.id);
+          
+          showSuccess(t('inventory.delete_success', `Successfully deleted "${itemToDelete.item_name}"`));
+          console.log(`✅ Item deleted from database: ${itemToDelete.item_name}`);
+        } catch (onlineError) {
+          console.warn('⚠️ Online delete failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          addInventoryOperation('stock_adjustment', {
+            itemName: itemToDelete.item_name,
+            stockLevel: 0,
+            previousStock: itemToDelete.quantity,
+            adjustmentReason: `Deleted item: ${itemToDelete.item_name}`
+          });
+          
+          showInfo(t('inventory.delete_queued', `"${itemToDelete.item_name}" deletion queued for sync`));
+          console.log(`✅ Item deletion queued for sync: ${itemToDelete.item_name}`);
+        }
+      } else {
+        // Offline mode - queue operation
+        console.log('📴 Offline mode: Queueing item deletion for later sync');
+        
+        addInventoryOperation('stock_adjustment', {
+          itemName: itemToDelete.item_name,
+          stockLevel: 0,
+          previousStock: itemToDelete.quantity,
+          adjustmentReason: `Deleted item: ${itemToDelete.item_name}`
+        });
+        
+        showInfo(t('inventory.delete_offline', `"${itemToDelete.item_name}" will be deleted when you're back online`));
+        console.log(`✅ Item deletion queued for sync: ${itemToDelete.item_name}`);
+      }
+      
+    } catch (error: any) {
+      console.error('Failed to delete item:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      
+      // Check if it's a UUID format error
+      if (error?.message?.includes('invalid input syntax for type uuid')) {
+        showError(t('inventory.delete_uuid_error', 'Invalid item ID format. This item may have been created offline. Try refreshing the page.'));
+      } else {
+        showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
+      }
+      
+      // If there's an error, refresh the inventory to get the correct state
+      refreshInventory();
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setItemToDelete(null);
+    }
+  };
+
+  const handleEditSubmit = async (editData: any) => {
+    if (!selectedItem || !business?.id) return;
+    
+    try {
+      const updates: any = {
+        item_name: editData.item_name,
+        category: editData.category,
+        quantity: parseFloat(editData.quantity),
+        threshold: parseFloat(editData.threshold),
+        unit: editData.unit,
+        supplier: editData.supplier
+      };
+
+      // Only include price fields if they have values
+      if (editData.cost_price && editData.cost_price !== '') {
+        updates.cost_price = parseFloat(editData.cost_price);
+      }
+      if (editData.selling_price && editData.selling_price !== '') {
+        updates.selling_price = parseFloat(editData.selling_price);
+      }
+
+      if (isOnline) {
+        // Try online first
+        try {
+          await updateInventoryItem(selectedItem.id, updates);
+          console.log(`✅ Item updated online: ${selectedItem.item_name}`);
+        } catch (onlineError) {
+          console.warn('⚠️ Online update failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          addInventoryOperation('stock_adjustment', {
+            itemName: selectedItem.item_name,
+            stockLevel: parseFloat(editData.quantity),
+            previousStock: selectedItem.quantity,
+            adjustmentReason: `Updated item: ${JSON.stringify(updates)}`
+          });
+          
+          console.log(`✅ Item update queued for sync: ${selectedItem.item_name}`);
+        }
+      } else {
+        // Offline mode - queue operation
+        console.log('📴 Offline mode: Queueing item update for later sync');
+        
+        addInventoryOperation('stock_adjustment', {
+          itemName: selectedItem.item_name,
+          stockLevel: parseFloat(editData.quantity),
+          previousStock: selectedItem.quantity,
+          adjustmentReason: `Updated item: ${JSON.stringify(updates)}`
+        });
+        
+        console.log(`✅ Item update queued for sync: ${selectedItem.item_name}`);
+      }
+
+      setShowEditModal(false);
+      setSelectedItem(null);
+      showSuccess(t('inventory.edit_success', `Successfully updated "${selectedItem.item_name}"`));
+    } catch (error) {
+      console.error('Failed to update item:', error);
+      showError(t('inventory.edit_error', 'Failed to update item. Please try again.'));
+    }
+  };
+
   const handleSellSubmit = async (sellData: any) => {
     if (!selectedItem || !business?.id) return;
     
     try {
-      // Create transaction record
-      await addTransaction({
+      const quantity = parseInt(sellData.quantity);
+      const totalPrice = quantity * selectedItem.selling_price;
+      const newQuantity = selectedItem.quantity - quantity;
+      
+      // Create a unique operation ID for tracking
+      const operationId = `sale-${selectedItem.id}-${Date.now()}`;
+      
+      // Optimistically update local inventory state immediately
+      updateInventoryItem(selectedItem.id, { quantity: newQuantity });
+      
+      // Create transaction data
+      const transactionData = {
         business_id: business.id,
         industry,
-        amount: sellData.quantity * selectedItem.selling_price,
+        amount: totalPrice,
         category: 'sale',
-        description: `Sale of ${sellData.quantity} ${selectedItem.unit} of ${selectedItem.item_name}`,
+        description: `Sale of ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`,
         customer_name: sellData.customerName,
         payment_method: sellData.paymentMethod,
         transaction_date: new Date().toISOString().split('T')[0],
         metadata: {
           inventory_item_id: selectedItem.id,
-          quantity_sold: sellData.quantity,
-          unit_price: selectedItem.selling_price
+          quantity_sold: quantity,
+          unit_price: selectedItem.selling_price,
+          operationId // Track this operation
         }
-      });
+      };
 
-      // Update inventory quantity
-      const newQuantity = selectedItem.quantity - sellData.quantity;
-      await updateInventoryItem(selectedItem.id, { quantity: newQuantity });
+      if (isOnline) {
+        // Try online first
+        try {
+          await addTransaction(transactionData);
+          
+          // Update inventory quantity in database (this should match the optimistic update)
+          await updateInventoryItem(selectedItem.id, { quantity: newQuantity });
+        } catch (onlineError) {
+          console.warn('⚠️ Online sale failed, using offline mode:', onlineError);
+          
+          // Fall back to offline operations
+          addCashOperation('sale', {
+            amount: totalPrice,
+            category: 'sale',
+            description: transactionData.description,
+            paymentMethod: sellData.paymentMethod,
+            receiptNumber: `INV-${Date.now()}`
+          });
+
+          addInventoryOperation('stock_adjustment', {
+            itemName: selectedItem.item_name,
+            stockLevel: newQuantity,
+            previousStock: selectedItem.quantity,
+            adjustmentReason: `Sale: ${quantity} ${selectedItem.unit} sold`
+          });
+
+          showInfo(t('inventory.sell_offline', 'Sale queued - will sync when you\'re back online'));
+          console.log(`✅ Sale queued for sync: ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`);
+        }
+      } else {
+        // Offline mode - queue operations
+        console.log('📴 Offline mode: Queueing sale for later sync');
+        
+        const cashOperationId = addCashOperation('sale', {
+          amount: totalPrice,
+          category: 'sale',
+          description: transactionData.description,
+          paymentMethod: sellData.paymentMethod,
+          receiptNumber: `INV-${Date.now()}`
+        });
+
+        addInventoryOperation('stock_adjustment', {
+          itemName: selectedItem.item_name,
+          stockLevel: newQuantity,
+          previousStock: selectedItem.quantity,
+          adjustmentReason: `Sale: ${quantity} ${selectedItem.unit} sold`
+        });
+
+        showInfo(t('inventory.sell_offline_mode', 'Offline mode: Sale queued for sync'));
+        console.log(`✅ Sale queued for sync: ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`);
+      }
 
       setShowSellModal(false);
       setSelectedItem(null);
+      showSuccess(t('inventory.sell_success', `Successfully sold ${quantity} ${selectedItem.unit} of "${selectedItem.item_name}"`));
     } catch (error) {
       console.error('Failed to process sale:', error);
+      showError(t('inventory.sell_error', 'Failed to process sale. Please try again.'));
+      // If there's an error, refresh the inventory to get the correct state
+      refreshInventory();
     }
   };
 
@@ -121,10 +355,30 @@ export default function StockPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header industry={industry} country={country} />
 
-      <div className="p-4 max-w-md mx-auto">
+      <div className="flex-1 p-4 max-w-md mx-auto">
+        {/* Offline Status Indicator */}
+        {isOfflineMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
+          >
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-red-800">Offline Mode</div>
+              <div className="text-xs text-red-600">Sales will be synced when you're back online</div>
+            </div>
+            {pendingCount > 0 && (
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                {pendingCount}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -324,16 +578,33 @@ export default function StockPage() {
                         <div className="text-xs text-gray-500">
                           {t('inventory.min', 'Min:')} {item.threshold ?? 0}
                         </div>
+                        
+                        {/* Edit, Sell, Delete Buttons - Cash Screen Style */}
+                        <div className="flex gap-1 mt-1">
+                          <button
+                            onClick={() => handleEditItem(item)}
+                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                            title="Edit item"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleSellItem(item)}
+                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            disabled={item.quantity === 0 || !business?.id}
+                            title={!business?.id ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
+                          >
+                            <DollarSign size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteItem(item)}
+                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                            title="Delete item"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
-                      
-                      <button
-                        onClick={() => handleSellItem(item)}
-                        className="ml-2 p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        disabled={item.quantity === 0 || !business?.id}
-                        title={!business?.id ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
-                      >
-                        <DollarSign size={16} />
-                      </button>
                     </div>
 
                     {/* Stock Level Bar */}
@@ -358,20 +629,12 @@ export default function StockPage() {
         </motion.div>
       </div>
 
-      <BottomNav industry={industry} country={country} />
-
       {/* Add Item Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">🧵 TAILOR ADD NEW ITEM TEST</h3>
-            
-            {/* Test element to verify changes are applied */}
-            <div className="mb-4 p-2 bg-red-100 text-red-600 rounded text-sm">
-              🧵 TEST: If you see this, changes are being applied!
-            </div>
-            
-            <AddItemFormTailor onSubmit={handleAddItem} onCancel={() => setShowAddModal(false)} t={t} industry={industry} />
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('inventory.add_new_item', 'Add New Item')}</h3>
+            <AddItemForm onSubmit={handleAddItem} onCancel={() => setShowAddModal(false)} t={t} industry={industry} />
           </div>
         </div>
       )}
@@ -394,7 +657,188 @@ export default function StockPage() {
           </div>
         </div>
       )}
+      {/* Edit Item Modal */}
+      {showEditModal && selectedItem && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('inventory.edit_item', 'Edit Item')}</h3>
+            <EditItemForm 
+              item={selectedItem} 
+              onSubmit={handleEditSubmit} 
+              onCancel={() => {
+                setShowEditModal(false);
+                setSelectedItem(null);
+              }} 
+              t={t}
+            />
+          </div>
+        </div>
+      )}
+      
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={confirmDeleteItem}
+        title={t('inventory.delete_confirm_title', 'Delete Item')}
+        message={itemToDelete ? t('inventory.delete_confirm_message', `Are you sure you want to delete "${itemToDelete.item_name}"? This action cannot be undone.`) : ''}
+        confirmText={t('common.delete', 'Delete')}
+        cancelText={t('common.cancel', 'Cancel')}
+        type="danger"
+        loading={isDeleting}
+      />
     </div>
+  );
+}
+
+function EditItemForm({ item, onSubmit, onCancel, t }: { 
+  item: any; 
+  onSubmit: (data: any) => void; 
+  onCancel: () => void; 
+  t: (key: string, fallback?: string) => string;
+}) {
+  const [formData, setFormData] = useState({
+    item_name: item.item_name || '',
+    category: item.category || '',
+    quantity: item.quantity?.toString() || '',
+    threshold: item.threshold?.toString() || '',
+    unit: item.unit || '',
+    cost_price: item.cost_price?.toString() || '',
+    selling_price: item.selling_price?.toString() || '',
+    supplier: item.supplier || ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...formData,
+      quantity: parseFloat(formData.quantity),
+      threshold: parseFloat(formData.threshold),
+      cost_price: parseFloat(formData.cost_price),
+      selling_price: parseFloat(formData.selling_price)
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('item_name', 'Item Name')}</label>
+        <input
+          type="text"
+          required
+          value={formData.item_name}
+          onChange={(e) => setFormData(prev => ({ ...prev, item_name: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="e.g., Coke 500ml"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('quantity', 'Quantity')}</label>
+          <input
+            type="number"
+            required
+            value={formData.quantity}
+            onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="0"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('retail.inventory.min_stock', 'Min Stock')}</label>
+          <input
+            type="number"
+            required
+            value={formData.threshold}
+            onChange={(e) => setFormData(prev => ({ ...prev, threshold: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="0"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.unit', 'Unit')}</label>
+          <input
+            type="text"
+            required
+            value={formData.unit}
+            onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="e.g., bottles"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('category', 'Category')}</label>
+          <input
+            type="text"
+            required
+            value={formData.category}
+            onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder={t('enter_category', 'Enter category')}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('cost_price', 'Cost Price')}</label>
+          <input
+            type="number"
+            value={formData.cost_price}
+            onChange={(e) => setFormData(prev => ({ ...prev, cost_price: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="0"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t('selling_price', 'Selling Price')}</label>
+          <input
+            type="number"
+            value={formData.selling_price}
+            onChange={(e) => setFormData(prev => ({ ...prev, selling_price: e.target.value }))}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="0"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('business.suppliers', 'Supplier')} ({t('common.optional', 'Optional')})</label>
+        <input
+          type="text"
+          value={formData.supplier}
+          onChange={(e) => setFormData(prev => ({ ...prev, supplier: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Supplier name"
+        />
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Update Item
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -497,14 +941,12 @@ function SellItemForm({ item, onSubmit, onCancel, t }: {
   );
 }
 
-function AddItemFormTailor({ onSubmit, onCancel, t, industry }: { 
+function AddItemForm({ onSubmit, onCancel, t, industry }: { 
   onSubmit: (data: any) => void; 
   onCancel: () => void; 
   t: (key: string, fallback?: string) => string;
   industry: string;
 }) {
-  console.log('🧵 AddItemFormTailor rendered with industry:', industry);
-  
   const [formData, setFormData] = useState({
     item_name: '',
     category: '',
@@ -516,25 +958,8 @@ function AddItemFormTailor({ onSubmit, onCancel, t, industry }: {
     supplier: ''
   });
 
-  // Tailor-specific categories
-  const tailorCategories = [
-    'Fabrics',
-    'Threads',
-    'Zippers & Fasteners',
-    'Buttons & Accessories',
-    'Interfacing & Linings',
-    'Elastic & Trims',
-    'Measuring Tools',
-    'Cutting Tools',
-    'Sewing Tools',
-    'Patterns & Templates',
-    'Dyes & Chemicals',
-    'Packaging Materials',
-    'Other'
-  ];
-
-  // Default categories for other industries
-  const defaultCategories = [
+  // General categories for all industries
+  const categories = [
     'Raw Materials',
     'Finished Goods',
     'Supplies',
@@ -542,15 +967,6 @@ function AddItemFormTailor({ onSubmit, onCancel, t, industry }: {
     'Packaging',
     'Other'
   ];
-
-  // Always use tailor categories if industry contains 'tailor', otherwise use default
-  const isTailorIndustry = industry?.toLowerCase().includes('tailor');
-  console.log('🧵 Industry detected:', industry);
-  console.log('🧵 Is tailor industry:', isTailorIndustry);
-  
-  // Force tailor categories for now
-  const finalCategories = tailorCategories;
-  console.log('🧵 Using categories:', finalCategories);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

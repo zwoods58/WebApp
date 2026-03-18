@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useBusiness } from '@/contexts/BusinessContext';
 import { supabase } from '@/lib/supabase';
+import { useOfflineData } from '@/hooks/useOfflineData';
+import { getQueue } from '@/utils/offlineQueue';
 
 export interface Expense {
   id: string;
@@ -14,6 +16,7 @@ export interface Expense {
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  status?: 'synced' | 'pending' | 'error'; // Add status for offline support
 }
 
 export interface UseExpensesOptions {
@@ -31,6 +34,7 @@ export interface UseExpensesOptions {
 
 export function useExpenses(options: UseExpensesOptions = {}) {
   const { business } = useBusiness();
+  const { isOnline, addCashOperation } = useOfflineData();
   const [data, setData] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,18 +72,76 @@ export function useExpenses(options: UseExpensesOptions = {}) {
 
       if (queryError) throw queryError;
 
-      setData((results as unknown as Expense[]) || []);
+      // Load pending operations from IndexedDB queue
+      const queue = await getQueue();
+      const pendingOps = queue.filter(op => op.type === 'cash');
+      const pendingExpenses: Expense[] = pendingOps
+        .filter(op => op.status === 'pending' && op.operation === 'expense')
+        .map(op => ({
+          id: op.id?.toString() || '',
+          business_id: business.id,
+          industry: business.industry || 'retail',
+          amount: (op.payload as any).amount || 0,
+          category: (op.payload as any).expenseCategory || (op.payload as any).category,
+          description: (op.payload as any).description,
+          supplier: (op.payload as any).vendorName,
+          expense_date: (op.payload as any).expenseDate || new Date(op.timestamp).toISOString().split('T')[0],
+          created_at: new Date(op.timestamp).toISOString(),
+          updated_at: new Date(op.timestamp).toISOString(),
+          status: 'pending' as const
+        }));
+
+      // Merge pending + fetched data
+      const allData = [...pendingExpenses, ...(results as unknown as Expense[]) || []];
+      setData(allData);
     } catch (err) {
       console.error('Error fetching expenses:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setData([]);
+      
+      // Still load pending items even if fetch fails
+      if (business?.id) {
+        const queue = await getQueue();
+        const pendingOps = queue.filter(op => op.type === 'cash');
+        const pendingExpenses: Expense[] = pendingOps
+          .filter(op => op.status === 'pending' && op.operation === 'expense')
+          .map(op => ({
+            id: op.id?.toString() || '',
+            business_id: business.id,
+            industry: business.industry || 'retail',
+            amount: (op.payload as any).amount || 0,
+            category: (op.payload as any).expenseCategory || (op.payload as any).category,
+            description: (op.payload as any).description,
+            supplier: (op.payload as any).vendorName,
+            expense_date: (op.payload as any).expenseDate || new Date(op.timestamp).toISOString().split('T')[0],
+            created_at: new Date(op.timestamp).toISOString(),
+            updated_at: new Date(op.timestamp).toISOString(),
+            status: 'pending' as const
+          }));
+        setData(pendingExpenses);
+      } else {
+        setData([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [business?.id, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
+  }, [business?.id, business?.industry, options.select, options.limit, options.orderBy?.column, options.orderBy?.ascending]);
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  // Listen for force refresh events
+  useEffect(() => {
+    const handleForceRefresh = () => {
+      fetchData();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('force-refresh-data', handleForceRefresh);
+      return () => {
+        window.removeEventListener('force-refresh-data', handleForceRefresh);
+      };
+    }
   }, [fetchData]);
 
   const insert = async (newData: any) => {
@@ -91,22 +153,53 @@ export function useExpenses(options: UseExpensesOptions = {}) {
         business_id: business.id
       };
 
-      const response = await fetch('/api/expenses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(expenseData)
-      });
+      // If online, try direct API call first
+      if (isOnline) {
+        try {
+          const response = await fetch('/api/expenses', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(expenseData)
+          });
 
-      const result = await response.json();
+          const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to insert expense');
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to insert expense');
+          }
+
+          setData(prev => [result.data, ...prev]);
+          return result.data;
+        } catch (apiError) {
+          console.warn('⚠️ API call failed, falling back to offline queue:', apiError);
+          // Fall through to offline queue
+        }
       }
 
-      setData(prev => [result.data, ...prev]);
-      return result.data;
+      // Always queue for offline/sync or as fallback
+      const operationId = addCashOperation('expense', {
+        amount: expenseData.amount,
+        category: expenseData.category || 'general',
+        description: expenseData.description,
+        paymentMethod: expenseData.payment_method || 'cash',
+        expenseCategory: expenseData.category,
+        receiptNumber: expenseData.receipt_number
+      });
+
+      // Return optimistic update
+      const optimisticExpense = {
+        ...expenseData,
+        id: operationId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        status: 'pending' // Add status field for pending items
+      } as Expense;
+
+      setData(prev => [optimisticExpense, ...prev]);
+      return optimisticExpense;
+
     } catch (err) {
       await fetchData();
       throw err;

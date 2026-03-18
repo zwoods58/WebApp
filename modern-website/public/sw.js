@@ -1,329 +1,230 @@
-const CACHE_NAME = 'beezee-business-os-v2';
-const STATIC_CACHE_NAME = 'beezee-static-v2';
-const API_CACHE_NAME = 'beezee-api-v2';
+const CACHE_NAME = 'beezee-app-shell-v1'
 
-// Cache all static assets and pages
-const urlsToCache = [
+// App shell files to pre-cache — HTML routes, JS bundles, CSS, fonts, icons
+const APP_SHELL = [
   '/',
-  '/Beezee-App/auth/signup',
+  '/Beezee-App',
   '/Beezee-App/auth/login',
+  '/Beezee-App/auth/signup',
   '/manifest.json',
   '/beezee-icon-192x192.png',
   '/beezee-icon-512x512.png',
-  // All dashboard combinations
-  '/Beezee-App/app/ke/retail',
-  '/Beezee-App/app/ke/services',
-  '/Beezee-App/app/ng/retail',
-  '/Beezee-App/app/ng/services',
-  '/Beezee-App/app/za/retail',
-  '/Beezee-App/app/za/services',
-  // Feature pages
-  '/Beezee-App/app/[country]/[industry]/beehive',
-  '/Beezee-App/app/[country]/[industry]/cash',
-  '/Beezee-App/app/[country]/[industry]/stock',
-  '/Beezee-App/app/[country]/[industry]/calendar',
-  '/Beezee-App/app/[country]/[industry]/credit',
-  '/Beezee-App/app/[country]/[industry]/transactions',
-  '/Beezee-App/app/[country]/[industry]/services',
-  '/Beezee-App/app/[country]/[industry]/reports',
-  '/Beezee-App/app/[country]/[industry]/settings'
-];
+  '/beezee-icon-96x96.png',
+  '/beezee-icon-72x72.png',
+  '/beezee-icon-128x128.png',
+  '/beezee-icon-144x144.png',
+  '/beezee-icon-152x152.png',
+  '/beezee-icon-384x384.png'
+]
 
-// API endpoints to cache
-const apiEndpoints = [
-  '/api/auth/signup',
-  '/api/auth/login',
-  '/api/transactions',
-  '/api/expenses',
-  '/api/beehive',
-  '/api/service-worker',
-  '/api/manifest'
-];
-
-// Install event - cache resources
+// ─── Install: pre-cache app shell ───────────────────────────────────────────
 self.addEventListener('install', event => {
   event.waitUntil(
-    Promise.all([
-      // Cache static pages and assets
-      caches.open(STATIC_CACHE_NAME)
-        .then(cache => {
-          console.log('Opened static cache');
-          return cache.addAll(urlsToCache);
-        }),
-      // Cache API responses
-      caches.open(API_CACHE_NAME)
-        .then(cache => {
-          console.log('Opened API cache');
-          return cache.addAll(apiEndpoints.map(endpoint => new Request(endpoint)));
-        })
-    ])
-  );
-});
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Caching app shell...')
+      return cache.addAll(APP_SHELL)
+    })
+  )
+  self.skipWaiting()
+})
 
-// Fetch event - comprehensive offline handling
-self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Handle different request types
-  if (request.method === 'GET') {
-    // Handle page requests
-    if (url.pathname.startsWith('/Beezee-App') || url.pathname === '/') {
-      event.respondWith(handlePageRequest(request));
-    }
-    // Handle API requests
-    else if (url.pathname.startsWith('/api/')) {
-      event.respondWith(handleAPIRequest(request));
-    }
-    // Handle static assets
-    else {
-      event.respondWith(handleStaticRequest(request));
-    }
-  } else {
-    // Handle POST/PUT/DELETE requests (offline queuing)
-    event.respondWith(handleMutationRequest(request));
-  }
-});
-
-// Handle page requests with offline fallback
-async function handlePageRequest(request) {
-  try {
-    // Try network first
-    const networkResponse = await fetch(request);
-    
-    // Cache successful response
-    const cache = await caches.open(STATIC_CACHE_NAME);
-    cache.put(request, networkResponse.clone());
-    
-    return networkResponse;
-  } catch (error) {
-    // Fallback to cache
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-    
-    // Fallback to offline page
-    return caches.match('/Beezee-App/auth/signup');
-  }
-}
-
-// Handle API requests with offline fallback
-async function handleAPIRequest(request) {
-  try {
-    // Try network first
-    const networkResponse = await fetch(request);
-    
-    // Cache successful GET responses
-    if (request.method === 'GET' && networkResponse.ok) {
-      const cache = await caches.open(API_CACHE_NAME);
-      cache.put(request, networkResponse.clone());
-    }
-    
-    return networkResponse;
-  } catch (error) {
-    // Fallback to cache for GET requests
-    if (request.method === 'GET') {
-      const cachedResponse = await caches.match(request);
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-    }
-    
-    // Return offline response for API requests
-    return new Response(JSON.stringify({
-      error: 'Offline mode',
-      offline: true,
-      message: 'Request queued for sync when online'
-    }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-// Handle static asset requests
-async function handleStaticRequest(request) {
-  try {
-    // Try network first
-    const networkResponse = await fetch(request);
-    
-    // Cache successful response
-    const cache = await caches.open(STATIC_CACHE_NAME);
-    cache.put(request, networkResponse.clone());
-    
-    return networkResponse;
-  } catch (error) {
-    // Fallback to cache
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-    
-    // Return minimal offline asset
-    return new Response('', { status: 404 });
-  }
-}
-
-// Handle mutation requests (POST/PUT/DELETE)
-async function handleMutationRequest(request) {
-  try {
-    // Try network first
-    const networkResponse = await fetch(request);
-    return networkResponse;
-  } catch (error) {
-    // Queue request for background sync
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-      // Store request in IndexedDB for background sync
-      const requestData = {
-        url: request.url,
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: await request.text(),
-        timestamp: Date.now()
-      };
-      
-      // Store in IndexedDB (simplified - in real implementation use proper IndexedDB)
-      const requests = JSON.parse(localStorage.getItem('offline-requests') || '[]');
-      requests.push(requestData);
-      localStorage.setItem('offline-requests', JSON.stringify(requests));
-      
-      // Register for background sync
-      self.registration.sync.register('background-sync');
-    }
-    
-    // Return queued response
-    return new Response(JSON.stringify({
-      success: true,
-      queued: true,
-      message: 'Request queued for sync when online'
-    }), {
-      status: 202,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-// Activate event - clean up old caches
+// ─── Activate: clean up old caches ──────────────────────────────────────────
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          // Keep only current caches
-          if (cacheName !== STATIC_CACHE_NAME && cacheName !== API_CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => {
+        console.log('[SW] Deleting old cache:', k)
+        return caches.delete(k)
+      }))
+    )
+  )
+  self.clients.claim()
+})
 
-// Enhanced background sync for offline operations
-self.addEventListener('sync', event => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(processOfflineQueue());
+// ─── Fetch: network-first for API, cache-first for app shell ────────────────
+self.addEventListener('fetch', event => {
+  const { request } = event
+  const url = new URL(request.url)
+
+  // Never intercept Supabase or external API calls — always go to network
+  if (
+    url.hostname.includes('supabase') ||
+    url.hostname.includes('httpbin') ||
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/_next/') // Next.js API routes
+  ) {
+    return
   }
-});
 
-// Process offline queue when back online
-async function processOfflineQueue() {
+  // For navigation (HTML) — serve from cache, fall back to network
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      caches.match(request).then(cached => {
+        if (cached) {
+          console.log('[SW] Serving from cache:', request.url)
+          return cached
+        }
+        return fetch(request).catch(() => {
+          // If network fails and no cache, serve the app shell
+          return caches.match('/Beezee-App')
+        })
+      })
+    )
+    return
+  }
+
+  // For static assets — cache first, fall back to network
+  event.respondWith(
+    caches.match(request).then(cached => {
+      if (cached) {
+        console.log('[SW] Serving static asset from cache:', request.url)
+        return cached
+      }
+      return fetch(request)
+    })
+  )
+})
+
+// ─── Background Sync ─────────────────────────────────────────────────────────
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-beezee-queue') {
+    console.log('[SW] Background sync triggered')
+    event.waitUntil(flushQueue())
+  }
+})
+
+async function flushQueue() {
   try {
-    // Get queued requests from storage
-    const requests = JSON.parse(localStorage.getItem('offline-requests') || '[]');
-    
-    if (requests.length === 0) {
-      console.log('No offline requests to process');
-      return;
+    // Open IndexedDB directly in the SW context
+    const db = await openIDB()
+    const tx = db.transaction('pending-actions', 'readonly')
+    const store = tx.objectStore('pending-actions')
+    const index = store.index('priority')
+    const actions = await getAllFromIndex(index)
+
+    if (actions.length === 0) {
+      console.log('[SW] No actions to sync')
+      return
     }
 
-    console.log(`Processing ${requests.length} offline requests`);
+    console.log(`[SW] Syncing ${actions.length} queued actions`)
 
-    // Process each request
-    for (const requestData of requests) {
+    let successCount = 0
+    let failureCount = 0
+
+    for (const action of actions) {
       try {
-        const response = await fetch(requestData.url, {
-          method: requestData.method,
-          headers: requestData.headers,
-          body: requestData.body
-        });
-
-        if (response.ok) {
-          console.log(`Offline request succeeded: ${requestData.method} ${requestData.url}`);
-        } else {
-          console.error(`Offline request failed: ${requestData.method} ${requestData.url}`, response.status);
-        }
-      } catch (error) {
-        console.error(`Error processing offline request: ${requestData.method} ${requestData.url}`, error);
+        await dispatchAction(action)
+        // Remove from queue on success
+        const deleteTx = db.transaction('pending-actions', 'readwrite')
+        deleteTx.objectStore('pending-actions').delete(action.id)
+        await deleteTx.done
+        successCount++
+        console.log(`[SW] Synced action: ${action.operation} [${action.idempotencyKey}]`)
+      } catch (err) {
+        failureCount++
+        console.warn('[SW] Failed to sync action, will retry:', action.operation, err)
+        // Leave in queue — Background Sync will retry
       }
     }
 
-    // Clear processed requests
-    localStorage.setItem('offline-requests', JSON.stringify([]));
-    
-    // Notify clients that sync is complete
-    const clients = await self.clients.matchAll();
-    clients.forEach(client => {
-      client.postMessage({
-        type: 'SYNC_COMPLETE',
-        processedCount: requests.length
-      });
-    });
+    // Notify all open clients that sync is complete
+    const clients = await self.clients.matchAll({ includeUncontrolled: true })
+    clients.forEach(client => client.postMessage({ 
+      type: 'SYNC_COMPLETE',
+      successCount,
+      failureCount,
+      total: actions.length
+    }))
 
+    console.log(`[SW] Sync complete: ${successCount} succeeded, ${failureCount} failed`)
   } catch (error) {
-    console.error('Background sync failed:', error);
+    console.error('[SW] Queue flush failed:', error)
   }
 }
 
-// Enhanced push notifications
-self.addEventListener('push', event => {
-  const options = {
-    body: event.data ? event.data.text() : 'New business update',
-    icon: '/beezee-icon-192x192.png',
-    badge: '/beezee-icon-72x72.png',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'Open App',
-        icon: '/beezee-icon-96x96.png'
-      },
-      {
-        action: 'sync',
-        title: 'Sync Now',
-        icon: '/beezee-icon-96x96.png'
-      }
-    ]
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('BeeZee', options)
-  );
-});
-
-// Handle notification clicks
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/Beezee-App/auth/signup')
-    );
-  } else if (event.action === 'sync') {
-    event.waitUntil(
-      processOfflineQueue().then(() => {
-        return clients.openWindow('/Beezee-App/auth/signup');
-      })
-    );
+// dispatchAction — calls the appropriate API endpoint based on action type
+// Mirror the routing logic from your existing offlineSyncHandler.ts here
+async function dispatchAction(action) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Idempotency-Key': action.idempotencyKey,
   }
-});
 
-// Clean up old localStorage references (service workers can't access localStorage directly)
-// In a real implementation, use IndexedDB instead
-console.log('BeeZee Service Worker v2 loaded - Offline-first architecture enabled');
+  const endpointMap = {
+    cash: '/api/transactions',
+    inventory: '/api/inventory',
+    calendar: '/api/calendar',
+    credit: '/api/credit',
+    beehive: '/api/beehive',
+  }
+
+  const endpoint = endpointMap[action.type]
+  if (!endpoint) throw new Error(`Unknown action type: ${action.type}`)
+
+  console.log(`[SW] Dispatching ${action.type} action to ${endpoint}`)
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      operation: action.operation,
+      payload: action.payload,
+      timestamp: action.timestamp,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`API error: ${response.status} - ${errorText}`)
+  }
+
+  return response.json()
+}
+
+// ─── Minimal IndexedDB helpers for SW context (no idb package in SW) ────────
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('beezee-offline-db', 1)
+    req.onsuccess = () => resolve(req.result)
+    req.onerror = () => reject(req.error)
+    req.onupgradeneeded = (event) => {
+      const db = event.target.result
+      if (!db.objectStoreNames.contains('pending-actions')) {
+        const store = db.createObjectStore('pending-actions', {
+          keyPath: 'id',
+          autoIncrement: true,
+        })
+        store.createIndex('priority', 'priority')
+        store.createIndex('idempotencyKey', 'idempotencyKey', { unique: true })
+        store.createIndex('timestamp', 'timestamp')
+        store.createIndex('type', 'type')
+      }
+      if (!db.objectStoreNames.contains('failed-actions')) {
+        const failedStore = db.createObjectStore('failed-actions', {
+          keyPath: 'id',
+          autoIncrement: true,
+        })
+        failedStore.createIndex('timestamp', 'timestamp')
+        failedStore.createIndex('type', 'type')
+      }
+    }
+  })
+}
+
+function getAllFromIndex(index) {
+  return new Promise((resolve, reject) => {
+    const req = index.getAll()
+    req.onsuccess = () => resolve(req.result)
+    req.onerror = () => reject(req.error)
+  })
+}
+
+// ─── Message handling for client communication ─────────────────────────────────
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
+console.log('[SW] Beezee Service Worker loaded - PWA architecture enabled')
