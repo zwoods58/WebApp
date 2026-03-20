@@ -1,9 +1,9 @@
 "use client";
 
-import { createContext, useContext } from 'react';
-import { useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
-// Temporary inline useAuth implementation to bypass import issues
+// Real Supabase authentication implementation
 function useAuthInline() {
   const [authState, setAuthState] = useState<{
     user: any;
@@ -13,7 +13,7 @@ function useAuthInline() {
     session: any;
   }>({
     user: null,
-    loading: false,
+    loading: true,
     error: null,
     isAuthenticated: false,
     session: null,
@@ -39,7 +39,51 @@ function useAuthInline() {
     return { valid: false };
   };
 
-  const signInDirect = async (phone: string) => {
+  // Monitor auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('🔐 Auth state changed:', event, session?.user?.phone);
+        
+        if (session?.user) {
+          setAuthState({
+            user: session.user,
+            loading: false,
+            error: null,
+            isAuthenticated: true,
+            session: session
+          });
+        } else {
+          setAuthState({
+            user: null,
+            loading: false,
+            error: null,
+            isAuthenticated: false,
+            session: null
+          });
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setAuthState({
+          user: session.user,
+          loading: false,
+          error: null,
+          isAuthenticated: true,
+          session: session
+        });
+      } else {
+        setAuthState(prev => ({ ...prev, loading: false }));
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signInDirect = async (phone: string, pin?: string) => {
     const validation = validatePhone(phone);
     if (!validation.valid) {
       return { error: { message: 'Invalid phone format' } };
@@ -47,36 +91,102 @@ function useAuthInline() {
 
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
     
-    // Mock implementation
-    const mockUser = {
-      id: 'mock-' + Date.now(),
-      phone_number: phone,
-      business_name: 'Mock Business',
-      country: validation.country || 'ke',
-      default_industry: 'retail',
-      auth_method: 'simple_phone'
-    };
+    try {
+      // Use PIN verification API for authentication
+      const response = await fetch('/api/auth/verify-pin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phoneNumber: phone, pin }),
+      });
 
-    setAuthState({
-      user: mockUser,
-      loading: false,
-      error: null,
-      isAuthenticated: true,
-      session: { user: mockUser }
-    });
+      const result = await response.json();
 
-    return { error: null, data: { message: 'Mock login successful', user: mockUser } };
+      if (!response.ok) {
+        throw new Error(result.error || 'Authentication failed');
+      }
+
+      // The API should handle setting up the Supabase session
+      // For now, we'll create a custom token session
+      if (result.success && result.business) {
+        const user = {
+          id: result.business.id,
+          phone_number: result.business.phone_number,
+          business_name: result.business.business_name,
+          country: result.business.country,
+          industry: result.business.industry,
+          auth_method: 'pin'
+        };
+
+        // Store session data for BusinessContext
+        const sessionData = {
+          userId: result.business.id,
+          businessId: result.business.id,
+          phone: result.business.phone_number,
+          businessName: result.business.business_name,
+          country: result.business.country,
+          industry: result.business.industry,
+          settings: result.business.settings,
+          isActive: result.business.is_active,
+          authenticated: true
+        };
+        localStorage.setItem('sessionData', JSON.stringify(sessionData));
+
+        setAuthState({
+          user,
+          loading: false,
+          error: null,
+          isAuthenticated: true,
+          session: { user }
+        });
+
+        return { error: null, data: { message: 'Login successful', business: user } };
+      } else {
+        throw new Error(result.error || 'Invalid credentials');
+      }
+    } catch (error) {
+      console.error('❌ Authentication error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+      
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: errorMessage
+      }));
+
+      return { error: { message: errorMessage } };
+    }
   };
 
   const signOut = async () => {
-    setAuthState({
-      user: null,
-      loading: false,
-      error: null,
-      isAuthenticated: false,
-      session: null,
-    });
-    return { error: null };
+    try {
+      await supabase.auth.signOut();
+      
+      // Clear session data
+      localStorage.removeItem('sessionData');
+      
+      setAuthState({
+        user: null,
+        loading: false,
+        error: null,
+        isAuthenticated: false,
+        session: null,
+      });
+      return { error: null };
+    } catch (error) {
+      console.error('❌ Sign out error:', error);
+      // Even if sign out fails, clear local state
+      localStorage.removeItem('sessionData');
+      setAuthState({
+        user: null,
+        loading: false,
+        error: null,
+        isAuthenticated: false,
+        session: null,
+      });
+      return { error: null };
+    }
   };
 
   return {
@@ -91,7 +201,7 @@ interface AuthContextType {
   user: any;
   loading: boolean;
   businessData: any;
-  signInDirect: (phone: string) => Promise<{ error: any; data?: any }>;
+  signInDirect: (phone: string, pin?: string) => Promise<{ error: any; data?: any }>;
   signOut: () => Promise<{ error: any }>;
   validatePhone: (phone: string) => { valid: boolean; country?: string };
 }

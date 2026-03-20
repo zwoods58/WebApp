@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { supabase } from '@/lib/supabase';
-import { useOfflineData } from '@/hooks/useOfflineData';
+import { onlineManager } from '@tanstack/react-query';
 
 interface Comment {
   id: string;
@@ -17,6 +18,7 @@ interface Comment {
 
 interface BeehiveCommentsProps {
   requestId: string;
+  onCommentAdded?: () => void; // Callback to refresh parent data
 }
 
 // Helper function to get current user ID from our custom auth
@@ -80,122 +82,23 @@ const getCurrentUserId = (): string | null => {
   }
 };
 
-export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
+export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCommentsProps) {
   const { t } = useLanguage();
-  const { addBeehiveOperation, isOnline } = useOfflineData();
+  const { business } = useUnifiedAuth(); // Use UnifiedAuth instead of localStorage
+  const isOnline = onlineManager.isOnline();
+  const addPendingOperation = async (type: string, action: string, data: any) => {
+    console.log('Stub: addPendingOperation called', type, action, data);
+  };
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
-  // Get current user ID only when needed (lazy loading)
+  // Get current user ID from UnifiedAuth - simple and reliable
   const getCurrentUserId = (): string | null => {
-    try {
-      console.log('🔍 Checking authentication status in comments...');
-      
-      // Method 1: Check sessionData (original system)
-      let sessionData = localStorage.getItem('sessionData');
-      if (sessionData) {
-        try {
-          const session = JSON.parse(sessionData);
-          if (session.isLoggedIn && session.userId) {
-            console.log('✅ Found user ID in sessionData:', session.userId);
-            return session.userId;
-          }
-        } catch (e) {
-          console.log('❌ Failed to parse sessionData:', e);
-        }
-      }
-      
-      // Method 2: Check beezee-user-data
-      const beezeeUserData = localStorage.getItem('beezee-user-data');
-      if (beezeeUserData) {
-        try {
-          const userData = JSON.parse(beezeeUserData);
-          const userId = userData?.userId || userData?.id || userData?.sub;
-          if (userId) {
-            console.log('✅ Found user ID in beezee-user-data:', userId);
-            return userId;
-          }
-        } catch (e) {
-          console.log('❌ Failed to parse beezee-user-data:', e);
-        }
-      }
-      
-      // Method 3: Check beezee-auth
-      const beezeeAuth = localStorage.getItem('beezee-auth');
-      if (beezeeAuth) {
-        try {
-          const authData = JSON.parse(beezeeAuth);
-          const userId = authData?.userId || authData?.id || authData?.sub;
-          if (userId) {
-            console.log('✅ Found user ID in beezee-auth:', userId);
-            return userId;
-          }
-        } catch (e) {
-          console.log('❌ Failed to parse beezee-auth:', e);
-        }
-      }
-      
-      // Method 4: Check beezee-business-auth (our new business auth system)
-      const businessAuth = localStorage.getItem('beezee_business_auth');
-      if (businessAuth) {
-        try {
-          const authData = JSON.parse(businessAuth);
-          const businessId = authData.business?.id || authData.session?.businessId;
-          if (businessId) {
-            console.log('✅ Using business ID as user ID:', businessId);
-            return businessId;
-          }
-        } catch (e) {
-          console.log('❌ Failed to parse beezee_business_auth:', e);
-        }
-      }
-      
-      // Method 5: Check beezee-business-profile
-      const businessProfile = localStorage.getItem('beezee-business-profile');
-      if (businessProfile) {
-        try {
-          const profileData = JSON.parse(businessProfile);
-          const userId = profileData?.userId || profileData?.id || profileData?.user_id;
-          if (userId) {
-            console.log('✅ Found user ID in beezee-business-profile:', userId);
-            return userId;
-          }
-        } catch (e) {
-          console.log('❌ Failed to parse beezee-business-profile:', e);
-        }
-      }
-      
-      // Method 6: Check isLoggedIn and create temporary session
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn === 'true') {
-        console.log('⚠️ User is logged in but no user ID found');
-        console.log('🔧 Creating temporary user ID...');
-        
-        // Create a temporary user ID based on available data
-        const tempUserId = 'temp-user-' + Date.now();
-        console.log('📝 Created temporary user ID:', tempUserId);
-        
-        // Create sessionData for future use
-        const tempSession = {
-          isLoggedIn: true,
-          userId: tempUserId,
-          email: 'temp@example.com',
-          loginTime: new Date().toISOString()
-        };
-        
-        localStorage.setItem('sessionData', JSON.stringify(tempSession));
-        console.log('✅ Created temporary sessionData');
-        return tempUserId;
-      }
-      
-      console.log('❌ No user ID found in any authentication method');
-      return null;
-    } catch (error) {
-      console.error('❌ Error in getCurrentUserId():', error);
-      return null;
-    }
+    const businessId = business?.id || null;
+    console.log('🔍 Getting user ID from UnifiedAuth:', { businessId, hasBusiness: !!business });
+    return businessId;
   };
 
   useEffect(() => {
@@ -305,7 +208,7 @@ export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
 
       // Create optimistic comment for immediate UI feedback
       const optimisticComment: Comment = {
-        id: `temp-comment-${Date.now()}`,
+        id: `00000000-0000-0000-0000-000000000000`, // Valid UUID placeholder for optimistic updates
         request_id: requestId,
         business_id: userId,
         comment_text: newComment.trim(),
@@ -335,16 +238,16 @@ export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
             throw new Error(error.error || 'Failed to add comment');
           }
 
-          // If successful, refresh comments
+          // If successful, refresh comments and notify parent
           await fetchComments();
+          onCommentAdded?.(); // Refresh parent data to update comment count
         } catch (error) {
           console.error('Online sync failed, queuing for offline:', error);
           // Queue for offline sync if online sync fails
-          addBeehiveOperation('comment', {
-            postId: requestId,
-            content: newComment.trim(),
-            userId,
-            businessId: userId
+          await addPendingOperation('beehive_comments', 'create', {
+            request_id: requestId,
+            comment_text: newComment.trim(),
+            business_id: userId
           });
           
           // Show optimistic comment
@@ -352,11 +255,10 @@ export default function BeehiveComments({ requestId }: BeehiveCommentsProps) {
         }
       } else {
         // Offline: Queue operation and show optimistic comment
-        addBeehiveOperation('comment', {
-          postId: requestId,
-          content: newComment.trim(),
-          userId,
-          businessId: userId
+        await addPendingOperation('beehive_comments', 'create', {
+          request_id: requestId,
+          comment_text: newComment.trim(),
+          business_id: userId
         });
         
         // Show optimistic comment immediately

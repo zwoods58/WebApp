@@ -1,124 +1,118 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+// Server-side admin client that bypasses RLS
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  }
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, pin, businessId } = await request.json();
-
-    if (!phone || (!pin && !businessId)) {
-      return NextResponse.json(
-        { error: { message: 'Missing required fields' } },
-        { status: 400 }
-      );
-    }
-
-    // Find business by phone number if businessId not provided
-    let business;
-    if (businessId) {
-      const { data, error } = await supabaseAdmin
-        .from('businesses')
-        .select('*')
-        .eq('id', businessId)
-        .single();
-
-      if (error || !data) {
-        return NextResponse.json(
-          { error: { message: 'Business not found' } },
-          { status: 404 }
-        );
-      }
-      business = data;
-    } else {
-      const { data, error } = await supabaseAdmin
-        .from('businesses')
-        .select('*')
-        .eq('phone_number', phone)
-        .single();
-
-      if (error || !data) {
-        return NextResponse.json(
-          { error: { message: 'Business not found' } },
-          { status: 404 }
-        );
-      }
-      business = data;
-    }
-
-    // Check for account lockout
-    if (business.pin_locked_until && business.pin_locked_until > Date.now()) {
-      const lockoutRemaining = Math.ceil((business.pin_locked_until - Date.now()) / 1000);
+    const { phoneNumber, pin } = await request.json();
+    
+    console.log('🔐 [API] Verifying PIN for phone:', phoneNumber);
+    
+    // Validate inputs
+    if (!phoneNumber || !pin) {
       return NextResponse.json({
-        error: {
-          message: 'ACCOUNT_LOCKED',
-          lockoutTime: lockoutRemaining,
-          remainingAttempts: 0
-        }
-      });
+        success: false,
+        error: 'Phone number and PIN are required',
+        business: null
+      }, { status: 400 });
     }
 
-    // Verify PIN if provided
-    if (business.pin_hash && pin) {
-      const pinValid = await bcrypt.compare(pin, business.pin_hash);
-      
-      if (!pinValid) {
-        // Increment failed attempts
-        const newAttempts = (business.pin_attempts || 0) + 1;
-        const lockoutTime = newAttempts >= 3 ? Date.now() + (30 * 60 * 1000) : null; // 30 minutes
-        
-        await supabaseAdmin
-          .from('businesses')
-          .update({
-            pin_attempts: newAttempts,
-            pin_locked_until: lockoutTime
-          })
-          .eq('id', business.id);
-
-        if (newAttempts >= 3) {
-          return NextResponse.json({
-            error: {
-              message: 'ACCOUNT_LOCKED',
-              lockoutTime: 30 * 60, // 30 minutes in seconds
-              remainingAttempts: 0
-            }
-          });
-        }
-
-        return NextResponse.json({
-          error: {
-            message: 'Invalid PIN. Please try again.',
-            remainingAttempts: 3 - newAttempts
-          }
-        });
-      }
-
-      // Reset failed attempts on successful PIN verification
-      await supabaseAdmin
-        .from('businesses')
-        .update({
-          pin_attempts: 0,
-          pin_locked_until: null
-        })
-        .eq('id', business.id);
-
+    // Validate PIN format
+    if (!/^\d{6}$/.test(pin)) {
       return NextResponse.json({
-        error: null,
-        data: {
-          verified: true,
-          business: business
-        }
-      });
+        success: false,
+        error: 'Invalid PIN format',
+        business: null
+      }, { status: 400 });
     }
+
+    // Find business by phone number
+    const { data: business, error: findError } = await supabaseAdmin
+      .from('businesses')
+      .select('*')
+      .eq('phone_number', phoneNumber)
+      .single();
+
+    if (findError || !business) {
+      console.log('❌ [API] No business found for phone:', phoneNumber);
+      return NextResponse.json({
+        success: false,
+        error: 'Business not found',
+        business: null
+      }, { status: 404 });
+    }
+
+    // Check if business has PIN hash
+    if (!business.pin_hash) {
+      console.error('❌ [API] No PIN hash found for business:', business.id);
+      return NextResponse.json({
+        success: false,
+        error: 'PIN not set for this account',
+        business: null
+      }, { status: 400 });
+    }
+
+    // Verify PIN against hash
+    let pinValid: boolean;
+    try {
+      console.log('🔐 Comparing PIN with stored hash:', { 
+        inputPinLength: pin.length,
+        storedHashLength: business.pin_hash.length,
+        storedHashPrefix: business.pin_hash.substring(0, 7) + '...',
+        pinValue: pin ? '***' : 'none'
+      });
+      pinValid = await bcrypt.compare(pin, business.pin_hash);
+      console.log('✅ [API] PIN verification completed:', { 
+        valid: pinValid,
+        businessId: business.id,
+        businessName: business.business_name
+      });
+    } catch (compareError) {
+      console.error('❌ [API] Error comparing PIN:', compareError);
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to verify PIN',
+        business: null
+      }, { status: 500 });
+    }
+
+    if (!pinValid) {
+      console.log('❌ [API] Invalid PIN provided');
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid PIN',
+        business: null
+      }, { status: 401 });
+    }
+
+    // PIN is valid - return business data (excluding PIN hash)
+    const { pin_hash: _, ...businessResponse } = business;
+    
+    console.log('✅ [API] PIN verification successful for:', business.business_name);
 
     return NextResponse.json({
-      error: { message: 'PIN verification failed' }
+      success: true,
+      error: null,
+      business: businessResponse
     });
 
-  } catch (error) {
-    console.error('PIN verification error:', error);
-    return NextResponse.json(
-      { error: { message: 'Internal server error' } },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('💥 [API] Unexpected error:', err);
+    return NextResponse.json({
+      success: false,
+      error: 'Unexpected error occurred',
+      business: null
+    }, { status: 500 });
   }
 }

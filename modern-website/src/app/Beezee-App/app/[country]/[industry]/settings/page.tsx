@@ -32,7 +32,7 @@ import { useParams } from 'next/navigation';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export default function SettingsPage() {
   const params = useParams();
@@ -40,7 +40,7 @@ export default function SettingsPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   
   // Check if accessed from More page
   const showProfileOnly = searchParams.get('from') === 'more';
@@ -72,9 +72,9 @@ export default function SettingsPage() {
     // Only update when business data actually changes
     if (business) {
       setEditedProfile({
-        businessName: business?.businessName || '',
+        businessName: business?.business_name || '',
         email: '',
-        phoneNumber: business?.phone || '',
+        phoneNumber: business?.phone_number || '',
         industry: business?.industry || industry,
         country: business?.country || country.toUpperCase()
       });
@@ -105,9 +105,9 @@ export default function SettingsPage() {
     // Reset to original values
     if (business) {
       setEditedProfile({
-        businessName: business?.businessName || '',
+        businessName: business?.business_name || '',
         email: '',
-        phoneNumber: business?.phone || '',
+        phoneNumber: business?.phone_number || '',
         industry: business?.industry || industry,
         country: business?.country || country.toUpperCase()
       });
@@ -666,11 +666,11 @@ export default function SettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('settings.phone', 'Phone')}:</span>
-              <span className="text-gray-900">{business?.phone || '+254 700 000 000'}</span>
+              <span className="text-gray-900">{business?.phone_number || '+254 700 000 000'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('settings.business', 'Business')}:</span>
-              <span className="text-gray-900">{business?.businessName || 'Business Name'}</span>
+              <span className="text-gray-900">{business?.business_name || 'Business Name'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('settings.industry', 'Industry')}:</span>

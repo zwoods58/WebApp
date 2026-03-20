@@ -26,10 +26,13 @@ interface StorageRules {
 
 const CACHE_RULES: StorageRules = {
   userProfile: { ttl: 7 * 24 * 60 * 60 * 1000 }, // 7 days
-  sessionData: { ttl: 24 * 60 * 60 * 1000 },     // 24 hours
+  sessionData: { ttl: 7 * 24 * 60 * 60 * 1000 },     // 7 days (extended)
   syncStatus: { ttl: 30 * 60 * 1000 },            // 30 minutes
   dashboardCache: { ttl: 60 * 60 * 1000 },       // 1 hour
-  businessData: { ttl: 7 * 24 * 60 * 60 * 1000 }, // 7 days
+  businessData: { ttl: 30 * 24 * 60 * 60 * 1000 }, // 30 days (extended)
+  // Preserve auth data much longer
+  beezee_unified_auth: { ttl: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+  beezee_business_auth: { ttl: 30 * 24 * 60 * 60 * 1000 }, // 30 days
 };
 
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
@@ -143,6 +146,22 @@ class LocalStorageManager {
   }
 
   /**
+   * Check if item is critical and should not be removed during cleanup
+   */
+  private isCriticalItem(key: string): boolean {
+    const criticalKeys = [
+      'beezee_unified_auth',
+      'beezee_business_auth',
+      'sessionData',
+      'userProfile',
+      'beezee_backup_data',
+      'beezee_emergency_data',
+      'cacheMeta'
+    ];
+    return criticalKeys.some(criticalKey => key.includes(criticalKey));
+  }
+
+  /**
    * Get current storage size in bytes
    */
   private getStorageSize(): number {
@@ -242,7 +261,7 @@ class LocalStorageManager {
         if (this.getStorageSize() <= CLEANUP_THRESHOLD) break;
         
         // Don't remove critical items
-        if (!item.key.includes('sessionData') && !item.key.includes('userProfile')) {
+        if (!this.isCriticalItem(item.key)) {
           localStorage.removeItem(item.key);
           removed++;
         }

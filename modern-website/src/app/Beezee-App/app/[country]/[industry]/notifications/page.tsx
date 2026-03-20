@@ -10,7 +10,7 @@ import { useNotifications, NotificationType, type Notification as AppNotificatio
 import { useToastContext } from '@/providers/ToastProvider';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const notificationIcons = {
   money_in: DollarSign,
@@ -42,7 +42,7 @@ const typeLabels = {
 export default function NotificationsPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   const { 
     notifications, 
     loading, 

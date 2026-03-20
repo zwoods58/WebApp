@@ -73,7 +73,7 @@ export async function getSubscriptionRevenue(): Promise<CountrySubscriptionStats
     }
 
     // Calculate subscription metrics per country
-    const countryData: SubscriptionRevenue[] = Object.entries(TARGET_COUNTRIES).map(([code, info]) => {
+    const countryData = await Promise.all(Object.entries(TARGET_COUNTRIES).map(async ([code, info]) => {
       const countrySubscriptions = subscriptions?.filter(s => s.country_code === code) || [];
       const activeSubscriptions = countrySubscriptions.length;
       
@@ -106,9 +106,9 @@ export async function getSubscriptionRevenue(): Promise<CountrySubscriptionStats
         active_subscriptions: activeSubscriptions,
         mrr: monthlyRevenueUSD,
         arpu: arpu,
-        growth_rate: 0, // TODO: Calculate from historical data
+        growth_rate: await getSubscriptionGrowthRate(),
       };
-    });
+    }));
 
     const totalMRR = countryData.reduce((sum, country) => sum + country.mrr, 0);
     const totalSubscriptions = countryData.reduce((sum, country) => sum + country.active_subscriptions, 0);
@@ -143,7 +143,7 @@ async function getMockSubscriptionRevenue(): Promise<CountrySubscriptionStats> {
     if (error) throw error;
 
     // Calculate subscription metrics per country using real pricing
-    const countryData: SubscriptionRevenue[] = Object.entries(TARGET_COUNTRIES).map(([code, info]) => {
+    const countryData = await Promise.all(Object.entries(TARGET_COUNTRIES).map(async ([code, info]) => {
       const countryBusinesses = businesses?.filter(b => b.country === code) || [];
       const activeSubscriptions = countryBusinesses.length;
       
@@ -176,9 +176,9 @@ async function getMockSubscriptionRevenue(): Promise<CountrySubscriptionStats> {
         active_subscriptions: activeSubscriptions,
         mrr: monthlyRevenueUSD,
         arpu: arpu,
-        growth_rate: Math.random() * 20 - 5, // Mock growth rate between -5% and +15%
+        growth_rate: await getSubscriptionGrowthRate(),
       };
-    });
+    }));
 
     const totalMRR = countryData.reduce((sum, country) => sum + country.mrr, 0);
     const totalSubscriptions = countryData.reduce((sum, country) => sum + country.active_subscriptions, 0);
@@ -190,9 +190,9 @@ async function getMockSubscriptionRevenue(): Promise<CountrySubscriptionStats> {
       date.setMonth(date.getMonth() - (5 - i));
       const month = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
       
-      // Mock growth trend based on real pricing
+      // Realistic growth trend based on real pricing
       const baseRevenue = totalMRR * 0.7; // Start at 70% of current
-      const growth = i * (totalMRR * 0.06) + Math.random() * (totalMRR * 0.1);
+      const growth = i * (totalMRR * 0.06); // Consistent 6% monthly growth
       const revenue = Math.min(baseRevenue + growth, totalMRR);
       const subscriptions = Math.floor(revenue / (totalARPU || 5));
       
@@ -284,6 +284,43 @@ export async function getCountrySubscriptionDetails(countryCode: string): Promis
 }
 
 export async function getSubscriptionGrowthRate(): Promise<number> {
-  // Mock monthly growth rate calculation
-  return 12.5;
+  try {
+    // Calculate real growth rate from subscription data
+    const now = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(now.getMonth() - 1);
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(now.getMonth() - 2);
+
+    // Get subscriptions from last month
+    const { data: lastMonthSubs, error: lastMonthError } = await supabase
+      .from('subscriptions')
+      .select('usd_price')
+      .eq('status', 'active')
+      .gte('created_at', lastMonth.toISOString());
+
+    // Get subscriptions from two months ago
+    const { data: twoMonthsAgoSubs, error: twoMonthsAgoError } = await supabase
+      .from('subscriptions')
+      .select('usd_price')
+      .eq('status', 'active')
+      .gte('created_at', twoMonthsAgo.toISOString())
+      .lt('created_at', lastMonth.toISOString());
+
+    if (lastMonthError || twoMonthsAgoError) throw lastMonthError || twoMonthsAgoError;
+
+    const weeklyToMonthly = 4.33;
+    const lastMonthRevenue = (lastMonthSubs || [])
+      .reduce((sum, sub) => sum + ((sub.usd_price || 0) * weeklyToMonthly), 0);
+    const twoMonthsAgoRevenue = (twoMonthsAgoSubs || [])
+      .reduce((sum, sub) => sum + ((sub.usd_price || 0) * weeklyToMonthly), 0);
+
+    if (twoMonthsAgoRevenue === 0) return 0;
+    
+    const growthRate = ((lastMonthRevenue - twoMonthsAgoRevenue) / twoMonthsAgoRevenue) * 100;
+    return Math.round(growthRate * 10) / 10; // Round to 1 decimal place
+  } catch (error) {
+    console.error('Error calculating subscription growth rate:', error);
+    return 0;
+  }
 }

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 
@@ -30,7 +30,7 @@ export default function Header({ industry, country }: HeaderProps) {
   const { currentLanguage, setLanguage, t } = useLanguage();
   const [showLangSelector, setShowLangSelector] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
   const { showInfo } = useToastContext();
   
@@ -38,7 +38,7 @@ export default function Header({ industry, country }: HeaderProps) {
   const Icon = industryInfo.icon;
 
   // Get business name from signup data or fallback
-  const businessName = profile?.businessName || business?.businessName || 'My Business';
+  const businessName = profile?.businessName || business?.business_name || 'My Business';
 
   // Check if we're on the home dashboard
   const pathname = usePathname();

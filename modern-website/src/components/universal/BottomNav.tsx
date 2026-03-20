@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, DollarSign, Package, FileText, MoreHorizontal, Calendar, MapPin } from 'lucide-react';
@@ -19,50 +19,58 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
   const pathname = usePathname();
   const basePath = `/Beezee-App/app/${country}/${industry}`;
 
-  // Debug logging
-  console.log('BottomNav Debug:', { industry, country, pathname, basePath });
+  // Debug logging (development only)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('BottomNav Debug:', { industry, country, pathname, basePath });
+  }
 
-  // Retail and food use stock page instead of services
-  const inventoryPath = (industry === 'retail' || industry === 'food') ? '/stock' : '/services';
-  
-  // Base navigation items for all industries
-  const baseNavItems = [
-    { nameKey: 'nav.home', icon: Home, path: '' },
-    { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-    { nameKey: 'nav.inventory', icon: Package, path: inventoryPath },
-    { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
-  ];
+  // Memoize navigation items to prevent recreation on every render
+  const navItems = useMemo(() => {
+    // Retail and food use stock page instead of services
+    const inventoryPath = (industry === 'retail' || industry === 'food') ? '/stock' : '/services';
+    
+    // Base navigation items for all industries
+    const baseNavItems = [
+      { nameKey: 'nav.home', icon: Home, path: '' },
+      { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
+      { nameKey: 'nav.inventory', icon: Package, path: inventoryPath },
+      { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
+    ];
 
-  // Add location and update inventory label for transport
-  const transportNavItems = [
-    { nameKey: 'nav.home', icon: Home, path: '' },
-    { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-    { nameKey: 'nav.services', icon: Package, path: '/services' }, // Services instead of inventory
-    { nameKey: 'nav.customers', icon: FileText, path: '/credit' }, // Credit instead of location
-    { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-  ];
+    // Add location and update inventory label for transport
+    const transportNavItems = [
+      { nameKey: 'nav.home', icon: Home, path: '' },
+      { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
+      { nameKey: 'nav.services', icon: Package, path: '/services' }, // Services instead of inventory
+      { nameKey: 'nav.customers', icon: FileText, path: '/credit' }, // Credit instead of location
+      { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+    ];
 
-  // Add calendar for specific industries, or use transport nav for transport
-  const navItems = industry === 'transport'
-    ? transportNavItems
-    : CALENDAR_INDUSTRIES.includes(industry)
-      ? [
-          ...baseNavItems.slice(0, 2), // home, cash
-          { nameKey: 'nav.calendar', icon: Calendar, path: '/calendar' }, // calendar
-          ...baseNavItems.slice(2), // inventory, customers
-          { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-        ]
-      : [
-          ...baseNavItems,
-          { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-        ];
+    // Add calendar for specific industries, or use transport nav for transport
+    return industry === 'transport'
+      ? transportNavItems
+      : CALENDAR_INDUSTRIES.includes(industry)
+        ? [
+            ...baseNavItems.slice(0, 2), // home, cash
+            { nameKey: 'nav.calendar', icon: Calendar, path: '/calendar' }, // calendar
+            ...baseNavItems.slice(2), // inventory, customers
+            { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+          ]
+        : [
+            ...baseNavItems,
+            { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+          ];
+  }, [industry]);
 
-  const isActive = (itemPath: string) => {
-    if (itemPath === '') {
-      return pathname === basePath;
-    }
-    return pathname.includes(`${basePath}${itemPath}`);
-  };
+  // Memoize isActive function to prevent recreation on every render
+  const isActive = useMemo(() => {
+    return (itemPath: string) => {
+      if (itemPath === '') {
+        return pathname === basePath;
+      }
+      return pathname.includes(`${basePath}${itemPath}`);
+    };
+  }, [pathname, basePath]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 min-h-[64px]">

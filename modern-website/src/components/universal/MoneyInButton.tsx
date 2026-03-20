@@ -7,6 +7,13 @@ import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices } from '@/hooks';
 
+type Service = {
+  id: string;
+  service_name: string;
+  price?: number;
+  category?: string;
+};
+
 interface MoneyInButtonProps {
   industry: string;
   country: string;
@@ -40,7 +47,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
   });
 
   // Get services for transport industry
-  const { services } = industry === 'transport' ? useServices({ industry }) : { services: [] };
+  const servicesHook = industry === 'transport' ? useServices({ industry }) : { data: [], loading: false, error: null };
+  const services = servicesHook.data || [];
 
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
   const Icon = labels.icon;
@@ -49,16 +57,16 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
   const calculateTransportFare = () => {
     if (!formData.service_id) return 0;
     
-    const service = services.find(s => s.id === formData.service_id);
+    const service = services.find((s: Service) => s.id === formData.service_id);
     if (!service) return 0;
 
     if (formData.use_base_amount) {
-      return (service.metadata?.base_amount || 0) + (parseFloat(formData.tips) || 0);
+      return (service.price || 0) + (parseFloat(formData.tips) || 0);
     }
 
     const distance = parseFloat(formData.distance) || 0;
-    const pricePerKm = service.metadata?.price_per_km || 0;
-    const baseAmount = service.metadata?.base_amount || 0;
+    const pricePerKm = service.price || 0;
+    const baseAmount = service.price || 0;
     const tips = parseFloat(formData.tips) || 0;
 
     return (distance * pricePerKm) + baseAmount + tips;
@@ -70,7 +78,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
       const fare = calculateTransportFare();
       setFormData(prev => ({ ...prev, amount: fare.toString() }));
       // Update description with service name
-      const service = services.find(s => s.id === formData.service_id);
+      const service = services.find((s: Service) => s.id === formData.service_id);
       if (service) {
         const description = formData.use_base_amount 
           ? `${service.service_name} (Base only${formData.tips ? ' + tips' : ''})`
@@ -195,7 +203,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                           required
                         >
                           <option value="">Select service</option>
-                          {services.map(service => (
+                          {services.map((service: Service) => (
                             <option key={service.id} value={service.id}>
                               {service.service_name}
                             </option>

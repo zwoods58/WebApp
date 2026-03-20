@@ -82,6 +82,8 @@ export default function PINSetup({ onPINComplete, onCancel, isLoading = false, e
       return;
     }
     
+    console.log('🔐 PIN setup completed - triggering business creation:', pinString);
+    // PIN setup is now functional - call the callback to trigger signup process
     onPINComplete(pinString);
   };
 

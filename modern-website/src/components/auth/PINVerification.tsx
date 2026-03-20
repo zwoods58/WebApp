@@ -52,9 +52,11 @@ export default function PINVerification({
       inputRefs.current[index + 1]?.focus();
     }
 
-    // Auto-submit when PIN is complete
+    // Auto-submit when PIN is complete (non-functional)
     if (newPin.every(digit => digit !== '')) {
       const pinString = newPin.join('');
+      console.log('🔐 PIN entered (non-functional):', pinString);
+      // PIN verification is disabled - just call the callback for UI purposes
       onPINSubmit(pinString);
     }
   };
@@ -77,7 +79,7 @@ export default function PINVerification({
     const lastIndex = Math.min(digits.length - 1, 5);
     inputRefs.current[lastIndex]?.focus();
 
-    // Auto-submit if complete
+    // Auto-submit if complete (non-functional)
     if (digits.length === 6) {
       onPINSubmit(digits);
     }

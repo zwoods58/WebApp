@@ -18,7 +18,9 @@ import { industries } from '@/data/industries';
 import { localStorageManager } from '@/utils/localStorageManager';
 import { setBusinessContext } from '@/lib/supabaseContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useSignup } from '@/hooks/useSignup';
 import PINSetup from '@/components/auth/PINSetup';
+import SignupPWAInstallModal from '@/components/auth/SignupPWAInstallModal';
 
 // Helper function to get flag emoji or fallback
 const getFlagDisplay = (country: { code: string; name: string; flag: string }) => {
@@ -48,296 +50,66 @@ const countries = [
 function BeezeeSignupContent() {
   const router = useRouter();
   const { setProfile } = useBusinessProfile();
-  const { setupBusinessPIN } = useAuth();
+  const { } = useAuth();
   
-  // Real signup state management
-  const [signupLoading, setSignupLoading] = useState(false);
-  const [signupError, setSignupError] = useState<string | null>(null);
-  const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
-  const [pinSetupError, setPinSetupError] = useState<string | undefined>(undefined);
+  // Use the new signup hook
+  const signup = useSignup();
   
-  const createBusinessInDatabase = async (userData: any) => {
-    console.log('🔧 Creating business in database:', userData);
-    
-    try {
-      // Call server-side API endpoint to create business (bypasses RLS)
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
+  // PWA Install Modal State
+  const [showPWAInstallModal, setShowPWAInstallModal] = useState(false);
+  const [hasSeenPWAInstallModal, setHasSeenPWAInstallModal] = useState(false);
 
-      const result = await response.json();
-
-      if (!result.success) {
-        console.error('❌ API error:', result.error);
-        return {
-          success: false,
-          existingUser: result.existingUser || false,
-          error: result.error || 'Failed to create business',
-          data: null
-        };
-      }
-
-      const business = result.data.business;
-
-      console.log('✅ Business created successfully:', {
-        id: business.id,
-        business_name: business.business_name,
-        country: business.country,
-        industry: business.industry,
-        home_currency: business.home_currency
-      });
-
-      // Create session data for immediate login
-      const sessionData = {
-        businessId: business.id,
-        businessName: business.business_name,
-        country: business.country,
-        industry: business.industry,
-        phone: business.phone_number
-      };
-
-      // Store authentication data
-      const authData = {
-        business: business,
-        session: sessionData
-      };
-
-      console.log('💾 Storing auth data to localStorage:', authData);
-      localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
-      
-      // Verify it was stored correctly
-      const storedData = localStorage.getItem('beezee_business_auth');
-      console.log('✅ Verification - stored data:', storedData ? JSON.parse(storedData) : 'null');
-
-      // Set business context for RLS policies
-      try {
-        await setBusinessContext(business.id, business.country, business.industry);
-        console.log('✅ Business context set during signup');
-      } catch (contextError) {
-        console.error('⚠️ Failed to set business context during signup:', contextError);
-        // Don't fail signup if context setting fails - it will be set on redirect
-      }
-
-      return {
-        success: true,
-        existingUser: false,
-        error: null,
-        data: {
-          user: { 
-            ...userData, 
-            id: business.id,
-            business: business
-          },
-          business: business,
-          userId: business.id,
-        }
-      };
-
-    } catch (err) {
-      console.error('💥 Unexpected error:', err);
-      return {
-        success: false,
-        existingUser: false,
-        error: err instanceof Error ? err.message : 'Unexpected error occurred',
-        data: null
-      };
+  // Check if user has already seen the PWA install modal
+  useEffect(() => {
+    const seenModal = localStorage.getItem('beezee_seen_pwa_install_modal');
+    if (seenModal) {
+      setHasSeenPWAInstallModal(true);
     }
-  };
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<Partial<SignupData>>({
-    country: '',
-    industry: '',
-    industrySector: '',
-    name: '',
-    businessName: '',
-    phoneNumber: '',
-    dailyTarget: 0,
-    currency: 'KES',
-    inviteCode: '',
-    pin: '',
-  });
+  }, []);
 
-  const updateFormData = (field: keyof SignupData, value: string | number) => {
-    setFormData(prev => {
-      const updated = { ...prev, [field]: value };
-      
-      // Auto-update currency when country changes
-      if (field === 'country' && value) {
-        updated.currency = getCurrency(value as string);
-      }
-      
-      return updated;
-    });
-  };
+  const {
+    currentStep,
+    formData,
+    updateFormData,
+    nextStep,
+    prevStep,
+    handlePINSetup,
+    handlePINConfirmation,
+    handleComplete,
+    validateCurrentStep
+  } = signup;
 
-  const nextStep = () => {
-    if (currentStep < 8) setCurrentStep(currentStep + 1);
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
-  };
-
-  const handlePINSetup = async (pin: string) => {
-    if (!createdBusinessId) {
-      setPinSetupError('Business not created yet');
-      return;
-    }
-
-    setSignupLoading(true);
-    setPinSetupError(undefined);
-
-    try {
-      const { error } = await setupBusinessPIN(createdBusinessId, pin);
-      
-      if (error) {
-        setPinSetupError(error.message);
-      } else {
-        console.log('✅ PIN setup successful');
-        // Continue to final step
-        nextStep();
-      }
-    } catch (error) {
-      console.error('💥 PIN setup error:', error);
-      setPinSetupError('Failed to set PIN. Please try again.');
-    } finally {
-      setSignupLoading(false);
+  const handleNextStep = () => {
+    // Show PWA install modal after welcome step (step 1) if not seen before
+    if (currentStep === 1 && !hasSeenPWAInstallModal) {
+      setShowPWAInstallModal(true);
+      localStorage.setItem('beezee_seen_pwa_install_modal', 'true');
+      setHasSeenPWAInstallModal(true);
+    } else {
+      nextStep();
     }
   };
 
-  const handleComplete = async () => {
-    // Create complete profile
-    const completeProfile: Omit<SignupData, 'isDataSynced' | 'lastSyncTime'> = {
-      country: formData.country || '',
-      industry: formData.industry || '',
-      industrySector: formData.industrySector || '',
-      name: formData.name || '',
-      businessName: formData.businessName || '',
-      phoneNumber: formData.phoneNumber || '',
-      dailyTarget: Number(formData.dailyTarget) || 0,
-      currency: getCurrency(formData.country || ''),
-      inviteCode: formData.inviteCode,
-      pin: formData.pin,
-    };
-
-    setSignupLoading(true);
-    setSignupError(null);
-
-    try {
-      console.log('🚀 Starting signup process...');
-      const result = await createBusinessInDatabase(completeProfile);
-
-      if (result.success && result.data?.business) {
-        console.log('✅ Business created successfully');
-        const business = result.data.business;
-        setCreatedBusinessId(business.id);
-        
-        // Set up PIN if provided
-        if (formData.pin && formData.pin.length === 6) {
-          console.log('🔐 Setting up PIN for business');
-          try {
-            const pinResponse = await fetch('/api/auth/setup-pin', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                businessId: business.id, 
-                pin: formData.pin 
-              })
-            });
-            
-            const pinResult = await pinResponse.json();
-            
-            if (pinResult.error) {
-              console.error('❌ PIN setup failed:', pinResult.error);
-              setSignupError('Business created but PIN setup failed: ' + pinResult.error.message);
-              setSignupLoading(false);
-              return;
-            }
-            
-            console.log('✅ PIN setup successful');
-          } catch (pinError) {
-            console.error('💥 PIN setup error:', pinError);
-            setSignupError('Business created but PIN setup failed');
-            setSignupLoading(false);
-            return;
-          }
-        }
-        
-        // Route directly to dashboard (skip completion page)
-        handleFinalComplete();
-      } else {
-        console.error('❌ Business creation failed:', result.error);
-        setSignupError(result.error || 'Failed to create business');
-      }
-    } catch (error) {
-      console.error('💥 Signup error:', error);
-      setSignupError('An unexpected error occurred during signup');
-    } finally {
-      setSignupLoading(false);
-    }
+  const handleContinueAfterPWA = () => {
+    setShowPWAInstallModal(false);
+    nextStep();
   };
-
+  
   const handleFinalComplete = async () => {
-    // Set up authentication state before redirecting
-    if (createdBusinessId && formData.phoneNumber) {
-      try {
-        console.log('🔐 Setting up authentication after signup...');
-        
-        // Fetch the created business with PIN hash
-        const response = await fetch('/api/auth/verify-pin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            phone: formData.phoneNumber, 
-            pin: formData.pin 
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (result.error) {
-          console.error('❌ Failed to verify PIN after signup:', result.error);
-          // Still redirect, but user will need to login
-        } else {
-          console.log('✅ Authentication setup successful');
-          
-          // Store authentication data
-          const business = result.data.business;
-          const sessionData = {
-            phone: formData.phoneNumber,
-            businessId: business.id,
-            timestamp: Date.now()
-          };
-
-          const authData = {
-            session: sessionData,
-            business: business
-          };
-          
-          localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
-          console.log('✅ Stored authentication data after signup');
-        }
-      } catch (error) {
-        console.error('💥 Error setting up authentication:', error);
-      }
+    // Redirect to dashboard after successful signup
+    if (signup.isComplete && signup.businessId) {
+      const country = formData.country?.toLowerCase() || 'ke';
+      const industry = formData.industry?.toLowerCase() || 'retail';
+      
+      console.log('🎯 Redirecting to dashboard:', { country, industry });
+      router.push(`/Beezee-App/app/${country}/${industry}`);
     }
-    
-    // Redirect to dashboard
-    const country = formData.country?.toLowerCase() || 'ke';
-    const industry = formData.industry?.toLowerCase() || 'retail';
-    
-    console.log('🎯 Redirecting to dashboard:', { country, industry });
-    router.push(`/Beezee-App/app/${country}/${industry}`);
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <WelcomeStep onNext={nextStep} />;
+        return <WelcomeStep onNext={handleNextStep} />;
       case 2:
         return <CountrySelection 
           selected={formData.country || ''}
@@ -371,14 +143,10 @@ function BeezeeSignupContent() {
         return (
           <div className="py-12">
             <PINSetup
-              onPINComplete={(pin) => {
-                // Store PIN in form data for later use
-                updateFormData('pin', pin);
-                nextStep();
-              }}
+              onPINComplete={handlePINSetup}
               onCancel={prevStep}
-              isLoading={signupLoading}
-              error={signupError || undefined}
+              isLoading={signup.creationState.loading}
+              error={signup.creationState.error || undefined}
             />
           </div>
         );
@@ -395,8 +163,8 @@ function BeezeeSignupContent() {
           formData={formData}
           onComplete={handleComplete}
           onPrev={prevStep}
-          isLoading={signupLoading}
-          error={signupError}
+          isLoading={signup.creationState.loading}
+          error={signup.creationState.error}
         />;
       default:
         return null;
@@ -428,6 +196,13 @@ function BeezeeSignupContent() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* PWA Install Modal */}
+      <SignupPWAInstallModal
+        isOpen={showPWAInstallModal}
+        onClose={() => setShowPWAInstallModal(false)}
+        onContinue={handleContinueAfterPWA}
+      />
     </div>
   );
 }

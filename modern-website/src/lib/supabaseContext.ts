@@ -13,21 +13,43 @@ export async function setBusinessContext(
     // Get country code from country name
     const countryCode = getCountryCode(country);
     
+    console.log('🔐 Setting business context:', { businessId, country: countryCode, industry });
+    
+    // Check if admin client is available
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY not found, using regular client');
+    }
+    
     // Call the Supabase function to set session context
-    const { error } = await supabaseAdmin.rpc('set_business_context', {
+    const { data, error } = await supabaseAdmin.rpc('set_business_context', {
       p_business_id: businessId,
       p_country: countryCode,
       p_industry: industry.toLowerCase()
     });
 
     if (error) {
-      console.error('Failed to set business context:', error);
+      console.error('❌ Failed to set business context:', {
+        error,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        message: error.message,
+        businessId,
+        countryCode,
+        industry
+      });
       throw error;
     }
 
-    console.log('✅ Business context set:', { businessId, country: countryCode, industry });
+    console.log('✅ Business context set successfully:', { businessId, country: countryCode, industry, data });
   } catch (error) {
-    console.error('Error setting business context:', error);
+    console.error('❌ Error setting business context:', {
+      error,
+      businessId,
+      country,
+      industry,
+      serviceKeyAvailable: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+    });
     throw error;
   }
 }

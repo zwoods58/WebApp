@@ -43,8 +43,8 @@ export interface BeehiveRequest {
   description: string;
   category: string;
   status: string;
-  upvote_count: number;
-  comment_count: number;
+  upvotes_count: number;
+  comments_count: number;
   created_at: string;
   updated_at: string;
 }

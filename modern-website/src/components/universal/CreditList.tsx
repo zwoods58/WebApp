@@ -5,6 +5,19 @@ import { Users, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 
+// Simple inline components to replace missing UI components
+const PendingItemBadge = ({ children, size, showIcon }: { children: React.ReactNode; size?: string; showIcon?: boolean }) => (
+  <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
+    {showIcon && <span>⏳</span>} {children}
+  </span>
+);
+
+const PendingItemWrapper = ({ children, isPending, className }: { children: React.ReactNode; isPending?: boolean; className?: string }) => (
+  <div className={`${isPending ? 'opacity-60' : ''} ${className || ''}`}>
+    {children}
+  </div>
+);
+
 interface CreditListProps {
   industry: string;
   country: string;
@@ -15,6 +28,7 @@ interface CreditListProps {
     status: string;
     due_date?: string;
     paid_amount?: number;
+    sync_status?: 'pending' | 'syncing' | 'synced' | 'failed';
   }>;
 }
 
@@ -101,40 +115,51 @@ export default function CreditList({ industry, country, credit }: CreditListProp
             ? item.amount - (item.paid_amount || 0) 
             : item.amount;
           const isLast = index === credit.length - 1;
+          const isPending = item.sync_status === 'pending' || item.sync_status === 'syncing';
 
           return (
-            <div 
-              key={item.id} 
-              className={`p-4 ${!isLast ? 'border-b border-[var(--border-soft)]' : ''}`}
+            <PendingItemWrapper
+              key={item.id}
+              isPending={isPending}
+              className="w-full"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(item.status)}
-                  <div>
-                    <div className="font-semibold text-[var(--text-1)] leading-tight">{item.customer_name}</div>
-                    {item.due_date && (
-                      <div className="text-[11px] font-medium text-[var(--text-3)] mt-1">
-                        {t('credit.due', 'Due:')} {formatDate(item.due_date)}
+              <div 
+                className={`p-4 ${!isLast ? 'border-b border-[var(--border-soft)]' : ''}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(item.status)}
+                    <div>
+                      <div className="font-semibold text-[var(--text-1)] leading-tight flex items-center gap-2">
+                        {item.customer_name}
+                        {isPending && (
+                          <PendingItemBadge size="sm" showIcon={false}>Pending</PendingItemBadge>
+                        )}
                       </div>
-                    )}
-                    {item.status === 'partial' && (
-                      <div className="text-[11px] font-semibold text-[var(--powder-dark)] mt-1">
-                        {t('credit.paid', 'Paid:')} {formatCurrency(item.paid_amount || 0, country)}
-                      </div>
-                    )}
+                      {item.due_date && (
+                        <div className="text-[11px] font-medium text-[var(--text-3)] mt-1">
+                          {t('credit.due', 'Due:')} {formatDate(item.due_date)}
+                        </div>
+                      )}
+                      {item.status === 'partial' && (
+                        <div className="text-[11px] font-semibold text-[var(--powder-dark)] mt-1">
+                          {t('credit.paid', 'Paid:')} {formatCurrency(item.paid_amount || 0, country)}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="text-right flex flex-col items-end gap-1.5">
-                  <div className="font-bold text-[var(--text-1)] text-base">
-                    {formatCurrency(remainingAmount, country)}
-                  </div>
-                  <div className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${getStatusColor(item.status)}`}>
-                    {item.status}
+                  
+                  <div className="text-right flex flex-col items-end gap-1.5">
+                    <div className="font-bold text-[var(--text-1)] text-base">
+                      {formatCurrency(remainingAmount, country)}
+                    </div>
+                    <div className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${getStatusColor(item.status)}`}>
+                      {item.sync_status === 'syncing' ? 'Syncing...' : item.status}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </PendingItemWrapper>
           );
         })}
       </div>

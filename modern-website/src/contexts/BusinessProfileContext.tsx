@@ -12,6 +12,7 @@ interface BusinessProfileContextType {
   setProfile: (profile: SignupData) => void;
   clearProfile: () => void;
   syncToBackend: () => Promise<void>;
+  syncProfileWithBusiness: (business: any) => void;
   isDataReady: boolean;
   businessId: string | null;
 }
@@ -95,6 +96,30 @@ export function BusinessProfileProvider({ children }: BusinessProfileProviderPro
     storage.clearSignupData();
   };
 
+  // Sync profile with business settings from auth context
+  const syncProfileWithBusiness = (business: any) => {
+    if (!business || !profile) return;
+
+    const updatedProfile = {
+      ...profile,
+      dailyTarget: business.settings?.daily_target || profile.dailyTarget,
+      businessId: business.id,
+      businessName: business.business_name,
+      country: business.country,
+      industry: business.industry,
+      currency: business.home_currency || profile.currency
+    };
+
+    console.log('Syncing profile with business settings:', {
+      businessDailyTarget: business.settings?.daily_target,
+      profileDailyTarget: profile.dailyTarget,
+      updatedDailyTarget: updatedProfile.dailyTarget
+    });
+
+    setProfileState(updatedProfile);
+    storage.setSignupData(updatedProfile);
+  };
+
   // Sync to backend (placeholder for future Supabase integration)
   const syncToBackend = async (profileData?: SignupData): Promise<void> => {
     const dataToSync = profileData || profile;
@@ -130,6 +155,7 @@ export function BusinessProfileProvider({ children }: BusinessProfileProviderPro
     setProfile,
     clearProfile,
     syncToBackend: () => syncToBackend(),
+    syncProfileWithBusiness,
     isDataReady,
     businessId: profile?.businessId || null
   };

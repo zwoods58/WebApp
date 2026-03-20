@@ -66,7 +66,7 @@ const BeezeePricing = () => {
         {
             countryCode: 'GH',
             currency: 'GHS',
-            price: '13',
+            price: '15',
             period: '/wk',
                         features: [
                 'All 6 Core Features',

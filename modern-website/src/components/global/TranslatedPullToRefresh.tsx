@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import GlobalPullToRefresh from './GlobalPullToRefresh';
+import PullToRefresh from '@/components/common/PullToRefresh';
 import { useLanguage } from '@/hooks/LanguageContext';
 
 interface TranslatedPullToRefreshProps {
@@ -25,8 +25,8 @@ export default function TranslatedPullToRefresh({
   // We'll pass translated text as props to GlobalPullToRefresh in the future
   // For now, just render the base component
   return (
-    <GlobalPullToRefresh onRefresh={onRefresh} threshold={threshold}>
+    <PullToRefresh onRefresh={onRefresh || (() => {})} threshold={threshold}>
       {children}
-    </GlobalPullToRefresh>
+    </PullToRefresh>
   );
 }

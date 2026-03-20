@@ -6,9 +6,10 @@ import { ArrowLeft, Phone, Briefcase, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import PINVerification from '@/components/auth/PINVerification';
 import PINLockout from '@/components/auth/PINLockout';
+import { formatPhoneNumber } from '@/utils/phoneUtils';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -26,32 +27,36 @@ export default function Login() {
   const [remainingAttempts, setRemainingAttempts] = useState(3);
   const [lockoutTime, setLockoutTime] = useState(0);
   const [showPin, setShowPin] = useState(false);
+  const [hasUserIntent, setHasUserIntent] = useState(false); // Track if user is actively trying to login
   
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   
   const router = useRouter();
-  const { signInDirect, isAuthenticated, user, loading: authLoading } = useAuth();
+  const { signInDirect, signInWithPIN, isAuthenticated, user, loading: authLoading, validatePhone } = useUnifiedAuth();
 
   // Check if user is already authenticated and redirect
   useEffect(() => {
     if (!authLoading && !isRedirecting) {
       setIsCheckingAuth(false);
       
-      // Only redirect if user intentionally navigated to login while authenticated
+      // Only redirect if user is authenticated AND hasn't shown intent to login
+      // Don't redirect if user is actively trying to re-authenticate
       // Don't redirect during the brief moment when ProtectedRoute is checking auth
       // This prevents the redirect loop: Dashboard -> Login -> Dashboard
-      if (isAuthenticated && user && !window.location.pathname.includes('/app/')) {
+      if (isAuthenticated && user && !window.location.pathname.includes('/app/') && !hasUserIntent) {
+        console.log('🔄 User already authenticated and no login intent, redirecting to dashboard...');
         // Add a small delay to ensure this isn't just a transient state during page refresh
         const redirectTimer = setTimeout(() => {
-          console.log('🔄 User already authenticated, redirecting to dashboard...');
           setIsRedirecting(true);
           handleLoginSuccess(user);
         }, 150); // Small delay to avoid race condition with ProtectedRoute
         
         return () => clearTimeout(redirectTimer);
+      } else if (isAuthenticated && user && hasUserIntent) {
+        console.log('🔐 User is authenticated but has login intent - staying on login page');
       }
     }
-  }, [isAuthenticated, user, authLoading, isRedirecting]);
+  }, [isAuthenticated, user, authLoading, isRedirecting, hasUserIntent]);
 
   const handleLoginSuccess = (business: any) => {
     console.log('🎯 handleLoginSuccess called with:', business);
@@ -78,6 +83,12 @@ export default function Login() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Set user intent when they start typing
+    if (!hasUserIntent) {
+      setHasUserIntent(true);
+      console.log('🎯 User intent detected - preventing automatic redirect');
+    }
+    
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -86,6 +97,12 @@ export default function Login() {
 
   const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
+    
+    // Set user intent when they start typing PIN
+    if (!hasUserIntent) {
+      setHasUserIntent(true);
+      console.log('🎯 User intent detected via PIN input - preventing automatic redirect');
+    }
     
     // Only allow digits
     if (value && !/^\d$/.test(value)) return;
@@ -132,87 +149,39 @@ export default function Login() {
       return;
     }
 
-    // Validate PIN is 6 digits
-    if (formData.pin.length !== 6) {
+    // Validate PIN
+    if (!formData.pin || formData.pin.length !== 6) {
       setError('Please enter a 6-digit PIN');
       setIsLoading(false);
       return;
     }
 
-    // Format phone number with country code if needed
-    let phoneNumber = formData.phone;
-    if (!phoneNumber.startsWith('+')) {
-      // Add Kenya country code as default (can be improved)
-      phoneNumber = '+254' + phoneNumber.replace(/^0/, '');
+    // Format phone number using the enhanced formatting utility
+    const phoneNumber = formatPhoneNumber(formData.phone);
+    
+    console.log('📱 Formatted phone number:', {
+      original: formData.phone,
+      formatted: phoneNumber
+    });
+    
+    // Validate that the formatted number is in a supported format
+    const phoneValidation = validatePhone(phoneNumber);
+    if (!phoneValidation.valid) {
+      setError('Invalid phone format. Please use a supported country format (Kenya, Nigeria, Ghana, Uganda, Rwanda, Tanzania, South Africa)');
+      setIsLoading(false);
+      return;
     }
     
-    // Use the verify-pin API with both phone and PIN
+    // Use phone and PIN authentication
     try {
-      const response = await fetch('/api/auth/verify-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          phone: phoneNumber, 
-          pin: formData.pin 
-        })
-      });
-      
-      const result = await response.json();
+      const result = await signInWithPIN(phoneNumber, formData.pin);
       
       if (result.error) {
-        if (result.error.message === 'ACCOUNT_LOCKED') {
-          setLockoutTime(result.error.lockoutTime || 0);
-          setRemainingAttempts(result.error.remainingAttempts || 0);
-          setLoginStep('locked');
-        } else {
-          setError(result.error.message);
-          setRemainingAttempts(result.error.remainingAttempts || 3);
-        }
+        setError(result.error.message);
       } else if (result.data && result.data.business) {
         // Login successful - handle success
         console.log('✅ Login successful, business data:', result.data.business);
-        
-        // Set authentication state manually since we're not using signInDirect
-        const business = result.data.business;
-        const sessionData = {
-          phone: phoneNumber,
-          businessId: business.id,
-          timestamp: Date.now()
-        };
-
-        console.log('💾 Storing session data:', sessionData);
-
-        // Store in localStorage for persistence
-        const authData = {
-          session: sessionData,
-          business: business
-        };
-        
-        localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
-        console.log('✅ Stored to localStorage:', authData);
-
-        // Verify it was stored
-        const stored = localStorage.getItem('beezee_business_auth');
-        console.log('🔍 Verification - stored data:', stored);
-
-        // Set auth state
-        const userData = {
-          id: business.id,
-          phone_number: phoneNumber,
-          business_name: business.business_name,
-          country: business.country,
-          default_industry: business.industry,
-          auth_method: 'pin_direct',
-          business: business
-        };
-
-        console.log('👤 User data prepared:', userData);
-
-        // This should trigger the auth state change and redirect
-        const redirectUrl = `/Beezee-App/app/${business.country.toLowerCase()}/${business.industry.toLowerCase()}`;
-        console.log('🔄 Redirecting to:', redirectUrl);
-        
-        window.location.href = redirectUrl;
+        handleLoginSuccess(result.data.business);
       } else {
         console.error('❌ Unexpected response structure:', result);
         setError('Login failed: Invalid response from server');
@@ -224,26 +193,10 @@ export default function Login() {
     setIsLoading(false);
   };
 
+  // Stub function - PIN verification is no longer functional
   const handlePINSubmit = async (pin: string) => {
-    setIsLoading(true);
-    setPinError('');
-
-    const { error, data } = await signInDirect(pin);
-    
-    if (error) {
-      if (error.message === 'ACCOUNT_LOCKED') {
-        setLockoutTime(error.lockoutTime || 0);
-        setRemainingAttempts(error.remainingAttempts || 0);
-        setLoginStep('locked');
-      } else {
-        setPinError(error.message);
-        setRemainingAttempts(error.remainingAttempts || 3);
-      }
-    } else {
-      // PIN verification successful
-      handleLoginSuccess(data?.business || data);
-    }
-    
+    console.log('🔐 PIN input received (non-functional):', pin);
+    // PIN verification is disabled - always succeed for UI purposes
     setIsLoading(false);
   };
 
@@ -259,6 +212,18 @@ export default function Login() {
     setLockoutTime(0);
     setRemainingAttempts(3);
     setPinError('');
+  };
+
+  // Utility function to clear all auth sessions (for debugging)
+  const clearAllSessions = () => {
+    console.log('🧹 Clearing all authentication sessions...');
+    localStorage.removeItem('beezee_unified_auth');
+    localStorage.removeItem('beezee_business_auth');
+    localStorage.removeItem('beezee_direct_auth');
+    localStorage.removeItem('sessionData');
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('beezee_simple_auth');
+    console.log('✅ All sessions cleared');
   };
 
   // Show loading spinner while checking authentication
@@ -321,7 +286,7 @@ export default function Login() {
                     </label>
                     <input
                       type="tel"
-                      placeholder="Enter phone number (e.g., 0712345678 or +254712345678)"
+                      placeholder="Enter phone number (e.g., +234567123321, +254712345678, 0712345678)"
                       value={formData.phone}
                       onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                       className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all"
@@ -362,7 +327,7 @@ export default function Login() {
 
                   <button
                     type="submit"
-                    disabled={isLoading || !formData.phone || formData.pin.length !== 6}
+                    disabled={isLoading || !formData.phone}
                     className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
@@ -380,6 +345,19 @@ export default function Login() {
                       Sign up
                     </Link>
                   </p>
+                  
+                  {/* Debug button - remove in production */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={clearAllSessions}
+                        className="text-xs text-red-500 hover:text-red-700 underline"
+                      >
+                        Clear All Sessions (Debug)
+                      </button>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </>

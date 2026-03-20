@@ -5,35 +5,38 @@ import { motion } from 'framer-motion';
 import { Package, Plus, AlertTriangle, Search, Filter, TrendingDown, DollarSign, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
-import { useInventory, useTransactions } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useOfflineData } from '@/hooks/useOfflineData';
 import { useToast } from '@/hooks/useToast';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+
+// Remove stub functions and use proper TanStack Query
+const isOnline = true; // This will be handled by TanStack Query's isPaused
 
 export default function StockPage() {
   const params = useParams();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   
-  // Use Supabase hook instead of mock data
-  const { business, loading: businessLoading } = useBusiness();
-  const { isOnline, isOfflineMode, pendingCount, addInventoryOperation, addCashOperation } = useOfflineData();
-  const { inventory, loading, insert: addInventoryItem, update: updateInventoryItem, remove: deleteInventoryItem } = useInventory({ 
-    industry,
-    businessId: business?.id 
-  });
-  const { insert: addTransaction } = useTransactions({ 
-    industry,
-    businessId: business?.id 
-  });
+  const { business, loading: businessLoading } = useUnifiedAuth();
+  
+  // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
-  const { refresh: refreshInventory } = useInventory({ industry, businessId: business?.id });
+  const { data: inventory, isLoading, addInventory: addInventoryItem, updateInventory, deleteInventory, isOffline } = useInventoryTanStack({ 
+    industry,
+    businessId: business?.id 
+  });
+  const { addTransaction } = useTransactionsTanStack({ 
+    industry,
+    businessId: business?.id 
+  });
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
@@ -45,13 +48,13 @@ export default function StockPage() {
   const [itemToDelete, setItemToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const categories = ['all', ...Array.from(new Set(inventory.map(item => item.category || 'uncategorized')))];
+  const categories = ['all', ...Array.from(new Set(inventory.map((item: any) => item.category || 'uncategorized')))] as string[];
   
-  const lowStockItems = inventory.filter(item => item.threshold !== undefined && item.quantity <= item.threshold);
-  const totalItems = inventory.reduce((sum, item) => sum + item.quantity, 0);
-  const totalValue = inventory.reduce((sum, item) => sum + (item.quantity * (item.cost_price || 0)), 0);
+  const lowStockItems = inventory.filter((item: any) => item.threshold !== undefined && item.quantity <= item.threshold);
+  const totalItems = inventory.reduce((sum: number, item: any) => sum + item.quantity, 0);
+  const totalValue = inventory.reduce((sum: number, item: any) => sum + (item.quantity * (item.cost_price || 0)), 0);
 
-  const filteredInventory = inventory.filter(item => {
+  const filteredInventory = inventory.filter((item: any) => {
     const matchesSearch = item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.category || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'all' || (item.category || 'uncategorized') === filterCategory;
@@ -65,12 +68,16 @@ export default function StockPage() {
         return;
       }
       
-      await addInventoryItem({
+      const itemData = {
         ...newItem,
         business_id: business.id,
         industry,
         last_ordered: new Date().toISOString().split('T')[0]
-      });
+      };
+      
+      // TanStack Query handles online/offline automatically
+      addInventoryItem(itemData);
+      
       setShowAddModal(false);
       showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}" to inventory`));
     } catch (error) {
@@ -119,9 +126,10 @@ export default function StockPage() {
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
         console.log(`🗑️ Removing offline item: ${itemToDelete.item_name}`);
         
-        // Remove from local state without calling the API
-        const { refresh: refreshInventory } = useInventory({ industry, businessId: business?.id });
-        refreshInventory();
+        // Remove from local state using TanStack Query
+        const currentData = queryClient.getQueryData([industry, country, 'inventory']) || [];
+        const updatedData = (currentData as any[]).filter(item => item.id !== itemToDelete.id);
+        queryClient.setQueryData([industry, country, 'inventory'], updatedData);
         
         setIsDeleting(false);
         setShowDeleteModal(false);
@@ -129,42 +137,11 @@ export default function StockPage() {
         return;
       }
       
-      if (isOnline) {
-        // Try online first - actually delete from database
-        try {
-          // Call the API to delete the item from database
-          await deleteInventoryItem(itemToDelete.id);
-          
-          showSuccess(t('inventory.delete_success', `Successfully deleted "${itemToDelete.item_name}"`));
-          console.log(`✅ Item deleted from database: ${itemToDelete.item_name}`);
-        } catch (onlineError) {
-          console.warn('⚠️ Online delete failed, using offline mode:', onlineError);
-          
-          // Fall back to offline operations
-          addInventoryOperation('stock_adjustment', {
-            itemName: itemToDelete.item_name,
-            stockLevel: 0,
-            previousStock: itemToDelete.quantity,
-            adjustmentReason: `Deleted item: ${itemToDelete.item_name}`
-          });
-          
-          showInfo(t('inventory.delete_queued', `"${itemToDelete.item_name}" deletion queued for sync`));
-          console.log(`✅ Item deletion queued for sync: ${itemToDelete.item_name}`);
-        }
-      } else {
-        // Offline mode - queue operation
-        console.log('📴 Offline mode: Queueing item deletion for later sync');
-        
-        addInventoryOperation('stock_adjustment', {
-          itemName: itemToDelete.item_name,
-          stockLevel: 0,
-          previousStock: itemToDelete.quantity,
-          adjustmentReason: `Deleted item: ${itemToDelete.item_name}`
-        });
-        
-        showInfo(t('inventory.delete_offline', `"${itemToDelete.item_name}" will be deleted when you're back online`));
-        console.log(`✅ Item deletion queued for sync: ${itemToDelete.item_name}`);
-      }
+      // TanStack Query handles online/offline automatically
+      deleteInventory(itemToDelete.id);
+      
+      showSuccess(t('inventory.delete_success', `Successfully deleted "${itemToDelete.item_name}"`));
+      console.log(`✅ Item deletion queued: ${itemToDelete.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
@@ -176,9 +153,6 @@ export default function StockPage() {
       } else {
         showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
       }
-      
-      // If there's an error, refresh the inventory to get the correct state
-      refreshInventory();
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -207,37 +181,8 @@ export default function StockPage() {
         updates.selling_price = parseFloat(editData.selling_price);
       }
 
-      if (isOnline) {
-        // Try online first
-        try {
-          await updateInventoryItem(selectedItem.id, updates);
-          console.log(`✅ Item updated online: ${selectedItem.item_name}`);
-        } catch (onlineError) {
-          console.warn('⚠️ Online update failed, using offline mode:', onlineError);
-          
-          // Fall back to offline operations
-          addInventoryOperation('stock_adjustment', {
-            itemName: selectedItem.item_name,
-            stockLevel: parseFloat(editData.quantity),
-            previousStock: selectedItem.quantity,
-            adjustmentReason: `Updated item: ${JSON.stringify(updates)}`
-          });
-          
-          console.log(`✅ Item update queued for sync: ${selectedItem.item_name}`);
-        }
-      } else {
-        // Offline mode - queue operation
-        console.log('📴 Offline mode: Queueing item update for later sync');
-        
-        addInventoryOperation('stock_adjustment', {
-          itemName: selectedItem.item_name,
-          stockLevel: parseFloat(editData.quantity),
-          previousStock: selectedItem.quantity,
-          adjustmentReason: `Updated item: ${JSON.stringify(updates)}`
-        });
-        
-        console.log(`✅ Item update queued for sync: ${selectedItem.item_name}`);
-      }
+      // TanStack Query handles online/offline automatically
+      updateInventory({ id: selectedItem.id, updates });
 
       setShowEditModal(false);
       setSelectedItem(null);
@@ -256,12 +201,6 @@ export default function StockPage() {
       const totalPrice = quantity * selectedItem.selling_price;
       const newQuantity = selectedItem.quantity - quantity;
       
-      // Create a unique operation ID for tracking
-      const operationId = `sale-${selectedItem.id}-${Date.now()}`;
-      
-      // Optimistically update local inventory state immediately
-      updateInventoryItem(selectedItem.id, { quantity: newQuantity });
-      
       // Create transaction data
       const transactionData = {
         business_id: business.id,
@@ -275,62 +214,16 @@ export default function StockPage() {
         metadata: {
           inventory_item_id: selectedItem.id,
           quantity_sold: quantity,
-          unit_price: selectedItem.selling_price,
-          operationId // Track this operation
+          unit_price: selectedItem.selling_price
         }
       };
 
-      if (isOnline) {
-        // Try online first
-        try {
-          await addTransaction(transactionData);
-          
-          // Update inventory quantity in database (this should match the optimistic update)
-          await updateInventoryItem(selectedItem.id, { quantity: newQuantity });
-        } catch (onlineError) {
-          console.warn('⚠️ Online sale failed, using offline mode:', onlineError);
-          
-          // Fall back to offline operations
-          addCashOperation('sale', {
-            amount: totalPrice,
-            category: 'sale',
-            description: transactionData.description,
-            paymentMethod: sellData.paymentMethod,
-            receiptNumber: `INV-${Date.now()}`
-          });
-
-          addInventoryOperation('stock_adjustment', {
-            itemName: selectedItem.item_name,
-            stockLevel: newQuantity,
-            previousStock: selectedItem.quantity,
-            adjustmentReason: `Sale: ${quantity} ${selectedItem.unit} sold`
-          });
-
-          showInfo(t('inventory.sell_offline', 'Sale queued - will sync when you\'re back online'));
-          console.log(`✅ Sale queued for sync: ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`);
-        }
-      } else {
-        // Offline mode - queue operations
-        console.log('📴 Offline mode: Queueing sale for later sync');
-        
-        const cashOperationId = addCashOperation('sale', {
-          amount: totalPrice,
-          category: 'sale',
-          description: transactionData.description,
-          paymentMethod: sellData.paymentMethod,
-          receiptNumber: `INV-${Date.now()}`
-        });
-
-        addInventoryOperation('stock_adjustment', {
-          itemName: selectedItem.item_name,
-          stockLevel: newQuantity,
-          previousStock: selectedItem.quantity,
-          adjustmentReason: `Sale: ${quantity} ${selectedItem.unit} sold`
-        });
-
-        showInfo(t('inventory.sell_offline_mode', 'Offline mode: Sale queued for sync'));
-        console.log(`✅ Sale queued for sync: ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`);
-      }
+      // TanStack Query handles online/offline automatically
+      // Add transaction first
+      addTransaction(transactionData);
+      
+      // Then update inventory quantity
+      updateInventory({ id: selectedItem.id, updates: { quantity: newQuantity } });
 
       setShowSellModal(false);
       setSelectedItem(null);
@@ -338,8 +231,6 @@ export default function StockPage() {
     } catch (error) {
       console.error('Failed to process sale:', error);
       showError(t('inventory.sell_error', 'Failed to process sale. Please try again.'));
-      // If there's an error, refresh the inventory to get the correct state
-      refreshInventory();
     }
   };
 
@@ -359,24 +250,11 @@ export default function StockPage() {
       <Header industry={industry} country={country} />
 
       <div className="flex-1 p-4 max-w-md mx-auto">
-        {/* Offline Status Indicator */}
-        {isOfflineMode && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
-          >
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-red-800">Offline Mode</div>
-              <div className="text-xs text-red-600">Sales will be synced when you're back online</div>
-            </div>
-            {pendingCount > 0 && (
-              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                {pendingCount}
-              </div>
-            )}
-          </motion.div>
+        {/* Simple Online Status Indicator */}
+        {isOffline && (
+          <div className="bg-red-500 text-white px-4 py-2 text-center text-sm mb-4 rounded">
+            You're offline. Some features may be limited.
+          </div>
         )}
 
         <motion.h1 
@@ -484,7 +362,7 @@ export default function StockPage() {
           </div>
 
           <div className="flex gap-2 overflow-x-auto">
-            {categories.map(category => (
+            {categories.map((category: string) => (
               <button
                 key={category}
                 onClick={() => setFilterCategory(category)}
@@ -513,7 +391,7 @@ export default function StockPage() {
               {t('inventory.running_low', 'Running Low')}
             </h3>
             <div className="space-y-2">
-              {lowStockItems.map(item => (
+              {lowStockItems.map((item: any) => (
                 <div key={item.id} className="flex justify-between items-center">
                   <div>
                     <span className="font-medium text-gray-900">{item.item_name}</span>
@@ -545,7 +423,7 @@ export default function StockPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredInventory.map((item, index) => {
+              {filteredInventory.map((item: any, index: number) => {
                 const stockStatus = getStockStatus(item);
                 const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
                 

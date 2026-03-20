@@ -1,4 +1,4 @@
-import { Transaction } from '@/hooks/useTransactions';
+import { Transaction } from '@/hooks/useTransactionsTanStack';
 
 export interface TransportAnalytics {
   popularServices: Array<{ service_name: string; trips: number; revenue: number }>;
@@ -9,7 +9,7 @@ export interface TransportAnalytics {
 }
 
 export function analyzeTransportTransactions(transactions: Transaction[]): TransportAnalytics {
-  // Filter for transport transactions
+  // Filter for transport transactions - safe with empty array
   const transportTransactions = transactions.filter(t => 
     t.category === 'transport_trip' && t.metadata?.service_name
   );

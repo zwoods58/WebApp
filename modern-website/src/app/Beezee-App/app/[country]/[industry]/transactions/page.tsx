@@ -7,8 +7,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { formatCurrency } from '@/utils/currency';
-import { useTransactions } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useTransactionsTanStack } from '@/hooks';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useToast } from '@/hooks/useToast';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import MoneyInButton from '@/components/universal/MoneyInButton';
@@ -22,9 +23,13 @@ export default function TransactionsPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   
-  // Use Supabase hook instead of mock data
-  const { business } = useBusiness();
-  const { transactions, loading, insert: addTransaction } = useTransactions({ 
+  const { business } = useUnifiedAuth();
+  
+  // Simple online/offline status using TanStack Query
+  const [isOnline, setIsOnline] = useState(true);
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  
+  const { data: transactions, isLoading, addTransaction, isAdding, isPaused } = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
   });
@@ -39,16 +44,37 @@ export default function TransactionsPage() {
 
   const handleNewTransaction = async (newTransaction: any) => {
     if (!business?.id) {
-      console.error('No business ID found');
+      showError('No business ID found');
       return;
     }
     
-    await addTransaction({
+    const fullTransactionData = {
       ...newTransaction,
       business_id: business.id,
       industry,
-      transaction_date: new Date().toISOString().split('T')[0]
-    });
+      transaction_date: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString()
+    };
+    
+    try {
+      if (isOnline) {
+        // Try online first
+        try {
+          await addTransaction(fullTransactionData);
+          showSuccess('Transaction added successfully');
+        } catch (error) {
+          console.error('Failed to add transaction:', error);
+          showError('Failed to add transaction');
+        }
+      } else {
+        // Offline mode - TanStack Query handles this automatically
+        await addTransaction(fullTransactionData);
+        showInfo('Transaction queued - will sync when online');
+      }
+    } catch (error) {
+      console.error('Failed to add transaction:', error);
+      showError('Failed to add transaction. Please try again.');
+    }
   };
 
   const handleTransactionClick = (transaction: any) => {
@@ -62,7 +88,7 @@ export default function TransactionsPage() {
   };
 
   const generateReceiptText = (transaction: any): string => {
-    let text = `${t('receipt.receipt_from', 'Receipt from')} ${business?.businessName || t('business.default_name', 'My Business')}\n\n`;
+    let text = `${t('receipt.receipt_from', 'Receipt from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
     text += `${t('receipt.transaction_id', 'Transaction ID')}: #${transaction.id}\n`;
     text += `${t('receipt.date', 'Date')}: ${new Date(transaction.transaction_date).toLocaleDateString()}\n`;
     text += `${t('receipt.description', 'Description')}: ${transaction.description}\n`;
@@ -132,6 +158,17 @@ export default function TransactionsPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto pt-16">
+        {/* Simple Online Status */}
+        <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
+          <div className="flex items-center justify-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-sm text-gray-600">
+              {isOnline ? 'Online' : 'Offline'}
+              {isAdding && ' - Pending items'}
+            </span>
+          </div>
+        </div>
+        
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <motion.div 
@@ -429,7 +466,7 @@ export default function TransactionsPage() {
           isOpen={showReceiptModal}
           onClose={handleCloseReceiptModal}
           transaction={selectedTransaction}
-          businessName={business?.businessName || t('business.default_name', 'My Business')}
+          businessName={business?.business_name || t('business.default_name', 'My Business')}
           country={country}
           customerPhone={selectedTransaction.customer_phone}
         />

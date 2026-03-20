@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { formatCurrency } from '@/utils/currency';
-import { useTransactions, useExpenses } from '@/hooks';
+import { useTransactionsTanStack, useExpensesTanStack } from '@/hooks';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBusiness } from '@/contexts/BusinessContext';
-import { useOfflineData } from '@/hooks/useOfflineData';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useToast } from '@/hooks/useToast';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import MoneyInButton from '@/components/universal/MoneyInButton';
@@ -23,27 +23,30 @@ function CashPageContent() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   const businessId = business?.id;
   
-  // Offline functionality
-  const { 
-    isOnline, 
-    syncStatus, 
-    pendingCount, 
-    isOfflineMode, 
-    addCashOperation,
-    forceSync 
-  } = useOfflineData();
+  // TanStack Query handles online/offline automatically
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
   
-  const { transactions, loading: transactionsLoading, insert: addTransaction, fetchTransactions } = useTransactions({ 
+  // Get transactions and expenses with offline support
+  const transactionsHook = useTransactionsTanStack({ 
     businessId: businessId,
     industry: business?.industry || industry
   });
-  const { expenses, loading: expensesLoading, insert: addExpense } = useExpenses({ 
+  const expensesHook = useExpensesTanStack({ 
     businessId: businessId,
     industry: business?.industry || industry
   });
+  
+  // Extract data and offline status
+  const { data: transactions, isPaused: transactionsOffline, isAdding: transactionsPending, addTransaction, isLoading: transactionsLoading } = transactionsHook;
+  const { data: expenses, isOffline: expensesOffline, isPending: expensesPending, addExpense, isLoading: expensesLoading } = expensesHook;
+  
+  // Overall offline status - TanStack Query handles this
+  const isOffline = transactionsOffline || expensesOffline;
+  const isSyncing = transactionsPending || expensesPending;
+  const totalPending = (transactionsPending ? 1 : 0) + (expensesPending ? 1 : 0);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'in' | 'out'>('all');
@@ -60,78 +63,74 @@ function CashPageContent() {
 
   const handleMoneyIn = async (transactionData: any) => {
     if (!businessId) {
-      alert('Please set up your business profile first before adding transactions.');
+      showError('Please set up your business profile first before adding transactions.');
       return;
     }
     
-    // Prepare transaction data for offline queue
-    const offlineTransactionData = {
-      amount: transactionData.amount,
-      customerId: transactionData.customer_name || 'walk-in',
-      category: transactionData.category || 'sales',
-      description: transactionData.description,
-      paymentMethod: transactionData.payment_method || 'cash',
-      operation: 'sale',
-      timestamp: Date.now(),
-      businessId: businessId
+    // Prepare transaction data
+    const fullTransactionData = {
+      ...transactionData,
+      business_id: businessId,
+      industry,
+      transaction_date: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString()
     };
     
-    // Always add to offline queue first
-    // const operationId = addCashOperation('sale', offlineTransactionData);
-    
-    // Try to save to server if online
-    if (isOnline) {
-      try {
-        await addTransaction({
-          ...transactionData,
-          business_id: businessId,
-          industry
-        });
-        // Transaction saved online
-      } catch (error) {
-        // Online save failed, transaction queued for sync
+    try {
+      if (!isOffline) {
+        // Try online first
+        try {
+          await addTransaction(fullTransactionData);
+          showSuccess('Transaction added successfully');
+        } catch (onlineError) {
+          console.warn('⚠️ Online transaction failed, using offline mode:', onlineError);
+          showInfo('Transaction queued - will sync when you\'re back online');
+        }
+      } else {
+        // Offline mode - TanStack Query handles this automatically
+        showInfo('Offline mode: Transaction queued for sync');
       }
-    } else {
-      // Offline mode: Transaction queued for sync
+    } catch (error) {
+      console.error('Failed to add transaction:', error);
+      showError('Failed to add transaction. Please try again.');
     }
   };
 
   const handleMoneyOut = async (expenseData: any) => {
     if (!businessId) {
-      alert('Please set up your business profile first before adding expenses.');
+      showError('Please set up your business profile first before adding expenses.');
       return;
     }
     
     const { payment_method, ...cleanExpenseData } = expenseData;
     
-    // Prepare expense data for offline queue
-    const offlineExpenseData = {
-      amount: expenseData.amount,
-      category: expenseData.category || 'general',
-      description: expenseData.description,
-      paymentMethod: payment_method || 'cash',
-      operation: 'expense',
-      timestamp: Date.now(),
-      businessId: businessId
+    // Prepare expense data
+    const fullExpenseData = {
+      ...cleanExpenseData,
+      payment_method,
+      business_id: businessId,
+      industry,
+      expense_date: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString()
     };
     
-    // Always add to offline queue first
-    // const operationId = addCashOperation('expense', offlineExpenseData);
-    
-    // Try to save to server if online
-    if (isOnline) {
-      try {
-        await addExpense({
-          ...cleanExpenseData,
-          business_id: businessId,
-          industry
-        });
-        // Expense saved online
-      } catch (error) {
-        // Online save failed, expense queued for sync
+    try {
+      if (!isOffline) {
+        // Try online first
+        try {
+          await addExpense(fullExpenseData);
+          showSuccess('Expense added successfully');
+        } catch (onlineError) {
+          console.warn('⚠️ Online expense failed, using offline mode:', onlineError);
+          showInfo('Expense queued - will sync when you\'re back online');
+        }
+      } else {
+        // Offline mode - TanStack Query handles this automatically
+        showInfo('Offline mode: Expense queued for sync');
       }
-    } else {
-      // Offline mode: Expense queued for sync
+    } catch (error) {
+      console.error('Failed to add expense:', error);
+      showError('Failed to add expense. Please try again.');
     }
   };
 
@@ -151,7 +150,7 @@ function CashPageContent() {
   const generateCashItemText = (item: any): string => {
     const date = item.transaction_date || item.expense_date;
     
-    let text = `${t('receipt.receipt_from', 'Receipt from')} ${business?.businessName || t('business.default_name', 'My Business')}\n\n`;
+    let text = `${t('receipt.receipt_from', 'Receipt from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
     text += `${t('receipt.description', 'Description')}: ${item.description}\n`;
     text += `${t('receipt.amount', 'Amount')}: ${item.type === 'in' ? '+' : '-'}${formatCurrency(item.amount, country)}\n`;
     text += `${t('receipt.date', 'Date')}: ${new Date(date).toLocaleDateString()}\n`;
@@ -225,26 +224,6 @@ function CashPageContent() {
 
       <main className="scroll-content">
         <div className="p-5 max-w-md mx-auto pb-20">
-          {/* Offline Status Indicator */}
-          {isOfflineMode && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
-            >
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-red-800">Offline Mode</div>
-                <div className="text-xs text-red-600">All transactions will be synced when you're back online</div>
-              </div>
-              {pendingCount > 0 && (
-                <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {pendingCount}
-                </div>
-              )}
-            </motion.div>
-          )}
-
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -515,6 +494,21 @@ function CashPageContent() {
       )}
 
       <BottomNav industry={industry} country={country} />
+      
+      {/* Offline Status Indicator */}
+      {(isOffline || isSyncing || totalPending > 0) && (
+        <div className="fixed bottom-24 left-4 right-4 z-50">
+          <div className={`p-3 rounded-lg text-white text-sm font-medium ${
+            isOffline ? 'bg-red-500' : 
+            isSyncing ? 'bg-blue-500' : 
+            'bg-orange-500'
+          }`}>
+            {isOffline && '📵 Offline - Changes will sync when connected'}
+            {isSyncing && '🔄 Syncing your data...'}
+            {!isOffline && !isSyncing && totalPending > 0 && `⏳ ${totalPending} pending changes`}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

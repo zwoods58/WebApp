@@ -24,8 +24,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useTransactions, useExpenses, useCredit, useInventory, useServices } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useServicesTanStack } from '@/hooks';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
@@ -42,13 +42,13 @@ export default function ReportsPage() {
   // Loading state for export
   const [isExporting, setIsExporting] = useState(false);
   
-  // Use Supabase hooks for data
-  const { business } = useBusiness();
-  const { transactions } = useTransactions({ industry });
-  const { expenses } = useExpenses({ industry });
-  const { credit } = useCredit({ industry });
-  const { inventory } = useInventory({ industry });
-  const { services } = useServices({ industry });
+  // Use TanStack Query hooks for data
+  const { business } = useUnifiedAuth();
+  const { data: transactions } = useTransactionsTanStack({ industry });
+  const { data: expenses } = useExpensesTanStack({ industry });
+  const { data: credit } = useCreditTanStack({ industry });
+  const { data: inventory } = useInventoryTanStack({ industry });
+  const { data: services } = useServicesTanStack({ industry });
   
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [selectedReport, setSelectedReport] = useState<'overview' | 'sales' | 'expenses' | 'inventory' | 'services' | 'customers' | 'daily'>('overview');
@@ -69,12 +69,12 @@ export default function ReportsPage() {
     const periodTransactions = transactions.filter(t => 
       new Date(t.transaction_date) >= periodStart
     );
-    const periodExpenses = expenses.filter(e => 
+    const periodExpenses = expenses.filter((e: any) => 
       new Date(e.expense_date) >= periodStart
     );
     
-    const totalRevenue = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
-    const totalExpenses = periodExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalRevenue = periodTransactions.reduce((sum: number, t: any) => sum + t.amount, 0);
+    const totalExpenses = periodExpenses.reduce((sum: number, e: any) => sum + e.amount, 0);
     const netProfit = totalRevenue - totalExpenses;
     const totalTransactions = periodTransactions.length;
     
@@ -192,13 +192,13 @@ export default function ReportsPage() {
 
   const calculateCustomerData = () => {
     const totalCustomers = credit.length;
-    const outstandingCredit = credit.filter(c => c.status === 'outstanding').length;
+    const outstandingCredit = credit.filter((c: any) => c.status === 'outstanding').length;
     const totalOwed = credit
-      .filter(c => c.status === 'outstanding')
-      .reduce((sum, c) => sum + (c.amount - c.paid_amount), 0);
+      .filter((c: any) => c.status === 'outstanding')
+      .reduce((sum: number, c: any) => sum + (c.amount - c.paid_amount), 0);
     
     const topCustomers = credit
-      .sort((a, b) => (b.amount - b.paid_amount) - (a.amount - a.paid_amount))
+      .sort((a: any, b: any) => (b.amount - b.paid_amount) - (a.amount - a.paid_amount))
       .slice(0, 5);
     
     return {
@@ -206,7 +206,7 @@ export default function ReportsPage() {
       outstandingCredit,
       totalOwed,
       topCustomers,
-      averageCreditValue: totalCustomers > 0 ? credit.reduce((sum, c) => sum + c.amount, 0) / totalCustomers : 0
+      averageCreditValue: totalCustomers > 0 ? credit.reduce((sum: number, c: any) => sum + c.amount, 0) / totalCustomers : 0
     };
   };
 
@@ -377,7 +377,7 @@ export default function ReportsPage() {
         profitMargin,
         currentStock: item.quantity
       };
-    }).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
+    }).sort((a: any, b: any) => b.revenue - a.revenue).slice(0, 10);
 
     return itemPerformance;
   };
@@ -519,7 +519,7 @@ export default function ReportsPage() {
         ]);
         
         // Expenses section
-        const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        const totalExpenses = expenses.reduce((sum: number, e: any) => sum + Number(e.amount), 0);
         drawSection('💸 EXPENSES', [
           { label: 'Total Expenses', value: formatCurrency(totalExpenses, country), color: '#ef4444' },
           { label: 'Number of Expenses', value: expenses.length.toString(), color: '#6b7280' },
@@ -1033,7 +1033,7 @@ export default function ReportsPage() {
               <div className="bg-white rounded-xl border border-gray-200 p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">{t('reports.expense_categories', 'Expense Categories')}</h3>
                 <div className="space-y-2">
-                  {expenses.slice(0, 5).map((expense, index) => (
+                  {expenses.slice(0, 5).map((expense: any, index: number) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{expense.category || 'Other'}</span>
                       <span className="text-sm font-medium">{formatCurrency(expense.amount, country)}</span>

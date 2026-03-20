@@ -25,18 +25,39 @@ import { useParams } from 'next/navigation';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBeehive } from '@/hooks/useBeehive';
-import { useAuth } from '@/contexts/AuthContext';
-import { useOfflineData } from '@/hooks/useOfflineData';
+import { useBeehiveTanStack } from '@/hooks';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useToast } from '@/hooks/useToast';
 import BeehiveRequestModal, { RequestFormData } from '@/components/universal/BeehiveRequestModal';
 import BeehiveComments from '@/components/universal/BeehiveComments';
+
+// Type definitions - matching the useBeehiveTanStack hook interface
+interface BeehiveRequest {
+  id: string;
+  business_id: string;
+  user_id?: string;
+  country: string;
+  industry: string;
+  title: string;
+  description: string;
+  category?: string;
+  status: 'open' | 'in_progress' | 'completed' | 'closed';
+  upvotes_count: number;
+  downvotes_count: number;
+  comments_count: number;
+  is_featured: boolean;
+  priority: 'low' | 'medium' | 'high';
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
 
 export default function BeehivePage() {
   const params = useParams();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'new_feature' | 'improvement' | 'bug_fix' | 'integration'>('all');
@@ -45,10 +66,60 @@ export default function BeehivePage() {
   const [expandedComments, setExpandedComments] = useState<string | null>(null);
 
   // Use Supabase hook for BeeHive data filtered by industry and country
-  const { requests, loading, addRequest, updateRequest, deleteRequest, voteOnRequest, hasVoted } = useBeehive({ industry, country });
-  const { isOnline, isOfflineMode, pendingCount } = useOfflineData();
+  const { data: requests, isLoading, addRequest: createRequest, deleteRequest, refetch: refetchRequests } = useBeehiveTanStack({ industry, country });
+  const [myVotes, setMyVotes] = useState<any[]>([]);
+  const loading = isLoading;
+  
+  // Simple online/offline status using TanStack Query
+  const [isOnline, setIsOnline] = useState(true);
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
 
-  const filteredRequests = requests.filter(request => {
+  // Helper functions to match the interface expected by the page
+  const addRequest = createRequest;
+  
+  const voteOnRequest = async (requestId: string, voteType: 'up' | 'down') => {
+    try {
+      const userId = user?.id;
+      if (!userId) {
+        showWarning('Please login to vote');
+        return;
+      }
+
+      const response = await fetch('/api/beehive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'voteOnRequest',
+          userId,
+          data: { requestId, voteType }
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to vote');
+      }
+
+      // Refresh requests to get updated vote counts
+      await refetchRequests();
+      showSuccess('Vote recorded successfully');
+    } catch (error) {
+      console.error('Error voting:', error);
+      showError('Failed to record vote');
+    }
+  };
+
+  const getUserVote = (requestId: string) => {
+    const vote = myVotes.find(v => v.request_id === requestId);
+    return {
+      voted: !!vote,
+      voteType: vote?.vote_type || null
+    };
+  };
+
+  const filteredRequests = requests.filter((request: BeehiveRequest) => {
     const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          request.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === 'all' || request.category === selectedFilter;
@@ -56,11 +127,7 @@ export default function BeehivePage() {
   });
 
   const handleVote = async (requestId: string, voteType: 'up' | 'down') => {
-    try {
-      await voteOnRequest(requestId, voteType);
-    } catch (error) {
-      console.error('Failed to vote:', error);
-    }
+    await voteOnRequest(requestId, voteType);
   };
 
   const handleAddRequest = () => {
@@ -76,7 +143,8 @@ export default function BeehivePage() {
   const handleSubmitRequest = async (data: RequestFormData) => {
     try {
       if (editingRequest) {
-        await updateRequest(editingRequest.id, data);
+        // Simplified - no update function in TanStack version yet
+        showInfo('Editing requests not available in current version');
       } else {
         await addRequest(data);
       }
@@ -84,7 +152,7 @@ export default function BeehivePage() {
       setEditingRequest(null);
     } catch (error) {
       console.error('Failed to submit request:', error);
-      throw error;
+      showError('Failed to submit request');
     }
   };
 
@@ -141,26 +209,6 @@ export default function BeehivePage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        {/* Offline Status Indicator */}
-        {isOfflineMode && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
-          >
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-red-800">Offline Mode</div>
-              <div className="text-xs text-red-600">All posts and comments will be synced when you're back online</div>
-            </div>
-            {pendingCount > 0 && (
-              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                {pendingCount}
-              </div>
-            )}
-          </motion.div>
-        )}
-
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -203,7 +251,7 @@ export default function BeehivePage() {
               { value: 'improvement', label: t('beehive.improvements', 'Improvements') },
               { value: 'bug_fix', label: t('beehive.bug_fixes', 'Bug Fixes') },
               { value: 'integration', label: t('beehive.integrations', 'Integrations') }
-            ].map((filter) => (
+            ].map((filter: { value: string; label: string }) => (
               <button
                 key={filter.value}
                 onClick={() => setSelectedFilter(filter.value as any)}
@@ -247,11 +295,11 @@ export default function BeehivePage() {
             <div className="text-xs text-gray-600">{t('beehive.total_requests', 'Total')}</div>
           </div>
           <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
-            <div className="text-lg font-bold text-green-600">{requests.filter(r => r.status === 'completed').length}</div>
+            <div className="text-lg font-bold text-green-600">{requests.filter((r: BeehiveRequest) => r.status === 'completed').length}</div>
             <div className="text-xs text-gray-600">{t('beehive.completed', 'Done')}</div>
           </div>
           <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
-            <div className="text-lg font-bold text-yellow-600">{requests.filter(r => r.status === 'in_progress').length}</div>
+            <div className="text-lg font-bold text-yellow-600">{requests.filter((r: BeehiveRequest) => r.status === 'in_progress').length}</div>
             <div className="text-xs text-gray-600">{t('beehive.in_progress', 'In Progress')}</div>
           </div>
         </motion.div>
@@ -263,8 +311,8 @@ export default function BeehivePage() {
           transition={{ delay: 0.5 }}
           className="space-y-3"
         >
-          {filteredRequests.map((request, index) => {
-            const userVote = hasVoted(request.id);
+          {filteredRequests.map((request: BeehiveRequest, index: number) => {
+            const userVote = getUserVote(request.id);
             const timeAgo = new Date(request.created_at).toLocaleDateString();
             
             return (
@@ -299,8 +347,8 @@ export default function BeehivePage() {
                     )}
                     <div className="flex items-center gap-1">
                       {getStatusIcon(request.status)}
-                      <span className={`text-xs font-medium ${getCategoryColor(request.category)} px-2 py-1 rounded-lg`}>
-                        {t(`beehive.${request.category}`, request.category.replace('_', ' '))}
+                      <span className={`text-xs font-medium ${getCategoryColor(request.category || 'general')} px-2 py-1 rounded-lg`}>
+                        {t(`beehive.${request.category || 'general'}`, (request.category || 'general').replace('_', ' '))}
                       </span>
                     </div>
                   </div>
@@ -342,7 +390,7 @@ export default function BeehivePage() {
                       }`}
                     >
                       <MessageSquare size={16} />
-                      <span className="text-sm">{request.comments_count}</span>
+                      <span className="text-sm">{request.comments_count || 0}</span>
                     </button>
                   </div>
                   <div className={`text-xs font-medium ${getPriorityColor(request.priority)}`}>
@@ -354,6 +402,10 @@ export default function BeehivePage() {
                 {expandedComments === request.id && (
                   <BeehiveComments
                     requestId={request.id}
+                    onCommentAdded={() => {
+                      console.log('🔄 Refreshing beehive data after comment added');
+                      refetchRequests();
+                    }}
                   />
                 )}
               </motion.div>

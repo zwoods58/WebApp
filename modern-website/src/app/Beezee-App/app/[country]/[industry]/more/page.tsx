@@ -22,10 +22,9 @@ import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBusiness } from '@/contexts/BusinessContext';
 import { useRouter } from 'next/navigation';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export default function MorePage() {
   const { t } = useLanguage();
@@ -34,10 +33,8 @@ export default function MorePage() {
   const industry = (params.industry as string) || 'retail';
   const router = useRouter();
 
-  // Use Supabase hook for user data instead of mock data
-  const { business, loading } = useBusiness();
+  const { business, loading, signOut } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
-  const { signOut } = useAuth();
 
   const handleSignOut = async () => {
     try {
@@ -53,7 +50,7 @@ export default function MorePage() {
   };
 
   const handleShareApp = () => {
-    const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://beezee.app';
+    const appUrl = 'https://atarwebb.com/Beezee-App/auth/signup';
     const shareMessage = t('more.share_app_message', 'Check out BeeZee - the amazing business management app that helps me track sales, inventory, appointments, and more! 🐝\n\nDownload it here: {url}').replace('{url}', appUrl);
     
     // Create WhatsApp share URL
@@ -135,13 +132,13 @@ export default function MorePage() {
               </div>
               <div className="flex-1">
                 <div className="font-bold text-[var(--text-1)] text-lg">
-                  {profile?.businessName || business?.businessName || 'Business Name'}
+                  {profile?.businessName || business?.business_name || 'Business Name'}
                 </div>
                 <div className="text-sm text-[var(--text-2)] mt-0.5">
                   {'email@example.com'}
                 </div>
                 <div className="text-sm text-[var(--text-2)]">
-                  {profile?.phoneNumber || business?.phone || '+254 700 000 000'}
+                  {profile?.phoneNumber || business?.phone_number || '+254 700 000 000'}
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-xs bg-[var(--powder)]/20 text-[var(--powder-dark)] font-bold px-2.5 py-1 rounded-lg">

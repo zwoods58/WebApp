@@ -615,7 +615,7 @@ export default function AdminPage() {
                     <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-900/30">
                       <Star className="text-violet-600 dark:text-violet-400" size={14} />
                       <span className="text-sm font-semibold text-violet-600 dark:text-violet-400">
-                        {request.upvote_count} votes
+                        {request.upvotes_count} votes
                       </span>
                     </div>
                     <ArrowRight className="text-slate-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all" size={20} />

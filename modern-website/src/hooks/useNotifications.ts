@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export type NotificationType = 
   | 'money_in' 
@@ -22,7 +22,7 @@ export interface Notification {
 }
 
 export function useNotifications() {
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

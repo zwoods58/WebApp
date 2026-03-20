@@ -163,7 +163,134 @@ export function useAuth() {
     }
   };
 
-  const signInDirect = async (phone: string, pin?: string) => {
+  const signInWithPIN = async (phone: string, pin: string) => {
+    // Validate phone format
+    const validation = validatePhone(phone);
+    if (!validation.valid) {
+      return { 
+        error: { 
+          message: 'Invalid phone format or unsupported country. Supported countries: Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania' 
+        } 
+      };
+    }
+
+    // Validate PIN format
+    if (!/^\d{6}$/.test(pin)) {
+      return { 
+        error: { 
+          message: 'Invalid PIN format. PIN must be exactly 6 digits.' 
+        } 
+      };
+    }
+
+    setAuthState(prev => ({ ...prev, loading: true, error: null }));
+
+    try {
+      console.log('🔐 Verifying PIN for phone:', phone);
+      
+      // Call PIN verification API
+      const response = await fetch('/api/auth/verify-pin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phoneNumber: phone, pin }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.log('❌ PIN verification failed:', result.error);
+        setAuthState({
+          user: null,
+          loading: false,
+          error: result.error || 'Invalid PIN',
+          isAuthenticated: false,
+          session: null,
+        });
+
+        return { 
+          error: { 
+            message: result.error || 'Invalid PIN' 
+          } 
+        };
+      }
+
+      const business = result.business;
+      console.log('✅ PIN verification successful:', business);
+
+      // Set business context for RLS policies
+      try {
+        await setBusinessContext(business.id, business.country, business.industry);
+      } catch (contextError) {
+        console.error('⚠️ Failed to set business context, but continuing:', contextError);
+      }
+
+      // Create session data
+      const sessionData = {
+        businessId: business.id,
+        businessName: business.business_name,
+        country: business.country,
+        industry: business.industry,
+        phone: phone
+      };
+
+      // Store authentication data
+      const authData = {
+        business: business,
+        session: sessionData
+      };
+
+      localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
+
+      // Set auth state with business data
+      const userData: UserData = {
+        id: business.id,
+        phone_number: phone,
+        business_name: business.business_name,
+        country: business.country,
+        default_industry: business.industry,
+        auth_method: 'phone_pin',
+        business: business
+      };
+
+      setAuthState({
+        user: userData,
+        loading: false,
+        error: null,
+        isAuthenticated: true,
+        session: sessionData,
+      });
+
+      return { 
+        error: null, 
+        data: { 
+          message: 'Access granted successfully!',
+          business: authData.business
+        } 
+      };
+
+    } catch (error) {
+      console.error('💥 Sign-in error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Sign-in failed. Please try again later.';
+      
+      setAuthState({
+        user: null,
+        loading: false,
+        error: errorMessage,
+        isAuthenticated: false,
+        session: null,
+      });
+
+      return { 
+        error: { 
+          message: errorMessage 
+        } 
+      };
+    }
+  };
+
+  const signInDirect = async (phone: string) => {
     // Validate phone format
     const validation = validatePhone(phone);
     if (!validation.valid) {
@@ -197,52 +324,7 @@ export function useAuth() {
 
       console.log('✅ Found business:', business);
 
-      // Check if PIN is required and provided
-      if (business.pin_hash && !pin) {
-        console.log('🔐 PIN required for this business');
-        return { 
-          error: { 
-            message: 'PIN_REQUIRED',
-            requiresPin: true,
-            businessId: business.id
-          } 
-        };
-      }
-
-      // Verify PIN if provided
-      if (business.pin_hash && pin) {
-        const response = await fetch('/api/auth/verify-pin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, pin, businessId: business.id })
-        });
-        
-        const result = await response.json();
-        
-        if (result.error) {
-          if (result.error.message === 'ACCOUNT_LOCKED') {
-            return result;
-          } else if (result.error.message === 'Invalid PIN. Please try again.') {
-            return result;
-          } else {
-            return { error: { message: result.error.message } };
-          }
-        }
-        
-        console.log('✅ PIN verification successful');
-      }
-
-      // Check for account lockout
-      if (business.pin_locked_until && business.pin_locked_until > Date.now()) {
-        const lockoutRemaining = Math.ceil((business.pin_locked_until - Date.now()) / 1000);
-        return { 
-          error: { 
-            message: 'ACCOUNT_LOCKED',
-            lockoutTime: lockoutRemaining,
-            remainingAttempts: 0
-          } 
-        };
-      }
+      // No PIN verification needed - phone-only authentication
 
       // Set business context for RLS policies
       try {
@@ -257,8 +339,7 @@ export function useAuth() {
         businessName: business.business_name,
         country: business.country,
         industry: business.industry,
-        phone: phone,
-        hasPin: !!business.pin_hash
+        phone: phone
       };
 
       // Store simple authentication data
@@ -276,7 +357,7 @@ export function useAuth() {
         business_name: business.business_name,
         country: business.country,
         default_industry: business.industry,
-        auth_method: business.pin_hash ? 'phone_pin' : 'phone_direct',
+        auth_method: 'phone_direct',
         business: business
       };
 
@@ -291,7 +372,7 @@ export function useAuth() {
       return { 
         error: null, 
         data: { 
-          message: business.pin_hash ? 'Access granted with PIN!' : 'Access granted successfully!',
+          message: 'Access granted successfully!',
           business: authData.business
         } 
       };
@@ -313,52 +394,6 @@ export function useAuth() {
           message: errorMessage 
         } 
       };
-    }
-  };
-
-  const setupBusinessPIN = async (businessId: string, pin: string) => {
-    try {
-      const response = await fetch('/api/auth/setup-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId, pin })
-      });
-      
-      const result = await response.json();
-      
-      if (result.error) {
-        return { error: { message: result.error.message } };
-      }
-
-      console.log('✅ PIN set successfully for business:', businessId);
-      return { error: null, data: result.data };
-    } catch (error) {
-      console.error('💥 PIN setup error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to set PIN';
-      return { error: { message: errorMessage } };
-    }
-  };
-
-  const changeBusinessPIN = async (businessId: string, currentPin: string, newPin: string) => {
-    try {
-      const response = await fetch('/api/auth/change-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId, currentPin, newPin })
-      });
-      
-      const result = await response.json();
-      
-      if (result.error) {
-        return { error: { message: result.error.message } };
-      }
-
-      console.log('✅ PIN changed successfully for business:', businessId);
-      return { error: null, data: result.data };
-    } catch (error) {
-      console.error('💥 PIN change error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to change PIN';
-      return { error: { message: errorMessage } };
     }
   };
 
@@ -396,16 +431,68 @@ export function useAuth() {
   };
 
   const refreshUserData = async () => {
-    // Mock implementation - no database connection
-    console.log('🔄 Mock refresh user data');
-    return;
+    try {
+      if (!authState.user?.phone_number) {
+        console.log('🔄 No user phone number available for refresh');
+        return;
+      }
+
+      console.log('🔄 Refreshing user data from database');
+      
+      // Fetch fresh business data from database
+      const { data: businessData, error } = await supabaseAdmin
+        .from('businesses')
+        .select('*')
+        .eq('phone_number', authState.user.phone_number)
+        .maybeSingle();
+
+      if (error) {
+        console.error('❌ Error refreshing user data:', error);
+        setAuthState(prev => ({ ...prev, error: 'Failed to refresh user data' }));
+        return;
+      }
+
+      if (businessData) {
+        const refreshedUser: UserData = {
+          id: businessData.id,
+          phone_number: businessData.phone_number,
+          business_name: businessData.business_name,
+          country: businessData.country,
+          default_industry: businessData.industry,
+          currency: businessData.home_currency,
+          auth_method: 'pin',
+          created_at: businessData.created_at,
+          updated_at: businessData.updated_at,
+          business: {
+            id: businessData.id,
+            business_name: businessData.business_name,
+            country: businessData.country,
+            industry: businessData.industry,
+            settings: businessData.settings || {}
+          }
+        };
+
+        setAuthState(prev => ({
+          ...prev,
+          user: refreshedUser,
+          error: null
+        }));
+
+        console.log('✅ User data refreshed successfully');
+      } else {
+        console.warn('⚠️ No business data found for user');
+        setAuthState(prev => ({ ...prev, error: 'Business data not found' }));
+      }
+    } catch (error) {
+      console.error('❌ Unexpected error refreshing user data:', error);
+      setAuthState(prev => ({ ...prev, error: 'Failed to refresh user data' }));
+    }
   };
 
   return {
     ...authState,
     signInDirect,
-    setupBusinessPIN,
-    changeBusinessPIN,
+    signInWithPIN,
     signOut,
     refreshUserData,
     validatePhone,

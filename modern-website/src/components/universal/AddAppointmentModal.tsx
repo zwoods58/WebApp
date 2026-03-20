@@ -13,8 +13,16 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices, useAppointments } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
+
+type Service = {
+  id: string;
+  service_name: string;
+  price?: number;
+  category?: string;
+  duration?: number;
+};
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -50,9 +58,9 @@ export default function AddAppointmentModal({
   country
 }: AddAppointmentModalProps) {
   const { t } = useLanguage();
-  const { business } = useBusiness();
-  const { services } = useServices({ industry, businessId: business?.id });
-  const { insert: addAppointment } = useAppointments({ industry, businessId: business?.id });
+  const { business } = useUnifiedAuth();
+  const { data: services } = useServices({ industry, businessId: business?.id });
+  const { addAppointment: addAppointment } = useAppointments({ industry, businessId: business?.id });
   const { showSuccess, showError } = useToastContext();
 
   const [formData, setFormData] = useState<FormData>({
@@ -115,7 +123,7 @@ export default function AddAppointmentModal({
   };
 
   const handleServiceChange = (serviceId: string) => {
-    const selectedService = services.find(s => s.id === serviceId);
+    const selectedService = services.find((s: Service) => s.id === serviceId);
     setFormData(prev => ({
       ...prev,
       service_id: serviceId,
@@ -166,6 +174,16 @@ export default function AddAppointmentModal({
       return;
     }
 
+    // Find the selected service to get its price
+    const selectedService = services.find((s: Service) => s.id === formData.service_id);
+    const servicePrice = selectedService?.price || 0;
+
+    console.log('📅 Creating appointment:', {
+      serviceName: selectedService?.service_name,
+      servicePrice,
+      customerName: formData.customer_name
+    });
+
     setSubmitting(true);
     try {
       await addAppointment({
@@ -179,7 +197,11 @@ export default function AddAppointmentModal({
         appointment_time: formData.appointment_time,
         duration: formData.duration,
         notes: formData.notes.trim() || undefined,
-        status: 'pending'
+        status: 'pending',
+        metadata: {
+          price: servicePrice,
+          service_name: formData.service_name
+        }
       });
       
       showSuccess(t('calendar.appointment_added', 'Appointment added successfully'));
@@ -207,22 +229,22 @@ export default function AddAppointmentModal({
           className="absolute inset-0 bg-black/20 backdrop-blur-xl"
         />
 
-        {/* Modal */}
+        {/* Modal - Mobile Responsive */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gray-100/80 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
+          className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gray-100/80 backdrop-blur-xl rounded-3xl p-4 sm:p-6 border border-white/20"
         >
           {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">
-            <div className="w-16" />
-            <h2 className="text-lg font-semibold text-black">
+            <div className="w-8 sm:w-16" />
+            <h2 className="text-lg sm:text-lg font-semibold text-black">
               {t('calendar.add_appointment', 'Add Appointment')}
             </h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-200/50 hover:bg-gray-300/50 flex items-center justify-center transition-colors"
+              className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-gray-200/50 hover:bg-gray-300/50 flex items-center justify-center transition-colors"
             >
               <X size={16} className="text-black" />
             </button>
@@ -241,9 +263,9 @@ export default function AddAppointmentModal({
                   type="text"
                   value={formData.customer_name}
                   onChange={(e) => handleInputChange('customer_name', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
+                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
                     errors.customer_name ? 'border-red-500' : 'border-gray-300'
-                  } text-black placeholder-black/50`}
+                  } text-black placeholder-black/50 text-base sm:text-sm`}
                   placeholder="John Doe"
                 />
               </div>
@@ -266,7 +288,7 @@ export default function AddAppointmentModal({
                   type="text"
                   value={formData.customer_contact}
                   onChange={(e) => handleInputChange('customer_contact', e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50"
+                  className="w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50 text-base sm:text-sm"
                   placeholder="+254 700 000 000"
                 />
               </div>
@@ -280,12 +302,12 @@ export default function AddAppointmentModal({
               <select
                 value={formData.service_id}
                 onChange={(e) => handleServiceChange(e.target.value)}
-                className={`w-full px-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
+                className={`w-full px-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
                   errors.service_id ? 'border-red-500' : 'border-gray-300'
-                } text-black`}
+                } text-black text-base sm:text-sm`}
               >
                 <option value="">{t('calendar.select_service', 'Select Service')}</option>
-                {services.map(service => (
+                {services.map((service: Service) => (
                   <option key={service.id} value={service.id}>
                     {service.service_name} {service.price ? `- ${service.price}` : ''}
                   </option>
@@ -316,9 +338,9 @@ export default function AddAppointmentModal({
                   value={formData.appointment_date}
                   onChange={(e) => handleInputChange('appointment_date', e.target.value)}
                   min={getTodayDate()}
-                  className={`w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
+                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
                     errors.appointment_date ? 'border-red-500' : 'border-gray-300'
-                  } text-black`}
+                  } text-black text-base sm:text-sm`}
                 />
               </div>
               {errors.appointment_date && (
@@ -339,9 +361,9 @@ export default function AddAppointmentModal({
                 <select
                   value={formData.appointment_time}
                   onChange={(e) => handleInputChange('appointment_time', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
+                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
                     errors.appointment_time ? 'border-red-500' : 'border-gray-300'
-                  } text-black`}
+                  } text-black text-base sm:text-sm`}
                 >
                   <option value="">{t('calendar.select_time', 'Select Time')}</option>
                   {timeSlots.map(time => (
@@ -369,7 +391,7 @@ export default function AddAppointmentModal({
                 min="15"
                 max="480"
                 step="15"
-                className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black"
+                className="w-full px-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black text-base sm:text-sm"
               />
             </div>
 
@@ -384,25 +406,25 @@ export default function AddAppointmentModal({
                   value={formData.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   rows={3}
-                  className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50 resize-none"
+                  className="w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50 resize-none text-base sm:text-sm"
                   placeholder={t('calendar.notes_placeholder', 'Any special requests or notes...')}
                 />
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            {/* Action Buttons - Mobile Responsive */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 bg-gray-200/50 text-black font-medium rounded-xl hover:bg-gray-300/50 transition-colors"
+                className="flex-1 px-6 py-4 sm:py-3 bg-gray-200/50 text-black font-medium rounded-xl hover:bg-gray-300/50 transition-colors text-base sm:text-sm"
               >
                 {t('common.cancel', 'Cancel')}
               </button>
               <button
                 type="submit"
                 disabled={submitting || services.length === 0}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-4 sm:py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm"
               >
                 {submitting 
                   ? t('common.saving', 'Saving...') 

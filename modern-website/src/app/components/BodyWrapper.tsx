@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
 import ServiceWorkerRegistration from './ServiceWorkerRegistration';
-import OfflineIndicator from '@/components/ui/OfflineIndicator';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 interface BodyWrapperProps {
   children: React.ReactNode;
@@ -35,15 +35,16 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
   return (
     <>
       <ServiceWorkerRegistration />
-      <body 
-        className={`${className} ${isClient ? 'hydrated' : ''}`}
-        suppressHydrationWarning
-      >
-        <AppLayout>
-          {!isBeezeePage && <OfflineIndicator />}
-          {children}
-        </AppLayout>
-      </body>
+      <QueryProvider>
+        <body 
+          className={`${className} ${isClient ? 'hydrated' : ''}`}
+          suppressHydrationWarning
+        >
+          <AppLayout>
+            {children}
+          </AppLayout>
+        </body>
+      </QueryProvider>
     </>
   );
 }

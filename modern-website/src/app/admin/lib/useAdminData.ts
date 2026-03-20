@@ -26,7 +26,6 @@ export const useAdminData = () => {
     const [users, setUsers] = useState<UserData[]>([]);
     const [totalRevenue, setTotalRevenue] = useState(0);
     const [totalUsers, setTotalUsers] = useState(0);
-    const [isMockData, setIsMockData] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -50,8 +49,11 @@ export const useAdminData = () => {
                 .select('*');
 
             if (usersError || subsError) {
-                console.error('Error fetching data, falling back to mock:', usersError || subsError);
-                useMockData();
+                console.error('Error fetching data:', usersError || subsError);
+                setStats([]);
+                setUsers([]);
+                setTotalRevenue(0);
+                setTotalUsers(0);
                 return;
             }
 
@@ -60,17 +62,22 @@ export const useAdminData = () => {
 
         } catch (err) {
             console.error('Exception fetching data:', err);
-            useMockData();
+            setStats([]);
+            setUsers([]);
+            setTotalRevenue(0);
+            setTotalUsers(0);
         } finally {
             setLoading(false);
         }
     };
 
     const processRealData = (usersData: any[], subsData: any[]) => {
-        // Implement processing logic here
-        // For now, if no data returned (RLS empty), use mock
+        // If no data available, return empty state
         if ((!usersData || usersData.length === 0) && (!subsData || subsData.length === 0)) {
-            useMockData();
+            setStats([]);
+            setUsers([]);
+            setTotalRevenue(0);
+            setTotalUsers(0);
             return;
         }
 
@@ -143,24 +150,5 @@ export const useAdminData = () => {
         setStats(Object.values(countryMap).filter(c => c.userCount > 0));
     };
 
-    const useMockData = () => {
-        setIsMockData(true);
-        setStats([
-            { code: 'NG', name: 'Nigeria', userCount: 1250, revenue: 15400000, currency: 'NGN', color: '#10B981' }, // ~ $10k
-            { code: 'KE', name: 'Kenya', userCount: 850, revenue: 1200000, currency: 'KES', color: '#EF4444' }, // ~ $9k
-            { code: 'ZA', name: 'South Africa', userCount: 620, revenue: 218000, currency: 'ZAR', color: '#F59E0B' }, // ~ $11k
-        ]);
-        setTotalUsers(2720);
-        setTotalRevenue(30540); // USD Approx
-
-        setUsers([
-            { id: '1', email: 'user1@example.com', phone: '+234 801 234 5678', country: 'Nigeria', status: 'active', joinedAt: '2024-01-10T10:00:00Z' },
-            { id: '2', email: 'user2@example.com', phone: '+254 712 345 678', country: 'Kenya', status: 'trial', joinedAt: '2024-01-11T14:30:00Z' },
-            { id: '3', email: 'user3@example.com', phone: '+27 61 234 5678', country: 'South Africa', status: 'expired', joinedAt: '2023-12-05T09:15:00Z' },
-            { id: '4', email: 'ade.b@example.ng', phone: '+234 809 111 2222', country: 'Nigeria', status: 'active', joinedAt: '2024-01-12T08:00:00Z' },
-            { id: '5', email: 'john.k@example.ke', phone: '+254 722 000 111', country: 'Kenya', status: 'active', joinedAt: '2024-01-09T16:45:00Z' },
-        ]);
-    };
-
-    return { loading, stats, users, totalUsers, totalRevenue, isMockData };
+    return { loading, stats, users, totalUsers, totalRevenue };
 };

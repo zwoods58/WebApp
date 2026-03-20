@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: ProtectedRouteProps) {
-    const { business, loading, isAuthenticated } = useBusiness();
+    const { business, loading, isAuthenticated } = useUnifiedAuth();
     const router = useRouter();
     const [isStabilizing, setIsStabilizing] = useState(true);
 

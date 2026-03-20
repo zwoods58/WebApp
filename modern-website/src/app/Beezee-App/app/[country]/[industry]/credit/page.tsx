@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useCredit } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useCreditTanStack, useTransactionsTanStack } from '@/hooks';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useOfflineData } from '@/hooks/useOfflineData';
+import { useToast } from '@/hooks/useToast';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
@@ -22,10 +22,16 @@ export default function CreditPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
-  // Use Supabase hook instead of mock data
-  const { business } = useBusiness();
-  const { isOnline, isOfflineMode, pendingCount } = useOfflineData();
-  const { credit, loading, insert: addCredit, getTotalOwed, getOverdueAmount, getOverdueCredit, getOutstandingCredit, getPartialCredit, markAsPaid, makePartialPayment } = useCredit({ 
+  const { business } = useUnifiedAuth();
+  
+  // TanStack Query handles online/offline automatically
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  
+  const { data: credit, isLoading, addCredit, updateCredit, isOffline } = useCreditTanStack({ 
+    industry,
+    businessId: business?.id 
+  });
+  const { addTransaction } = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
   });
@@ -39,14 +45,36 @@ export default function CreditPage() {
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
 
-  const outstandingCredit = getOutstandingCredit();
-  const partialCredit = getPartialCredit();
-  const overdueCredit = getOverdueCredit();
+  // Calculate credit statistics from data
+  const creditData = credit || [];
+  const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
+  const partialCredit = creditData.filter((c: any) => c.status === 'partial');
+  const overdueCredit = creditData.filter((c: any) => c.status === 'overdue');
   
-  const totalOwed = getTotalOwed();
-  const overdueAmount = getOverdueAmount();
+  const totalOwed = creditData.reduce((sum: number, c: any) => {
+    // If status is 'paid', remaining amount is 0
+    if (c.status === 'paid') {
+      console.log(`💳 Credit calculation: ${c.customer_name} - Fully paid, remaining: 0`);
+      return sum + 0;
+    }
+    
+    const remainingAmount = c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount;
+    console.log(`💳 Credit calculation: ${c.customer_name} - Original: ${c.amount}, Paid: ${c.paid_amount || 0}, Status: ${c.status}, Remaining: ${remainingAmount}`);
+    return sum + remainingAmount;
+  }, 0);
+  const overdueAmount = overdueCredit.reduce((sum: number, c: any) => {
+    // If status is 'paid', remaining amount is 0
+    if (c.status === 'paid') {
+      return sum + 0;
+    }
+    
+    const remainingAmount = c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount;
+    return sum + remainingAmount;
+  }, 0);
+  
+  console.log(`📊 Credit Summary: Total Owed: ${totalOwed}, Overdue: ${overdueAmount}, Customers: ${creditData.length}`);
 
-  const filteredCredit = credit.filter(item => {
+  const filteredCredit = creditData.filter((item: any) => {
     const matchesSearch = item.customer_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
     return matchesSearch && matchesStatus;
@@ -54,27 +82,41 @@ export default function CreditPage() {
 
   const handleAddCredit = async (newCredit: any) => {
     if (!business?.id) {
-      console.error('No business ID found');
+      showError('No business ID found');
       return;
     }
     
     // Get currency from business country
     const currency = getCurrency(business.country || country);
     
-    await addCredit({
+    const fullCreditData = {
       ...newCredit,
       business_id: business.id,
       industry,
       currency,
-      date_given: new Date().toISOString().split('T')[0]
-    });
-    setShowAddModal(false);
+      date_given: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString()
+    };
+    
+    try {
+      // TanStack Query handles online/offline automatically
+      await addCredit(fullCreditData);
+      showSuccess('Credit added successfully');
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Failed to add credit:', error);
+      showError('Failed to add credit. Please try again.');
+    }
   };
 
   const handleUpdateCredit = async (id: string, updates: any) => {
-    // This would be handled by the useCredit hook update function
-    // For now, just close modal
-    setShowAddModal(false);
+    try {
+      updateCredit({ id, updates });
+      showSuccess('Credit updated successfully');
+    } catch (error) {
+      console.error('Failed to update credit:', error);
+      showError('Failed to update credit');
+    }
   };
 
   const handleDeleteCredit = async (id: string) => {
@@ -84,7 +126,55 @@ export default function CreditPage() {
   };
 
   const handlePayment = async (creditId: string, paymentAmount: number) => {
-    await makePartialPayment(creditId, paymentAmount);
+    if (!business?.id) {
+      showError('No business ID found');
+      return;
+    }
+    
+    const creditRecord = creditData.find((c: any) => c.id === creditId);
+    if (!creditRecord) {
+      showError('Credit record not found');
+      return;
+    }
+    
+    // Calculate new amounts
+    const currentPaid = creditRecord.paid_amount || 0;
+    const newPaidAmount = currentPaid + paymentAmount;
+    const newStatus = newPaidAmount >= creditRecord.amount ? 'paid' : 
+                     newPaidAmount > 0 ? 'partial' : 'outstanding';
+    
+    try {
+      // Update credit record with payment
+      await updateCredit({ 
+        id: creditId, 
+        updates: { 
+          paid_amount: newPaidAmount,
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        }
+      });
+      
+      // Record payment transaction
+      await addTransaction({
+        business_id: business.id,
+        industry,
+        amount: paymentAmount,
+        category: 'payment',
+        description: `Payment for credit: ${creditRecord.customer_name}`,
+        transaction_date: new Date().toISOString().split('T')[0],
+        metadata: {
+          credit_id: creditId,
+          customer_name: creditRecord.customer_name,
+          payment_amount: paymentAmount
+        }
+      });
+      
+      showSuccess('Payment recorded successfully');
+      setShowPaymentModal(false);
+    } catch (error) {
+      console.error('Failed to record payment:', error);
+      showError('Failed to record payment. Please try again.');
+    }
   };
 
   const handleCustomerClick = (customer: any) => {
@@ -96,7 +186,7 @@ export default function CreditPage() {
     const remainingAmount = creditItem.status === 'partial' ? creditItem.amount - (creditItem.paid_amount || 0) : creditItem.amount;
     const daysOverdue = creditItem.due_date ? Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24)) : 0;
     
-    let text = `${t('credit.reminder_from', 'Credit Reminder from')} ${business?.businessName || t('business.default_name', 'My Business')}\n\n`;
+    let text = `${t('credit.reminder_from', 'Credit Reminder from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
     text += `${t('common.customer', 'Customer')}: ${creditItem.customer_name}\n`;
     text += `${t('credit.amount_owed', 'Amount Owed')}: ${formatCurrency(remainingAmount, country)}\n`;
     text += `${t('credit.original_amount', 'Original Amount')}: ${formatCurrency(creditItem.amount, country)}\n`;
@@ -185,26 +275,6 @@ export default function CreditPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        {/* Offline Status Indicator */}
-        {isOfflineMode && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3"
-          >
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-red-800">Offline Mode</div>
-              <div className="text-xs text-red-600">All credit operations will be synced when you're back online</div>
-            </div>
-            {pendingCount > 0 && (
-              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                {pendingCount}
-              </div>
-            )}
-          </motion.div>
-        )}
-
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -228,7 +298,7 @@ export default function CreditPage() {
             <div className="text-2xl font-bold text-orange-600">
               {formatCurrency(totalOwed, country)}
             </div>
-            <div className="text-xs text-gray-500">{credit.length} {t('credit.customers')}</div>
+            <div className="text-xs text-gray-500">{creditData.length} {t('credit.customers')}</div>
           </div>
 
           <div className="bg-red-50 p-4 rounded-xl border border-red-200">
@@ -324,7 +394,7 @@ export default function CreditPage() {
               {t('credit.overdue_payments')}
             </h3>
             <div className="space-y-2">
-              {overdueCredit.map(c => {
+              {overdueCredit.map((c: any) => {
                 const remainingAmount = c.status === 'partial' ? c.amount - c.paid_amount : c.amount;
                 return (
                   <div key={c.id} className="flex justify-between items-center">
@@ -361,7 +431,7 @@ export default function CreditPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredCredit.map((item, index) => {
+              {filteredCredit.map((item: any, index: number) => {
                 const remainingAmount = item.status === 'partial' ? item.amount - item.paid_amount : item.amount;
                 const overdue = isOverdue(item.due_date || '', item.status);
                 

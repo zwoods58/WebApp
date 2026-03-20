@@ -1,65 +1,44 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LanguageProvider } from '@/hooks/LanguageContext';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { BusinessProvider } from '@/contexts/BusinessContext';
+import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { ToastProvider } from '@/providers/ToastProvider';
-import OfflineIndicator from '@/components/ui/OfflineIndicator';
-import GlobalPullToRefresh from '@/components/global/GlobalPullToRefresh';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname } from 'next/navigation';
-import { offlineSyncHandler } from '@/services/offlineSyncHandler';
-import { initServiceWorker, initializeQueue } from '@/utils/registerSW';
-import { SyncRefreshBanner } from '@/components/ui/SyncRefreshBanner';
 import BottomNav from '@/components/universal/BottomNav';
+import { initConnectionMonitoring, cleanupConnectionMonitoring } from '@/lib/connection-manager';
+import { ConnectionStatus } from '@/components/ConnectionStatus';
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { business } = useUnifiedAuth();
   
+  // Initialize connection monitoring
+  useEffect(() => {
+    initConnectionMonitoring()
+    return () => {
+      cleanupConnectionMonitoring()
+    }
+  }, [])
+
   // Extract country and industry from pathname
   const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
   const country = pathMatch?.[1] || '';
   const industry = pathMatch?.[2] || '';
-  
-  // Initialize Service Worker and new queue system
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        // Initialize the new IndexedDB queue system
-        await initializeQueue()
-        
-        // Initialize Service Worker
-        initServiceWorker()
-        
-        // Keep existing sync handler for compatibility
-        offlineSyncHandler.initialize()
-        
-        console.log('✅ PWA architecture initialized successfully')
-      } catch (error) {
-        console.error('❌ Failed to initialize PWA architecture:', error)
-      }
-    }
-
-    initialize()
-    
-    return () => {
-      offlineSyncHandler.destroy()
-    }
-  }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-20">
-      <GlobalPullToRefresh>
-        <SyncRefreshBanner />
-        <OfflineIndicator />
-        {children}
-        {/* Bottom Navigation - always show for app pages */}
-        {country && industry && (
-          <BottomNav industry={industry} country={country} />
-        )}
-      </GlobalPullToRefresh>
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-20 pt-0">
+      {/* Global connection status indicator */}
+      <ConnectionStatus />
+      
+      {children}
+      
+      {/* Bottom Navigation - always show for app pages */}
+      {country && industry && (
+        <BottomNav industry={industry} country={country} />
+      )}
     </div>
   );
 }
@@ -76,6 +55,7 @@ export default function BeezeeLayout({
 
   const handleClearSession = () => {
     // Clear all auth data and redirect to login
+    localStorage.removeItem('beezee_unified_auth');
     localStorage.removeItem('beezee_business_auth');
     localStorage.removeItem('beezee_direct_auth');
     localStorage.removeItem('sessionData');
@@ -86,17 +66,15 @@ export default function BeezeeLayout({
 
   return (
     <AuthErrorBoundary onRetry={handleRetry} onClearSession={handleClearSession}>
-      <AuthProvider>
-        <BusinessProvider>
-          <BusinessProfileProvider>
-            <LanguageProvider industry="retail">
-              <ToastProvider>
-                <BeezeeContent>{children}</BeezeeContent>
-              </ToastProvider>
-            </LanguageProvider>
-          </BusinessProfileProvider>
-        </BusinessProvider>
-      </AuthProvider>
+      <UnifiedAuthProvider>
+        <BusinessProfileProvider>
+          <LanguageProvider industry="retail">
+            <ToastProvider>
+              <BeezeeContent>{children}</BeezeeContent>
+            </ToastProvider>
+          </LanguageProvider>
+        </BusinessProfileProvider>
+      </UnifiedAuthProvider>
     </AuthErrorBoundary>
   );
 }

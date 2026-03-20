@@ -40,11 +40,11 @@ export function BeehiveCard({ request, index }: BeehiveCardProps) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
             <ArrowUp size={14} className="text-blue-500" />
-            <span className="font-semibold">{request.upvote_count}</span>
+            <span className="font-semibold">{request.upvotes_count}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
             <MessageCircle size={14} />
-            <span>{request.comment_count}</span>
+            <span>{request.comments_count}</span>
           </div>
         </div>
         

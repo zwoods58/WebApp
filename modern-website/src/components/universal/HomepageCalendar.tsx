@@ -1,13 +1,22 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar as CalendarIcon, Clock, ChevronRight, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useAppointments } from '@/hooks';
-import { useBusiness } from '@/contexts/BusinessContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { formatDate } from '@/utils/currency';
+
+type Appointment = {
+  id: string;
+  customer_name?: string;
+  service_name?: string;
+  appointment_time: string;
+  appointment_date: string;
+  status?: string;
+};
 
 interface HomepageCalendarProps {
   industry: string;
@@ -19,14 +28,23 @@ const CALENDAR_INDUSTRIES = ['salon', 'transport', 'tailor', 'freelance', 'repai
 
 export default function HomepageCalendar({ industry, country }: HomepageCalendarProps) {
   const { t } = useLanguage();
-  const { business } = useBusiness();
+  const { business } = useUnifiedAuth();
   const { 
-    appointments, 
-    loading, 
-    getTodayAppointments, 
-    getUpcomingAppointments,
+    data: appointments, 
+    isLoading, 
     refetch
   } = useAppointments({ businessId: business?.id, industry });
+
+  // Helper functions to filter appointments
+  const getTodayAppointments = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return appointments.filter((apt: Appointment) => apt.appointment_date === today && apt.status === 'pending');
+  };
+
+  const getUpcomingAppointments = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return appointments.filter((apt: Appointment) => apt.appointment_date > today && apt.status === 'pending');
+  };
 
   // Don't render if industry doesn't use calendar
   if (!CALENDAR_INDUSTRIES.includes(industry)) {
@@ -35,8 +53,18 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
 
   const todayAppointments = getTodayAppointments();
   const upcomingAppointments = getUpcomingAppointments().slice(0, 3); // Next 3 appointments
+  
+  // Debug appointment changes
+  useEffect(() => {
+    console.log('📅 Homepage Calendar Updated:', {
+      totalAppointments: appointments?.length || 0,
+      todayAppointments: todayAppointments.length,
+      upcomingAppointments: upcomingAppointments.length,
+      timestamp: new Date().toISOString()
+    });
+  }, [appointments, todayAppointments, upcomingAppointments]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -92,7 +120,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
             </span>
           </div>
           <div className="space-y-2">
-            {todayAppointments.slice(0, 2).map((appointment) => (
+            {todayAppointments.slice(0, 2).map((appointment: Appointment) => (
               <motion.div
                 key={appointment.id}
                 initial={{ opacity: 0, x: -10 }}
@@ -140,7 +168,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
             </span>
           </div>
           <div className="space-y-2">
-            {upcomingAppointments.map((appointment) => (
+            {upcomingAppointments.map((appointment: Appointment) => (
               <motion.div
                 key={appointment.id}
                 initial={{ opacity: 0, x: -10 }}
