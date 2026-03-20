@@ -17,7 +17,7 @@ import { getCurrency, countryConfigs } from '@/utils/currency';
 import { industries } from '@/data/industries';
 import { localStorageManager } from '@/utils/localStorageManager';
 import { setBusinessContext } from '@/lib/supabaseContext';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useSignup } from '@/hooks/useSignup';
 import PINSetup from '@/components/auth/PINSetup';
 import SignupPWAInstallModal from '@/components/auth/SignupPWAInstallModal';
@@ -50,7 +50,7 @@ const countries = [
 function BeezeeSignupContent() {
   const router = useRouter();
   const { setProfile } = useBusinessProfile();
-  const { } = useAuth();
+  const { } = useUnifiedAuth();
   
   // Use the new signup hook
   const signup = useSignup();

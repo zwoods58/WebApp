@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { setBusinessContext } from '@/lib/supabaseContext';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { SUPPORTED_COUNTRIES, validatePhoneFormat } from '@/utils/phoneUtils';
 import { persistentStorage } from '@/utils/persistentStorage';
 
@@ -133,6 +134,58 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
       
       // Validate session before restoring
       if (authData && isSessionValid(authData)) {
+        // 🔥 DATABASE VALIDATION: Verify business still exists
+        try {
+          const { data: business, error } = await supabaseAdmin
+            .from('businesses')
+            .select('id, country, industry')
+            .eq('id', authData.business.id)
+            .single();
+
+          if (error || !business) {
+            console.log('❌ Business no longer exists in database, clearing session');
+            clearInvalidSessions();
+            setAuthState({
+              business: null,
+              user: null,
+              loading: false,
+              error: null,
+              isAuthenticated: false,
+              session: null,
+            });
+            return;
+          }
+
+          // Update localStorage with fresh data if changed
+          if (business.country !== authData.business.country ||
+              business.industry !== authData.business.industry) {
+            console.log('🔄 Updating business data from database:', {
+              oldCountry: authData.business.country,
+              newCountry: business.country,
+              oldIndustry: authData.business.industry, 
+              newIndustry: business.industry
+            });
+            
+            authData.business.country = business.country;
+            authData.business.industry = business.industry;
+            authData.session.country = business.country;
+            authData.session.industry = business.industry;
+          }
+
+        } catch (dbError) {
+          console.error('❌ Database validation error:', dbError);
+          clearInvalidSessions();
+          setAuthState({
+            business: null,
+            user: null,
+            loading: false,
+            error: null,
+            isAuthenticated: false,
+            session: null,
+          });
+          return;
+        }
+
         // Validate the stored data structure
         if (authData.business.id && authData.session.businessId) {
           // Set business context for RLS policies

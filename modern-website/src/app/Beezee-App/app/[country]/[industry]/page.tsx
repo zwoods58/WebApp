@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, TrendingUp, TrendingDown, Users, Package, Target, AlertTriangle, Clock, Calendar as CalendarIcon, CheckCircle, DollarSign } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -56,6 +56,7 @@ function IndustryDashboardContent() {
   
   const { t } = useLanguage();
   const params = useParams();
+  const router = useRouter();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const queryClient = useQueryClient();
@@ -70,7 +71,7 @@ function IndustryDashboardContent() {
     
     console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
     
-    const { business } = useUnifiedAuth();
+    const { business, loading: authLoading } = useUnifiedAuth();
     const businessId = business?.id;
     
     console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });
@@ -238,6 +239,30 @@ function IndustryDashboardContent() {
     });
   }, [safeInventory, safeTransactions]);
   
+  // 🔥 ROUTE VALIDATION: Ensure user is on correct industry/country page
+  useEffect(() => {
+    if (authLoading) return;
+    
+    if (!business) {
+      console.log('🔓 User not authenticated, redirecting to login');
+      router.replace('/Beezee-App/auth/login');
+      return;
+    }
+    
+    // Redirect if wrong industry/country
+    if (business.country?.toLowerCase() !== country || 
+        business.industry?.toLowerCase() !== industry) {
+      console.log('🔄 Wrong route, redirecting to correct industry/country:', {
+        currentRoute: { country, industry },
+        businessData: { country: business.country, industry: business.industry }
+      });
+      router.replace(`/Beezee-App/app/${business.country?.toLowerCase()}/${business.industry?.toLowerCase()}`);
+      return;
+    }
+    
+    console.log('✅ Route validation passed:', { country, industry, business: business.business_name });
+  }, [business, country, industry, authLoading, router]);
+
   // Additional safety check - add early return if critical data is missing
   if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
     console.error('❌ Critical: One or more hooks failed to initialize');

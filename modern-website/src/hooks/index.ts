@@ -3,7 +3,6 @@
 
 // Core hooks
 export { useLanguageSafe } from './useLanguageSafe';
-export { useAuth } from './useAuth';
 export { useUnifiedAuth } from '../contexts/UnifiedAuthContext';
 
 // New TanStack Query hooks
