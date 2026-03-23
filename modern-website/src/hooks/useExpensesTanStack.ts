@@ -1,4 +1,5 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
+import { getOnlineStatus } from '@/lib/connection-manager'
 
 export interface Expense {
   id: string;
@@ -42,9 +43,14 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook
-  const { data, isLoading, addItem, deleteItem, isAdding, isPaused } = 
-    useIndustryData(industry, country, 'expenses')
+  // Use the new TanStack Query hook with updated API
+  const { data, isLoading, create, delete: deleteItem, isCreating, error, refetch } = 
+    useIndustryDataNew({
+      industry,
+      country,
+      table: 'expenses',
+      select: options.select,
+    })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -82,12 +88,11 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
   return {
     data: filteredData as Expense[],
     isLoading,
-    isOffline: isPaused,
-    addExpense: addItem,
+    isOffline: !getOnlineStatus(), // Use actual network status
+    addExpense: create,
     deleteExpense: deleteItem,
-    isPending: isAdding,
-    // Keep the same interface as the original hook
-    error: null,
-    refetch: () => {}, // TanStack Query handles this automatically
+    isPending: isCreating,
+    error,
+    refetch,
   }
 }

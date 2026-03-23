@@ -1,230 +1,297 @@
-const CACHE_NAME = 'beezee-app-shell-v1'
+/**
+ * Beezee App Service Worker - User-Specific Caching
+ * Caches routes based on user's country and industry after login
+ */
 
-// App shell files to pre-cache — HTML routes, JS bundles, CSS, fonts, icons
-const APP_SHELL = [
+const CACHE_VERSION = 'v28';
+const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
+const API_CACHE = `beezee-api-${CACHE_VERSION}`;
+const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
+const RSC_CACHE = `beezee-rsc-${CACHE_VERSION}`;
+
+// Default fallback routes (before login)
+const DEFAULT_ROUTES = [
   '/',
-  '/Beezee-App',
-  '/Beezee-App/auth/login',
-  '/Beezee-App/auth/signup',
   '/manifest.json',
-  '/beezee-icon-192x192.png',
-  '/beezee-icon-512x512.png',
-  '/beezee-icon-96x96.png',
-  '/beezee-icon-72x72.png',
-  '/beezee-icon-128x128.png',
-  '/beezee-icon-144x144.png',
-  '/beezee-icon-152x152.png',
-  '/beezee-icon-384x384.png'
-]
+  '/Beezee-App/auth/login',
+  '/Beezee-App/auth/signup',  // ✅ Corrected signup route
+];
 
-// ─── Install: pre-cache app shell ───────────────────────────────────────────
-self.addEventListener('install', event => {
+// Store user's country and industry in SW memory
+let userCountry = null;
+let userIndustry = null;
+
+console.log('[SW] User-specific caching mode - waiting for login');
+
+// ============================================================
+// INSTALL - Cache only default routes (FAST!)
+// ============================================================
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing...');
+  console.log('[SW] Caching default routes:', DEFAULT_ROUTES);
+  
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('[SW] Caching app shell...')
-      return cache.addAll(APP_SHELL)
+    caches.open(PAGE_CACHE).then((cache) => {
+      return cache.addAll(DEFAULT_ROUTES);
+    }).then(() => {
+      console.log('[SW] Install complete');
+      return self.skipWaiting();
+    }).catch((error) => {
+      console.error('[SW] Install failed:', error);
+      return self.skipWaiting();
     })
-  )
-  self.skipWaiting()
-})
+  );
+});
 
-// ─── Activate: clean up old caches ──────────────────────────────────────────
-self.addEventListener('activate', event => {
+// ============================================================
+// ACTIVATE - Clean up old caches
+// ============================================================
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating...');
+  
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => {
-        console.log('[SW] Deleting old cache:', k)
-        return caches.delete(k)
-      }))
-    )
-  )
-  self.clients.claim()
-})
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== STATIC_CACHE && 
+              cacheName !== API_CACHE && 
+              cacheName !== PAGE_CACHE &&
+              cacheName !== RSC_CACHE) {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      console.log('[SW] Activation complete');
+      return self.clients.claim();
+    })
+  );
+});
 
-// ─── Fetch: network-first for API, cache-first for app shell ────────────────
-self.addEventListener('fetch', event => {
-  const { request } = event
-  const url = new URL(request.url)
-
-  // Never intercept Supabase or external API calls — always go to network
-  if (
-    url.hostname.includes('supabase') ||
-    url.hostname.includes('httpbin') ||
-    url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/_next/') // Next.js API routes
-  ) {
-    return
+// ============================================================
+// MESSAGE HANDLER - Receive user routes from app
+// ============================================================
+self.addEventListener('message', (event) => {
+  const { type, country, industry } = event.data;
+  
+  if (type === 'CACHE_USER_ROUTES') {
+    console.log('[SW] Received user routes:', { country, industry });
+    userCountry = country;
+    userIndustry = industry;
+    
+    // Cache user's routes in background
+    event.waitUntil(cacheUserRoutes(country, industry));
   }
+});
 
-  // For navigation (HTML) — serve from cache, fall back to network
-  if (request.mode === 'navigate') {
+// ============================================================
+// Cache user's specific routes (their country + industry)
+// ============================================================
+async function cacheUserRoutes(country, industry) {
+  const routesToCache = [
+    `/Beezee-App/app/${country}/${industry}`,           // Dashboard
+    `/Beezee-App/app/${country}/${industry}/cash`,      // Cash transactions
+    `/Beezee-App/app/${country}/${industry}/credit`,    // Credit management
+    `/Beezee-App/app/${country}/${industry}/services`,  // Services
+    `/Beezee-App/app/${country}/${industry}/stock`,     // Stock/inventory
+    `/Beezee-App/app/${country}/${industry}/beehive`,   // Beehive
+    `/Beezee-App/app/${country}/${industry}/calendar`,  // Calendar
+    `/Beezee-App/app/${country}/${industry}/reports`,   // Reports
+  ];
+  
+  console.log(`[SW] 📦 Starting to cache ${routesToCache.length} routes for: ${country}/${industry}`);
+  
+  const cache = await caches.open(PAGE_CACHE);
+  const rscCache = await caches.open(RSC_CACHE);
+  let cached = 0;
+  let failed = 0;
+  
+  for (const route of routesToCache) {
+    try {
+      // Fetch HTML version (for initial page load)
+      const htmlResponse = await fetch(route, {
+        headers: {
+          'Accept': 'text/html',
+        }
+      });
+      
+      if (htmlResponse.ok) {
+        await cache.put(route, htmlResponse.clone());
+        cached++;
+        console.log(`[SW] ✅ Cached HTML: ${route}`);
+        
+        // Also fetch and cache RSC version (for client-side navigation)
+        try {
+          const rscResponse = await fetch(route, {
+            headers: {
+              'RSC': '1',
+              'Next-Router-State-Tree': '%5B%22%22%2C%7B%22children%22%3A%5B%22__PAGE__%22%2C%7B%7D%5D%7D%2Cnull%2Cnull%2Ctrue%5D',
+            }
+          });
+          
+          if (rscResponse.ok) {
+            await rscCache.put(route, rscResponse.clone());
+            console.log(`[SW] ✅ Cached RSC: ${route}`);
+          }
+        } catch (rscErr) {
+          console.log(`[SW] ⚠️ RSC cache skipped for: ${route}`);
+        }
+      } else {
+        failed++;
+        console.warn(`[SW] ❌ Failed (${htmlResponse.status}): ${route}`);
+      }
+    } catch (err) {
+      failed++;
+      console.warn(`[SW] ❌ Error: ${route}`, err.message);
+    }
+  }
+  
+  console.log(`[SW] 🎉 User routes caching complete! ✅ ${cached} cached, ❌ ${failed} failed`);
+}
+
+// ============================================================
+// Generate routes for current user (if known)
+// ============================================================
+function getUserRoutes() {
+  if (userCountry && userIndustry) {
+    return [
+      ...DEFAULT_ROUTES,
+      `/Beezee-App/app/${userCountry}/${userIndustry}`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/cash`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/credit`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/services`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/stock`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/beehive`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/calendar`,
+      `/Beezee-App/app/${userCountry}/${userIndustry}/reports`,
+    ];
+  }
+  return DEFAULT_ROUTES;
+}
+
+// ============================================================
+// FETCH - Serve from cache, cache new pages as visited
+// ============================================================
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Skip non-GET
+  if (request.method !== 'GET') return;
+  
+  // Skip Next.js internal
+  if (url.pathname.startsWith('/__next') || 
+      url.pathname.includes('webpack') ||
+      url.pathname.includes('hot-update')) {
+    return;
+  }
+  
+  // Skip prefetch requests
+  if (url.searchParams.has('next-router-prefetch') ||
+      url.searchParams.has('next-router-segment-prefetch')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+  
+  // ============================================================
+  // RSC Requests (client navigation)
+  // ============================================================
+  if (url.searchParams.has('_rsc')) {
+    event.respondWith(
+      (async () => {
+        const cacheKey = url.pathname;
+        
+        // Try RSC cache first
+        const rscCache = await caches.open(RSC_CACHE);
+        const rscCached = await rscCache.match(cacheKey);
+        if (rscCached) {
+          console.log('[SW] ✅ Serving RSC from cache:', cacheKey);
+          return rscCached;
+        }
+        
+        // Fetch from network and cache
+        const response = await fetch(request);
+        if (response.ok) {
+          rscCache.put(cacheKey, response.clone());
+          console.log('[SW] 📦 Cached RSC:', cacheKey);
+        }
+        return response;
+      })()
+    );
+    return;
+  }
+  
+  // ============================================================
+  // HTML Pages - Cache on first visit
+  // ============================================================
+  if (request.destination === 'document' || 
+      url.pathname === '/' ||
+      url.pathname.startsWith('/Beezee-App/')) {
+    event.respondWith(
+      (async () => {
+        const cacheKey = url.pathname;
+        
+        // Try cache first
+        const cached = await caches.match(cacheKey);
+        if (cached) {
+          console.log('[SW] ✅ Serving HTML from cache:', cacheKey);
+          return cached;
+        }
+        
+        // Not in cache, fetch and store
+        console.log('[SW] 📡 Fetching HTML from network:', cacheKey);
+        const response = await fetch(request);
+        if (response.ok) {
+          const cache = await caches.open(PAGE_CACHE);
+          cache.put(cacheKey, response.clone());
+          console.log('[SW] 📦 Cached HTML:', cacheKey);
+        }
+        return response;
+      })()
+    );
+    return;
+  }
+  
+  // ============================================================
+  // Static Assets - Cache First
+  // ============================================================
+  if (url.pathname.match(/\.(js|css|json|png|jpg|jpeg|svg|ico)$/) ||
+      url.pathname.includes('/_next/static/')) {
     event.respondWith(
       caches.match(request).then(cached => {
-        if (cached) {
-          console.log('[SW] Serving from cache:', request.url)
-          return cached
-        }
-        return fetch(request).catch(() => {
-          // If network fails and no cache, serve the app shell
-          return caches.match('/Beezee-App')
-        })
+        if (cached) return cached;
+        return fetch(request);
       })
-    )
-    return
+    );
+    return;
   }
-
-  // For static assets — cache first, fall back to network
-  event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) {
-        console.log('[SW] Serving static asset from cache:', request.url)
-        return cached
-      }
-      return fetch(request)
-    })
-  )
-})
-
-// ─── Background Sync ─────────────────────────────────────────────────────────
-self.addEventListener('sync', event => {
-  if (event.tag === 'sync-beezee-queue') {
-    console.log('[SW] Background sync triggered')
-    event.waitUntil(flushQueue())
+  
+  // ============================================================
+  // API calls - Network First
+  // ============================================================
+  if (url.pathname.startsWith('/api/') || url.hostname.includes('supabase.co')) {
+    event.respondWith(
+      (async () => {
+        try {
+          const response = await fetch(request);
+          if (response.ok) {
+            const cache = await caches.open(API_CACHE);
+            cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return new Response(JSON.stringify({ error: 'OFFLINE' }), { status: 503 });
+        }
+      })()
+    );
+    return;
   }
-})
-
-async function flushQueue() {
-  try {
-    // Open IndexedDB directly in the SW context
-    const db = await openIDB()
-    const tx = db.transaction('pending-actions', 'readonly')
-    const store = tx.objectStore('pending-actions')
-    const index = store.index('priority')
-    const actions = await getAllFromIndex(index)
-
-    if (actions.length === 0) {
-      console.log('[SW] No actions to sync')
-      return
-    }
-
-    console.log(`[SW] Syncing ${actions.length} queued actions`)
-
-    let successCount = 0
-    let failureCount = 0
-
-    for (const action of actions) {
-      try {
-        await dispatchAction(action)
-        // Remove from queue on success
-        const deleteTx = db.transaction('pending-actions', 'readwrite')
-        deleteTx.objectStore('pending-actions').delete(action.id)
-        await deleteTx.done
-        successCount++
-        console.log(`[SW] Synced action: ${action.operation} [${action.idempotencyKey}]`)
-      } catch (err) {
-        failureCount++
-        console.warn('[SW] Failed to sync action, will retry:', action.operation, err)
-        // Leave in queue — Background Sync will retry
-      }
-    }
-
-    // Notify all open clients that sync is complete
-    const clients = await self.clients.matchAll({ includeUncontrolled: true })
-    clients.forEach(client => client.postMessage({ 
-      type: 'SYNC_COMPLETE',
-      successCount,
-      failureCount,
-      total: actions.length
-    }))
-
-    console.log(`[SW] Sync complete: ${successCount} succeeded, ${failureCount} failed`)
-  } catch (error) {
-    console.error('[SW] Queue flush failed:', error)
-  }
-}
-
-// dispatchAction — calls the appropriate API endpoint based on action type
-// Mirror the routing logic from your existing offlineSyncHandler.ts here
-async function dispatchAction(action) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Idempotency-Key': action.idempotencyKey,
-  }
-
-  const endpointMap = {
-    cash: '/api/transactions',
-    inventory: '/api/inventory',
-    calendar: '/api/calendar',
-    credit: '/api/credit',
-    beehive: '/api/beehive',
-  }
-
-  const endpoint = endpointMap[action.type]
-  if (!endpoint) throw new Error(`Unknown action type: ${action.type}`)
-
-  console.log(`[SW] Dispatching ${action.type} action to ${endpoint}`)
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      operation: action.operation,
-      payload: action.payload,
-      timestamp: action.timestamp,
-    }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`API error: ${response.status} - ${errorText}`)
-  }
-
-  return response.json()
-}
-
-// ─── Minimal IndexedDB helpers for SW context (no idb package in SW) ────────
-function openIDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open('beezee-offline-db', 1)
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
-    req.onupgradeneeded = (event) => {
-      const db = event.target.result
-      if (!db.objectStoreNames.contains('pending-actions')) {
-        const store = db.createObjectStore('pending-actions', {
-          keyPath: 'id',
-          autoIncrement: true,
-        })
-        store.createIndex('priority', 'priority')
-        store.createIndex('idempotencyKey', 'idempotencyKey', { unique: true })
-        store.createIndex('timestamp', 'timestamp')
-        store.createIndex('type', 'type')
-      }
-      if (!db.objectStoreNames.contains('failed-actions')) {
-        const failedStore = db.createObjectStore('failed-actions', {
-          keyPath: 'id',
-          autoIncrement: true,
-        })
-        failedStore.createIndex('timestamp', 'timestamp')
-        failedStore.createIndex('type', 'type')
-      }
-    }
-  })
-}
-
-function getAllFromIndex(index) {
-  return new Promise((resolve, reject) => {
-    const req = index.getAll()
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
-  })
-}
-
-// ─── Message handling for client communication ─────────────────────────────────
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting()
-  }
-})
-
-console.log('[SW] Beezee Service Worker loaded - PWA architecture enabled')
+  
+  // ============================================================
+  // Everything else
+  // ============================================================
+  event.respondWith(fetch(request).catch(() => new Response('Offline', { status: 503 })));
+});

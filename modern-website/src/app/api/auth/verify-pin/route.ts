@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
+import { pinVerificationSchema } from '@/lib/validation/schemas';
+import { validateRequest, handleValidationError } from '@/middleware/validate';
+import { sanitizeObject } from '@/lib/validation/sanitizer';
+import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -13,29 +17,20 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-export async function POST(request: NextRequest) {
+async function verifyPinHandler(request: NextRequest) {
   try {
-    const { phoneNumber, pin } = await request.json();
+    const body = await request.json();
     
-    console.log('🔐 [API] Verifying PIN for phone:', phoneNumber);
-    
-    // Validate inputs
-    if (!phoneNumber || !pin) {
-      return NextResponse.json({
-        success: false,
-        error: 'Phone number and PIN are required',
-        business: null
-      }, { status: 400 });
+    // Validate with Zod schema
+    const validation = validateRequest(pinVerificationSchema, body);
+    if (!validation.success) {
+      return handleValidationError(validation.error);
     }
 
-    // Validate PIN format
-    if (!/^\d{6}$/.test(pin)) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid PIN format',
-        business: null
-      }, { status: 400 });
-    }
+    // Sanitize validated data
+    const { phoneNumber, pin } = sanitizeObject(validation.data);
+    
+    console.log('🔐 [API] Verifying PIN for phone:', phoneNumber);
 
     // Find business by phone number
     const { data: business, error: findError } = await supabaseAdmin
@@ -116,3 +111,6 @@ export async function POST(request: NextRequest) {
     }, { status: 500 });
   }
 }
+
+// Export with strict rate limiting (3 attempts per 15 minutes to prevent brute force)
+export const POST = withRateLimit(verifyPinHandler, RATE_LIMITS.PIN_VERIFY);

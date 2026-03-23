@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { phoneLookupSchema } from '@/lib/validation/schemas';
+import { validateRequest, handleValidationError } from '@/middleware/validate';
+import { sanitizeObject } from '@/lib/validation/sanitizer';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -14,18 +17,18 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { phoneNumber } = await request.json();
+    const body = await request.json();
+    
+    // Validate with Zod schema
+    const validation = validateRequest(phoneLookupSchema, body);
+    if (!validation.success) {
+      return handleValidationError(validation.error);
+    }
+
+    // Sanitize validated data
+    const { phoneNumber } = sanitizeObject(validation.data);
     
     console.log('🔍 [API] Checking phone number:', phoneNumber);
-    
-    // Validate phone number format
-    if (!phoneNumber || typeof phoneNumber !== 'string') {
-      return NextResponse.json({
-        success: false,
-        error: 'Phone number is required',
-        exists: false
-      }, { status: 400 });
-    }
 
     // Check if phone number already exists
     const { data: business, error } = await supabaseAdmin

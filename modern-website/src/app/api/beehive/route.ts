@@ -2,6 +2,7 @@
 // This bypasses RLS by using service role key on the server
 
 import { createClient } from '@supabase/supabase-js';
+import { sanitizeUserContent } from '@/lib/validation/sanitizer';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -12,6 +13,17 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { action, data, userId, industry, country } = body;
+
+    // Sanitize user-generated content fields
+    if (data?.content) {
+      data.content = sanitizeUserContent(data.content);
+    }
+    if (data?.comment_text) {
+      data.comment_text = sanitizeUserContent(data.comment_text);
+    }
+    if (data?.title) {
+      data.title = sanitizeUserContent(data.title, 200);
+    }
 
     if (!userId && action !== 'list' && action !== 'listComments') {
       return Response.json({ error: 'User ID required' }, { status: 400 });

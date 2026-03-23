@@ -27,14 +27,23 @@ export default function CreditPage() {
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
-  const { data: credit, isLoading, addCredit, updateCredit, isOffline } = useCreditTanStack({ 
+  // ✅ ADDED: refetch to force refresh
+  const { data: credit, isLoading, addCredit, updateCredit, updateCreditAsync, isOffline, refetch } = useCreditTanStack({ 
     industry,
     businessId: business?.id 
   });
-  const { addTransaction } = useTransactionsTanStack({ 
+  const { addTransaction, addTransactionAsync } = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
   });
+  
+  // ✅ ADDED: Refresh credit data when businessId is available
+  useEffect(() => {
+    if (business?.id) {
+      console.log('🔄 [CreditPage] Refreshing credit data for business:', business.id);
+      refetch();
+    }
+  }, [business?.id, refetch]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'outstanding' | 'partial' | 'paid'>('all');
@@ -99,10 +108,11 @@ export default function CreditPage() {
     };
     
     try {
-      // TanStack Query handles online/offline automatically
       await addCredit(fullCreditData);
       showSuccess('Credit added successfully');
       setShowAddModal(false);
+      // ✅ Force refresh after adding
+      await refetch();
     } catch (error) {
       console.error('Failed to add credit:', error);
       showError('Failed to add credit. Please try again.');
@@ -111,8 +121,10 @@ export default function CreditPage() {
 
   const handleUpdateCredit = async (id: string, updates: any) => {
     try {
-      updateCredit({ id, updates });
+      updateCredit({ id, data: updates });
       showSuccess('Credit updated successfully');
+      // ✅ Force refresh after update
+      await refetch();
     } catch (error) {
       console.error('Failed to update credit:', error);
       showError('Failed to update credit');
@@ -144,18 +156,18 @@ export default function CreditPage() {
                      newPaidAmount > 0 ? 'partial' : 'outstanding';
     
     try {
-      // Update credit record with payment
-      await updateCredit({ 
+      // Update credit record with payment - AWAIT to complete before transaction
+      await updateCreditAsync({ 
         id: creditId, 
-        updates: { 
+        data: { 
           paid_amount: newPaidAmount,
           status: newStatus,
           updated_at: new Date().toISOString()
         }
       });
       
-      // Record payment transaction
-      await addTransaction({
+      // Record payment transaction - AWAIT to ensure it completes
+      await addTransactionAsync({
         business_id: business.id,
         industry,
         amount: paymentAmount,
@@ -168,6 +180,9 @@ export default function CreditPage() {
           payment_amount: paymentAmount
         }
       });
+      
+      // ✅ Force refresh to show updated balance
+      await refetch();
       
       showSuccess('Payment recorded successfully');
       setShowPaymentModal(false);

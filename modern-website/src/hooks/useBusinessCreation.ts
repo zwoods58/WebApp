@@ -9,6 +9,7 @@ export interface BusinessCreationResult {
   data: {
     business: any;
     userId: string;
+    session?: any;
   } | null;
 }
 
@@ -33,7 +34,10 @@ export function useBusinessCreation() {
         ...signupData, 
         pinLength: signupData.pin?.length,
         pinSet: !!signupData.pin,
-        pinValue: signupData.pin ? '***' : 'none'
+        pinValue: signupData.pin ? '***' : 'none',
+        hasSecurityQuestions: !!signupData.securityQuestions,
+        securityQuestionId: signupData.securityQuestions?.questionId,
+        answerLength: signupData.securityQuestions?.answer?.length
       });
       
       // Prepare business data with PIN for server-side hashing
@@ -47,7 +51,8 @@ export function useBusinessCreation() {
         currency: signupData.currency,
         inviteCode: signupData.inviteCode,
         name: signupData.name,
-        pin: signupData.pin // PIN will be hashed server-side
+        pin: signupData.pin, // PIN will be hashed server-side
+        securityQuestions: signupData.securityQuestions // ✅ ADDED: Include security questions
       };
 
       // Call server-side API endpoint to create business with PIN hashing
@@ -74,36 +79,16 @@ export function useBusinessCreation() {
       }
 
       const business = result.data.business;
+      const session = result.data.session;
 
-      console.log('✅ Business created successfully with PIN hash:', {
+      console.log('✅ Business created successfully with PIN hash and security question:', {
         id: business.id,
         business_name: business.business_name,
         country: business.country,
         industry: business.industry,
-        home_currency: business.home_currency
+        home_currency: business.home_currency,
+        has_security_question: !!(business.security_question_1_id && business.security_answer_1_hash)
       });
-
-      // Create session data for immediate login
-      const sessionData = {
-        businessId: business.id,
-        businessName: business.business_name,
-        country: business.country,
-        industry: business.industry,
-        phone: business.phone_number
-      };
-
-      // Store authentication data
-      const authData = {
-        business: business,
-        session: sessionData
-      };
-
-      console.log('💾 Storing auth data to localStorage:', authData);
-      localStorage.setItem('beezee_business_auth', JSON.stringify(authData));
-      
-      // Verify it was stored correctly
-      const storedData = localStorage.getItem('beezee_business_auth');
-      console.log('✅ Verification - stored data:', storedData ? JSON.parse(storedData) : 'null');
 
       // Set business context for RLS policies
       try {
@@ -120,7 +105,8 @@ export function useBusinessCreation() {
         error: null,
         data: {
           business: business,
-          userId: business.id
+          userId: business.id,
+          session: session
         }
       };
 

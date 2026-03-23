@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Test - BeeZee</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .status.active {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.inactive {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .status.pending {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        button {
+            background: #4A8DB8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background: #3a7ba8;
+        }
+        .log {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Service Worker Test</h1>
+        <p>This page tests the service worker functionality for BeeZee Finance.</p>
+        
+        <div id="sw-status" class="status pending">
+            Checking service worker status...
+        </div>
+        
+        <div class="info">
+            <strong>Current Environment:</strong><br>
+            <span id="environment-info">Loading...</span>
+        </div>
+        
+        <div>
+            <button onclick="checkServiceWorker()">🔄 Check Status</button>
+            <button onclick="unregisterServiceWorker()">🗑️ Unregister SW</button>
+            <button onclick="registerServiceWorker()">✅ Register SW</button>
+            <button onclick="testOffline()">📵 Test Offline</button>
+        </div>
+        
+        <div>
+            <h3>📝 Console Log:</h3>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let logElement = document.getElementById('log');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function updateEnvironment() {
+            const env = {
+                hostname: window.location.hostname,
+                protocol: window.location.protocol,
+                href: window.location.href,
+                isLocalhost: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
+                isNgrok: window.location.hostname.includes('.ngrok') || window.location.hostname.includes('.ngrok-free.dev'),
+                isHTTPS: window.location.protocol === 'https:'
+            };
+            
+            document.getElementById('environment-info').innerHTML = `
+                <strong>Hostname:</strong> ${env.hostname}<br>
+                <strong>Protocol:</strong> ${env.protocol}<br>
+                <strong>Localhost:</strong> ${env.isLocalhost}<br>
+                <strong>Ngrok:</strong> ${env.isNgrok}<br>
+                <strong>HTTPS:</strong> ${env.isHTTPS}<br>
+                <strong>Service Worker Support:</strong> ${('serviceWorker' in navigator) ? '✅ Yes' : '❌ No'}
+            `;
+            
+            log(`Environment: ${JSON.stringify(env, null, 2)}`);
+        }
+        
+        async function checkServiceWorker() {
+            log('Checking service worker status...');
+            
+            if (!('serviceWorker' in navigator)) {
+                updateStatus('Service Worker not supported', 'inactive');
+                log('❌ Service Worker not supported in this browser');
+                return;
+            }
+            
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                
+                if (registration) {
+                    const active = registration.active;
+                    const installing = registration.installing;
+                    const waiting = registration.waiting;
+                    
+                    log(`✅ Service Worker registered: ${registration.scope}`);
+                    log(`📱 Active: ${active ? active.state : 'none'}`);
+                    log(`🔧 Installing: ${installing ? installing.state : 'none'}`);
+                    log(`⏳ Waiting: ${waiting ? waiting.state : 'none'}`);
+                    
+                    if (active && active.state === 'activated') {
+                        updateStatus('Service Worker Active', 'active');
+                        log('✅ Service Worker is active and ready');
+                    } else {
+                        updateStatus('Service Worker Pending', 'pending');
+                        log('⏳ Service Worker is installing or waiting');
+                    }
+                } else {
+                    updateStatus('Service Worker Not Registered', 'inactive');
+                    log('❌ No service worker registration found');
+                }
+            } catch (error) {
+                updateStatus('Service Worker Error', 'inactive');
+                log(`❌ Error checking service worker: ${error.message}`);
+            }
+        }
+        
+        async function registerServiceWorker() {
+            log('Attempting to register service worker...');
+            
+            if (!('serviceWorker' in navigator)) {
+                log('❌ Service Worker not supported');
+                return;
+            }
+            
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js', {
+                    scope: '/'
+                });
+                
+                log(`✅ Service Worker registered: ${registration.scope}`);
+                updateStatus('Service Worker Registered', 'pending');
+                
+                // Check status after a delay
+                setTimeout(checkServiceWorker, 1000);
+                
+            } catch (error) {
+                log(`❌ Registration failed: ${error.message}`);
+                updateStatus('Registration Failed', 'inactive');
+            }
+        }
+        
+        async function unregisterServiceWorker() {
+            log('Attempting to unregister service worker...');
+            
+            if (!('serviceWorker' in navigator)) {
+                log('❌ Service Worker not supported');
+                return;
+            }
+            
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                
+                if (registration) {
+                    const result = await registration.unregister();
+                    log(`🗑️ Unregistration result: ${result}`);
+                    updateStatus('Service Worker Unregistered', 'inactive');
+                } else {
+                    log('ℹ️ No service worker to unregister');
+                }
+            } catch (error) {
+                log(`❌ Unregistration failed: ${error.message}`);
+            }
+        }
+        
+        function testOffline() {
+            log('Testing offline functionality...');
+            log('📵 Try turning off WiFi/mobile data and refresh this page');
+            log('📱 The service worker should show an offline page');
+            
+            // Try to fetch something to test network
+            fetch('/manifest.json', { cache: 'no-cache' })
+                .then(response => {
+                    if (response.ok) {
+                        log('✅ Network request successful');
+                    } else {
+                        log('⚠️ Network request failed');
+                    }
+                })
+                .catch(error => {
+                    log(`❌ Network request failed: ${error.message}`);
+                });
+        }
+        
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('sw-status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+        
+        // Listen for service worker messages
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', event => {
+                log(`📨 Message from SW: ${JSON.stringify(event.data)}`);
+            });
+        }
+        
+        // Initialize
+        updateEnvironment();
+        checkServiceWorker();
+        
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            log('🌐 Network connection restored');
+            checkServiceWorker();
+        });
+        
+        window.addEventListener('offline', () => {
+            log('📵 Network connection lost');
+        });
+    </script>
+</body>
+</html>

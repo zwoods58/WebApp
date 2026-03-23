@@ -1,82 +1,191 @@
-// src/lib/connection-manager.ts
-import { onlineManager } from '@tanstack/react-query'
+import { db } from './database';
+import { swManager } from './serviceWorker';
+import { syncProcessor } from './sync-processor';
 
-let isChecking = false
-let intervalId: NodeJS.Timeout | null = null
+type ConnectionCallback = (isOnline: boolean) => void;
+
+let listeners: ConnectionCallback[] = [];
+let isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+let checkInterval: NodeJS.Timeout | null = null;
 
 /**
- * Check actual internet connectivity by pinging Supabase
+ * Test actual connectivity (not just device network)
  */
-async function checkConnection() {
-  if (isChecking) return
-  isChecking = true
+async function testConnectivity(): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch('/manifest.json', {
+      method: 'HEAD',
+      cache: 'no-cache',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Set online state and notify listeners
+ */
+async function setOnline(online: boolean): Promise<void> {
+  if (isOnline === online) return;
+  
+  isOnline = online;
+  console.log(`[Network] State changed: ${online ? 'online' : 'offline'}`);
+  
+  // Notify all listeners
+  listeners.forEach(listener => listener(online));
+  
+  // Trigger sync when coming online
+  if (online) {
+    await triggerSync();
+  }
+}
+
+/**
+ * Trigger sync of offline operations
+ */
+async function triggerSync(): Promise<void> {
+  console.log('[Network] Connection restored, triggering sync');
+  
+  // Small delay for network stability
+  await new Promise(resolve => setTimeout(resolve, 1000));
   
   try {
-    const response = await fetch(
-      'https://zruprmhkcqhgzydjfhrk.supabase.co/rest/v1/health',
-      { 
-        method: 'HEAD', 
-        cache: 'no-store',
-        signal: AbortSignal.timeout(5000)
-      }
-    )
+    // Use sync processor to process queued operations
+    await syncProcessor.forceSync();
     
-    // 401 means the server exists (just not authenticated) = online
-    const isOnline = response.ok || response.status === 401
-    onlineManager.setOnline(isOnline)
-    
-    if (isOnline) {
-      console.log('✅ Connection: ONLINE')
-    } else {
-      console.log('📴 Connection: OFFLINE')
-    }
+    // Also trigger service worker sync (for background sync API)
+    await swManager.triggerSync();
   } catch (error) {
-    onlineManager.setOnline(false)
-    console.log('📴 Connection: OFFLINE')
-  } finally {
-    isChecking = false
+    console.error('[Network] Sync trigger failed:', error);
   }
+}
+
+/**
+ * Start periodic connectivity check
+ */
+function startConnectivityCheck(): void {
+  if (checkInterval) clearInterval(checkInterval);
+  
+  checkInterval = setInterval(async () => {
+    const isActuallyOnline = await testConnectivity();
+    if (isActuallyOnline !== isOnline) {
+      await setOnline(isActuallyOnline);
+    }
+  }, 30000);
 }
 
 /**
  * Initialize connection monitoring
- * Call this once when your app starts
  */
-export function initConnectionMonitoring() {
-  if (typeof window === 'undefined') return
+export async function initConnectionMonitoring(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  
+  // Set up browser events
+  window.addEventListener('online', async () => {
+    const isActuallyOnline = await testConnectivity();
+    await setOnline(isActuallyOnline);
+  });
+  
+  window.addEventListener('offline', async () => {
+    await setOnline(false);
+  });
+  
+  // Start periodic checks
+  startConnectivityCheck();
   
   // Initial check
-  checkConnection()
+  const initialStatus = await testConnectivity();
+  await setOnline(initialStatus);
   
-  // Listen to browser events (they're hints, not truth)
-  window.addEventListener('online', () => {
-    console.log('Browser says online - verifying...')
-    checkConnection()
-  })
+  // ✅ SIMPLE: Just register service worker, don't wait for ready
+  // Let the service worker handle its own registration
+  if ('serviceWorker' in navigator) {
+    // Just trigger registration, don't await or check
+    swManager.register().catch(err => {
+      console.warn('[Network] Service worker registration warning:', err);
+    });
+    
+    // Try background sync but don't block
+    swManager.registerBackgroundSync().catch(err => {
+      console.warn('[Network] Background sync not available:', err);
+    });
+  }
   
-  window.addEventListener('offline', () => {
-    console.log('Browser says offline')
-    onlineManager.setOnline(false)
-  })
+  // Start automatic sync processor (runs every 10 seconds when online)
+  syncProcessor.startAutoSync(10000);
   
-  // Periodic check every 30 seconds
-  intervalId = setInterval(checkConnection, 30000)
-}
-
-/**
- * Cleanup connection monitoring
- * Call this when your app unmounts
- */
-export function cleanupConnectionMonitoring() {
-  if (intervalId) {
-    clearInterval(intervalId)
-    intervalId = null
+  // Check for pending operations on startup
+  const pendingCount = await db.getPendingCount(await getCurrentBusinessId());
+  if (pendingCount > 0 && isOnline) {
+    console.log(`[Network] Found ${pendingCount} pending operations on startup`);
+    await triggerSync();
   }
 }
 
 /**
- * Get current connection status
+ * Clean up connection monitoring
  */
-export function getConnectionStatus() {
-  return onlineManager.isOnline()
+export function cleanupConnectionMonitoring(): void {
+  if (checkInterval) {
+    clearInterval(checkInterval);
+    checkInterval = null;
+  }
+  
+  // Stop sync processor
+  syncProcessor.stopAutoSync();
+  
+  listeners = [];
+}
+
+/**
+ * Register callback for connection changes
+ */
+export function onConnectionChange(callback: ConnectionCallback): () => void {
+  listeners.push(callback);
+  
+  return () => {
+    const index = listeners.indexOf(callback);
+    if (index > -1) listeners.splice(index, 1);
+  };
+}
+
+/**
+ * Get current online status
+ */
+export function getOnlineStatus(): boolean {
+  return isOnline;
+}
+
+/**
+ * Manual connectivity check
+ */
+export async function checkConnectivity(): Promise<boolean> {
+  const status = await testConnectivity();
+  await setOnline(status);
+  return status;
+}
+
+/**
+ * Get current business ID from localStorage
+ */
+async function getCurrentBusinessId(): Promise<string> {
+  if (typeof window === 'undefined') return '';
+  
+  const auth = localStorage.getItem('beezee_unified_auth');
+  if (auth) {
+    try {
+      const parsed = JSON.parse(auth);
+      return parsed.businessId || '';
+    } catch {
+      return '';
+    }
+  }
+  return '';
 }

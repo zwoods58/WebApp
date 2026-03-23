@@ -50,8 +50,8 @@ interface Expense {
   amount: number;
 }
 
-function IndustryDashboardContent() {
-  // Add immediate error boundary at the very start
+export default function IndustryDashboard() {
+  // ✅ STEP 1: ALL hooks called at top level, unconditionally
   console.log('🔍 Component Starting...');
   
   const { t } = useLanguage();
@@ -63,81 +63,27 @@ function IndustryDashboardContent() {
   
   console.log('🔍 Basic Hooks Loaded:', { t: !!t, params: !!params, country, industry, queryClient: !!queryClient });
   
-  // Add a try-catch wrapper around the entire component logic
-  try {
-    // Get business profile from signup
-    const { profile, syncProfileWithBusiness } = useBusinessProfile();
-    const currencyData = useCurrency();
-    
-    console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
-    
-    const { business, loading: authLoading } = useUnifiedAuth();
-    const businessId = business?.id;
-    
-    console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });
-    
-    const { showSuccess, showError } = useToastContext();
-    const { user: authUser } = useUnifiedAuth();
-    const { registerRefreshHandler, unregisterRefreshHandler } = useRefreshContext();
+  // ✅ Get business profile from signup - NO try-catch around hooks
+  const { profile, syncProfileWithBusiness } = useBusinessProfile();
+  const currencyData = useCurrency();
   
-  // Use Supabase hooks with business ID filtering to prevent data leakage
-  let transactionsHook, expensesHook, creditHook, inventoryHook, targetsHook;
+  console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
   
-  try {
-    transactionsHook = useTransactionsTanStack({ industry, businessId });
-    expensesHook = useExpensesTanStack({ industry, businessId });
-    creditHook = useCreditTanStack({ industry, businessId });
-    inventoryHook = useInventoryTanStack({ industry, businessId });
-    targetsHook = useTargetsTanStack({ industry, businessId });
-  } catch (hookError) {
-    console.error('❌ Hook initialization error:', hookError);
-    // Fallback empty hooks but keep basic functionality
-    transactionsHook = { data: [], isLoading: false, addTransaction: async (data: any) => {
-      console.log('🔄 Fallback addTransaction called:', data);
-      // Try to save to localStorage directly as fallback
-      try {
-        const storageKey = `beezee_${industry}_${country}_transactions`;
-        const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const newTransaction = {
-          ...data,
-          id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          pendingSync: true
-        };
-        existing.unshift(newTransaction);
-        localStorage.setItem(storageKey, JSON.stringify(existing));
-        console.log('💾 Fallback: Saved transaction to localStorage');
-        return newTransaction;
-      } catch (error) {
-        console.error('❌ Fallback save failed:', error);
-      }
-    }};
-    expensesHook = { data: [], isLoading: false, addExpense: async (data: any) => {
-      console.log('🔄 Fallback addExpense called:', data);
-      // Try to save to localStorage directly as fallback
-      try {
-        const storageKey = `beezee_${industry}_${country}_expenses`;
-        const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const newExpense = {
-          ...data,
-          id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          pendingSync: true
-        };
-        existing.unshift(newExpense);
-        localStorage.setItem(storageKey, JSON.stringify(existing));
-        console.log('💾 Fallback: Saved expense to localStorage');
-        return newExpense;
-      } catch (error) {
-        console.error('❌ Fallback save failed:', error);
-      }
-    }};
-    creditHook = { data: [], isLoading: false };
-    inventoryHook = { data: [], isLoading: false };
-    targetsHook = { data: [], isLoading: false };
-  }
+  const { business, loading: authLoading } = useUnifiedAuth();
+  const businessId = business?.id;
+  
+  console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });
+  
+  const { showSuccess, showError } = useToastContext();
+  const { user: authUser } = useUnifiedAuth();
+  const { registerRefreshHandler, unregisterRefreshHandler } = useRefreshContext();
+  
+  // ✅ Use Supabase hooks with business ID filtering - called unconditionally
+  const transactionsHook = useTransactionsTanStack({ industry, businessId });
+  const expensesHook = useExpensesTanStack({ industry, businessId });
+  const creditHook = useCreditTanStack({ industry, businessId });
+  const inventoryHook = useInventoryTanStack({ industry, businessId });
+  const targetsHook = useTargetsTanStack({ industry, businessId });
   
   // Safely extract values with fallbacks - add extra defensive checks
   let transactions = Array.isArray(transactionsHook?.data) ? transactionsHook.data : [];
@@ -332,37 +278,11 @@ function IndustryDashboardContent() {
 
     window.addEventListener('storage', storageListener);
 
-    // Also set up periodic checks for offline data sync
-    const interval = setInterval(() => {
-      // Check if there are pending offline operations
-      const transactionsKey = `beezee_${industry}_${country}_transactions`;
-      const inventoryKey = `beezee_${industry}_${country}_inventory`;
-      
-      const transactions = localStorage.getItem(transactionsKey);
-      const inventory = localStorage.getItem(inventoryKey);
-      
-      if (transactions || inventory) {
-        try {
-          const parsedTransactions = JSON.parse(transactions || '[]');
-          const parsedInventoryItemItemItem = JSON.parse(inventory || '[]');
-          
-          const hasPendingTransactions = parsedTransactions.some((t: any) => t.pendingSync);
-          const hasPendingInventoryItemItemItem = parsedInventoryItemItemItem.some((i: any) => i.pendingSync);
-          
-          if (hasPendingTransactions || hasPendingInventoryItemItemItem) {
-            console.log('🔄 Detected pending offline operations, updating BuzzInsights...');
-            handleInventoryItemItemItemChange();
-            handleTransactionChange();
-          }
-        } catch (error) {
-          console.warn('Error checking for pending operations:', error);
-        }
-      }
-    }, 5000); // Check every 5 seconds
+    // ✅ REMOVED: setInterval polling - TanStack Query + Service Worker handle sync automatically
+    // The polling was causing disruptive refreshes when offline
 
     return () => {
       window.removeEventListener('storage', storageListener);
-      clearInterval(interval);
     };
   }, [industry, country, queryClient]);
 
@@ -834,38 +754,4 @@ function IndustryDashboardContent() {
         <BottomNav industry={industry} country={country} />
     </div>
   );
-  } catch (componentError) {
-    console.error('❌ Component Error:', componentError);
-    return (
-      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-6">
-        <div className="max-w-md w-full">
-          <div className="bg-white rounded-3xl border border-red-200 shadow-lg p-8">
-            <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 text-center mb-3">
-              Loading Error
-            </h1>
-            <p className="text-gray-600 text-center mb-6">
-              We encountered an issue while loading this page. Please try refreshing.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
-export default function IndustryDashboard() {
-  const params = useParams();
-  const country = (params.country as string) || 'ke';
-  const industry = (params.industry as string) || 'retail';
-
-  return <IndustryDashboardContent />;
 }

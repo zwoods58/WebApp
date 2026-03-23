@@ -37,6 +37,7 @@ export interface UnifiedAuthState {
 interface UnifiedAuthContextType extends UnifiedAuthState {
   signInWithPIN: (phone: string, pin: string) => Promise<{ error: any; data?: any }>;
   signInDirect: (phone: string) => Promise<{ error: any; data?: any }>;
+  signInAfterSignup: (business: Business, session: any) => Promise<{ error: any; data?: any }>;
   signOut: () => Promise<{ error: any }>;
   refreshBusiness: () => void;
   validatePhone: (phone: string) => { valid: boolean; country?: string };
@@ -44,6 +45,25 @@ interface UnifiedAuthContextType extends UnifiedAuthState {
 }
 
 const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(undefined);
+
+// Helper function to notify Service Worker about user routes
+async function notifyServiceWorker(country: string, industry: string) {
+  if (typeof window === 'undefined') return;
+  
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      registration.active?.postMessage({
+        type: 'CACHE_USER_ROUTES',
+        country: country.toLowerCase(),
+        industry: industry.toLowerCase()
+      });
+      console.log('📦 Service Worker notified to cache routes:', { country, industry });
+    } catch (err) {
+      console.warn('⚠️ Could not notify service worker:', err);
+    }
+  }
+}
 
 export function UnifiedAuthProvider({ children }: { children: React.ReactNode }) {
   const [authState, setAuthState] = useState<UnifiedAuthState>({
@@ -365,6 +385,9 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
         session: sessionData,
       });
 
+      // 🔥 NOTIFY SERVICE WORKER TO CACHE USER ROUTES
+      await notifyServiceWorker(business.country, business.industry);
+
       return { 
         error: null, 
         data: { 
@@ -460,6 +483,9 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
         session: sessionData,
       });
 
+      // 🔥 NOTIFY SERVICE WORKER TO CACHE USER ROUTES
+      await notifyServiceWorker(business.country, business.industry);
+
       return { 
         error: null, 
         data: { 
@@ -489,9 +515,77 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     }
   }, [validatePhone]);
 
+  const signInAfterSignup = useCallback(async (business: Business, session: any) => {
+    setAuthState(prev => ({ ...prev, loading: true, error: null }));
+
+    try {
+      console.log('🚀 Setting auth state after signup:', business);
+
+      // Set business context for RLS policies
+      try {
+        await setBusinessContext(business.id, business.country, business.industry);
+      } catch (contextError) {
+        console.error('⚠️ Failed to set business context, but continuing:', contextError);
+      }
+
+      // Set auth state with business data
+      setAuthState({
+        business: business,
+        user: business, // Alias for compatibility
+        loading: false,
+        error: null,
+        isAuthenticated: true,
+        session: session,
+      });
+
+      // 🔥 NOTIFY SERVICE WORKER TO CACHE USER ROUTES
+      await notifyServiceWorker(business.country, business.industry);
+
+      return { 
+        error: null, 
+        data: { 
+          message: 'Authentication established successfully after signup!',
+          business: business
+        } 
+      };
+
+    } catch (error) {
+      console.error('💥 Post-signup auth error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to establish authentication after signup.';
+      
+      setAuthState({
+        business: null,
+        user: null,
+        loading: false,
+        error: errorMessage,
+        isAuthenticated: false,
+        session: null,
+      });
+
+      return { 
+        error: { 
+          message: errorMessage 
+        } 
+      };
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
       console.log('🔓 Signing out...');
+      
+      // 🔥 OPTIONAL: Notify service worker to clear user routes
+      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          registration.active?.postMessage({
+            type: 'CLEAR_USER_ROUTES'
+          });
+          console.log('📦 Service worker notified to clear user routes');
+        } catch (err) {
+          console.warn('Could not notify service worker:', err);
+        }
+      }
       
       // Clear all auth data from persistent storage
       persistentStorage.remove('beezee_unified_auth');
@@ -534,6 +628,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     ...authState,
     signInWithPIN,
     signInDirect,
+    signInAfterSignup,
     signOut,
     refreshBusiness,
     validatePhone,

@@ -22,7 +22,7 @@ import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
-import { formatCurrency, formatDate } from '@/utils/currency';
+import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import AddAppointmentModal from './AddAppointmentModal';
@@ -147,6 +147,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
           business_id: business?.id,
           industry,
           amount: servicePrice,
+          currency: getCurrency(country),
           category: 'appointment_booking',
           description: `Appointment booked: ${appointmentData.service_name || 'service'} - ${appointmentData.customer_name || 'Customer'}`,
           customer_name: appointmentData.customer_name || 'Customer',
@@ -186,7 +187,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Update appointment status to completed
       updateAppointment({ 
         id: appointmentId, 
-        updates: { 
+        data: { 
           status: 'completed',
           updated_at: new Date().toISOString()
         }
@@ -198,6 +199,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
           business_id: business.id,
           industry: industry,
           amount: appointment.metadata.price,
+          currency: getCurrency(country),
           category: 'service_payment',
           description: `Payment for ${appointment.service_name || 'service'} - ${appointment.customer_name || 'Customer'}`,
           customer_name: appointment.customer_name || 'Customer',
@@ -233,7 +235,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Update appointment status to cancelled
       updateAppointment({ 
         id: appointmentId, 
-        updates: { 
+        data: { 
           status: 'cancelled',
           updated_at: new Date().toISOString(),
           notes: reason ? `Cancelled: ${reason}` : undefined

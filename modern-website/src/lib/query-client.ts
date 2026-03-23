@@ -9,10 +9,12 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000,
       gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
       retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
     mutations: {
       networkMode: 'offlineFirst',
-      retry: 3, // CRITICAL: mutations default to 0!
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
   },
 })

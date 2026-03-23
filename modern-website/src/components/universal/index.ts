@@ -11,7 +11,6 @@ export { default as AddAppointmentModal } from './AddAppointmentModal';
 export { default as UniversalLanguageSelector } from './UniversalLanguageSelector';
 export { PullToRefresh } from './PullToRefresh';
 export { SwipeableItem } from './SwipeableItem';
-export { OfflineBanner } from './PWAPrompts';
 export { default as WelcomeTour, useWelcomeTour } from './WelcomeTour';
 export { TourProvider, useTour } from './IndustryTour';
 export { default as BeehiveRequestModal } from './BeehiveRequestModal';

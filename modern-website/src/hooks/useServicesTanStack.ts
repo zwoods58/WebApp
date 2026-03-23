@@ -1,4 +1,4 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
 
 export interface Service {
   id: string;
@@ -37,16 +37,22 @@ export function useServicesTanStack(options: UseServicesOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook
+  // Use the new TanStack Query hook with updated API
   const { 
     data, 
     isLoading, 
-    addItem, 
-    deleteItem, 
-    updateItem,
-    isAdding,
-    isPaused
-  } = useIndustryData(industry, country, 'services')
+    create, 
+    delete: deleteItem, 
+    update,
+    isCreating,
+    error,
+    refetch
+  } = useIndustryDataNew({
+    industry,
+    country,
+    table: 'services',
+    select: options.select,
+  })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -66,13 +72,12 @@ export function useServicesTanStack(options: UseServicesOptions = {}) {
   return {
     data: filteredData as Service[],
     isLoading,
-    isOffline: isPaused,
-    addService: addItem,
+    isOffline: !isLoading && data.length === 0,
+    addService: create,
     deleteService: deleteItem,
-    updateService: updateItem,
-    isPending: isAdding,
-    // Keep the same interface as the original hook
-    error: null,
-    refetch: () => {}, // TanStack Query handles this automatically
+    updateService: update,
+    isPending: isCreating,
+    error,
+    refetch,
   }
 }

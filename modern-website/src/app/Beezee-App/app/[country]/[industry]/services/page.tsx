@@ -47,9 +47,9 @@ export default function ServicesPage() {
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
-  const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending } = useServicesTanStack({ industry });
-  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, isOffline: inventoryOffline } = useInventoryTanStack({ industry });
-  const { data: transactions, isLoading: transactionsLoading, addTransaction, isPaused: transactionsOffline } = useTransactionsTanStack({ industry });
+  const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending } = useServicesTanStack({ industry, businessId: business?.id });
+  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, isOffline: inventoryOffline } = useInventoryTanStack({ industry, businessId: business?.id });
+  const { data: transactions, isLoading: transactionsLoading, addTransaction, addTransactionAsync, isOffline: transactionsOffline } = useTransactionsTanStack({ industry, businessId: business?.id });
   
   // Ensure services is always an array
   const safeServices = Array.isArray(services) ? services : [];
@@ -235,7 +235,7 @@ export default function ServicesPage() {
 
   const handleUpdateService = async (serviceId: string, updates: any) => {
     try {
-      updateService({ id: serviceId, updates });
+      updateService({ id: serviceId, data: updates });
       showSuccess('Service updated successfully');
     } catch (error) {
       console.error('Failed to update service:', error);
@@ -262,12 +262,25 @@ export default function ServicesPage() {
     setShowSellModal(true);
   };
 
+  // ============================================================
+  // ✅ FIXED: handleSellSubmit - changed "updates" to "data"
+  // ============================================================
   const handleSellSubmit = async (sellData: any) => {
     if (!selectedInventoryItem || !business?.id) return;
     
     try {
       const quantity = parseInt(sellData.quantity);
       const totalPrice = quantity * (selectedInventoryItem.selling_price || selectedInventoryItem.cost_price || 0);
+      const newQuantity = selectedInventoryItem.quantity - quantity;
+      
+      console.log('🔧 [ServicesPage] SELL DEBUG:', {
+        itemId: selectedInventoryItem.id,
+        itemName: selectedInventoryItem.item_name,
+        currentQuantity: selectedInventoryItem.quantity,
+        quantityToSell: quantity,
+        newQuantity: newQuantity,
+        updateInventoryItem: typeof updateInventoryItem
+      });
       
       // Create transaction for the sale
       const transactionData = {
@@ -275,10 +288,11 @@ export default function ServicesPage() {
         industry: industry,
         amount: totalPrice,
         category: 'inventory_sale',
-        description: `${quantity} ${selectedInventoryItem.unit} ${selectedInventoryItem.item_name}`,
+        description: `Sale of ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name}`,
         customer_name: sellData.customerName || 'Walk-in Customer',
         payment_method: sellData.paymentMethod || 'cash',
         transaction_date: new Date().toISOString().split('T')[0],
+        currency: (business as any).currency || 'KES', // Add required currency field
         metadata: {
           inventory_item_id: selectedInventoryItem.id,
           item_name: selectedInventoryItem.item_name,
@@ -288,46 +302,25 @@ export default function ServicesPage() {
         }
       };
 
-      if (!isOffline) {
-        // Try online first
-        try {
-          console.log('📦 Starting inventory sale:', { 
-            itemName: selectedInventoryItem.item_name, 
-            currentQuantity: selectedInventoryItem.quantity, 
-            quantityToSell: quantity 
-          });
-          
-          await addTransaction(transactionData);
-          console.log('✅ Transaction added successfully');
-          
-          // Update inventory quantity
-          const updatedQuantity = selectedInventoryItem.quantity - quantity;
-          console.log('📉 Updating inventory quantity:', { 
-            from: selectedInventoryItem.quantity, 
-            to: updatedQuantity 
-          });
-          
-          await updateInventoryItem({ id: selectedInventoryItem.id, updates: { quantity: updatedQuantity } });
-          console.log('✅ Inventory updated successfully');
-          
-          console.log(`💰 Sold ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name} for ${formatCurrency(totalPrice, country)}`);
-        } catch (onlineError) {
-          console.warn('⚠️ Online sale failed, using offline mode:', onlineError);
-          showInfo(t('services.sell_offline', 'Sale queued - will sync when you\'re back online'));
-          console.log(`✅ Sale queued for sync: ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name}`);
-        }
+      // Add transaction first (use async version for proper awaiting)
+      console.log('💰 Creating transaction:', transactionData);
+      if (addTransactionAsync) {
+        await addTransactionAsync(transactionData);
+        console.log('✅ Transaction created successfully');
       } else {
-        // Offline mode - TanStack Query handles this automatically
-        console.log('📴 Offline mode: TanStack Query will queue for later sync');
-        showInfo(t('services.sell_offline_mode', 'Offline mode: Sale queued for sync'));
-        console.log(`✅ Sale queued for sync: ${quantity} ${selectedInventoryItem.unit} of ${selectedInventoryItem.item_name}`);
+        addTransaction(transactionData);
+        console.log('✅ Transaction queued (fallback)');
       }
       
-      // Close modal and reset selection
+      // ✅ FIX: Use "data" not "updates"
+      await updateInventoryItem({ id: selectedInventoryItem.id, data: { quantity: newQuantity } });
+      console.log('✅ Inventory updated successfully');
+      
       setShowSellModal(false);
       setSelectedInventoryItem(null);
+      
     } catch (error) {
-      console.error('Failed to create inventory sale:', error);
+      console.error('❌ Failed to create inventory sale:', error);
       alert('Failed to complete sale. Please try again.');
     }
   };
@@ -337,6 +330,9 @@ export default function ServicesPage() {
     setShowEditInventoryModal(true);
   };
 
+  // ============================================================
+  // ✅ FIXED: handleEditInventorySubmit - changed "updates" to "data"
+  // ============================================================
   const handleEditInventorySubmit = async (editData: any) => {
     if (!selectedInventoryItem) return;
     
@@ -358,14 +354,15 @@ export default function ServicesPage() {
         updates.selling_price = parseFloat(editData.selling_price);
       }
 
-      await updateInventoryItem({ id: selectedInventoryItem.id, updates });
-      console.log('Inventory item updated successfully');
+      // ✅ FIX: Use "data" not "updates"
+      await updateInventoryItem({ id: selectedInventoryItem.id, data: updates });
+      console.log('✅ Inventory item updated successfully');
       
       // Close modal and reset selection
       setShowEditInventoryModal(false);
       setSelectedInventoryItem(null);
     } catch (error) {
-      console.error('Failed to update inventory item:', error);
+      console.error('❌ Failed to update inventory item:', error);
       alert('Failed to update item. Please try again.');
     }
   };

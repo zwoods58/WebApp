@@ -7,16 +7,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, getCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-
-// Remove stub functions and use proper TanStack Query
-const isOnline = true; // This will be handled by TanStack Query's isPaused
 
 export default function StockPage() {
   const params = useParams();
@@ -29,14 +26,38 @@ export default function StockPage() {
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
-  const { data: inventory, isLoading, addInventory: addInventoryItem, updateInventory, deleteInventory, isOffline } = useInventoryTanStack({ 
+  
+  // 🔧 DEBUG: Get the full hook and log it
+  const inventoryHook = useInventoryTanStack({ 
     industry,
     businessId: business?.id 
   });
-  const { addTransaction } = useTransactionsTanStack({ 
+  
+  console.log('🔧 [StockPage] inventoryHook methods:', {
+    hasUpdateInventory: typeof inventoryHook.updateInventory === 'function',
+    hasUpdateInventoryAsync: typeof inventoryHook.updateInventoryAsync === 'function',
+    hasAddInventory: typeof inventoryHook.addInventory === 'function',
+    hasAddInventoryAsync: typeof inventoryHook.addInventoryAsync === 'function',
+    allKeys: Object.keys(inventoryHook)
+  });
+  
+  const { 
+    data: inventory, 
+    isLoading, 
+    addInventory: addInventoryItem, 
+    addInventoryAsync,
+    updateInventory, 
+    updateInventoryAsync, 
+    deleteInventory, 
+    isOffline 
+  } = inventoryHook;
+  
+  const transactionsHook = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
   });
+  
+  const { addTransaction, addTransactionAsync } = transactionsHook;
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
@@ -75,7 +96,9 @@ export default function StockPage() {
         last_ordered: new Date().toISOString().split('T')[0]
       };
       
-      // TanStack Query handles online/offline automatically
+      console.log('🔧 [StockPage] Adding item:', itemData);
+      
+      // Use addInventory (the synchronous version for optimistic update)
       addInventoryItem(itemData);
       
       setShowAddModal(false);
@@ -111,22 +134,17 @@ export default function StockPage() {
     setIsDeleting(true);
     
     try {
-      // Debug: Log the item ID to understand the format
       console.log('🔍 Deleting item with ID:', itemToDelete.id, 'Type:', typeof itemToDelete.id);
       
-      // Check if the ID is a valid UUID format
       const isValidUUID = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         return uuidRegex.test(id);
       };
       
       if (!isValidUUID(itemToDelete.id)) {
-        // This is likely an offline-created item with a string ID
-        // Remove it from local state only since it doesn't exist in the database
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
         console.log(`🗑️ Removing offline item: ${itemToDelete.item_name}`);
         
-        // Remove from local state using TanStack Query
         const currentData = queryClient.getQueryData([industry, country, 'inventory']) || [];
         const updatedData = (currentData as any[]).filter(item => item.id !== itemToDelete.id);
         queryClient.setQueryData([industry, country, 'inventory'], updatedData);
@@ -137,7 +155,6 @@ export default function StockPage() {
         return;
       }
       
-      // TanStack Query handles online/offline automatically
       deleteInventory(itemToDelete.id);
       
       showSuccess(t('inventory.delete_success', `Successfully deleted "${itemToDelete.item_name}"`));
@@ -145,14 +162,7 @@ export default function StockPage() {
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      
-      // Check if it's a UUID format error
-      if (error?.message?.includes('invalid input syntax for type uuid')) {
-        showError(t('inventory.delete_uuid_error', 'Invalid item ID format. This item may have been created offline. Try refreshing the page.'));
-      } else {
-        showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
-      }
+      showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -173,7 +183,6 @@ export default function StockPage() {
         supplier: editData.supplier
       };
 
-      // Only include price fields if they have values
       if (editData.cost_price && editData.cost_price !== '') {
         updates.cost_price = parseFloat(editData.cost_price);
       }
@@ -181,8 +190,14 @@ export default function StockPage() {
         updates.selling_price = parseFloat(editData.selling_price);
       }
 
-      // TanStack Query handles online/offline automatically
-      updateInventory({ id: selectedItem.id, updates });
+      console.log('🔧 [StockPage] Updating item:', { id: selectedItem.id, updates });
+      
+      // Use updateInventoryAsync for better async handling
+      if (updateInventoryAsync) {
+        await updateInventoryAsync({ id: selectedItem.id, data: updates });
+      } else {
+        updateInventory({ id: selectedItem.id, data: updates });
+      }
 
       setShowEditModal(false);
       setSelectedItem(null);
@@ -201,13 +216,22 @@ export default function StockPage() {
       const totalPrice = quantity * selectedItem.selling_price;
       const newQuantity = selectedItem.quantity - quantity;
       
+      console.log('🔧 [StockPage] SELL DEBUG:');
+      console.log('  - Item ID:', selectedItem.id);
+      console.log('  - Item Name:', selectedItem.item_name);
+      console.log('  - Current Quantity:', selectedItem.quantity);
+      console.log('  - Quantity to Sell:', quantity);
+      console.log('  - New Quantity:', newQuantity);
+      console.log('  - updateInventoryAsync exists?', typeof updateInventoryAsync);
+      
       // Create transaction data
       const transactionData = {
         business_id: business.id,
         industry,
         amount: totalPrice,
+        currency: getCurrency(country),
         category: 'sale',
-        description: `Sale of ${quantity} ${selectedItem.unit} of ${selectedItem.item_name}`,
+        description: `Sale of ${quantity} ${selectedItem.unit || 'units'} of ${selectedItem.item_name}`,
         customer_name: sellData.customerName,
         payment_method: sellData.paymentMethod,
         transaction_date: new Date().toISOString().split('T')[0],
@@ -218,18 +242,33 @@ export default function StockPage() {
         }
       };
 
-      // TanStack Query handles online/offline automatically
+      console.log('🔧 [StockPage] Adding transaction:', transactionData);
+      
       // Add transaction first
-      addTransaction(transactionData);
+      if (addTransactionAsync) {
+        await addTransactionAsync(transactionData);
+      } else {
+        await addTransaction(transactionData);
+      }
+      console.log('✅ [StockPage] Transaction recorded');
       
       // Then update inventory quantity
-      updateInventory({ id: selectedItem.id, updates: { quantity: newQuantity } });
+      console.log('🔧 [StockPage] Updating inventory quantity to:', newQuantity);
+      
+      if (updateInventoryAsync) {
+        const result = await updateInventoryAsync({ id: selectedItem.id, data: { quantity: newQuantity } });
+        console.log('✅ [StockPage] Inventory updated via updateInventoryAsync:', result);
+      } else {
+        console.warn('⚠️ [StockPage] updateInventoryAsync is undefined, using updateInventory');
+        updateInventory({ id: selectedItem.id, data: { quantity: newQuantity } });
+        console.log('✅ [StockPage] Inventory updated via updateInventory');
+      }
 
       setShowSellModal(false);
       setSelectedItem(null);
-      showSuccess(t('inventory.sell_success', `Successfully sold ${quantity} ${selectedItem.unit} of "${selectedItem.item_name}"`));
+      showSuccess(t('inventory.sell_success', `Successfully sold ${quantity} ${selectedItem.unit || 'units'} of "${selectedItem.item_name}"`));
     } catch (error) {
-      console.error('Failed to process sale:', error);
+      console.error('❌ [StockPage] Failed to process sale:', error);
       showError(t('inventory.sell_error', 'Failed to process sale. Please try again.'));
     }
   };
@@ -250,7 +289,6 @@ export default function StockPage() {
       <Header industry={industry} country={country} />
 
       <div className="flex-1 p-4 max-w-md mx-auto">
-        {/* Simple Online Status Indicator */}
         {isOffline && (
           <div className="bg-red-500 text-white px-4 py-2 text-center text-sm mb-4 rounded">
             You're offline. Some features may be limited.
@@ -265,7 +303,6 @@ export default function StockPage() {
           {t('nav.inventory', 'Stock')}
         </motion.h1>
 
-        {/* Business Setup Warning */}
         {!business && !businessLoading && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -457,7 +494,6 @@ export default function StockPage() {
                           {t('inventory.min', 'Min:')} {item.threshold ?? 0}
                         </div>
                         
-                        {/* Edit, Sell, Delete Buttons - Cash Screen Style */}
                         <div className="flex gap-1 mt-1">
                           <button
                             onClick={() => handleEditItem(item)}
@@ -485,7 +521,6 @@ export default function StockPage() {
                       </div>
                     </div>
 
-                    {/* Stock Level Bar */}
                     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
                         className={`h-full transition-all duration-300 ${stockStatus.barColor}`}
@@ -535,6 +570,7 @@ export default function StockPage() {
           </div>
         </div>
       )}
+      
       {/* Edit Item Modal */}
       {showEditModal && selectedItem && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -572,6 +608,7 @@ export default function StockPage() {
   );
 }
 
+// Rest of the forms remain the same as your original...
 function EditItemForm({ item, onSubmit, onCancel, t }: { 
   item: any; 
   onSubmit: (data: any) => void; 
@@ -835,16 +872,6 @@ function AddItemForm({ onSubmit, onCancel, t, industry }: {
     selling_price: '',
     supplier: ''
   });
-
-  // General categories for all industries
-  const categories = [
-    'Raw Materials',
-    'Finished Goods',
-    'Supplies',
-    'Equipment',
-    'Packaging',
-    'Other'
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

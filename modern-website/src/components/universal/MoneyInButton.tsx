@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices } from '@/hooks';
 
@@ -31,6 +31,13 @@ const industryLabels = {
   freelance: { buttonKey: 'freelance.new_project', placeholderKey: 'freelance.payment_received', icon: Laptop }
 };
 
+// Helper function to get default due date (30 days from today)
+const getDefaultDueDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  return date.toISOString().split('T')[0];
+};
+
 export default function MoneyInButton({ industry, country, onSuccess, disabled = false }: MoneyInButtonProps) {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
@@ -43,7 +50,9 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
     service_id: '',
     distance: '',
     tips: '',
-    use_base_amount: false
+    use_base_amount: false,
+    // Credit due date
+    due_date: getDefaultDueDate(), // ✅ Set default date (30 days from today)
   });
 
   // Get services for transport industry
@@ -93,10 +102,12 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
     
     const transactionData = {
       amount: parseFloat(formData.amount),
+      currency: getCurrency(country),
       description: formData.description,
       customer_name: formData.customer_name,
       payment_method: formData.payment_method,
-      transaction_date: new Date().toISOString().split('T')[0]
+      transaction_date: new Date().toISOString().split('T')[0],
+      due_date: formData.due_date,
     };
 
     onSuccess(transactionData);
@@ -109,7 +120,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
       service_id: '',
       distance: '',
       tips: '',
-      use_base_amount: false
+      use_base_amount: false,
+      due_date: getDefaultDueDate(), // ✅ Reset to default date
     });
   };
 
@@ -303,12 +315,14 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
                       {t('payment_method', 'Payment Method')}
                     </label>
+                    
                     <div className="grid grid-cols-3 gap-2">
                       {['cash', 'transfer', 'credit'].map((method) => (
                         <button
                           key={method}
                           type="button"
                           onClick={() => {
+                            console.log('🔧 Payment method clicked:', method);
                             if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
                               window.navigator.vibrate(20);
                             }
@@ -325,6 +339,25 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       ))}
                     </div>
                   </div>
+
+                  {/* ✅ Due Date field - REQUIRED when credit selected */}
+                  {formData.payment_method === 'credit' && (
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
+                        Due Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        value={formData.due_date}
+                        onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                        className="w-full px-4 py-3 glass-regular rounded-xl border border-[var(--border)] focus:ring-2 focus:ring-green-500/50 focus:border-green-300 backdrop-blur-sm bg-white/20 text-[var(--text-1)]"
+                      />
+                      <p className="text-xs text-[var(--text-3)] mt-1">
+                        Payment due date (default: 30 days from today)
+                      </p>
+                    </div>
+                  )}
 
                   <div className="pt-4">
                     <motion.button

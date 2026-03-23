@@ -1,390 +1,502 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/lib/supabase'
+'use client';
 
-// Operation type detection based on metadata and data structure
-const detectOperationType = (data: any, dataType: string) => {
-  // Transaction-based operations
-  if (dataType === 'transactions') {
-    if (data.metadata?.inventory_item_id) return 'inventory_sale'
-    if (data.metadata?.credit_id) return 'credit_payment'
-    if (data.metadata?.appointment_id || data.metadata?.service_name) return 'appointment_completion'
-    if (data.category?.includes('appointment')) return 'appointment_completion'
-    if (data.category === 'payment') return 'payment'
-    if (data.category === 'sale') return 'sale'
-    if (data.description?.toLowerCase().includes('payment for credit')) return 'credit_payment'
-    if (data.description?.toLowerCase().includes('payment for') && data.metadata?.service_name) return 'appointment_completion'
-  }
-  
-  // Direct data operations
-  if (dataType === 'inventory') {
-    console.log('🔍 Inventory operation detected:', data)
-    return 'inventory_update'
-  }
-  if (dataType === 'credit') {
-    // Check if this is a payment update (paid_amount changing)
-    if (data.paid_amount !== undefined || data.status !== undefined) return 'credit_payment'
-    return 'credit_update'
-  }
-  if (dataType === 'appointments') return 'appointment_update'
-  if (dataType === 'services') return 'service_update'
-  
-  console.log('🔍 Default operation type for:', dataType, data)
-  return 'general'
-}
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { db, QueuedOperation } from '@/lib/database';
+import { supabase } from '@/lib/supabase';
+import { getOnlineStatus } from '@/lib/connection-manager';
+import { swManager } from '@/lib/serviceWorker';
+import { syncProcessor } from '@/lib/sync-processor';
 
-// Cross-invalidation based on operation type
-const invalidateRelatedQueries = (queryClient: any, industry: string, country: string, operationType: string) => {
-  console.log(`🔄 Cross-invalidating queries for operation: ${operationType}`);
-  
-  const baseKeys = [
-    [industry, country, 'transactions'],
-    [industry, country, 'inventory'], 
-    [industry, country, 'credit'],
-    [industry, country, 'appointments'],
-    [industry, country, 'services']
-  ]
-  
-  switch (operationType) {
-    case 'inventory_sale':
-      console.log('📦 Inventory sale - invalidating transactions and inventory');
-      queryClient.invalidateQueries([industry, country, 'transactions'])
-      queryClient.invalidateQueries([industry, country, 'inventory'])
-      break
-    case 'credit_payment':
-    case 'payment':
-      console.log('💳 Credit payment - invalidating credit and transactions');
-      queryClient.invalidateQueries([industry, country, 'credit'])
-      queryClient.invalidateQueries([industry, country, 'transactions'])
-      break
-    case 'appointment_completion':
-    case 'appointment_update':
-      console.log('📅 Appointment operation - invalidating appointments, services, and transactions');
-      queryClient.invalidateQueries([industry, country, 'appointments'])
-      queryClient.invalidateQueries([industry, country, 'services'])
-      queryClient.invalidateQueries([industry, country, 'transactions'])
-      break
-    case 'inventory_update':
-      console.log('📦 Inventory update - invalidating inventory');
-      queryClient.invalidateQueries([industry, country, 'inventory'])
-      break
-    case 'credit_update':
-      console.log('💳 Credit update - invalidating credit and transactions');
-      queryClient.invalidateQueries([industry, country, 'credit'])
-      queryClient.invalidateQueries([industry, country, 'transactions'])
-      break
-    case 'service_update':
-      console.log('🔧 Service update - invalidating services and appointments');
-      queryClient.invalidateQueries([industry, country, 'services'])
-      queryClient.invalidateQueries([industry, country, 'appointments'])
-      break
-    case 'sale':
-    default:
-      console.log('💰 General operation - invalidating transactions');
-      // For general operations, invalidate transactions and related data
-      queryClient.invalidateQueries([industry, country, 'transactions'])
-      break
-  }
-}
+type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'appointments' | 'beehive' | 'targets';
 
-export function useIndustryData<T = any>(
-  industry: string, 
-  country: string, 
-  dataType: string
-) {
-  const queryClient = useQueryClient()
-  const isClient = typeof window !== 'undefined'
+export const useIndustryDataNew = ({
+  industry,
+  country,
+  table,
+  select,
+  enabled = true,
+  businessId: externalBusinessId,
+}: {
+  industry: string;
+  country: string;
+  table: TableName;
+  select?: string;
+  enabled?: boolean;
+  businessId?: string;
+}) => {
+  const queryClient = useQueryClient();
+  const { business } = useUnifiedAuth();
+  const businessId = externalBusinessId || business?.id;
+  const isOnline = getOnlineStatus();
+
+  const hasRequiredParams = !!(industry && country && table && businessId);
   
-  // localStorage persistence keys
-  const storageKey = `beezee_${industry}_${country}_${dataType}`
-  
-  // Load initial data from localStorage if available
-  const getInitialData = () => {
-    if (!isClient) return []
-    try {
-      const stored = localStorage.getItem(storageKey)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        console.log(`📦 Loaded ${parsed.length} ${dataType} from localStorage`)
-        return parsed
-      }
-    } catch (error) {
-      console.warn(`Failed to load ${dataType} from localStorage:`, error)
-    }
-    return []
-  }
-  
-  // Save data to localStorage when it changes
-  const saveToLocalStorage = (data: any[]) => {
-    if (!isClient) return
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(data))
-      console.log(`💾 Saved ${data.length} ${dataType} to localStorage`)
-    } catch (error) {
-      console.warn(`Failed to save ${dataType} to localStorage:`, error)
+  // Only log in development and only if we have some params but not all (to catch actual issues)
+  if (!hasRequiredParams && process.env.NODE_ENV === 'development') {
+    // Only warn if we have industry/country but missing businessId (initial load is expected)
+    if (industry && country && table && !businessId) {
+      // This is expected during initial auth load, so use debug level logging
+      console.debug('[useIndustryDataNew] Waiting for businessId:', { industry, country, table });
+    } else {
+      console.warn('[useIndustryDataNew] Missing required params:', { industry, country, table, businessId });
     }
   }
 
-  // Query - reading data
-  const { 
-    data, 
-    isLoading, 
-    isPaused: isQueryPaused,
-    error,
-    refetch 
-  } = useQuery({
-    queryKey: [industry, country, dataType],
+  // ============================================================
+  // QUERY
+  // ============================================================
+  const query = useQuery({
+    queryKey: [table, industry, country, businessId].filter(Boolean),
     queryFn: async () => {
-      // Check if Supabase is properly configured
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-        const error = new Error('Supabase configuration missing. Please check environment variables.')
-        console.error(`Error fetching ${dataType}:`, error.message)
-        throw error
-      }
-
+      if (!businessId) return [];
+      
+      let cachedData: any[] = [];
+      
       try {
-        const { data, error } = await supabase
-          .from(dataType)
-          .select('*')
-          .eq('industry', industry)
-          .order('created_at', { ascending: false })
-        
-        if (error) {
-          console.error(`Supabase error fetching ${dataType}:`, {
-            error,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-            message: error.message,
-            industry
-          })
-          throw error
+        switch (table) {
+          case 'transactions':
+            cachedData = await db.transactions.where('business_id').equals(businessId).toArray();
+            break;
+          case 'inventory':
+            cachedData = await db.inventory.where('business_id').equals(businessId).toArray();
+            break;
+          case 'credit':
+            cachedData = await db.credit.where('business_id').equals(businessId).toArray();
+            break;
+          case 'expenses':
+            cachedData = await db.expenses.where('business_id').equals(businessId).toArray();
+            break;
+          case 'services':
+            cachedData = await db.services.where('business_id').equals(businessId).toArray();
+            break;
+          case 'appointments':
+            cachedData = await db.appointments.where('business_id').equals(businessId).toArray();
+            break;
+          case 'targets':
+            cachedData = await db.targets.where('business_id').equals(businessId).toArray();
+            break;
+          default:
+            cachedData = await db.table(table as any).where('business_id').equals(businessId).toArray().catch(() => []);
         }
-        
-        console.log(`✅ Successfully fetched ${data?.length || 0} ${dataType}`)
-        
-        // Save to localStorage for offline persistence
-        saveToLocalStorage(data || [])
-        
-        return (data || []) as T[]
-      } catch (err) {
-        console.error(`Failed to fetch ${dataType}:`, {
-          error: err,
-          industry,
-          supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'configured' : 'missing',
-          anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'configured' : 'missing'
-        })
-        throw err
+      } catch (error) {
+        console.warn(`[useIndustryDataNew] Failed to read from IndexedDB for ${table}:`, error);
+        cachedData = [];
       }
-    },
-    enabled: isClient && !!industry && !!country,
-    initialData: getInitialData(),
-    networkMode: 'offlineFirst',
-    staleTime: 5 * 60 * 1000,
-    gcTime: 7 * 24 * 60 * 60 * 1000,
-    retry: 3,
-  })
-  
-  // Mutation - adding data (NO onError rollback!)
-  const mutation = useMutation({
-    mutationKey: [industry, country, dataType],
-    mutationFn: async (newItem: any) => {
-      const { data, error } = await supabase
-        .from(dataType)
-        .insert({
-          ...newItem,
-          industry,
-          country,
-          created_at: new Date().toISOString(),
-        })
-        .select()
-        .single()
-      
-      if (error) throw error
-      return data
-    },
-    
-    // Optimistic update - show item immediately
-    onMutate: async (newItem) => {
-      await queryClient.cancelQueries({ queryKey: [industry, country, dataType] })
-      
-      const previousData = queryClient.getQueryData([industry, country, dataType])
-      
-      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}` 
-      const optimisticItem = {
-        ...newItem,
-        id: tempId,
-        created_at: new Date().toISOString(),
-        pendingSync: true,  // Visual indicator
+
+      // Filter out soft-deleted items
+      const filteredData = Array.isArray(cachedData) ? cachedData.filter(item => !item._deleted) : [];
+
+      // Refresh from Supabase in background if online
+      if (isOnline) {
+        refreshFromSupabase().catch(console.warn);
       }
-      
-      queryClient.setQueryData([industry, country, dataType], 
-        (old = []) => {
-          const newItems = [optimisticItem, ...(old as any[])]
-          // Save optimistic data to localStorage
-          saveToLocalStorage(newItems)
-          return newItems
-        }
-      )
-      
-      return { previousData, optimisticItem, tempId }
-    },
-    
-    // ❌ REMOVED onError - Let TanStack Query handle failures and queue offline mutations
-    // The mutation will automatically go into isPaused state and retry when online
-    
-    // ✅ Keep onSuccess - Replace temp ID with real data + cross-invalidate related queries
-    onSuccess: (result, variables, context) => {
-      // Detect operation type and invalidate related queries
-      const operationType = detectOperationType(variables, dataType)
-      console.log(`🔄 ${dataType} operation successful: ${operationType} - invalidating related queries`)
-      
-      // Invalidate related queries for UI synchronization
-      invalidateRelatedQueries(queryClient, industry, country, operationType)
-      
-      if (context?.optimisticItem) {
-        queryClient.setQueryData([industry, country, dataType], 
-          (old = []) => {
-            const items = old as any[]
-            // Find and replace the optimistic item
-            const index = items.findIndex(item => item.id === context.optimisticItem?.id)
-            if (index !== -1) {
-              const newItems = [...items]
-              newItems[index] = { ...result, pendingSync: false }
-              // Save to localStorage
-              saveToLocalStorage(newItems)
-              return newItems
+
+      // Apply select filter if provided
+      if (select && Array.isArray(filteredData) && filteredData.length > 0) {
+        const fields = select.split(',');
+        return filteredData.map(item => {
+          const selected: any = {};
+          fields.forEach(field => {
+            const trimmedField = field.trim();
+            if (item[trimmedField] !== undefined) {
+              selected[trimmedField] = item[trimmedField];
             }
-            // Fallback: just add the real item
-            const updatedItems = [result, ...items.filter(i => !i.id?.toString().startsWith('temp_'))]
-            saveToLocalStorage(updatedItems)
-            return updatedItems
-          }
-        )
+          });
+          return selected;
+        });
       }
-    },
-    
-    networkMode: 'offlineFirst',  // ← This enables offline queue
-    retry: 3,
-  })
 
-  const deleteMutation = useMutation({
-    mutationKey: [industry, country, dataType, 'delete'],
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from(dataType)
-        .delete()
-        .eq('id', id)
-      
-      if (error) throw error
-      return { success: true }
+      return filteredData;
     },
-    onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: [industry, country, dataType] })
-      const previousData = queryClient.getQueryData([industry, country, dataType])
-      
-      queryClient.setQueryData([industry, country, dataType], 
-        (old = []) => {
-          const newItems = (old as any[]).filter((item: any) => item.id !== id)
-          // Save to localStorage after optimistic delete
-          saveToLocalStorage(newItems)
-          return newItems
-        }
-      )
-      
-      return { previousData }
-    },
-    // ❌ REMOVED onError - Let TanStack Query handle offline failures
-    onSuccess: (id) => {
-      console.log(`🔄 ${dataType} delete operation successful - invalidating related queries`)
-      
-      // Save updated data to localStorage after delete
-      const currentData = queryClient.getQueryData([industry, country, dataType]) as any[] || []
-      saveToLocalStorage(currentData)
-      
-      // For delete operations, invalidate the current data type and related queries
-      invalidateRelatedQueries(queryClient, industry, country, dataType + '_update')
-      queryClient.invalidateQueries({ queryKey: [industry, country, dataType] })
-    },
-    networkMode: 'offlineFirst',
-    retry: 3,
-  })
+    staleTime: isOnline ? 5 * 60 * 1000 : Infinity,
+    enabled: enabled && hasRequiredParams,
+  });
 
-  const updateMutation = useMutation({
-    mutationKey: [industry, country, dataType, 'update'],
-    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-      const { data, error } = await supabase
-        .from(dataType)
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single()
+  const refreshFromSupabase = async () => {
+    try {
+      let freshData: any[] = [];
+      let error: any = null;
+
+      switch (table) {
+        case 'transactions':
+          const { data: tData, error: tError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('transaction_date', { ascending: false });
+          freshData = tData || [];
+          error = tError;
+          break;
+        case 'inventory':
+          const { data: iData, error: iError } = await supabase
+            .from('inventory')
+            .select('*')
+            .eq('business_id', businessId);
+          freshData = iData || [];
+          error = iError;
+          break;
+        case 'credit':
+          const { data: cData, error: cError } = await supabase
+            .from('credit')
+            .select('*')
+            .eq('business_id', businessId);
+          freshData = cData || [];
+          error = cError;
+          break;
+        default:
+          const { data: gData, error: gError } = await supabase
+            .from(table)
+            .select('*')
+            .eq('business_id', businessId);
+          freshData = gData || [];
+          error = gError;
+      }
+
+      if (error) {
+        console.warn(`[useIndustryDataNew] Supabase fetch error for ${table}:`, error);
+        return;
+      }
+
+      for (const item of freshData) {
+        await updateCache(table, { ...item, syncStatus: 'synced' });
+      }
+
+      if (freshData.length > 0) {
+        queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+      }
+    } catch (error) {
+      console.warn(`[useIndustryDataNew] Background refresh failed for ${table}:`, error);
+    }
+  };
+
+  // ============================================================
+  // CREATE MUTATION
+  // ============================================================
+  const createMutation = useMutation({
+    mutationFn: async (newData: any) => {
+      if (!businessId) throw new Error('Business ID required for create operation');
       
-      if (error) throw error
-      return data
-    },
-    onMutate: async ({ id, updates }) => {
-      await queryClient.cancelQueries({ queryKey: [industry, country, dataType] })
-      const previousData = queryClient.getQueryData([industry, country, dataType])
+      const operationId = crypto.randomUUID();
       
+      const dataToStore = {
+        ...newData,
+        id: newData.id || operationId,
+        business_id: businessId,
+        created_at: newData.created_at || new Date().toISOString(),
+      };
+
+      // Add to offline queue
+      const operation: QueuedOperation = {
+        id: operationId,
+        type: 'CREATE',
+        table: table as any,
+        data: dataToStore,
+        timestamp: Date.now(),
+        idempotencyKey: crypto.randomUUID(),
+        status: 'pending',
+        retryCount: 0,
+        businessId: businessId,
+      };
+      await db.operations_queue.add(operation);
+
+      // Add to IndexedDB cache
+      const cachedItem = {
+        ...dataToStore,
+        syncStatus: 'pending',
+        _offlineId: operationId
+      };
+      await updateCache(table, cachedItem);
+
       // Optimistic update
-      queryClient.setQueryData([industry, country, dataType], 
-        (old = []) => {
-          const items = old as any[]
-          const index = items.findIndex(item => item.id === id)
-          if (index !== -1) {
-            const newItems = [...items]
-            newItems[index] = { ...newItems[index], ...updates, updated_at: new Date().toISOString() }
-            // Save optimistic update to localStorage
-            saveToLocalStorage(newItems)
-            return newItems
-          }
-          return items
+      queryClient.setQueryData(
+        [table, industry, country, businessId],
+        (oldData: any[] | undefined) => {
+          if (!oldData) return [cachedItem];
+          return [cachedItem, ...oldData];
         }
-      )
-      
-      return { previousData }
+      );
+
+      if (isOnline) {
+        // Trigger sync processor to immediately process the queued operation
+        syncProcessor.forceSync().catch(err => 
+          console.error('[useIndustryDataNew] Sync failed:', err)
+        );
+        await swManager.triggerSync();
+      }
+
+      return cachedItem;
     },
-    onSuccess: (result, variables, context) => {
-      // Detect operation type and invalidate related queries
-      const operationType = detectOperationType(variables.updates || variables, dataType)
-      console.log(`🔄 ${dataType} update operation successful: ${operationType} - invalidating related queries`)
-      console.log('🔍 Update variables:', variables)
-      console.log('🔍 Detected operation type:', operationType)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+    onError: (error) => {
+      console.error(`[useIndustryDataNew] Create failed for ${table}:`, error);
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+  });
+
+  // ============================================================
+  // UPDATE MUTATION - CLEAN VERSION
+  // ============================================================
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      if (!businessId) throw new Error('Business ID required for update operation');
       
-      // Invalidate related queries for UI synchronization
-      invalidateRelatedQueries(queryClient, industry, country, operationType)
-      
-      queryClient.setQueryData([industry, country, dataType], 
-        (old = []) => {
-          const items = old as any[]
-          const index = items.findIndex(item => item.id === variables.id)
-          if (index !== -1) {
-            const newItems = [...items]
-            newItems[index] = { ...result, updated_at: new Date().toISOString() }
-            console.log(`✅ Updated ${dataType} item at index ${index}`)
-            // Save to localStorage
-            saveToLocalStorage(newItems)
-            return newItems
-          }
-          return items
+      // Get the existing record from IndexedDB
+      let existingRecord: any = null;
+      try {
+        switch (table) {
+          case 'credit':
+            existingRecord = await db.credit.get(id);
+            break;
+          case 'transactions':
+            existingRecord = await db.transactions.get(id);
+            break;
+          case 'inventory':
+            existingRecord = await db.inventory.get(id);
+            break;
+          case 'expenses':
+            existingRecord = await db.expenses.get(id);
+            break;
+          case 'services':
+            existingRecord = await db.services.get(id);
+            break;
+          case 'appointments':
+            existingRecord = await db.appointments.get(id);
+            break;
+          case 'targets':
+            existingRecord = await db.targets.get(id);
+            break;
+          default:
+            existingRecord = await db.table(table as any).get(id);
         }
-      )
+      } catch (err) {
+        console.warn('[useIndustryDataNew] Could not fetch existing record:', err);
+      }
+      
+      // Merge the update with existing record (preserve all fields!)
+      const mergedData = existingRecord 
+        ? { ...existingRecord, ...data, updated_at: new Date().toISOString() }
+        : { ...data, id, updated_at: new Date().toISOString() };
+      
+      const operationId = crypto.randomUUID();
+      
+      // Add to offline queue
+      const operation: QueuedOperation = {
+        id: operationId,
+        type: 'UPDATE',
+        table: table as any,
+        entityId: id,
+        data: mergedData,
+        timestamp: Date.now(),
+        idempotencyKey: crypto.randomUUID(),
+        status: 'pending',
+        retryCount: 0,
+        businessId: businessId,
+      };
+      await db.operations_queue.add(operation);
+      
+      // Update IndexedDB cache with merged data
+      const updatedItem = {
+        ...mergedData,
+        id,
+        syncStatus: 'pending',
+        _pendingUpdate: operationId
+      };
+      await updateCache(table, updatedItem);
+      
+      // Optimistic update - use merged data to preserve all fields
+      queryClient.setQueryData(
+        [table, industry, country, businessId],
+        (oldData: any[] | undefined) => {
+          if (!oldData) return [updatedItem];
+          return oldData.map((item: any) => 
+            item.id === id ? { ...item, ...mergedData, syncStatus: 'pending' } : item
+          );
+        }
+      );
+      
+      if (isOnline) {
+        // Trigger sync processor to immediately process the queued operation
+        syncProcessor.forceSync().catch(err => 
+          console.error('[useIndustryDataNew] Sync failed:', err)
+        );
+        await swManager.triggerSync();
+      }
+      
+      return { id, ...data };
     },
-    networkMode: 'offlineFirst',
-    retry: 3,
-  })
-  
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+    onError: (error) => {
+      console.error(`[useIndustryDataNew] Update failed for ${table}:`, error);
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+  });
+
+  // ============================================================
+  // DELETE MUTATION
+  // ============================================================
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!businessId) throw new Error('Business ID required for delete operation');
+      
+      const operationId = crypto.randomUUID();
+      
+      // Add to offline queue
+      const operation: QueuedOperation = {
+        id: operationId,
+        type: 'DELETE',
+        table: table as any,
+        entityId: id,
+        data: null,
+        timestamp: Date.now(),
+        idempotencyKey: crypto.randomUUID(),
+        status: 'pending',
+        retryCount: 0,
+        businessId: businessId,
+      };
+      await db.operations_queue.add(operation);
+      
+      // Soft delete in IndexedDB
+      await softDeleteFromCache(table, id);
+      
+      // Optimistic update - remove from cache
+      queryClient.setQueryData(
+        [table, industry, country, businessId],
+        (oldData: any[] | undefined) => {
+          if (!oldData) return [];
+          return oldData.filter((item: any) => item.id !== id);
+        }
+      );
+      
+      if (isOnline) {
+        // Trigger sync processor to immediately process the queued operation
+        syncProcessor.forceSync().catch(err => 
+          console.error('[useIndustryDataNew] Sync failed:', err)
+        );
+        await swManager.triggerSync();
+      }
+      
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+    onError: (error) => {
+      console.error(`[useIndustryDataNew] Delete failed for ${table}:`, error);
+      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+    },
+  });
+
+  // ============================================================
+  // Helpers
+  // ============================================================
+  const updateCache = async (tableName: TableName, data: any): Promise<void> => {
+    try {
+      switch (tableName) {
+        case 'transactions':
+          await db.transactions.put(data);
+          break;
+        case 'inventory':
+          await db.inventory.put(data);
+          break;
+        case 'credit':
+          await db.credit.put(data);
+          break;
+        case 'expenses':
+          await db.expenses.put(data);
+          break;
+        case 'services':
+          await db.services.put(data);
+          break;
+        case 'appointments':
+          await db.appointments.put(data);
+          break;
+        case 'targets':
+          await db.targets.put(data);
+          break;
+        default:
+          await db.table(tableName as any).put(data);
+      }
+    } catch (error) {
+      console.error(`[useIndustryDataNew] Failed to update cache for ${tableName}:`, error);
+    }
+  };
+
+  const softDeleteFromCache = async (tableName: TableName, id: string): Promise<void> => {
+    try {
+      let existing: any;
+      
+      switch (tableName) {
+        case 'transactions':
+          existing = await db.transactions.get(id);
+          if (existing) {
+            await db.transactions.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'inventory':
+          existing = await db.inventory.get(id);
+          if (existing) {
+            await db.inventory.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'credit':
+          existing = await db.credit.get(id);
+          if (existing) {
+            await db.credit.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'expenses':
+          existing = await db.expenses.get(id);
+          if (existing) {
+            await db.expenses.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'services':
+          existing = await db.services.get(id);
+          if (existing) {
+            await db.services.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'appointments':
+          existing = await db.appointments.get(id);
+          if (existing) {
+            await db.appointments.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        case 'targets':
+          existing = await db.targets.get(id);
+          if (existing) {
+            await db.targets.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+          }
+          break;
+        default:
+          await db.table(tableName as any).delete(id);
+      }
+    } catch (error) {
+      console.error(`[useIndustryDataNew] Failed to soft delete from cache:`, error);
+    }
+  };
+
   return {
-    data: (data || []) as T[],
-    isLoading,
-    error,
-    isPaused: isQueryPaused || mutation.isPaused || deleteMutation.isPaused || updateMutation.isPaused,
-    addItem: mutation.mutate,
-    deleteItem: deleteMutation.mutate,
-    updateItem: updateMutation.mutate,
-    isAdding: mutation.isPending,
-    isDeleting: deleteMutation.isPending,
+    data: query.data || [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    create: createMutation.mutate,
+    createAsync: createMutation.mutateAsync,
+    isCreating: createMutation.isPending,
+    update: updateMutation.mutate,
+    updateAsync: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
-    refetch,
-  }
-}
+    delete: deleteMutation.mutate,
+    deleteAsync: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
+    refetch: query.refetch,
+  };
+};
+
+export default useIndustryDataNew;

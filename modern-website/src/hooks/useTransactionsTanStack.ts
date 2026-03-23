@@ -1,4 +1,5 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
+import { getOnlineStatus } from '@/lib/connection-manager'
 
 export interface Transaction {
   id: string;
@@ -35,9 +36,15 @@ export function useTransactionsTanStack(options: UseTransactionsOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook
-  const { data, isLoading, addItem, deleteItem, isAdding, isDeleting, isPaused, error, refetch } = 
-    useIndustryData<Transaction>(industry, country, 'transactions')
+  // Use the new TanStack Query hook with updated API
+  const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, isDeleting, error, refetch } = 
+    useIndustryDataNew({
+      industry,
+      country,
+      table: 'transactions',
+      select: options.select,
+      businessId: options.businessId,
+    })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -65,10 +72,11 @@ export function useTransactionsTanStack(options: UseTransactionsOptions = {}) {
   return {
     data: filteredData as Transaction[],
     isLoading,
-    isPaused, // Built-in offline state detection
-    addTransaction: addItem,
+    isOffline: !getOnlineStatus(), // Use actual network status
+    addTransaction: create,
+    addTransactionAsync: createAsync,
     deleteTransaction: deleteItem,
-    isAdding: isAdding || isDeleting, // Combined pending state
+    isAdding: isCreating || isDeleting, // Combined pending state
     error,
     refetch,
   }

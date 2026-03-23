@@ -1,26 +1,31 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrency } from '@/utils/currency';
+import { expenseSchema } from '@/lib/validation/schemas';
+import { validateRequest, handleValidationError } from '@/middleware/validate';
+import { sanitizeObject } from '@/lib/validation/sanitizer';
+import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-export async function POST(request: NextRequest) {
+async function expenseHandler(request: NextRequest) {
   try {
     const body = await request.json();
-    const { business_id, industry, amount, category, description, vendor_name, payment_method, expense_date, metadata } = body;
 
-    console.log('🔧 API Route - Received expense data:', { business_id, industry, amount, category, description, vendor_name, payment_method, expense_date, metadata });
-
-    // Validate required fields
-    if (!business_id || !industry || !amount || !expense_date) {
-      return NextResponse.json(
-        { error: 'Missing required fields: business_id, industry, amount, expense_date' },
-        { status: 400 }
-      );
+    // Validate with Zod schema
+    const validation = validateRequest(expenseSchema, body);
+    if (!validation.success) {
+      return handleValidationError(validation.error);
     }
+
+    // Sanitize validated data
+    const sanitizedData = sanitizeObject(validation.data);
+    const { business_id, industry, amount, category, description, vendor_name, payment_method, expense_date, metadata } = sanitizedData;
+
+    console.log('🔧 API Route - Validated expense data:', { business_id, industry, amount, category });
 
     // Fetch business to get country for currency derivation
     const { data: business, error: businessError } = await supabaseAdmin
@@ -78,3 +83,6 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// Export with rate limiting (100 requests per minute)
+export const POST = withRateLimit(expenseHandler, RATE_LIMITS.DATA);

@@ -16,86 +16,137 @@ import BottomNav from '@/components/universal/BottomNav';
 import MoneyInButton from '@/components/universal/MoneyInButton';
 import MoneyOutButton from '@/components/universal/MoneyOutButton';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
+import { handleCreditTransaction } from '@/services/creditService'; // ✅ ADDED
 
-function CashPageContent() {
+export default function CashPage() {
+  // ✅ STEP 1: ALL hooks called at top level, unconditionally
   const params = useParams();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
-  const { business } = useUnifiedAuth();
+  const { business, loading: authLoading } = useUnifiedAuth();
   const businessId = business?.id;
   
-  // TanStack Query handles online/offline automatically
+  // ✅ STEP 2: Toast hook
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
-  // Get transactions and expenses with offline support
+  // ✅ STEP 3: Data hooks - ALWAYS called, but with safe defaults
   const transactionsHook = useTransactionsTanStack({ 
     businessId: businessId,
-    industry: business?.industry || industry
+    industry: business?.industry || industry,
+    country: country
   });
   const expensesHook = useExpensesTanStack({ 
     businessId: businessId,
-    industry: business?.industry || industry
+    industry: business?.industry || industry,
+    country: country
   });
   
-  // Extract data and offline status
-  const { data: transactions, isPaused: transactionsOffline, isAdding: transactionsPending, addTransaction, isLoading: transactionsLoading } = transactionsHook;
-  const { data: expenses, isOffline: expensesOffline, isPending: expensesPending, addExpense, isLoading: expensesLoading } = expensesHook;
+  // ✅ STEP 4: Safely extract data with fallbacks
+  const transactions = transactionsHook?.data || [];
+  const expenses = expensesHook?.data || [];
+  const isTransactionsOffline = transactionsHook?.isOffline || false;
+  const isExpensesOffline = expensesHook?.isOffline || false;
+  const isTransactionsPending = transactionsHook?.isAdding || false;
+  const isExpensesPending = expensesHook?.isPending || false;
+  const addTransaction = transactionsHook?.addTransaction || (() => Promise.resolve());
+  const addExpense = expensesHook?.addExpense || (() => Promise.resolve());
+  const isTransactionsLoading = transactionsHook?.isLoading || false;
+  const isExpensesLoading = expensesHook?.isLoading || false;
   
-  // Overall offline status - TanStack Query handles this
-  const isOffline = transactionsOffline || expensesOffline;
-  const isSyncing = transactionsPending || expensesPending;
-  const totalPending = (transactionsPending ? 1 : 0) + (expensesPending ? 1 : 0);
+  // ✅ STEP 5: Derived state
+  const isOffline = isTransactionsOffline || isExpensesOffline;
+  const isSyncing = isTransactionsPending || isExpensesPending;
+  const totalPending = (isTransactionsPending ? 1 : 0) + (isExpensesPending ? 1 : 0);
   
+  // ✅ STEP 6: useState hooks - all called unconditionally
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'in' | 'out'>('all');
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedItemForShare, setSelectedItemForShare] = useState<any>(null);
-
-  // Combine transactions and expenses for cash flow
+  
+  // ✅ STEP 7: Combined data for display
   const allCashFlow = [
     ...transactions.map((t: any) => ({ ...t, type: 'in' as const })),
     ...expenses.map((e: any) => ({ ...e, type: 'out' as const }))
   ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-
+  
+  // ✅ STEP 8: useEffect hooks - all called unconditionally
+  useEffect(() => {
+    console.log('[CashPage] Business ID:', businessId);
+    console.log('[CashPage] Transactions count:', transactions.length);
+    console.log('[CashPage] Expenses count:', expenses.length);
+  }, [businessId, transactions.length, expenses.length]);
+  
+  // ✅ STEP 9: Handler functions
   const handleMoneyIn = async (transactionData: any) => {
     if (!businessId) {
       showError('Please set up your business profile first before adding transactions.');
       return;
     }
     
-    // Prepare transaction data
+    // Remove due_date from transaction data as it belongs to credit table, not transactions table
+    const { due_date, ...cleanTransactionData } = transactionData;
+    
     const fullTransactionData = {
-      ...transactionData,
+      ...cleanTransactionData,
       business_id: businessId,
       industry,
       transaction_date: new Date().toISOString().split('T')[0],
       created_at: new Date().toISOString()
     };
-    
+
+    console.log('🔧 [CashPage] handleMoneyIn called:', {
+      transactionData,
+      businessId,
+      industry,
+      isOffline
+    });
+
     try {
-      if (!isOffline) {
-        // Try online first
-        try {
-          await addTransaction(fullTransactionData);
-          showSuccess('Transaction added successfully');
-        } catch (onlineError) {
-          console.warn('⚠️ Online transaction failed, using offline mode:', onlineError);
-          showInfo('Transaction queued - will sync when you\'re back online');
+      // Step 1: Create the transaction
+      console.log('📝 [CashPage] Creating transaction...');
+      await addTransaction(fullTransactionData);
+      console.log('✅ [CashPage] Transaction saved successfully');
+      
+      // Step 2: If payment method is 'credit', handle credit record
+      if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
+        console.log('💳 [CashPage] Credit transaction detected, processing credit record...');
+        
+        const { credit, wasExisting } = await handleCreditTransaction(
+          transactionData.customer_name,
+          transactionData.amount,
+          transactionData.due_date,
+          businessId
+        );
+        
+        const formattedAmount = formatCurrency(transactionData.amount, country);
+        
+        if (wasExisting) {
+          showSuccess(
+            `Transaction added! Credit balance updated for "${credit.customer_name}". ` +
+            `New total owed: ${formatCurrency(credit.amount, country)}`
+          );
+          console.log(`✅ [CashPage] Added ${formattedAmount} to existing credit for ${credit.customer_name}`);
+        } else {
+          showSuccess(
+            `Transaction added! New credit record created for "${credit.customer_name}" for ${formattedAmount}. ` +
+            `Due date: ${new Date(credit.due_date!).toLocaleDateString()}`
+          );
+          console.log(`✅ [CashPage] Created new credit record for ${credit.customer_name}`);
         }
       } else {
-        // Offline mode - TanStack Query handles this automatically
-        showInfo('Offline mode: Transaction queued for sync');
+        showSuccess('Transaction added successfully');
       }
+      
     } catch (error) {
-      console.error('Failed to add transaction:', error);
+      console.error('❌ [CashPage] Failed to add transaction:', error);
       showError('Failed to add transaction. Please try again.');
     }
   };
-
+  
   const handleMoneyOut = async (expenseData: any) => {
     if (!businessId) {
       showError('Please set up your business profile first before adding expenses.');
@@ -104,7 +155,6 @@ function CashPageContent() {
     
     const { payment_method, ...cleanExpenseData } = expenseData;
     
-    // Prepare expense data
     const fullExpenseData = {
       ...cleanExpenseData,
       payment_method,
@@ -116,7 +166,6 @@ function CashPageContent() {
     
     try {
       if (!isOffline) {
-        // Try online first
         try {
           await addExpense(fullExpenseData);
           showSuccess('Expense added successfully');
@@ -125,7 +174,6 @@ function CashPageContent() {
           showInfo('Expense queued - will sync when you\'re back online');
         }
       } else {
-        // Offline mode - TanStack Query handles this automatically
         showInfo('Offline mode: Expense queued for sync');
       }
     } catch (error) {
@@ -133,7 +181,7 @@ function CashPageContent() {
       showError('Failed to add expense. Please try again.');
     }
   };
-
+  
   const filteredCashFlow = allCashFlow.filter(item => {
     const matchesSearch = !searchTerm || (
       (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -145,8 +193,7 @@ function CashPageContent() {
     
     return matchesSearch && matchesType;
   });
-
-
+  
   const generateCashItemText = (item: any): string => {
     const date = item.transaction_date || item.expense_date;
     
@@ -171,17 +218,16 @@ function CashPageContent() {
     
     return text;
   };
-
+  
   const handleCopyItem = async (item: any) => {
     const itemText = generateCashItemText(item);
     
     try {
       await navigator.clipboard.writeText(itemText);
       setCopiedItem(item.id);
-      setTimeout(() => setCopiedItem(null), 2000); // Reset after 2 seconds
+      setTimeout(() => setCopiedItem(null), 2000);
     } catch (error) {
       console.error('Failed to copy item:', error);
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = itemText;
       document.body.appendChild(textArea);
@@ -192,17 +238,17 @@ function CashPageContent() {
       setTimeout(() => setCopiedItem(null), 2000);
     }
   };
-
+  
   const handleShareItem = (item: any) => {
     setSelectedItemForShare(item);
     setShowShareModal(true);
   };
-
+  
   const handleCloseShareModal = () => {
     setShowShareModal(false);
     setSelectedItemForShare(null);
   };
-
+  
   const today = new Date().toISOString().split('T')[0];
   const todayMoneyIn = allCashFlow
     .filter(item => {
@@ -217,7 +263,42 @@ function CashPageContent() {
     })
     .reduce((sum, item) => sum + item.amount, 0);
   const todayProfit = todayMoneyIn - todayMoneyOut;
-
+  
+  // ✅ STEP 10: Loading state - AFTER all hooks
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+  
+  // ✅ STEP 11: No business warning - AFTER all hooks
+  if (!businessId && !authLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg)]">
+        <Header industry={industry} country={country} />
+        <div className="p-8 text-center">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">Business Setup Required</h2>
+            <p className="text-yellow-700 mb-4">Please complete your business profile to start adding transactions.</p>
+            <Link 
+              href="/Beezee-App/setup"
+              className="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            >
+              Set Up Business
+            </Link>
+          </div>
+        </div>
+        <BottomNav industry={industry} country={country} />
+      </div>
+    );
+  }
+  
+  // ✅ STEP 12: Main render
   return (
     <div className="scroll-container bg-[var(--bg)]">
       <Header industry={industry} country={country} />
@@ -231,7 +312,6 @@ function CashPageContent() {
           >
             {t('cash')}
           </motion.h1>
-
 
           {/* Quick Actions */}
           <motion.div
@@ -408,12 +488,11 @@ function CashPageContent() {
                     
                     <div className="text-right">
                       <div className={`text-lg font-bold ${
-                        item.type === 'in' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger])'
+                        item.type === 'in' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
                       }`}>
                         {item.type === 'in' ? '+' : '-'}{formatCurrency(item.amount, country)}
                       </div>
                       
-                      {/* Copy and Share Buttons */}
                       <div className="flex gap-1 mt-1">
                         <button
                           onClick={(e) => {
@@ -511,12 +590,4 @@ function CashPageContent() {
       )}
     </div>
   );
-}
-
-export default function CashPage() {
-  const params = useParams();
-  const country = (params.country as string) || 'ke';
-  const industry = (params.industry as string) || 'retail';
-
-  return <CashPageContent />;
 }

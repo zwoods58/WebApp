@@ -8,20 +8,96 @@ import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname } from 'next/navigation';
 import BottomNav from '@/components/universal/BottomNav';
-import { initConnectionMonitoring, cleanupConnectionMonitoring } from '@/lib/connection-manager';
+import { initConnectionMonitoring, cleanupConnectionMonitoring, getOnlineStatus } from '@/lib/connection-manager';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
+import SplashScreen from '@/components/SplashScreen';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { business } = useUnifiedAuth();
+  const [isOnline, setIsOnline] = useState(true);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [newVersion, setNewVersion] = useState<string | null>(null);
   
   // Initialize connection monitoring
   useEffect(() => {
-    initConnectionMonitoring()
+    // Initialize the new connection manager
+    initConnectionMonitoring();
+    
+    // Listen for online/offline status
+    const checkStatus = () => setIsOnline(getOnlineStatus());
+    checkStatus();
+    
+    const interval = setInterval(checkStatus, 5000);
+    
     return () => {
-      cleanupConnectionMonitoring()
-    }
+      cleanupConnectionMonitoring();
+      clearInterval(interval);
+    };
   }, [])
+
+  // ✅ NEW: Service Worker Update Detection
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      // Listen for messages from service worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SW_UPDATED') {
+          console.log('[Layout] New service worker version:', event.data.version);
+          setNewVersion(event.data.version);
+          setUpdateAvailable(true);
+        }
+      });
+      
+      // Detect when a new service worker is waiting
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version is waiting
+                console.log('[Layout] New version waiting to activate');
+                setUpdateAvailable(true);
+                setNewVersion('New');
+              }
+            });
+          }
+        });
+      });
+      
+      // Check for updates periodically (every hour)
+      const updateInterval = setInterval(() => {
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
+        }
+      }, 60 * 60 * 1000);
+      
+      return () => clearInterval(updateInterval);
+    }
+  }, []);
+  
+  // ✅ NEW: Handle update reload
+  const handleUpdate = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      });
+      
+      // Reload after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else {
+      window.location.reload();
+    }
+  };
+  
+  // ✅ NEW: Dismiss update notification
+  const handleDismissUpdate = () => {
+    setUpdateAvailable(false);
+    setNewVersion(null);
+  };
 
   // Extract country and industry from pathname
   const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
@@ -30,10 +106,46 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col pb-20 pt-0">
+      {/* Splash Screen */}
+      <SplashScreen />
+      
       {/* Global connection status indicator */}
       <ConnectionStatus />
       
+      {/* ✅ NEW: Update Available Banner */}
+      {updateAvailable && (
+        <div className="fixed top-12 left-0 right-0 z-50 mx-4">
+          <div className="bg-blue-600 text-white rounded-lg shadow-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="text-sm font-medium">
+                New version {newVersion} available!
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleUpdate}
+                className="bg-white text-blue-600 px-3 py-1 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors"
+              >
+                Update Now
+              </button>
+              <button
+                onClick={handleDismissUpdate}
+                className="bg-blue-700 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-800 transition-colors"
+              >
+                Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {children}
+      
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
       
       {/* Bottom Navigation - always show for app pages */}
       {country && industry && (
@@ -78,4 +190,3 @@ export default function BeezeeLayout({
     </AuthErrorBoundary>
   );
 }
-

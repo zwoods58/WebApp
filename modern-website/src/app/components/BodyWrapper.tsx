@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
-import ServiceWorkerRegistration from './ServiceWorkerRegistration';
 import { QueryProvider } from '@/providers/QueryProvider';
 
 interface BodyWrapperProps {
@@ -34,7 +33,6 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
 
   return (
     <>
-      <ServiceWorkerRegistration />
       <QueryProvider>
         <body 
           className={`${className} ${isClient ? 'hydrated' : ''}`}

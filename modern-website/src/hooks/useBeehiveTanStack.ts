@@ -1,4 +1,4 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
 
 export interface BeehiveRequest {
   id: string;
@@ -60,9 +60,14 @@ export function useBeehiveTanStack(options: UseBeehiveOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook for requests
-  const { data, isLoading, addItem, deleteItem, isAdding, isDeleting, isPaused, error, refetch } = 
-    useIndustryData<BeehiveRequest>(industry, country, 'beehive')
+  // Use the new TanStack Query hook for requests with updated API
+  const { data, isLoading, create, delete: deleteItem, isCreating, isDeleting, error, refetch } = 
+    useIndustryDataNew({
+      industry,
+      country,
+      table: 'beehive',
+      select: options.select,
+    })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -86,10 +91,10 @@ export function useBeehiveTanStack(options: UseBeehiveOptions = {}) {
   return {
     data: filteredData as BeehiveRequest[],
     isLoading,
-    isPaused, // Built-in offline state detection
-    addRequest: addItem,
+    isOffline: !isLoading && data.length === 0, // Offline state detection
+    addRequest: create,
     deleteRequest: deleteItem,
-    isAdding: isAdding || isDeleting, // Combined pending state
+    isAdding: isCreating || isDeleting, // Combined pending state
     error,
     refetch,
   }

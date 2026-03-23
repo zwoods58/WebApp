@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Minus, TrendingDown, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
+import { getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 
 interface MoneyOutButtonProps {
@@ -40,9 +41,9 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
     
     const expenseData = {
       amount: parseFloat(formData.amount),
+      currency: getCurrency(country),
       description: formData.description,
       category: formData.category,
-      payment_method: formData.payment_method,
       expense_date: new Date().toISOString().split('T')[0]
     };
 

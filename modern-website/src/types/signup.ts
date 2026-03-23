@@ -10,6 +10,10 @@ export interface SignupData {
   inviteCode?: string;
   businessId?: string; // Unique business ID in format COUNTRY-INDUSTRY-7DIGIT
   pin?: string; // User's 6-digit PIN for account security
+  securityQuestions?: {
+    questionId: string;
+    answer: string;
+  };
   // Performance optimization flags
   isDataSynced: boolean;
   lastSyncTime: number;
@@ -42,4 +46,4 @@ export interface DailyTargetOption {
   description: string;
 }
 
-export type SignupStep = 1 | 2 | 3 | 4 | 5 | 6;
+export type SignupStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;

@@ -107,6 +107,17 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* PWA Meta Tags for Standalone Mode */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="BeeZee" />
+        <meta name="application-name" content="BeeZee" />
+        <meta name="msapplication-TileColor" content="#4A8DB8" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+      </head>
       <BodyWrapper className={bodyClassName}>
         {children}
       </BodyWrapper>

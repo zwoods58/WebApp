@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { SignupData } from '@/types/signup';
 import { useSignupValidation } from './useSignupValidation';
 import { useBusinessCreation } from './useBusinessCreation';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { getCurrency } from '@/utils/currency';
 
 export interface SignupState {
@@ -17,6 +19,7 @@ export interface SignupActions {
   prevStep: () => void;
   goToStep: (step: number) => void;
   updateFormData: (field: keyof SignupData, value: string | number) => void;
+  updateSecurityQuestions: (securityQuestions: any) => void;
   handlePINSetup: (pin: string) => void;
   handlePINConfirmation: (pin: string, confirmPin: string) => void;
   handleComplete: () => Promise<void>;
@@ -26,6 +29,8 @@ export interface SignupActions {
 }
 
 export function useSignup(): SignupState & SignupActions {
+  const router = useRouter();
+  const { signInAfterSignup } = useUnifiedAuth();
   const [signupState, setSignupState] = useState<SignupState>({
     currentStep: 1,
     formData: {
@@ -39,6 +44,7 @@ export function useSignup(): SignupState & SignupActions {
       currency: 'KES',
       inviteCode: '',
       pin: '',
+      securityQuestions: undefined,
     },
     isComplete: false,
     businessId: null,
@@ -68,7 +74,7 @@ export function useSignup(): SignupState & SignupActions {
   }, [getFieldError, clearFieldError]);
 
   const nextStep = useCallback(() => {
-    if (signupState.currentStep < 8) {
+    if (signupState.currentStep < 9) {
       setSignupState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
     }
   }, [signupState.currentStep]);
@@ -85,7 +91,7 @@ export function useSignup(): SignupState & SignupActions {
   }, [signupState.currentStep, signupState.pinSetupStep]);
 
   const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= 8) {
+    if (step >= 1 && step <= 9) {
       setSignupState(prev => ({ ...prev, currentStep: step }));
     }
   }, []);
@@ -100,6 +106,18 @@ export function useSignup(): SignupState & SignupActions {
       nextStep();
     }, 500);
   }, [updateFormData, nextStep]);
+
+  const updateSecurityQuestions = useCallback((securityQuestions: any) => {
+    console.log('🔐 [useSignup] Updating security questions:', securityQuestions);
+    setSignupState(prev => ({
+      ...prev,
+      formData: {
+        ...prev.formData,
+        securityQuestions
+      }
+    }));
+    console.log('✅ [useSignup] Security questions stored in state');
+  }, []);
 
   const handlePINConfirmation = useCallback((pin: string, confirmPin: string) => {
     const error = validatePINConfirmation(pin, confirmPin);
@@ -129,7 +147,7 @@ export function useSignup(): SignupState & SignupActions {
 
   const handleComplete = useCallback(async () => {
     // Validate final step
-    const validation = validateStep(8, signupState.formData);
+    const validation = validateStep(9, signupState.formData);
     if (!validation.isValid) {
       console.error('❌ Final validation failed:', validation.errors);
       return;
@@ -147,19 +165,23 @@ export function useSignup(): SignupState & SignupActions {
       currency: getCurrency(signupState.formData.country || ''),
       inviteCode: signupState.formData.inviteCode,
       pin: signupState.formData.pin || '',
+      securityQuestions: signupState.formData.securityQuestions,
     };
 
     try {
       console.log('🚀 Starting signup process with PIN:', { 
         pinLength: completeProfile.pin?.length, 
         pinSet: !!completeProfile.pin,
-        pinHash: completeProfile.pin ? '***' : 'none'
+        pinHash: completeProfile.pin ? '***' : 'none',
+        hasSecurityQuestions: !!completeProfile.securityQuestions,
+        securityQuestionId: completeProfile.securityQuestions?.questionId
       });
       const result = await createBusinessWithPIN(completeProfile);
 
-      if (result.success && result.data?.business) {
+      if (result.success && result.data?.business && result.data?.session) {
         console.log('✅ Business created successfully');
         const business = result.data.business;
+        const session = result.data.session;
         
         setSignupState(prev => ({
           ...prev,
@@ -167,13 +189,20 @@ export function useSignup(): SignupState & SignupActions {
           businessId: business.id
         }));
 
-        // Auto-redirect after successful signup
-        setTimeout(() => {
-          const country = signupState.formData.country?.toLowerCase() || 'ke';
-          const industry = signupState.formData.industry?.toLowerCase() || 'retail';
-          console.log('🎯 Auto-redirecting to dashboard:', { country, industry });
-          window.location.href = `/Beezee-App/app/${country}/${industry}`;
-        }, 1000);
+        // Establish authentication state immediately
+        const authResult = await signInAfterSignup(business, session);
+        
+        if (authResult.error) {
+          console.error('❌ Failed to establish auth state after signup:', authResult.error);
+          return;
+        }
+
+        // Navigate to dashboard using Next.js router
+        const country = business.country.toLowerCase();
+        const industry = business.industry.toLowerCase();
+        console.log('🎯 Navigating to dashboard:', { country, industry });
+        
+        router.push(`/Beezee-App/app/${country}/${industry}`);
       } else {
         console.error('❌ Business creation failed:', result.error);
         // Error will be handled by the creation state
@@ -182,7 +211,7 @@ export function useSignup(): SignupState & SignupActions {
       console.error('💥 Signup error:', error);
       // Error will be handled by the creation state
     }
-  }, [signupState.formData, createBusinessWithPIN, validateStep]);
+  }, [signupState.formData, createBusinessWithPIN, validateStep, signInAfterSignup, router]);
 
   const reset = useCallback(() => {
     setSignupState({
@@ -198,6 +227,7 @@ export function useSignup(): SignupState & SignupActions {
         currency: 'KES',
         inviteCode: '',
         pin: '',
+        securityQuestions: undefined,
       },
       isComplete: false,
       businessId: null,
@@ -227,6 +257,7 @@ export function useSignup(): SignupState & SignupActions {
     prevStep,
     goToStep,
     updateFormData,
+    updateSecurityQuestions,
     handlePINSetup,
     handlePINConfirmation,
     handleComplete,

@@ -1,4 +1,4 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
 
 export interface Inventory {
   id: string;
@@ -41,17 +41,25 @@ export function useInventoryTanStack(options: UseInventoryOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook
+  // Use the new TanStack Query hook with updated API
   const { 
     data, 
     isLoading, 
-    addItem, 
-    deleteItem, 
-    updateItem,
-    isAdding,
-    isPaused,
+    create,
+    createAsync,
+    delete: deleteItem, 
+    update,
+    updateAsync,
+    isCreating,
+    error,
     refetch
-  } = useIndustryData(industry, country, 'inventory')
+  } = useIndustryDataNew({
+    industry,
+    country,
+    table: 'inventory',
+    select: options.select,
+    businessId: options.businessId,
+  })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -77,13 +85,14 @@ export function useInventoryTanStack(options: UseInventoryOptions = {}) {
   return {
     data: filteredData as Inventory[],
     isLoading,
-    isOffline: isPaused,
-    addInventory: addItem,
+    isOffline: !isLoading && data.length === 0,
+    addInventory: create,
+    addInventoryAsync: createAsync,
     deleteInventory: deleteItem,
-    updateInventory: updateItem,
-    isPending: isAdding,
-    // Keep the same interface as the original hook
-    error: null,
-    refetch // Return the actual refetch function from useIndustryData
+    updateInventory: update,
+    updateInventoryAsync: updateAsync,
+    isPending: isCreating,
+    error,
+    refetch
   }
 }

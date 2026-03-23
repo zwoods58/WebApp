@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
+import { businessSignupSchema } from '@/lib/validation/schemas';
+import { validateRequest, handleValidationError } from '@/middleware/validate';
+import { sanitizeObject } from '@/lib/validation/sanitizer';
+import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -13,35 +17,34 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-export async function POST(request: NextRequest) {
+async function signupHandler(request: NextRequest) {
   try {
-    const userData = await request.json();
+    const body = await request.json();
     
-    console.log('🔧 [API] Creating business in database with PIN:', userData);
+    console.log('🔧 [API] Creating business in database with PIN');
+    console.log('📥 [API] Received body:', {
+      ...body,
+      pin: body.pin ? '***' : 'none',
+      securityQuestions: body.securityQuestions ? {
+        questionId: body.securityQuestions.questionId,
+        hasAnswer: !!body.securityQuestions.answer
+      } : 'NOT PROVIDED'
+    });
     
-    // Validate required fields
-    if (!userData.phoneNumber || !userData.name || !userData.country || !userData.industry) {
-      return NextResponse.json({
-        success: false,
-        existingUser: false,
-        error: 'Missing required fields: phone, name, country, industry',
-        data: null
-      }, { status: 400 });
+    // Validate with Zod schema
+    const validation = validateRequest(businessSignupSchema, body);
+    if (!validation.success) {
+      return handleValidationError(validation.error);
     }
 
-    // Validate PIN
-    if (!userData.pin || userData.pin.length !== 6 || !/^\d{6}$/.test(userData.pin)) {
-      return NextResponse.json({
-        success: false,
-        existingUser: false,
-        error: 'Invalid PIN. PIN must be exactly 6 digits.',
-        data: null
-      }, { status: 400 });
-    }
+    // Sanitize validated data
+    const userData = sanitizeObject(validation.data) as any;
+    console.log('✅ [API] After validation, userData.securityQuestions:', userData.securityQuestions ? 'EXISTS' : 'NULL');
 
     // Hash the PIN with bcrypt
     const saltRounds = 12;
     let pinHash: string;
+    let answerHash: string | null = null;
     
     try {
       console.log('🔐 Hashing PIN:', { 
@@ -54,18 +57,27 @@ export async function POST(request: NextRequest) {
         hashLength: pinHash.length,
         hashPrefix: pinHash.substring(0, 7) + '...'
       });
+
+      // Hash security question answer if provided
+      if (userData.securityQuestions) {
+        const normalizeAnswer = (answer: string) => answer.toLowerCase().trim().replace(/\s+/g, ' ');
+        
+        console.log('🔐 Hashing security question answer');
+        answerHash = await bcrypt.hash(normalizeAnswer(userData.securityQuestions.answer), saltRounds);
+        console.log('✅ Security answer hashed successfully');
+      }
     } catch (hashError) {
-      console.error('❌ Error hashing PIN:', hashError);
+      console.error('❌ Error hashing PIN or security answers:', hashError);
       return NextResponse.json({
         success: false,
         existingUser: false,
-        error: 'Failed to secure PIN',
+        error: 'Failed to secure credentials',
         data: null
       }, { status: 500 });
     }
 
     // Prepare business data for database insertion
-    const businessData = {
+    const businessData: any = {
       phone_number: userData.phoneNumber,
       business_name: userData.businessName || `${userData.name}'s Business`,
       country: userData.country.toUpperCase(),
@@ -81,6 +93,13 @@ export async function POST(request: NextRequest) {
       pin_hash: pinHash, // Store the hashed PIN
       is_active: true
     };
+
+    // Add security question if provided
+    if (userData.securityQuestions && answerHash) {
+      businessData.security_question_1_id = userData.securityQuestions.questionId;
+      businessData.security_answer_1_hash = answerHash;
+      console.log('📝 [API] Including security question in business data');
+    }
 
     console.log('📝 [API] Inserting business data with hashed PIN');
 
@@ -123,12 +142,23 @@ export async function POST(request: NextRequest) {
     // Remove PIN hash from response for security
     const { pin_hash: _, ...businessResponse } = business;
 
+    // Create session data for immediate authentication
+    const sessionData = {
+      businessId: business.id,
+      businessName: business.business_name,
+      country: business.country,
+      industry: business.industry,
+      phone: business.phone_number,
+      timestamp: Date.now()
+    };
+
     return NextResponse.json({
       success: true,
       existingUser: false,
       error: null,
       data: {
-        business: businessResponse
+        business: businessResponse,
+        session: sessionData
       }
     });
 
@@ -142,3 +172,6 @@ export async function POST(request: NextRequest) {
     }, { status: 500 });
   }
 }
+
+// Export with rate limiting
+export const POST = withRateLimit(signupHandler, RATE_LIMITS.AUTH);

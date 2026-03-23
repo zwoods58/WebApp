@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeeZee - Offline</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .offline-container {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      max-width: 450px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .offline-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.5rem;
+      animation: pulse 2s infinite;
+      box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+      }
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding: 0.75rem;
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 10px;
+      color: #856404;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .retry-btn {
+      background: linear-gradient(135deg, #4A8DB8, #3a7ba8);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(74, 141, 184, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 141, 184, 0.4);
+    }
+
+    .retry-btn:active {
+      transform: translateY(0);
+    }
+
+    .retry-btn:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .help-text {
+      color: #95a5a6;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .features-list {
+      text-align: left;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .features-list h3 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: #555;
+    }
+
+    .feature-icon {
+      width: 20px;
+      height: 20px;
+      background: #4A8DB8;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 480px) {
+      .offline-container {
+        padding: 2rem 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      .offline-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <div class="offline-icon">📵</div>
+    <h1>You're Offline</h1>
+    <p class="subtitle">
+      BeeZee is currently unavailable because you're offline. 
+      Your data is safe and will sync when you reconnect.
+    </p>
+    
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>Checking connection...</span>
+    </div>
+
+    <button class="retry-btn" id="retryBtn" onclick="retryConnection()">
+      Try Again
+    </button>
+
+    <div class="features-list">
+      <h3>📱 What happens when you're offline:</h3>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>All your data is saved locally</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>You can still add transactions</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>Everything syncs automatically when online</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✓</div>
+        <span>No data is ever lost</span>
+      </div>
+    </div>
+
+    <p class="help-text">
+      Tip: Your transactions and data are safely stored on your device and will sync automatically when your connection returns.
+    </p>
+  </div>
+
+  <script>
+    let retryCount = 0;
+    const maxRetries = 5;
+    
+    // Update status indicator
+    function updateStatus(isOnline) {
+      const statusIndicator = document.querySelector('.status-indicator');
+      const statusDot = document.querySelector('.status-dot');
+      const statusText = statusIndicator.querySelector('span');
+      
+      if (isOnline) {
+        statusDot.style.background = '#28a745';
+        statusText.textContent = 'Connection restored!';
+        statusIndicator.style.background = '#d4edda';
+        statusIndicator.style.borderColor = '#c3e6cb';
+        statusIndicator.style.color = '#155724';
+      } else {
+        statusDot.style.background = '#ff6b6b';
+        statusText.textContent = 'Checking connection...';
+        statusIndicator.style.background = '#fff3cd';
+        statusIndicator.style.borderColor = '#ffeaa7';
+        statusIndicator.style.color = '#856404';
+      }
+    }
+
+    // Retry connection
+    async function retryConnection() {
+      const retryBtn = document.getElementById('retryBtn');
+      retryBtn.disabled = true;
+      retryBtn.textContent = 'Checking...';
+      
+      retryCount++;
+      
+      try {
+        // Try to fetch a small resource to test connection
+        const response = await fetch('/manifest.json', {
+          method: 'HEAD',
+          cache: 'no-cache'
+        });
+        
+        if (response.ok) {
+          updateStatus(true);
+          retryBtn.textContent = 'Connected! Reloading...';
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          throw new Error('Network failed');
+        }
+      } catch (error) {
+        updateStatus(false);
+        retryBtn.disabled = false;
+        
+        if (retryCount >= maxRetries) {
+          retryBtn.textContent = 'Max retries reached';
+          retryBtn.disabled = true;
+        } else {
+          retryBtn.textContent = `Try Again (${retryCount}/${maxRetries})`;
+        }
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', () => {
+      updateStatus(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+
+    window.addEventListener('offline', () => {
+      updateStatus(false);
+    });
+
+    // Check initial status
+    updateStatus(navigator.onLine);
+
+    // Auto-retry every 10 seconds
+    setInterval(() => {
+      if (!navigator.onLine && retryCount < maxRetries) {
+        retryConnection();
+      }
+    }, 10000);
+  </script>
+</body>
+</html>

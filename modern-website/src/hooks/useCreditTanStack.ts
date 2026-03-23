@@ -1,4 +1,4 @@
-import { useIndustryData } from './useIndustryDataNew'
+import { useIndustryDataNew } from './useIndustryDataNew'
 
 export interface Credit {
   id: string;
@@ -40,17 +40,25 @@ export function useCreditTanStack(options: UseCreditOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook
+  // Use the new TanStack Query hook with updated API
   const { 
     data, 
     isLoading, 
-    addItem, 
-    deleteItem, 
-    updateItem,
-    isAdding,
-    isPaused,
+    create,
+    createAsync,
+    delete: deleteItem, 
+    update,
+    updateAsync,
+    isCreating,
+    error,
     refetch
-  } = useIndustryData(industry, country, 'credit')
+  } = useIndustryDataNew({
+    industry,
+    country,
+    table: 'credit',
+    select: options.select,
+    businessId: options.businessId,
+  })
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
@@ -84,13 +92,14 @@ export function useCreditTanStack(options: UseCreditOptions = {}) {
   return {
     data: filteredData as Credit[],
     isLoading,
-    isOffline: isPaused,
-    addCredit: addItem,
+    isOffline: !isLoading && data.length === 0,
+    addCredit: create,
+    addCreditAsync: createAsync,
     deleteCredit: deleteItem,
-    updateCredit: updateItem,
-    isPending: isAdding,
-    // Keep the same interface as the original hook
-    error: null,
-    refetch // Return the actual refetch function from useIndustryData
+    updateCredit: update,
+    updateCreditAsync: updateAsync,
+    isPending: isCreating,
+    error,
+    refetch
   }
 }

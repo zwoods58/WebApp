@@ -21,6 +21,7 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useSignup } from '@/hooks/useSignup';
 import PINSetup from '@/components/auth/PINSetup';
 import SignupPWAInstallModal from '@/components/auth/SignupPWAInstallModal';
+import SecurityQuestionsSetup from '@/components/auth/SecurityQuestionsSetup';
 
 // Helper function to get flag emoji or fallback
 const getFlagDisplay = (country: { code: string; name: string; flag: string }) => {
@@ -151,6 +152,23 @@ function BeezeeSignupContent() {
           </div>
         );
       case 7:
+        return (
+          <div className="py-12">
+            <SecurityQuestionsSetup
+              onComplete={(data) => {
+                // Store security questions data
+                console.log('📝 [SignupPage] Security question data received:', data);
+                signup.updateSecurityQuestions(data);
+                console.log('📝 [SignupPage] Moving to next step');
+                nextStep();
+              }}
+              onCancel={prevStep}
+              isLoading={signup.creationState.loading}
+              error={signup.creationState.error || undefined}
+            />
+          </div>
+        );
+      case 8:
         return <HybridDailyTarget 
           country={formData.country || ''}
           selectedTarget={formData.dailyTarget?.toString() || ''}
@@ -158,7 +176,7 @@ function BeezeeSignupContent() {
           onNext={nextStep}
           onPrev={prevStep}
         />;
-      case 8:
+      case 9:
         return <AccountSummaryPreview 
           formData={formData}
           onComplete={handleComplete}
@@ -179,7 +197,7 @@ function BeezeeSignupContent() {
       <LiveAccountSummary 
         data={formData} 
         currentStep={currentStep} 
-        isVisible={currentStep >= 2 && currentStep <= 8} 
+        isVisible={currentStep >= 2 && currentStep <= 9} 
       />
 
       <div className="flex-1 container mx-auto px-6 py-8">

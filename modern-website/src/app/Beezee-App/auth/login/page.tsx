@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Phone, Briefcase, Lock } from 'lucide-react';
+import { ArrowLeft, Phone, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import ForgotPINFlow from '@/components/auth/ForgotPINFlow';
 
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import PINVerification from '@/components/auth/PINVerification';
@@ -28,6 +30,7 @@ export default function Login() {
   const [lockoutTime, setLockoutTime] = useState(0);
   const [showPin, setShowPin] = useState(false);
   const [hasUserIntent, setHasUserIntent] = useState(false); // Track if user is actively trying to login
+  const [showForgotPIN, setShowForgotPIN] = useState(false);
   
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
   
@@ -252,8 +255,14 @@ export default function Login() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center mb-12"
               >
-                <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
-                  <Briefcase size={40} strokeWidth={1.5} />
+                <div className="mx-auto mb-6">
+                  <Image
+                    src="/beezee-icon-192x192.png"
+                    alt="BeeZee"
+                    width={80}
+                    height={80}
+                    className="mx-auto"
+                  />
                 </div>
                 <h1 className="text-3xl font-bold text-[var(--text-1)] mb-4 tracking-[-0.02em]">
                   Welcome Back
@@ -338,7 +347,7 @@ export default function Login() {
                   </button>
                 </form>
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center space-y-3">
                   <p className="text-[var(--text-3)] text-sm">
                     Don't have an account?{' '}
                     <Link href="/Beezee-App/auth/signup" className="text-[var(--powder-dark)] hover:underline font-medium">
@@ -346,18 +355,13 @@ export default function Login() {
                     </Link>
                   </p>
                   
-                  {/* Debug button - remove in production */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        onClick={clearAllSessions}
-                        className="text-xs text-red-500 hover:text-red-700 underline"
-                      >
-                        Clear All Sessions (Debug)
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPIN(true)}
+                    className="text-sm text-[var(--powder-dark)] hover:underline font-medium"
+                  >
+                    Forgot PIN?
+                  </button>
                 </div>
               </motion.div>
             </>
@@ -385,6 +389,21 @@ export default function Login() {
           )}
         </div>
       </div>
+
+      {/* Forgot PIN Modal/Flow */}
+      {showForgotPIN && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg)] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <ForgotPINFlow
+              onSuccess={() => {
+                setShowForgotPIN(false);
+                // Optionally show a success message or redirect to login
+              }}
+              onCancel={() => setShowForgotPIN(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

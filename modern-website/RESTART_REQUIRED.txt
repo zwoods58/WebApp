@@ -1,0 +1,30 @@
+⚠️ DEV SERVER RESTART REQUIRED ⚠️
+
+I've added server-side logging to track the security question data.
+
+ACTION NEEDED:
+1. Stop the dev server (Ctrl+C in terminal)
+2. Run: npm run dev
+3. Create a NEW test account with a different phone number
+4. Complete all 9 signup steps
+
+WHAT TO CHECK:
+The terminal running the dev server should show these logs:
+
+📥 [API] Received body: {
+  securityQuestions: { questionId: "...", hasAnswer: true }
+}
+
+✅ [API] After validation, userData.securityQuestions: EXISTS
+
+🔐 Hashing security question answer
+
+📝 [API] Including security question in business data
+
+If you DON'T see "securityQuestions" in the received body, then the data isn't being sent from the frontend despite the browser console showing it.
+
+This will help us identify if the issue is:
+- Frontend not sending the data (even though logs say it is)
+- API not receiving the data
+- Validation stripping the data
+- Sanitization removing the data
