@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
@@ -21,7 +21,10 @@ export async function POST(request: Request) {
       data: op.data ? sanitizeObject(op.data) : undefined
     }));
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     
     const results = [];
     const errors = [];
