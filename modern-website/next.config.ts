@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   typescript: {
-    ignoreBuildErrors: true, // Temporarily ignore errors in test pages
+    ignoreBuildErrors: true,
     tsconfigPath: './tsconfig.json',
   },
   
