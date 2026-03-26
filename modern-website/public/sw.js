@@ -222,10 +222,45 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cacheKey = url.pathname;
         
-        // Dashboard routes: Network-first for fresh data
+        // Dashboard routes: Offline-aware cache-first with background update
         if (url.pathname.startsWith('/Beezee-App/app/')) {
+          // Try cache first for instant response
+          const cached = await caches.match(cacheKey);
+          
+          // If offline or cached, serve from cache immediately
+          if (!navigator.onLine || cached) {
+            if (cached) {
+              console.log('[SW] ✅ Serving dashboard from cache:', cacheKey);
+              
+              // If online, update cache in background (don't wait)
+              if (navigator.onLine) {
+                event.waitUntil(
+                  fetch(request).then(response => {
+                    if (response.ok) {
+                      caches.open(PAGE_CACHE).then(cache => {
+                        cache.put(cacheKey, response.clone());
+                        console.log('[SW] � Updated cache in background:', cacheKey);
+                      });
+                    }
+                  }).catch(() => {
+                    console.log('[SW] ⚠️ Background update failed (offline):', cacheKey);
+                  })
+                );
+              }
+              
+              return cached;
+            }
+            
+            // Offline and not cached - can't serve
+            if (!navigator.onLine) {
+              console.log('[SW] ❌ Offline and not cached:', cacheKey);
+              throw new Error('Offline and page not cached');
+            }
+          }
+          
+          // Online and not cached - fetch from network
           try {
-            console.log('[SW] 📡 Fetching dashboard from network:', cacheKey);
+            console.log('[SW] �📡 Fetching dashboard from network:', cacheKey);
             const response = await fetch(request);
             if (response.ok) {
               const cache = await caches.open(PAGE_CACHE);
@@ -234,11 +269,10 @@ self.addEventListener('fetch', (event) => {
             }
             return response;
           } catch (error) {
-            // Fallback to cache if offline
+            // Network failed - try cache as last resort
             console.log('[SW] ⚠️ Network failed, trying cache:', cacheKey);
-            const cached = await caches.match(cacheKey);
             if (cached) {
-              console.log('[SW] ✅ Serving dashboard from cache (offline):', cacheKey);
+              console.log('[SW] ✅ Serving dashboard from cache (fallback):', cacheKey);
               return cached;
             }
             throw error;
