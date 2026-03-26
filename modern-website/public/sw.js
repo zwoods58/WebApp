@@ -128,6 +128,32 @@ async function cacheUserRoutes(country, industry) {
   }
   
   console.log(`[SW] 🎉 User routes caching complete! ✅ ${cached} cached, ❌ ${failed} failed`);
+  
+  // Pre-cache critical Next.js chunks for offline support
+  console.log('[SW] 📦 Pre-caching critical Next.js chunks...');
+  const criticalChunks = [
+    '/_next/static/chunks/webpack.js',
+    '/_next/static/chunks/main.js',
+    '/_next/static/chunks/pages/_app.js',
+  ];
+  
+  const staticCache = await caches.open(STATIC_CACHE);
+  let chunksCached = 0;
+  
+  for (const chunk of criticalChunks) {
+    try {
+      const response = await fetch(chunk);
+      if (response.ok) {
+        await staticCache.put(chunk, response.clone());
+        chunksCached++;
+        console.log(`[SW] ✅ Cached chunk: ${chunk}`);
+      }
+    } catch (err) {
+      console.warn(`[SW] ⚠️ Failed to cache chunk: ${chunk}`, err.message);
+    }
+  }
+  
+  console.log(`[SW] 🎉 Chunk caching complete! ✅ ${chunksCached}/${criticalChunks.length} chunks cached`);
 }
 
 // ============================================================
@@ -239,15 +265,47 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // Static Assets - Cache First
+  // Static Assets - Cache First with Cache-on-Fetch
   // ============================================================
   if (url.pathname.match(/\.(js|css|json|png|jpg|jpeg|svg|ico)$/) ||
       url.pathname.includes('/_next/static/')) {
     event.respondWith(
-      caches.match(request).then(cached => {
-        if (cached) return cached;
-        return fetch(request);
-      })
+      (async () => {
+        // Try cache first
+        const cached = await caches.match(request);
+        if (cached) {
+          console.log('[SW] ✅ Serving static from cache:', url.pathname);
+          return cached;
+        }
+        
+        // Fetch from network and cache
+        try {
+          console.log('[SW] 📡 Fetching static asset:', url.pathname);
+          const response = await fetch(request);
+          if (response.ok) {
+            const cache = await caches.open(STATIC_CACHE);
+            cache.put(request, response.clone());
+            console.log('[SW] 📦 Cached static asset:', url.pathname);
+          }
+          return response;
+        } catch (error) {
+          console.log('[SW] ❌ Static asset failed offline:', url.pathname);
+          
+          // For JS chunks, return a minimal error script instead of hanging
+          if (url.pathname.endsWith('.js')) {
+            return new Response(
+              'console.error("Offline: Failed to load chunk - " + "' + url.pathname + '");',
+              { 
+                status: 503,
+                headers: { 'Content-Type': 'application/javascript' }
+              }
+            );
+          }
+          
+          // For other assets, throw the error
+          throw error;
+        }
+      })()
     );
     return;
   }
