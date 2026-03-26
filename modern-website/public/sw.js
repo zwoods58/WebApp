@@ -96,6 +96,8 @@ async function cacheUserRoutes(country, industry) {
     `/Beezee-App/app/${country}/${industry}/beehive`,   // Beehive
     `/Beezee-App/app/${country}/${industry}/calendar`,  // Calendar
     `/Beezee-App/app/${country}/${industry}/reports`,   // Reports
+    `/Beezee-App/app/${country}/${industry}/more`,      // More page
+    `/Beezee-App/app/${country}/${industry}/settings`,  // Settings
   ];
   
   console.log(`[SW] 📦 Starting to cache ${routesToCache.length} routes for: ${country}/${industry}`);
