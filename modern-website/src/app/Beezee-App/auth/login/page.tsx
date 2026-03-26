@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Phone, Lock } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import ForgotPINFlow from '@/components/auth/ForgotPINFlow';
@@ -350,9 +349,12 @@ export default function Login() {
                 <div className="mt-6 text-center space-y-3">
                   <p className="text-[var(--text-3)] text-sm">
                     Don't have an account?{' '}
-                    <Link href="/Beezee-App/auth/signup" className="text-[var(--powder-dark)] hover:underline font-medium">
+                    <button
+                      onClick={() => window.location.href = '/Beezee-App/auth/signup'}
+                      className="text-[var(--powder-dark)] hover:underline font-medium bg-transparent border-none cursor-pointer"
+                    >
                       Sign up
-                    </Link>
+                    </button>
                   </p>
                   
                   <button
