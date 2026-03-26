@@ -3,11 +3,10 @@
  * Caches routes based on user's country and industry after login
  */
 
-const CACHE_VERSION = 'v28';
+const CACHE_VERSION = 'v29';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
-const RSC_CACHE = `beezee-rsc-${CACHE_VERSION}`;
 
 // Default fallback routes (before login)
 const DEFAULT_ROUTES = [
@@ -55,8 +54,7 @@ self.addEventListener('activate', (event) => {
         cacheNames.map((cacheName) => {
           if (cacheName !== STATIC_CACHE && 
               cacheName !== API_CACHE && 
-              cacheName !== PAGE_CACHE &&
-              cacheName !== RSC_CACHE) {
+              cacheName !== PAGE_CACHE) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -103,13 +101,12 @@ async function cacheUserRoutes(country, industry) {
   console.log(`[SW] 📦 Starting to cache ${routesToCache.length} routes for: ${country}/${industry}`);
   
   const cache = await caches.open(PAGE_CACHE);
-  const rscCache = await caches.open(RSC_CACHE);
   let cached = 0;
   let failed = 0;
   
   for (const route of routesToCache) {
     try {
-      // Fetch HTML version (for initial page load)
+      // Fetch HTML version only (RSC should never be cached)
       const htmlResponse = await fetch(route, {
         headers: {
           'Accept': 'text/html',
@@ -120,23 +117,6 @@ async function cacheUserRoutes(country, industry) {
         await cache.put(route, htmlResponse.clone());
         cached++;
         console.log(`[SW] ✅ Cached HTML: ${route}`);
-        
-        // Also fetch and cache RSC version (for client-side navigation)
-        try {
-          const rscResponse = await fetch(route, {
-            headers: {
-              'RSC': '1',
-              'Next-Router-State-Tree': '%5B%22%22%2C%7B%22children%22%3A%5B%22__PAGE__%22%2C%7B%7D%5D%7D%2Cnull%2Cnull%2Ctrue%5D',
-            }
-          });
-          
-          if (rscResponse.ok) {
-            await rscCache.put(route, rscResponse.clone());
-            console.log(`[SW] ✅ Cached RSC: ${route}`);
-          }
-        } catch (rscErr) {
-          console.log(`[SW] ⚠️ RSC cache skipped for: ${route}`);
-        }
       } else {
         failed++;
         console.warn(`[SW] ❌ Failed (${htmlResponse.status}): ${route}`);
@@ -195,35 +175,17 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests (client navigation)
+  // RSC Requests (client navigation) - NEVER CACHE
   // ============================================================
-  if (url.searchParams.has('_rsc')) {
-    event.respondWith(
-      (async () => {
-        const cacheKey = url.pathname;
-        
-        // Try RSC cache first
-        const rscCache = await caches.open(RSC_CACHE);
-        const rscCached = await rscCache.match(cacheKey);
-        if (rscCached) {
-          console.log('[SW] ✅ Serving RSC from cache:', cacheKey);
-          return rscCached;
-        }
-        
-        // Fetch from network and cache
-        const response = await fetch(request);
-        if (response.ok) {
-          rscCache.put(cacheKey, response.clone());
-          console.log('[SW] 📦 Cached RSC:', cacheKey);
-        }
-        return response;
-      })()
-    );
+  if (url.searchParams.has('_rsc') || request.headers.get('RSC') === '1') {
+    // RSC requests should NEVER be cached - always fetch fresh from network
+    console.log('[SW] 📡 Fetching RSC from network (no cache):', url.pathname);
+    event.respondWith(fetch(request));
     return;
   }
   
   // ============================================================
-  // HTML Pages - Cache on first visit
+  // HTML Pages
   // ============================================================
   if (request.destination === 'document' || 
       url.pathname === '/' ||
@@ -232,7 +194,30 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cacheKey = url.pathname;
         
-        // Try cache first
+        // Dashboard routes: Network-first for fresh data
+        if (url.pathname.startsWith('/Beezee-App/app/')) {
+          try {
+            console.log('[SW] 📡 Fetching dashboard from network:', cacheKey);
+            const response = await fetch(request);
+            if (response.ok) {
+              const cache = await caches.open(PAGE_CACHE);
+              cache.put(cacheKey, response.clone());
+              console.log('[SW] 📦 Cached dashboard HTML:', cacheKey);
+            }
+            return response;
+          } catch (error) {
+            // Fallback to cache if offline
+            console.log('[SW] ⚠️ Network failed, trying cache:', cacheKey);
+            const cached = await caches.match(cacheKey);
+            if (cached) {
+              console.log('[SW] ✅ Serving dashboard from cache (offline):', cacheKey);
+              return cached;
+            }
+            throw error;
+          }
+        }
+        
+        // Auth pages: Cache-first for speed
         const cached = await caches.match(cacheKey);
         if (cached) {
           console.log('[SW] ✅ Serving HTML from cache:', cacheKey);
