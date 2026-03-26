@@ -3,7 +3,7 @@
  * Caches routes based on user's country and industry after login
  */
 
-const CACHE_VERSION = 'v29';
+const CACHE_VERSION = 'v30';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -52,17 +52,33 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
+          // Delete all old version caches
           if (cacheName !== STATIC_CACHE && 
               cacheName !== API_CACHE && 
               cacheName !== PAGE_CACHE) {
             console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
+          
+          // Also clear static cache to remove old chunks with old hashes
+          // This ensures fresh chunks are loaded after deployment
+          if (cacheName === STATIC_CACHE) {
+            console.log('[SW] Clearing static cache for fresh chunks');
+            return caches.delete(cacheName);
+          }
         })
       );
     }).then(() => {
-      console.log('[SW] Activation complete');
+      console.log('[SW] Activation complete - all old caches cleared');
       return self.clients.claim();
+    }).then(() => {
+      // Notify all clients that new SW is activated
+      return self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'SW_ACTIVATED' });
+        });
+        console.log('[SW] Notified', clients.length, 'clients of activation');
+      });
     })
   );
 });

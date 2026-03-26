@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter_Tight, JetBrains_Mono } from "next/font/google"; // New fonts
 import "./globals.css";
 import BodyWrapper from "./components/BodyWrapper";
+import ServiceWorkerUpdate from "@/components/ServiceWorkerUpdate";
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -119,6 +120,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
       </head>
       <BodyWrapper className={bodyClassName}>
+        <ServiceWorkerUpdate />
         {children}
       </BodyWrapper>
     </html>
