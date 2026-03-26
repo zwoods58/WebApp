@@ -53,7 +53,7 @@
         },
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://web-app1-dsvkfjaqz-zwoods58s-projects.vercel.app"
+          "value": "*"
         },
         {
           "key": "Access-Control-Allow-Methods",
