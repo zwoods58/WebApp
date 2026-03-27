@@ -44,10 +44,11 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
   const country = options.country || 'ke'
   
   // Use the new TanStack Query hook with updated API
-  const { data, isLoading, create, delete: deleteItem, isCreating, error, refetch } = 
+  const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, error, refetch } = 
     useIndustryDataNew({
       industry,
       country,
+      businessId: options.businessId,
       table: 'expenses',
       select: options.select,
     })
@@ -90,6 +91,7 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
     isLoading,
     isOffline: !getOnlineStatus(), // Use actual network status
     addExpense: create,
+    addExpenseAsync: createAsync,
     deleteExpense: deleteItem,
     isPending: isCreating,
     error,

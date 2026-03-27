@@ -23,9 +23,10 @@ export default function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500 ${
+      className={`splash-screen fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white transition-opacity duration-500 ${
         isLoaded ? 'opacity-100' : 'opacity-0'
       }`}
+      style={{ backgroundColor: '#ffffff' }}
     >
       {/* Main Content Container */}
       <div className="flex flex-col items-center justify-center flex-1">

@@ -153,7 +153,10 @@ export default function CashPage() {
   };
   
   const handleMoneyOut = async (expenseData: any) => {
+    console.log('🚀 [CashPage] handleMoneyOut START', { businessId, isOffline });
+    
     if (!businessId) {
+      console.error('❌ [CashPage] No business ID for expense');
       showError('Please set up your business profile first before adding expenses.');
       return;
     }
@@ -168,23 +171,34 @@ export default function CashPage() {
       expense_date: new Date().toISOString().split('T')[0],
       created_at: new Date().toISOString()
     };
-    
+
+    console.log('📝 [CashPage] Expense data prepared:', {
+      fullExpenseData,
+      isOffline,
+      hasAddExpense: typeof addExpense === 'function'
+    });
+
     try {
-      if (!isOffline) {
-        try {
-          await addExpense(fullExpenseData);
-          showSuccess('Expense added successfully');
-        } catch (onlineError) {
-          console.warn('⚠️ Online expense failed, using offline mode:', onlineError);
-          showInfo('Expense queued - will sync when you\'re back online');
-        }
+      // Use TanStack mutation which handles online/offline automatically
+      console.log('💾 [CashPage] Calling addExpense...');
+      const result = await addExpense(fullExpenseData);
+      console.log('✅ [CashPage] addExpense completed:', { result, isOffline });
+      
+      // Show appropriate success message based on online status
+      if (isOffline) {
+        showInfo('Expense added - will sync when you\'re back online');
+        console.log('✅ [CashPage] Expense queued for offline sync');
       } else {
-        showInfo('Offline mode: Expense queued for sync');
+        showSuccess('Expense added successfully');
+        console.log('✅ [CashPage] Expense saved online');
       }
+      
     } catch (error) {
-      console.error('Failed to add expense:', error);
+      console.error('❌ [CashPage] Failed to add expense:', error);
       showError('Failed to add expense. Please try again.');
     }
+    
+    console.log('🏁 [CashPage] handleMoneyOut END');
   };
   
   const filteredCashFlow = allCashFlow.filter(item => {
