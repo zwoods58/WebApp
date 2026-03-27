@@ -19,6 +19,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
+  const [updateShownForVersion, setUpdateShownForVersion] = useState<string | null>(null);
   
   // Initialize connection monitoring
   useEffect(() => {
@@ -37,41 +38,49 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     };
   }, [])
 
-  // ✅ NEW: Service Worker Update Detection
+  // ✅ Service Worker Update Detection (with loop prevention)
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      // Listen for messages from service worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'SW_UPDATED') {
-          console.log('[Layout] New service worker version:', event.data.version);
-          setNewVersion(event.data.version);
-          setUpdateAvailable(true);
-        }
-      });
+      let hasShownUpdate = false;
       
       // Detect when a new service worker is waiting
       navigator.serviceWorker.ready.then((registration) => {
+        // Check if there's already a waiting worker on mount
+        if (registration.waiting && navigator.serviceWorker.controller && !hasShownUpdate) {
+          console.log('[Layout] Update already waiting on mount');
+          hasShownUpdate = true;
+          setUpdateAvailable(true);
+          setNewVersion('v32');
+          setUpdateShownForVersion('v32');
+        }
+        
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version is waiting
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller && !hasShownUpdate) {
+                // New version is waiting - only show once
                 console.log('[Layout] New version waiting to activate');
+                hasShownUpdate = true;
+                const versionId = `v32-${Date.now()}`;
                 setUpdateAvailable(true);
-                setNewVersion('New');
+                setNewVersion('v32');
+                setUpdateShownForVersion(versionId);
               }
             });
           }
         });
       });
       
-      // Check for updates periodically (every hour)
+      // Check for updates periodically (every 2 hours, not every hour)
       const updateInterval = setInterval(() => {
-        if (navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ type: 'CHECK_FOR_UPDATES' });
-        }
-      }, 60 * 60 * 1000);
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg && !hasShownUpdate) {
+            console.log('[Layout] 🔍 Periodic update check...');
+            reg.update();
+          }
+        });
+      }, 2 * 60 * 60 * 1000); // 2 hours
       
       return () => clearInterval(updateInterval);
     }

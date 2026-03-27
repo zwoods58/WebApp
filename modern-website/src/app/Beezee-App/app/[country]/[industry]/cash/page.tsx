@@ -82,7 +82,10 @@ export default function CashPage() {
   
   // ✅ STEP 9: Handler functions
   const handleMoneyIn = async (transactionData: any) => {
+    console.log('🚀 [CashPage] handleMoneyIn START', { businessId, isOffline });
+    
     if (!businessId) {
+      console.error('❌ [CashPage] No business ID');
       showError('Please set up your business profile first before adding transactions.');
       return;
     }
@@ -98,18 +101,17 @@ export default function CashPage() {
       created_at: new Date().toISOString()
     };
 
-    console.log('🔧 [CashPage] handleMoneyIn called:', {
-      transactionData,
-      businessId,
-      industry,
-      isOffline
+    console.log('� [CashPage] Transaction data prepared:', {
+      fullTransactionData,
+      isOffline,
+      hasAddTransaction: typeof addTransaction === 'function'
     });
 
     try {
       // Step 1: Create the transaction
-      console.log('📝 [CashPage] Creating transaction...');
-      await addTransaction(fullTransactionData);
-      console.log('✅ [CashPage] Transaction saved successfully');
+      console.log('� [CashPage] Calling addTransaction...');
+      const result = await addTransaction(fullTransactionData);
+      console.log('✅ [CashPage] addTransaction completed:', { result, isOffline });
       
       // Step 2: If payment method is 'credit', handle credit record
       if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
@@ -139,12 +141,15 @@ export default function CashPage() {
         }
       } else {
         showSuccess('Transaction added successfully');
+        console.log('✅ [CashPage] Regular transaction completed successfully');
       }
       
     } catch (error) {
       console.error('❌ [CashPage] Failed to add transaction:', error);
       showError('Failed to add transaction. Please try again.');
     }
+    
+    console.log('🏁 [CashPage] handleMoneyIn END');
   };
   
   const handleMoneyOut = async (expenseData: any) => {
@@ -573,21 +578,6 @@ export default function CashPage() {
       )}
 
       <BottomNav industry={industry} country={country} />
-      
-      {/* Offline Status Indicator */}
-      {(isOffline || isSyncing || totalPending > 0) && (
-        <div className="fixed bottom-24 left-4 right-4 z-50">
-          <div className={`p-3 rounded-lg text-white text-sm font-medium ${
-            isOffline ? 'bg-red-500' : 
-            isSyncing ? 'bg-blue-500' : 
-            'bg-orange-500'
-          }`}>
-            {isOffline && '📵 Offline - Changes will sync when connected'}
-            {isSyncing && '🔄 Syncing your data...'}
-            {!isOffline && !isSyncing && totalPending > 0 && `⏳ ${totalPending} pending changes`}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

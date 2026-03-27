@@ -104,14 +104,9 @@ export async function initConnectionMonitoring(): Promise<void> {
   const initialStatus = await testConnectivity();
   await setOnline(initialStatus);
   
-  // ✅ SIMPLE: Just register service worker, don't wait for ready
-  // Let the service worker handle its own registration
+  // Service worker registration is now handled globally in BodyWrapper
+  // Just set up background sync if SW is available
   if ('serviceWorker' in navigator) {
-    // Just trigger registration, don't await or check
-    swManager.register().catch(err => {
-      console.warn('[Network] Service worker registration warning:', err);
-    });
-    
     // Try background sync but don't block
     swManager.registerBackgroundSync().catch(err => {
       console.warn('[Network] Background sync not available:', err);

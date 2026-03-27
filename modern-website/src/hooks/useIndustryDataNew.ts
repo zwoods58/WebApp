@@ -49,7 +49,12 @@ export const useIndustryDataNew = ({
   const query = useQuery({
     queryKey: [table, industry, country, businessId].filter(Boolean),
     queryFn: async () => {
-      if (!businessId) return [];
+      console.log(`🔍 [QUERY ${table}] Starting query fetch`, { businessId, isOnline });
+      
+      if (!businessId) {
+        console.log(`❌ [QUERY ${table}] No business ID, returning empty`);
+        return [];
+      }
       
       let cachedData: any[] = [];
       
@@ -79,23 +84,43 @@ export const useIndustryDataNew = ({
           default:
             cachedData = await db.table(table as any).where('business_id').equals(businessId).toArray().catch(() => []);
         }
+        
+        console.log(`📦 [QUERY ${table}] IndexedDB read complete`, { 
+          count: cachedData.length,
+          items: cachedData.slice(0, 3).map(item => ({
+            id: item.id,
+            syncStatus: item.syncStatus,
+            _deleted: item._deleted
+          }))
+        });
       } catch (error) {
-        console.warn(`[useIndustryDataNew] Failed to read from IndexedDB for ${table}:`, error);
+        console.error(`❌ [QUERY ${table}] Failed to read from IndexedDB:`, error);
         cachedData = [];
       }
 
       // Filter out soft-deleted items
       const filteredData = Array.isArray(cachedData) ? cachedData.filter(item => !item._deleted) : [];
+      const deletedCount = cachedData.length - filteredData.length;
+      
+      console.log(`🔍 [QUERY ${table}] Data filtering`, { 
+        original: cachedData.length,
+        deleted: deletedCount,
+        final: filteredData.length,
+        pendingItems: filteredData.filter(item => item.syncStatus === 'pending').length
+      });
 
       // Refresh from Supabase in background if online
       if (isOnline) {
+        console.log(`🌐 [QUERY ${table}] Online - triggering background refresh`);
         refreshFromSupabase().catch(console.warn);
+      } else {
+        console.log(`📵 [QUERY ${table}] Offline - skipping Supabase refresh`);
       }
 
       // Apply select filter if provided
       if (select && Array.isArray(filteredData) && filteredData.length > 0) {
         const fields = select.split(',');
-        return filteredData.map(item => {
+        const selectedData = filteredData.map(item => {
           const selected: any = {};
           fields.forEach(field => {
             const trimmedField = field.trim();
@@ -105,8 +130,15 @@ export const useIndustryDataNew = ({
           });
           return selected;
         });
+        
+        console.log(`🔧 [QUERY ${table}] Applied select filter`, { 
+          fields,
+          resultCount: selectedData.length 
+        });
+        return selectedData;
       }
 
+      console.log(`✅ [QUERY ${table}] Returning data`, { count: filteredData.length });
       return filteredData;
     },
     staleTime: isOnline ? 5 * 60 * 1000 : Infinity,
@@ -114,6 +146,8 @@ export const useIndustryDataNew = ({
   });
 
   const refreshFromSupabase = async () => {
+    console.log(`🔄 [REFRESH ${table}] Starting background refresh from Supabase`);
+    
     try {
       let freshData: any[] = [];
       let error: any = null;
@@ -154,19 +188,22 @@ export const useIndustryDataNew = ({
       }
 
       if (error) {
-        console.warn(`[useIndustryDataNew] Supabase fetch error for ${table}:`, error);
+        console.warn(`⚠️ [REFRESH ${table}] Supabase fetch error:`, error);
         return;
       }
+
+      console.log(`📥 [REFRESH ${table}] Fetched ${freshData.length} items from Supabase`);
 
       for (const item of freshData) {
         await updateCache(table, { ...item, syncStatus: 'synced' });
       }
 
       if (freshData.length > 0) {
+        console.log(`🔄 [REFRESH ${table}] Invalidating query cache - this may overwrite optimistic updates`);
         queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
       }
     } catch (error) {
-      console.warn(`[useIndustryDataNew] Background refresh failed for ${table}:`, error);
+      console.warn(`❌ [REFRESH ${table}] Background refresh failed:`, error);
     }
   };
 
@@ -228,7 +265,10 @@ export const useIndustryDataNew = ({
       return cachedItem;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+      console.log(`✅ [CREATE ${table}] Mutation successful - optimistic update should show new item`);
+      // Note: Removed queryClient.invalidateQueries() to prevent race condition
+      // The optimistic update set during mutation should be sufficient for immediate UI update
+      // Background refresh will handle syncing with server when online
     },
     onError: (error) => {
       console.error(`[useIndustryDataNew] Create failed for ${table}:`, error);
@@ -328,7 +368,10 @@ export const useIndustryDataNew = ({
       return { id, ...data };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+      console.log(`✅ [UPDATE ${table}] Mutation successful - optimistic update should show changes`);
+      // Note: Removed queryClient.invalidateQueries() to prevent race condition
+      // The optimistic update set during mutation should be sufficient for immediate UI update
+      // Background refresh will handle syncing with server when online
     },
     onError: (error) => {
       console.error(`[useIndustryDataNew] Update failed for ${table}:`, error);
@@ -383,7 +426,10 @@ export const useIndustryDataNew = ({
       return id;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+      console.log(`✅ [DELETE ${table}] Mutation successful - optimistic update should remove item`);
+      // Note: Removed queryClient.invalidateQueries() to prevent race condition
+      // The optimistic update set during mutation should be sufficient for immediate UI update
+      // Background refresh will handle syncing with server when online
     },
     onError: (error) => {
       console.error(`[useIndustryDataNew] Delete failed for ${table}:`, error);

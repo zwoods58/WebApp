@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { swManager } from '@/lib/serviceWorker';
 
 interface BodyWrapperProps {
   children: React.ReactNode;
@@ -18,6 +19,13 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Register service worker globally on all pages
+    if ('serviceWorker' in navigator) {
+      swManager.register().catch(err => {
+        console.warn('[App] Service worker registration warning:', err);
+      });
+    }
   }, []);
 
   const handleGlobalRefresh = async () => {

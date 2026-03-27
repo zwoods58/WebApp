@@ -141,15 +141,24 @@ class PersistentStorage {
 
       const storageItem: PersistentStorageItem<T> = JSON.parse(item);
       
-      // Verify data integrity
+      // In development, skip strict checksum validation to avoid false positives
+      // from hot-reload and data structure changes
+      if (process.env.NODE_ENV === 'development') {
+        // Just validate the data structure is reasonable
+        if (this.isDataStructureValid(storageItem.data)) {
+          return storageItem.data;
+        }
+        // If structure is invalid, try backup
+        console.warn(`⚠️ Invalid data structure for ${key}, trying backup...`);
+        return this.getFromBackup<T>(key);
+      }
+      
+      // In production, verify data integrity with checksum
       const currentChecksum = this.generateChecksum(storageItem.data);
       if (currentChecksum !== storageItem.checksum) {
         // Before treating as corruption, validate the data structure
-        // Checksum can differ due to object property ordering or minor serialization differences
         if (this.isDataStructureValid(storageItem.data)) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn(`⚠️ Checksum mismatch for ${key}, but data structure is valid. Updating checksum...`);
-          }
+          console.warn(`⚠️ Checksum mismatch for ${key}, but data structure is valid. Updating checksum...`);
           // Update the checksum and re-save silently
           this.set(key, storageItem.data, { backup: true });
           return storageItem.data;

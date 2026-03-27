@@ -13,11 +13,14 @@ export async function setBusinessContext(
     // Get country code from country name
     const countryCode = getCountryCode(country);
     
-    console.log('🔐 Setting business context:', { businessId, country: countryCode, industry });
-    
-    // Check if admin client is available
+    // Skip in development if service key not available
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY not found, using regular client');
+      if (process.env.NODE_ENV === 'development') {
+        // Silently skip in development - not critical for local dev
+        return;
+      }
+      console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY not found, skipping business context');
+      return;
     }
     
     // Call the Supabase function to set session context
@@ -28,29 +31,31 @@ export async function setBusinessContext(
     });
 
     if (error) {
-      console.error('❌ Failed to set business context:', {
-        error,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-        message: error.message,
-        businessId,
-        countryCode,
-        industry
-      });
-      throw error;
+      // Check if function doesn't exist (common in dev)
+      if (error.code === '42883' || error.message?.includes('function') || error.message?.includes('does not exist')) {
+        if (process.env.NODE_ENV === 'development') {
+          // Silently skip in development
+          return;
+        }
+        console.warn('⚠️ set_business_context function not found in database - skipping (non-critical)');
+        return;
+      }
+      
+      // For other errors, log but don't throw (non-critical)
+      console.warn('⚠️ Failed to set business context (non-critical):', error.message);
+      return;
     }
 
-    console.log('✅ Business context set successfully:', { businessId, country: countryCode, industry, data });
-  } catch (error) {
-    console.error('❌ Error setting business context:', {
-      error,
-      businessId,
-      country,
-      industry,
-      serviceKeyAvailable: !!process.env.SUPABASE_SERVICE_ROLE_KEY
-    });
-    throw error;
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Business context set:', { businessId, country: countryCode, industry });
+    }
+  } catch (error: any) {
+    // Gracefully handle errors - business context is not critical for app functionality
+    if (process.env.NODE_ENV === 'development') {
+      // Silently skip in development
+      return;
+    }
+    console.warn('⚠️ Could not set business context (non-critical):', error?.message || 'Unknown error');
   }
 }
 

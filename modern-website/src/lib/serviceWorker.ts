@@ -84,6 +84,25 @@ export class ServiceWorkerManager {
   getState(): string | null {
     return navigator.serviceWorker.controller?.state || null;
   }
+  
+  async notifyUserRoutes(country: string, industry: string): Promise<void> {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      registration.active?.postMessage({
+        type: 'CACHE_USER_ROUTES',
+        country: country.toLowerCase(),
+        industry: industry.toLowerCase()
+      });
+      console.log('[SW] Notified service worker to cache user routes:', { country, industry });
+    } catch (error) {
+      console.error('[SW] Failed to notify service worker:', error);
+    }
+  }
 }
 
 export const swManager = ServiceWorkerManager.getInstance();
+
+// Helper function for notifying service worker about user routes
+export async function notifyServiceWorker(country: string, industry: string): Promise<void> {
+  await swManager.notifyUserRoutes(country, industry);
+}
