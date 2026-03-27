@@ -5,6 +5,24 @@ import { useSignupValidation } from './useSignupValidation';
 import { useBusinessCreation } from './useBusinessCreation';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { getCurrency } from '@/utils/currency';
+import { useToast } from './useToast';
+import { notifyServiceWorker } from '@/lib/serviceWorker';
+
+// Helper function to detect standalone mode and navigate accordingly
+function navigatePWAAware(path: string, router: any) {
+  const isStandalone = typeof window !== 'undefined' && 
+                       window.matchMedia('(display-mode: standalone)').matches;
+  
+  if (isStandalone) {
+    // In standalone PWA mode, use window.location.href
+    console.log('[Auth] Standalone mode detected, using window.location.href');
+    window.location.href = path;
+  } else {
+    // In browser mode, use Next.js router
+    console.log('[Auth] Browser mode detected, using router.push');
+    router.push(path);
+  }
+}
 
 export interface SignupState {
   currentStep: number;
@@ -31,6 +49,7 @@ export interface SignupActions {
 export function useSignup(): SignupState & SignupActions {
   const router = useRouter();
   const { signInAfterSignup } = useUnifiedAuth();
+  const { showInfo, showSuccess } = useToast();
   const [signupState, setSignupState] = useState<SignupState>({
     currentStep: 1,
     formData: {
@@ -197,12 +216,32 @@ export function useSignup(): SignupState & SignupActions {
           return;
         }
 
-        // Navigate to dashboard using Next.js router
+        // Cache user routes before redirecting
         const country = business.country.toLowerCase();
         const industry = business.industry.toLowerCase();
-        console.log('🎯 Navigating to dashboard:', { country, industry });
         
-        router.push(`/Beezee-App/app/${country}/${industry}`);
+        // Show caching progress indicator
+        showInfo('📦 Preparing for offline use...');
+        
+        try {
+          // Notify service worker to cache user routes
+          await notifyServiceWorker(country, industry);
+          
+          // Wait a bit for caching to start (non-blocking)
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Show success message
+          showSuccess('✅ Ready for offline use!');
+          
+          console.log('🎯 Navigating to dashboard:', { country, industry });
+          
+          // Navigate to dashboard with PWA-aware navigation
+          navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
+        } catch (error) {
+          console.error('⚠️ Failed to cache user routes:', error);
+          // Still navigate even if caching fails
+          navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
+        }
       } else {
         console.error('❌ Business creation failed:', result.error);
         // Error will be handled by the creation state
@@ -211,7 +250,7 @@ export function useSignup(): SignupState & SignupActions {
       console.error('💥 Signup error:', error);
       // Error will be handled by the creation state
     }
-  }, [signupState.formData, createBusinessWithPIN, validateStep, signInAfterSignup, router]);
+  }, [signupState.formData, createBusinessWithPIN, validateStep, signInAfterSignup, router, showInfo, showSuccess]);
 
   const reset = useCallback(() => {
     setSignupState({

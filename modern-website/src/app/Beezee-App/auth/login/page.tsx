@@ -11,6 +11,23 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import PINVerification from '@/components/auth/PINVerification';
 import PINLockout from '@/components/auth/PINLockout';
 import { formatPhoneNumber } from '@/utils/phoneUtils';
+import { useToast } from '@/hooks/useToast';
+
+// Helper function to detect standalone mode and navigate accordingly
+function navigatePWAAware(path: string, router: any) {
+  const isStandalone = typeof window !== 'undefined' && 
+                       window.matchMedia('(display-mode: standalone)').matches;
+  
+  if (isStandalone) {
+    // In standalone PWA mode, use window.location.href
+    console.log('[Auth] Standalone mode detected, using window.location.href');
+    window.location.href = path;
+  } else {
+    // In browser mode, use Next.js router
+    console.log('[Auth] Browser mode detected, using router.push');
+    router.push(path);
+  }
+}
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -35,6 +52,7 @@ export default function Login() {
   
   const router = useRouter();
   const { signInDirect, signInWithPIN, isAuthenticated, user, loading: authLoading, validatePhone } = useUnifiedAuth();
+  const { showInfo, showSuccess } = useToast();
 
   // Check if user is already authenticated and redirect
   useEffect(() => {
@@ -80,7 +98,7 @@ export default function Login() {
     
     // Add a small delay to ensure auth state is set before redirect
     setTimeout(() => {
-      router.push(`/Beezee-App/app/${country}/${industry}`);
+      navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
     }, 100);
   };
 
@@ -181,8 +199,18 @@ export default function Login() {
       if (result.error) {
         setError(result.error.message);
       } else if (result.data && result.data.business) {
-        // Login successful - handle success
+        // Login successful - show caching progress
         console.log('✅ Login successful, business data:', result.data.business);
+        
+        // Show caching progress indicator
+        showInfo('📦 Preparing for offline use...');
+        
+        // Wait a bit for caching to start (service worker notification happens in signInWithPIN)
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Show success message
+        showSuccess('✅ Ready for offline use!');
+        
         handleLoginSuccess(result.data.business);
       } else {
         console.error('❌ Unexpected response structure:', result);

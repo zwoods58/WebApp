@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { pinVerificationSchema } from '@/lib/validation/schemas';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { checkRateLimit, getRateLimitIdentifier, RATE_LIMITS } from '@/middleware/rateLimit';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -84,14 +84,31 @@ async function verifyPinHandler(request: NextRequest) {
 
     if (!pinValid) {
       console.log('❌ [API] Invalid PIN provided');
+      
+      // Apply rate limiting ONLY for failed attempts
+      const identifier = getRateLimitIdentifier(request);
+      const rateLimitResult = await checkRateLimit(request, RATE_LIMITS.PIN_VERIFY);
+      
+      if (!rateLimitResult.success) {
+        console.log('🚫 [API] Rate limit exceeded for failed PIN attempts:', identifier);
+        return NextResponse.json({
+          success: false,
+          error: 'Too many failed attempts. Please try again later.',
+          business: null,
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000 / 60) // minutes
+        }, { status: 429 });
+      }
+      
       return NextResponse.json({
         success: false,
         error: 'Invalid PIN',
-        business: null
+        business: null,
+        remainingAttempts: rateLimitResult.remaining
       }, { status: 401 });
     }
 
     // PIN is valid - return business data (excluding PIN hash)
+    // Successful logins do NOT count toward rate limiting
     const { pin_hash: _, ...businessResponse } = business;
     
     console.log('✅ [API] PIN verification successful for:', business.business_name);
@@ -112,5 +129,5 @@ async function verifyPinHandler(request: NextRequest) {
   }
 }
 
-// Export with strict rate limiting (3 attempts per 15 minutes to prevent brute force)
-export const POST = withRateLimit(verifyPinHandler, RATE_LIMITS.PIN_VERIFY);
+// Export handler - rate limiting applied only for failed PIN attempts (inside handler)
+export const POST = verifyPinHandler;
