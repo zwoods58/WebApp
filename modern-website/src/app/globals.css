@@ -871,14 +871,18 @@ html, body {
     background-color: #ffffff !important;
   }
   
-  /* Prevent any black background flash */
-  * {
-    background-color: transparent !important;
+  /* Only affect splash screen, not other components */
+  .splash-screen,
+  .splash-screen * {
+    background-color: #ffffff !important;
   }
   
-  /* Splash screen container */
-  .splash-screen {
-    background-color: #ffffff !important;
+  /* Ensure navigation and other UI elements keep their backgrounds */
+  nav,
+  nav *,
+  .fixed,
+  .bg-white {
+    background-color: inherit !important;
   }
 }
 

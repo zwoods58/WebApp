@@ -112,7 +112,7 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 min-h-[64px]">
+      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 min-h-[64px]" style={{ backgroundColor: '#ffffff' }}>
         <div className="flex justify-around items-center max-w-md mx-auto h-16 px-2">
           {navItems.map((item) => {
             const active = isActive(item.path);
