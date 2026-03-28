@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { 
   User, 
@@ -316,11 +315,7 @@ export default function SettingsPage() {
 
       <div className="p-4 max-w-md mx-auto">
         {/* Back Navigation */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-4"
-        >
+        <div className="fade-in">
           <Link 
             href={`/Beezee-App/app/${country}/${industry}/more`}
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -328,24 +323,14 @@ export default function SettingsPage() {
             <ArrowLeft size={20} />
             <span>{t('common.back', 'Back to More')}</span>
           </Link>
-        </motion.div>
+        </div>
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {t('settings.profile', 'Profile Information')}
-        </motion.h1>
+        </h1>
 
         {/* Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6"
-        >
+        <div className="fade-in">
           <div className="flex items-start gap-4 mb-6">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center text-3xl">
               👤
@@ -459,7 +444,7 @@ export default function SettingsPage() {
               </button>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />
@@ -476,21 +461,12 @@ export default function SettingsPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {t('settings.title', 'Settings')}
-        </motion.h1>
+        </h1>
 
         {/* Section Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="flex gap-2 overflow-x-auto mb-6"
-        >
+        <div className="fade-in mt-8">
           {settingsSections.map((section) => (
             <button
               key={section.id}
@@ -505,14 +481,10 @@ export default function SettingsPage() {
               {section.title}
             </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Settings Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        <div className="fade-in mt-8">
           {activeSection === 'password' ? (
             /* Password Change Form */
             <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -586,13 +558,7 @@ export default function SettingsPage() {
             /* Settings Items */
             <div className="space-y-4">
               {currentSection.items.map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="bg-white rounded-xl border border-gray-200 p-4"
-                >
+                <div className="fade-in">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -643,19 +609,14 @@ export default function SettingsPage() {
                       </select>
                     )}
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Account Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6 bg-white rounded-xl border border-gray-200 p-4"
-        >
+        <div className="fade-in">
           <h3 className="font-medium text-gray-900 mb-3">
             {t('settings.account_info', 'Account Information')}
           </h3>
@@ -681,15 +642,10 @@ export default function SettingsPage() {
               <span className="text-gray-900">{business?.country || country.toUpperCase()}</span>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* App Version */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-6 text-center text-sm text-gray-500"
-        >
+        <div className="fade-in">
           <div className="mb-2">
             {t('app.name', 'BeeZee App')} v2.1.0
           </div>
@@ -704,7 +660,7 @@ export default function SettingsPage() {
               {t('footer.help', 'Help')}
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />

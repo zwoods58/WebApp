@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Phone, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -12,6 +11,7 @@ import PINVerification from '@/components/auth/PINVerification';
 import PINLockout from '@/components/auth/PINLockout';
 import { formatPhoneNumber } from '@/utils/phoneUtils';
 import { useToast } from '@/hooks/useToast';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 // Helper function to detect standalone mode and navigate accordingly
 function navigatePWAAware(path: string, router: any) {
@@ -30,6 +30,7 @@ function navigatePWAAware(path: string, router: any) {
 }
 
 export default function Login() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     phone: '',
     pin: ''
@@ -277,36 +278,29 @@ export default function Login() {
           {/* Phone Step */}
           {loginStep === 'phone' && (
             <>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-12"
+              <div
+                className="text-center mb-12 fade-in"
               >
                 <div className="mx-auto mb-6">
                   <Image
                     src="/beezee-icon-192x192.png"
-                    alt="BeeZee"
-                    width={80}
-                    height={80}
-                    className="mx-auto"
+                    alt="BeeZee Icon"
+                    width={64}
+                    height={64}
+                    className="rounded-2xl"
                   />
                 </div>
-                <h1 className="text-3xl font-bold text-[var(--text-1)] mb-4 tracking-[-0.02em]">
-                  Welcome Back
+                <h1 className="text-3xl font-bold text-[var(--text-1)] mb-4">
+                  {t('auth.welcome_back', 'Welcome Back')}
                 </h1>
-                <p className="text-[var(--text-2)]">
-                  Enter your phone number and PIN to access your business
-                </p>
                 <p className="text-[var(--text-3)] text-sm mt-2">
                   Just like mobile banking - secure and simple
                 </p>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8"
+              <div
+                className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8"
+                style={{ animationDelay: '0.1s' }}
               >
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4">
@@ -393,7 +387,7 @@ export default function Login() {
                     Forgot PIN?
                   </button>
                 </div>
-              </motion.div>
+              </div>
             </>
           )}
 

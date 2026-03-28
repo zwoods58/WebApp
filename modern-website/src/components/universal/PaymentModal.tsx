@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, DollarSign, CheckCircle, Clock } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
@@ -78,14 +77,9 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
+    
       <div className="fixed inset-0 bg-black/20 backdrop-blur-xl flex items-center justify-center z-[70] p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-gray-100/80 backdrop-blur-xl rounded-2xl p-6 w-full max-w-md relative border border-white/20"
-        >
+        <div className="animate-fade-in">
           {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="w-16" />
@@ -103,13 +97,9 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
           {/* Success State */}
           {success ? (
             <div className="text-center py-8">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="w-20 h-20 bg-green-100/50 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
+              <div className="w-20 h-20 bg-green-100/50 rounded-full flex items-center justify-center mx-auto mb-4 animate-fade-in">
                 <CheckCircle size={48} className="text-green-600" />
-              </motion.div>
+              </div>
               <h3 className="text-xl font-bold text-black mb-2">
                 {t('credit.payment_recorded', 'Payment Recorded!')}
               </h3>
@@ -200,8 +190,8 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
               </form>
             </>
           )}
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
+    
   );
 }

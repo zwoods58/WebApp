@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Bell, Check, X, Search, Filter, DollarSign, TrendingDown, Package, Clock, Star, Settings, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
@@ -261,14 +260,7 @@ export default function NotificationsPage() {
               const isSelected = selectedNotifications.includes(notification.id);
               
               return (
-                <motion.div
-                  key={notification.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`p-4 rounded-xl border transition-all ${
-                    !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
-                  } ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-                >
+                <div class="fade-in">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
@@ -322,7 +314,7 @@ export default function NotificationsPage() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

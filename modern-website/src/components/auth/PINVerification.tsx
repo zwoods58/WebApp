@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, AlertCircle, Timer } from 'lucide-react';
 
 interface PINVerificationProps {
@@ -100,11 +99,7 @@ export default function PINVerification({
   const isPinComplete = pin.every(digit => digit !== '');
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md mx-auto"
-    >
+    <div class="fade-in">
       <div className="text-center mb-6">
         <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
           isLocked 
@@ -180,14 +175,10 @@ export default function PINVerification({
             </div>
 
             {isPinComplete && !error && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center justify-center text-blue-600"
-              >
+              <div class="fade-in">
                 <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2" />
                 <span className="text-sm font-medium">Verifying...</span>
-              </motion.div>
+              </div>
             )}
           </div>
 
@@ -217,23 +208,15 @@ export default function PINVerification({
 
       {/* Error Message */}
       {error && !isLocked && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center text-red-700 mb-4"
-        >
+        <div class="fade-in">
           <AlertCircle size={16} className="mr-2 flex-shrink-0" />
           <span className="text-sm">{error}</span>
-        </motion.div>
+        </div>
       )}
 
       {/* Lockout Warning */}
       {remainingAttempts <= 1 && !isLocked && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-center text-orange-700 mb-4"
-        >
+        <div class="fade-in">
           <AlertCircle size={16} className="mr-2 flex-shrink-0" />
           <span className="text-sm">
             {remainingAttempts === 1 
@@ -241,7 +224,7 @@ export default function PINVerification({
               : 'One more failed attempt will lock your account for 30 minutes.'
             }
           </span>
-        </motion.div>
+        </div>
       )}
 
       {/* Help Text */}
@@ -252,6 +235,6 @@ export default function PINVerification({
           </p>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

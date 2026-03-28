@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
   User, 
@@ -218,25 +217,13 @@ export default function AddAppointmentModal({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/20 backdrop-blur-xl"
-        />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
 
-        {/* Modal - Mobile Responsive */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gray-100/80 backdrop-blur-xl rounded-3xl p-4 sm:p-6 border border-white/20"
-        >
-          {/* Apple-style Header */}
+      {/* Modal - Mobile Responsive */}
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl p-6 animate-scale-in">
+        {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="w-8 sm:w-16" />
             <h2 className="text-lg sm:text-lg font-semibold text-black">
@@ -433,8 +420,7 @@ export default function AddAppointmentModal({
               </button>
             </div>
           </form>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+        </div>
+    </div>
   );
 }

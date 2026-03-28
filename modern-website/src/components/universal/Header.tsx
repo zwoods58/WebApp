@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
@@ -165,19 +164,12 @@ export default function Header({ industry, country }: HeaderProps) {
       </header>
 
       {/* Language Selector Dropdown */}
-      <AnimatePresence>
-        {showLangSelector && (
-          <motion.div
-            ref={dropdownRef}
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-20 right-5 z-[90] glass-strong rounded-2xl shadow-float-lg p-2 min-w-[200px] max-h-[300px] overflow-y-auto"
-          >
+      {showLangSelector && (
+        <div className="fixed inset-0 z-[70] flex items-start justify-end pt-20 px-4">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden min-w-[200px] animate-fade-in">
             <div className="py-1">
               <div className="px-3 py-2 mb-2">
-                <h3 className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   {t('language.select')}
                 </h3>
               </div>
@@ -188,24 +180,25 @@ export default function Header({ industry, country }: HeaderProps) {
                     setLanguage(lang.code);
                     setShowLangSelector(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-[var(--powder)]/10 transition-colors ${
-                    currentLanguage === lang.code ? 'bg-[var(--powder)]/20 text-[var(--powder-dark)]' : 'text-[var(--text-1)]'
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
+                    currentLanguage === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-900'
                   }`}
                 >
                   <span className="text-lg">{lang.flag}</span>
                   <div className="flex-1">
                     <div className="text-sm font-medium">{getLanguageName(lang.code)}</div>
-                    <div className="text-xs text-[var(--text-3)]">{lang.nativeName}</div>
+                    <div className="text-xs text-gray-500">{lang.nativeName}</div>
                   </div>
                   {currentLanguage === lang.code && (
-                    <div className="w-2 h-2 bg-[var(--powder-dark)] rounded-full"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   )}
                 </button>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
+      
     </>
   );
 }

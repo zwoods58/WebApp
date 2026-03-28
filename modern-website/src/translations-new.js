@@ -13279,6 +13279,45 @@ const translations = {
       rw: "Ubucuruzi bw'ubuhambuki", 
       lg: "By'ensi by'okutambula" 
     },
+    "transport.distance": {
+      en: "Distance (km)",
+      sw: "Umbali (km)",
+      ha: "Tazara (km)",
+      yo: "Ibodo (km)",
+      ig: "Oghogo (km)",
+      zu: "Ubude (km)",
+      xh: "Ubude (km)",
+      af: "Afstand (km)",
+      tw: "Ntɔntɔ (km)",
+      rw: "Intambwe (km)",
+      lg: "Buwanvu (km)"
+    },
+    "transport.fuel": {
+      en: "Fuel",
+      sw: "Mafuta",
+      ha: "Man fetur",
+      yo: "Mọto",
+      ig: "Mmanụ ụgbọ ala",
+      zu: "Amandla",
+      xh: "Amandla",
+      af: "Brandstof",
+      tw: "Nsa",
+      rw: "Amavuta",
+      lg: "Amafuta"
+    },
+    "transport.maintenance": {
+      en: "Maintenance",
+      sw: "Matengenezo",
+      ha: "Kula da Mota",
+      yo: "Itọju",
+      ig: "Nlekọta",
+      zu: "Ukulondolozwa",
+      xh: "Ukulondolozwa",
+      af: "Onderhoud",
+      tw: "Ahweho",
+      rw: "Ukurinda",
+      lg: "Okulaba"
+    },
     "transport.new_trip.subtitle": { 
       en: "Log your transport trip",
       sw: "Andika safari yako", 
@@ -15375,6 +15414,19 @@ const translations = {
       tw: "Adwuma Fata", 
       rw: "Ubucuruzi bw'umuhinzi", 
       lg: "Emirimu gy'omukono"
+    },
+    "tailor.materials": {
+      en: "Materials",
+      sw: "Nyuzi",
+      ha: "Kayayyakin Sutura",
+      yo: "Ohun elo",
+      ig: "Ahịa",
+      zu: "Izinto",
+      xh: "Izinto",
+      af: "Materiale",
+      tw: "Nneɛma",
+      rw: "Ibikoresho",
+      lg: "Ebintu"
     },
     "tailor.measurements_subtitle": { 
       en: "Track client measurements and fitting schedules",
@@ -18811,6 +18863,19 @@ const translations = {
       af: "Produk Koste", 
       tw: "Boɔmu Nneɛma", 
       lg: "Sente bbiri Ebyokulya" 
+    },
+    "salon.products": {
+      en: "Products",
+      sw: "Bidhaa",
+      ha: "Kayayyaki",
+      yo: "Ọja",
+      ig: "Ahịa",
+      zu: "Izinto",
+      xh: "Izinto",
+      af: "Produkte",
+      tw: "Nneɛma",
+      rw: "Ibicuruzwa",
+      lg: "Ebintu"
     },
     "salon.staff": { 
       en: "Staff",
@@ -22439,6 +22504,32 @@ const translations = {
       yo: "Míràn",
       ig: "Ọzọ",
       zu: "Ezinye"
+    },
+    "expense_tracker.transport": {
+      en: "Transport",
+      sw: "Usafiri",
+      ha: "Tafi",
+      yo: "Irin-ajo",
+      ig: "Njem",
+      zu: "Ukuhamba",
+      xh: "Uhambo",
+      af: "Vervoer",
+      tw: "Akwan",
+      rw: "Ubuhambuki",
+      lg: "Okutambula"
+    },
+    "expense_tracker.salary": {
+      en: "Salaries",
+      sw: "Mishahara",
+      ha: "Ma'aishi",
+      yo: "Iye owo",
+      ig: "Ụgwọ ọrụ",
+      zu: "Imali yokusebenza",
+      xh: "Imali yokusebenza",
+      af: "Salarisse",
+      tw: "Sika adwuma",
+      rw: "Umushahara",
+      lg: "Emmuwendo g'okukola"
     },
     "expense_tracker.total_expenses": {
       en: "Total Expenses",

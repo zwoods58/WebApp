@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -334,15 +333,9 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
         </div>
       ) : (
         <div className="space-y-3 mb-4">
-          <AnimatePresence>
+          
             {comments.map((comment) => (
-              <motion.div
-                key={comment.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="bg-gray-50 rounded-lg p-3"
-              >
+              <div class="fade-in">
                 <div className="flex items-start justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs">
@@ -368,9 +361,9 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
                 <p className="text-sm text-gray-700 ml-8">
                   {comment.comment_text}
                 </p>
-              </motion.div>
+              </div>
             ))}
-          </AnimatePresence>
+          
         </div>
       )}
 

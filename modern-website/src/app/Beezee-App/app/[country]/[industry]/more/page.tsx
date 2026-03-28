@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Settings, 
   FileText, 
@@ -110,21 +109,12 @@ export default function MorePage() {
       {/* Main Content - Scrollable */}
       <main className="scroll-content">
         <div className="p-5 max-w-md mx-auto pb-32">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-[var(--text-1)] mb-6"
-        >
+        <h1 className="text-2xl font-bold text-[var(--text-1)] mb-6 spring-enter">
           {t('nav.more', 'More')}
-        </motion.h1>
+        </h1>
 
         {/* Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card p-5 border border-[var(--border)] mb-6"
-        >
+        <div className="fade-in mt-8">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4 flex-1">
               <div className="w-16 h-16 bg-[var(--powder)]/20 rounded-full flex items-center justify-center text-2xl">
@@ -160,17 +150,12 @@ export default function MorePage() {
               <Share2 size={18} className="text-[var(--powder-dark)] group-hover:scale-110 transition-transform" />
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Menu Sections */}
+        <div className="mt-8">
         {menuSections.map((section, sectionIndex) => (
-          <motion.div
-            key={section.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 + sectionIndex * 0.1 }}
-            className="mb-6"
-          >
+          <div className="fade-in mb-6">
             <h2 className="text-sm font-bold text-[var(--text-3)] uppercase tracking-wider mb-3">
               {section.title}
             </h2>
@@ -211,16 +196,12 @@ export default function MorePage() {
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         ))}
+        </div>
 
         {/* App Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="glass-card p-5 rounded-2xl border border-[var(--border)] mb-6"
-        >
+        <div className="fade-in mt-8">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-[var(--text-1)]">{t('app.name', 'BeeZee App')}</h3>
             <span className="text-xs bg-[var(--color-success-light)] text-[var(--color-success)] font-bold px-2.5 py-1 rounded-lg">v2.1.0</span>
@@ -239,14 +220,10 @@ export default function MorePage() {
               <span>{t('more.member_since', 'Member since')}: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Sign Out Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
+        <div className="fade-in mt-8">
           <button
             onClick={handleSignOut}
             className="w-full py-3.5 border-2 border-[var(--color-danger)]/30 text-[var(--color-danger)] rounded-xl font-bold hover:bg-[var(--color-danger-light)] transition-colors flex items-center justify-center gap-2"
@@ -254,27 +231,22 @@ export default function MorePage() {
             <LogOut size={20} strokeWidth={2.5} />
             {t('auth.sign_out', 'Sign Out')}
           </button>
-        </motion.div>
+        </div>
 
         {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="text-center py-6 text-sm text-[var(--text-3)]"
-        >
+        <div className="fade-in mt-8">
           <div className="mb-2">© 2026 {t('app.name', 'BeeZee App')}</div>
           <div className="flex items-center justify-center gap-4">
             <Link href="/privacy" className="hover:text-[var(--powder-dark)] font-medium">{t('footer.privacy', 'Privacy')}</Link>
             <Link href="/terms" className="hover:text-[var(--powder-dark)] font-medium">{t('footer.terms', 'Terms')}</Link>
             <Link href="/help" className="hover:text-[var(--powder-dark)] font-medium">{t('footer.help', 'Help')}</Link>
           </div>
-        </motion.div>
-          </div>
-        </main>
+        </div>
+        </div>
+      </main>
 
-        {/* Bottom Navigation - Fixed */}
-        <BottomNav industry={industry} country={country} />
-      </div>
+      {/* Bottom Navigation - Fixed */}
+      <BottomNav industry={industry} country={country} />
+    </div>
   );
 }

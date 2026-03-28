@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Smartphone, Zap, Wifi, Home, ArrowRight } from 'lucide-react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 
@@ -41,28 +40,16 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
     return null;
   }
 
-  return (
-    <AnimatePresence>
-      {isOpen && canInstall && (
-        <>
-          {/* Backdrop with blur */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
-          />
+  if (!isOpen || !canInstall) return null;
 
-          {/* Modal Container */}
-          <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[110] p-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl pointer-events-auto border border-gray-100 relative"
-            >
+  return (
+    <>
+      {/* Backdrop with blur */}
+      <div className="fixed inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
+
+      {/* Modal Container */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[110] p-4">
+            <div className="animate-scale-in">
               {/* Close Button */}
               <button
                 onClick={onClose}
@@ -78,13 +65,9 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
                     <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-600">
                       <Download size={40} strokeWidth={1.5} />
                     </div>
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      className="absolute -top-2 -right-2 bg-white p-2 rounded-xl shadow-lg text-blue-600"
-                    >
+                    <div className="absolute -top-2 -right-2 bg-white p-2 rounded-xl shadow-lg text-blue-600 animate-fade-in">
                       <Smartphone size={20} />
-                    </motion.div>
+                    </div>
                   </div>
                 </div>
 
@@ -127,11 +110,7 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
                   >
                     {isInstalling ? (
                       <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                        />
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         Installing...
                       </>
                     ) : (
@@ -164,11 +143,9 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
-        </>
-      )}
-    </AnimatePresence>
+    </>
   );
 };
 

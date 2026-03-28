@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Loader2, CheckCircle } from 'lucide-react';
 
 // Industry configurations
@@ -108,11 +107,7 @@ function RoutePageContent() {
 
   return (
     <div className="min-h-screen bg-studio-white flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center max-w-md mx-auto px-6"
-      >
+      <div class="fade-in">
         <div className="mb-8">
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6"
                style={{ backgroundColor: `${industryConfig.color}20` }}>
@@ -132,16 +127,10 @@ function RoutePageContent() {
             <h3 className="font-semibold text-obsidian mb-3">Your 5 Business Pillars:</h3>
             <div className="space-y-2">
               {industryConfig.pillars.map((pillar, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-mist-gray"
-                >
+                <div class="fade-in">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   <span className="text-sm text-obsidian">{pillar}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -160,7 +149,7 @@ function RoutePageContent() {
             </>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

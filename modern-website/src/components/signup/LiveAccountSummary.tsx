@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, User, Building, Phone, Globe, Briefcase, Target } from 'lucide-react';
 import { SignupData } from '@/types/signup';
 import { getCountryConfig, formatCurrencyWithSymbol } from '@/utils/currency';
@@ -29,13 +28,7 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
   };
 
   const renderSummaryItem = (label: string, value: string, isCompleted: boolean) => (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={`flex items-center gap-3 p-3 rounded-lg ${
-        isCompleted ? 'bg-[var(--powder-light)]/20 border border-[var(--border)]' : 'bg-white/5 border border-[var(--border)]/50'
-      }`}
-    >
+    <div className="animate-fade-in">
       <div className="flex-1 text-left">
         <div className="text-xs text-[var(--text-2)]">{label}</div>
         <div className={`text-sm font-medium ${
@@ -47,7 +40,7 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
       {isCompleted && (
         <span className="text-[var(--powder-dark)] font-bold">✓</span>
       )}
-    </motion.div>
+    </div>
   );
 
   const getCountryDisplay = () => {
@@ -73,15 +66,10 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
     return formatCurrencyWithSymbol(data.dailyTarget, data.country);
   };
 
+  if (!isVisible) return null;
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="bg-[var(--glass-bg)] backdrop-blur-md border-b border-[var(--border)] p-4 shadow-sm"
-        >
+    <div className="animate-fade-in">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
@@ -91,11 +79,9 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
                 </div>
               </div>
               <div className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-[var(--powder-dark)]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${getCompletionPercentage()}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                <div
+                  className="h-full bg-[var(--powder-dark)] transition-all duration-500 ease-out"
+                  style={{ width: `${getCompletionPercentage()}%` }}
                 />
               </div>
             </div>
@@ -146,23 +132,16 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
             </div>
 
             {currentStep === 6 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="mt-3 p-2 bg-[var(--powder-light)]/20 border border-[var(--border)] rounded-lg"
-              >
+              <div className="animate-fade-in">
                 <div className="flex items-center gap-2 text-[var(--powder-dark)]">
                   <span className="text-[var(--powder-dark)] font-bold">✓</span>
                   <span className="text-xs font-medium">
                     Profile complete! Ready to start your business journey.
                   </span>
                 </div>
-              </motion.div>
+              </div>
             )}
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }

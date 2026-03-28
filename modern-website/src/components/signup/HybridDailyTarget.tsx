@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Edit3 } from 'lucide-react';
 import { validateDailyTarget, formatCurrencyWithSymbol } from '@/utils/currency';
 
@@ -102,11 +101,7 @@ export function HybridDailyTarget({
 
   return (
     <div className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
+      <div className="animate-fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <span className="text-2xl font-bold">$</span>
         </div>
@@ -116,18 +111,15 @@ export function HybridDailyTarget({
         <p className="text-[var(--text-2)] max-w-md mx-auto mb-8">
           Set a target to help track your progress
         </p>
-      </motion.div>
+      </div>
 
       {/* Quick Options */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {quickOptions.map((option, index) => (
-          <motion.button
+          <button
             key={option.value}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
             onClick={() => handleQuickOptionSelect(option.value)}
-            className={`p-6 rounded-xl border-2 transition-all ${
+            className={`p-6 rounded-xl border-2 transition-all animate-fade-in ${
               selectedTarget === option.value.toString() && !showCustomInput
                 ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20'
                 : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
@@ -142,27 +134,18 @@ export function HybridDailyTarget({
             <div className="text-sm font-medium text-[var(--text-1)] mb-1">{option.label}</div>
             <div className="text-xs text-[var(--text-2)]">{option.description}</div>
             {selectedTarget === option.value.toString() && !showCustomInput && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="flex justify-center mt-2"
-              >
+              <div className="flex justify-center mt-2 animate-fade-in">
                 <span className="text-[var(--powder-dark)] font-bold">✓</span>
-              </motion.div>
+              </div>
             )}
-          </motion.button>
+          </button>
         ))}
       </div>
 
       {/* Custom Input Option */}
       <div className="mb-8">
         {!showCustomInput && !quickOptions.some(option => option.value.toString() === selectedTarget) && selectedTarget ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl border-2 border-[var(--powder-dark)] bg-[var(--powder-light)]/20"
-          >
+          <div className="animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-[var(--text-2)] mb-1">Your custom daily target</div>
@@ -180,23 +163,16 @@ export function HybridDailyTarget({
             >
               Change amount
             </button>
-          </motion.div>
+          </div>
         ) : !showCustomInput ? (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+          <button
             onClick={handleCustomInputClick}
-            className="w-full p-4 rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--powder-mid)] transition-all flex items-center justify-center gap-3 text-[var(--text-2)] hover:text-[var(--text-1)]"
+            className="w-full p-4 rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--powder-mid)] transition-all flex items-center justify-center gap-3 text-[var(--text-2)] hover:text-[var(--text-1)] animate-fade-in"
           >
             <span className="font-medium">Enter custom amount</span>
-          </motion.button>
+          </button>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl border-2 border-[var(--powder-dark)] bg-[var(--powder-light)]/20"
-          >
+          <div className="animate-fade-in">
             <div className="mb-3">
               <label className="block text-sm font-medium text-[var(--text-1)] mb-2">
                 Custom daily target
@@ -237,7 +213,7 @@ export function HybridDailyTarget({
                 Cancel
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 

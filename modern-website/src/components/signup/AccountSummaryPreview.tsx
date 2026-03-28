@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Check, User, Building, Phone, Globe, Briefcase, Target, Play } from 'lucide-react';
 import { SignupData } from '@/types/signup';
 import { getCountryConfig, formatCurrencyWithSymbol } from '@/utils/currency';
@@ -46,13 +45,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
   };
 
   const renderSummaryItem = (label: string, value: string, isCompleted: boolean) => (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={`flex items-center gap-4 p-4 rounded-xl border-2 ${
-        isCompleted ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20' : 'border-[var(--border)] bg-white/5'
-      }`}
-    >
+    <div class="fade-in">
       <div className="flex-1 text-left">
         <div className="text-sm text-[var(--text-2)] mb-1">{label}</div>
         <div className={`text-base font-medium ${
@@ -64,16 +57,12 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
       {isCompleted && (
         <span className="text-[var(--powder-dark)] font-bold">✓</span>
       )}
-    </motion.div>
+    </div>
   );
 
   return (
     <div className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
+      <div class="fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <span className="text-2xl font-bold">✓</span>
         </div>
@@ -89,14 +78,10 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
           </div>
           <div className="w-24 h-2 bg-[var(--bg2)] rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-[var(--powder-dark)]"
-              initial={{ width: 0 }}
-              animate={{ width: `${getCompletionPercentage()}%` }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            />
+              className="h-full bg-[var(--powder-dark)]"animate={{ width: `${getCompletionPercentage()}%` }}/>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="space-y-4 mb-8 max-w-2xl mx-auto">
         {renderSummaryItem(
@@ -142,33 +127,24 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
         )}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="p-4 bg-system-blue/10 border border-glass-border rounded-xl max-w-2xl mx-auto mb-8"
-      >
+      <div class="fade-in">
         <div className="flex items-center gap-2 text-system-blue">
           <span className="text-[var(--powder-dark)] font-bold">✓</span>
           <span className="text-sm font-medium">
             Your business profile is complete! You're all set to start managing your business with BeeZee.
           </span>
         </div>
-      </motion.div>
+      </div>
 
       {/* Error Display */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl max-w-2xl mx-auto mb-8"
-        >
+        <div class="fade-in">
           <div className="flex items-center gap-2 text-red-400">
             <span className="text-sm font-medium">
               {error}
             </span>
           </div>
-        </motion.div>
+        </div>
       )}
 
       <div className="flex gap-4 max-w-xs mx-auto">

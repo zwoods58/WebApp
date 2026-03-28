@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   AlertTriangle, 
   TrendingUp, 
@@ -312,17 +311,12 @@ export default function BuzzInsights({
       </div>
 
       <div className="relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentInsight.id}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => handleCardClick(currentInsight)}
-            className={`${currentInsight.bgColor} border rounded-xl p-4 relative overflow-hidden ${
+        
+          <div 
+            className={`${currentInsight.bgColor} border rounded-xl p-4 relative overflow-hidden animate-fade-in ${
               currentInsight.link ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
             }`}
+            onClick={() => handleCardClick(currentInsight)}
           >
             {/* Background decoration */}
             <div className="absolute top-0 right-0 opacity-10">
@@ -446,8 +440,8 @@ export default function BuzzInsights({
                 </div>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        
 
         {/* Dots indicator */}
         {insights.length > 1 && (

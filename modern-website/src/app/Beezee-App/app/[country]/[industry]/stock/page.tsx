@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Package, Plus, AlertTriangle, Search, Filter, TrendingDown, DollarSign, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -295,252 +294,191 @@ export default function StockPage() {
           </div>
         )}
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
-          {t('nav.inventory', 'Stock')}
-        </motion.h1>
+    {/* Summary Cards */}
+    <div className="grid grid-cols-3 gap-3 mb-6 mt-8">
+      <div className="bg-white p-3 rounded-xl border border-gray-200">
+        <div className="text-sm text-gray-500 mb-1">{t('inventory.total_items', 'Total Items')}</div>
+        <div className="text-xl font-bold text-gray-900">{inventory.length}</div>
+      </div>
+      
+      <div className="bg-white p-3 rounded-xl border border-gray-200">
+        <div className="text-sm text-gray-500 mb-1">{t('inventory.total_qty', 'Total Qty')}</div>
+        <div className="text-xl font-bold text-gray-900">{totalItems}</div>
+      </div>
+      
+      <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
+        <div className="text-sm text-orange-700 mb-1">{t('inventory.low_stock', 'Low Stock')}</div>
+        <div className="text-xl font-bold text-orange-600">{lowStockItems.length}</div>
+      </div>
+    </div>
 
-        {!business && !businessLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6"
-          >
-            <div className="flex items-center gap-3">
-              <div className="text-yellow-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-yellow-800">Business Setup Required</h3>
-                <p className="text-xs text-yellow-700 mt-1">Please complete your business profile to start selling inventory items.</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
+    {/* Total Value */}
+    <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-6 mt-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm text-blue-700 mb-1">{t('inventory.total_stock_value', 'Total Stock Value')}</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {formatCurrency(totalValue, country)}
+          </div>
+        </div>
+        <Package className="text-blue-500" size={32} />
+      </div>
+    </div>
 
-        {/* Summary Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-3 mb-6"
-        >
-          <div className="bg-white p-3 rounded-xl border border-gray-200">
-            <div className="text-sm text-gray-500 mb-1">{t('inventory.total_items', 'Total Items')}</div>
-            <div className="text-xl font-bold text-gray-900">{inventory.length}</div>
-          </div>
-          
-          <div className="bg-white p-3 rounded-xl border border-gray-200">
-            <div className="text-sm text-gray-500 mb-1">{t('inventory.total_qty', 'Total Qty')}</div>
-            <div className="text-xl font-bold text-gray-900">{totalItems}</div>
-          </div>
-          
-          <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
-            <div className="text-sm text-orange-700 mb-1">{t('inventory.low_stock', 'Low Stock')}</div>
-            <div className="text-xl font-bold text-orange-600">{lowStockItems.length}</div>
-          </div>
-        </motion.div>
+    {/* Add Item Button */}
+    <div className="mb-4 mt-6">
+      <button
+        onClick={() => setShowAddModal(true)}
+        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+      >
+        <Plus size={20} />
+        {t('inventory.add_new_item', 'Add New Item')}
+      </button>
+    </div>
 
-        {/* Total Value */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-6"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-blue-700 mb-1">{t('inventory.total_stock_value', 'Total Stock Value')}</div>
-              <div className="text-2xl font-bold text-blue-600">
-                {formatCurrency(totalValue, country)}
-              </div>
-            </div>
-            <Package className="text-blue-500" size={32} />
-          </div>
-        </motion.div>
+    {/* Search and Filter */}
+    <div className="mb-4 space-y-3 mt-4">
+      <div className="relative">
+        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input
+          type="text"
+          placeholder={t('inventory.search_items', 'Search items...')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
 
-        {/* Add Item Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-4"
-        >
+      <div className="flex gap-2 overflow-x-auto">
+        {categories.map((category: string) => (
           <button
-            onClick={() => setShowAddModal(true)}
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+            key={category}
+            onClick={() => setFilterCategory(category)}
+            className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              filterCategory === category
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-gray-700 border border-gray-200'
+            }`}
           >
-            <Plus size={20} />
-            {t('inventory.add_new_item', 'Add New Item')}
+            {category === 'all' ? t('common.all', 'All') : category}
           </button>
-        </motion.div>
+        ))}
+      </div>
+    </div>
 
-        {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-4 space-y-3"
-        >
-          <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder={t('inventory.search_items', 'Search items...')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+    {/* Low Stock Alerts */}
+    {lowStockItems.length > 0 && (
+      <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-4">
+        <h3 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+          <AlertTriangle size={20} />
+          {t('inventory.running_low', 'Running Low')}
+        </h3>
+        <div className="space-y-2">
+          {lowStockItems.map((item: any) => (
+            <div key={item.id} className="flex justify-between items-center">
+              <div>
+                <span className="font-medium text-gray-900">{item.item_name}</span>
+                <span className="text-sm text-gray-500 ml-2">({item.unit})</span>
+              </div>
+              <span className="font-bold text-red-600">{item.quantity} {t('inventory.left', 'left')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* All Inventory */}
+    <div className="bg-white rounded-xl p-4 border border-gray-200">
+      <h3 className="font-semibold text-gray-900 mb-3">{t('common.all', 'All')} {t('inventory.items', 'Items')}</h3>
+      
+      {filteredInventory.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="text-gray-400 mb-2">
+            <Package size={48} className="mx-auto" />
           </div>
-
-          <div className="flex gap-2 overflow-x-auto">
-            {categories.map((category: string) => (
-              <button
-                key={category}
-                onClick={() => setFilterCategory(category)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  filterCategory === category
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-700 border border-gray-200'
+          <p className="text-gray-600">{t('services.no_inventory_found', 'No items found')}</p>
+          <p className="text-sm text-gray-500 mt-1">{t('repairs.try_adjusting', 'Try adjusting your search or filters')}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredInventory.map((item: any, index: number) => {
+            const stockStatus = getStockStatus(item);
+            const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
+            
+            return (
+              <div
+                key={item.id}
+                className={`p-3 rounded-lg border ${
+                  item.threshold !== undefined && item.quantity <= item.threshold 
+                    ? 'bg-orange-50 border-orange-200' 
+                    : 'bg-gray-50 border-gray-100'
                 }`}
               >
-                {category === 'all' ? t('common.all', 'All') : category}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Low Stock Alerts */}
-        {lowStockItems.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-4"
-          >
-            <h3 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
-              <AlertTriangle size={20} />
-              {t('inventory.running_low', 'Running Low')}
-            </h3>
-            <div className="space-y-2">
-              {lowStockItems.map((item: any) => (
-                <div key={item.id} className="flex justify-between items-center">
-                  <div>
-                    <span className="font-medium text-gray-900">{item.item_name}</span>
-                    <span className="text-sm text-gray-500 ml-2">({item.unit})</span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-900">{item.item_name}</div>
+                    <div className="text-sm text-gray-500">
+                      {item.category || 'uncategorized'} • {item.unit} • {formatCurrency(item.cost_price || 0, country)} → {formatCurrency(item.selling_price || 0, country)}
+                    </div>
                   </div>
-                  <span className="font-bold text-red-600">{item.quantity} {t('inventory.left', 'left')}</span>
+                  
+                  <div className="text-right">
+                    <div className={`font-bold ${
+                      item.threshold !== undefined && item.quantity <= item.threshold ? 'text-red-600' : 'text-gray-900'
+                    }`}>
+                      {item.quantity} {item.unit}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t('inventory.min', 'Min:')} {item.threshold ?? 0}
+                    </div>
+                    
+                    <div className="flex gap-1 mt-1">
+                      <button
+                        onClick={() => handleEditItem(item)}
+                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        title="Edit item"
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleSellItem(item)}
+                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        disabled={item.quantity === 0 || !business?.id}
+                        title={!business?.id ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
+                      >
+                        <DollarSign size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteItem(item)}
+                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        title="Delete item"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
-        {/* All Inventory */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white rounded-xl p-4 border border-gray-200"
-        >
-          <h3 className="font-semibold text-gray-900 mb-3">{t('common.all', 'All')} {t('inventory.items', 'Items')}</h3>
-          
-          {filteredInventory.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-gray-400 mb-2">
-                <Package size={48} className="mx-auto" />
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-300 ${stockStatus.barColor}`}
+                    style={{ width: `${Math.min(stockPercentage, 100)}%` }}
+                  />
+                </div>
+
+                {item.threshold !== undefined && item.quantity <= item.threshold && (
+                  <div className="mt-2 text-xs text-orange-600 font-medium flex items-center gap-1">
+                    <TrendingDown size={12} />
+                    {t('services.running_low', 'Stock running low - reorder soon')}
+                  </div>
+                )}
               </div>
-              <p className="text-gray-600">{t('services.no_inventory_found', 'No items found')}</p>
-              <p className="text-sm text-gray-500 mt-1">{t('repairs.try_adjusting', 'Try adjusting your search or filters')}</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredInventory.map((item: any, index: number) => {
-                const stockStatus = getStockStatus(item);
-                const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
-                
-                return (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + index * 0.05 }}
-                    className={`p-3 rounded-lg border ${
-                      item.threshold !== undefined && item.quantity <= item.threshold 
-                        ? 'bg-orange-50 border-orange-200' 
-                        : 'bg-gray-50 border-gray-100'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex-1">
-                        <div className="font-medium text-gray-900">{item.item_name}</div>
-                        <div className="text-sm text-gray-500">
-                          {item.category || 'uncategorized'} • {item.unit} • {formatCurrency(item.cost_price || 0, country)} → {formatCurrency(item.selling_price || 0, country)}
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className={`font-bold ${
-                          item.threshold !== undefined && item.quantity <= item.threshold ? 'text-red-600' : 'text-gray-900'
-                        }`}>
-                          {item.quantity} {item.unit}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {t('inventory.min', 'Min:')} {item.threshold ?? 0}
-                        </div>
-                        
-                        <div className="flex gap-1 mt-1">
-                          <button
-                            onClick={() => handleEditItem(item)}
-                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                            title="Edit item"
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleSellItem(item)}
-                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            disabled={item.quantity === 0 || !business?.id}
-                            title={!business?.id ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
-                          >
-                            <DollarSign size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteItem(item)}
-                            className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                            title="Delete item"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-300 ${stockStatus.barColor}`}
-                        style={{ width: `${Math.min(stockPercentage, 100)}%` }}
-                      />
-                    </div>
-
-                    {item.threshold !== undefined && item.quantity <= item.threshold && (
-                      <div className="mt-2 text-xs text-orange-600 font-medium flex items-center gap-1">
-                        <TrendingDown size={12} />
-                        {t('services.running_low', 'Stock running low - reorder soon')}
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </motion.div>
-      </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </div>
 
       {/* Add Item Modal */}
       {showAddModal && (
@@ -566,6 +504,7 @@ export default function StockPage() {
                 setSelectedItem(null);
               }} 
               t={t}
+              country={country}
             />
           </div>
         </div>
@@ -608,7 +547,6 @@ export default function StockPage() {
   );
 }
 
-// Rest of the forms remain the same as your original...
 function EditItemForm({ item, onSubmit, onCancel, t }: { 
   item: any; 
   onSubmit: (data: any) => void; 
@@ -757,11 +695,12 @@ function EditItemForm({ item, onSubmit, onCancel, t }: {
   );
 }
 
-function SellItemForm({ item, onSubmit, onCancel, t }: { 
+function SellItemForm({ item, onSubmit, onCancel, t, country }: { 
   item: any; 
   onSubmit: (data: any) => void; 
   onCancel: () => void;
   t: (key: string, fallback?: string) => string;
+  country: string;
 }) {
   const [formData, setFormData] = useState({
     quantity: '1',
@@ -783,7 +722,7 @@ function SellItemForm({ item, onSubmit, onCancel, t }: {
         <div className="font-medium text-gray-900">{item.item_name}</div>
         <div className="text-sm text-gray-500">Available: {item.quantity} {item.unit}</div>
         <div className="text-sm font-medium text-green-600">
-          {formatCurrency(item.selling_price || 0, 'ke')} per {item.unit}
+          {formatCurrency(item.selling_price || 0, country)} per {item.unit}
         </div>
       </div>
 
@@ -832,7 +771,7 @@ function SellItemForm({ item, onSubmit, onCancel, t }: {
       <div className="bg-blue-50 p-3 rounded-lg">
         <div className="text-sm text-blue-700">{t('common.total_amount', 'Total Amount')}</div>
         <div className="text-xl font-bold text-blue-600">
-          {formatCurrency(totalPrice, 'ke')}
+          {formatCurrency(totalPrice, country)}
         </div>
       </div>
 

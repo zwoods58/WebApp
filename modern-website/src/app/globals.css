@@ -89,9 +89,357 @@ html:not([data-theme="dark"]) {
   --duration-slow: 500ms;
 }
 
-/* ═══════════════════════════════════
-   BASE STYLES
-   ═══════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   CSS ANIMATIONS FOR FRAMER MOTION REPLACEMENT
+   Lightweight, GPU-accelerated, perfect for budget phones
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ============================================
+   FADE ANIMATIONS
+   ============================================ */
+
+/* Fade In */
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInClean {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade In Up */
+.fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Down */
+.fade-in-down {
+  animation: fadeInDown 0.3s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Left */
+.fade-in-left {
+  animation: fadeInLeft 0.3s ease-out forwards;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fade In Right */
+.fade-in-right {
+  animation: fadeInRight 0.3s ease-out forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+   SLIDE ANIMATIONS
+   ============================================ */
+
+/* Slide In Up (for modals) */
+.slide-in-up {
+  transform: translateY(100%);
+  opacity: 0;
+  animation: slideInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slide In Down */
+.slide-in-down {
+  animation: slideInDown 0.3s ease-out forwards;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Slide In Left */
+.slide-in-left {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+   SCALE ANIMATIONS
+   ============================================ */
+
+/* Scale In (for modals/popups) */
+.scale-in {
+  animation: scaleIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Scale In Small */
+.scale-in-sm {
+  animation: scaleInSm 0.2s ease-out forwards;
+}
+
+@keyframes scaleInSm {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   DELAY CLASSES (for staggered animations)
+   ============================================ */
+
+.delay-0 { animation-delay: 0s; }
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.2s; }
+.delay-5 { animation-delay: 0.25s; }
+.delay-6 { animation-delay: 0.3s; }
+.delay-7 { animation-delay: 0.35s; }
+.delay-8 { animation-delay: 0.4s; }
+
+/* ============================================
+   PROGRESS BAR ANIMATION
+   ============================================ */
+
+.progress-bar {
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width;
+}
+
+/* ============================================
+   BUTTON INTERACTIONS (tap feedback)
+   ============================================ */
+
+.button-tap {
+  transition: transform 0.05s ease-out;
+  cursor: pointer;
+}
+
+.button-tap:active {
+  transform: scale(0.97);
+}
+
+/* For touch devices only - no hover effects */
+@media (hover: none) and (pointer: coarse) {
+  .button-tap-hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   TOAST / NOTIFICATION ANIMATIONS
+   ============================================ */
+
+.toast-enter {
+  animation: slideInDown 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.toast-exit {
+  animation: fadeOut 0.2s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* ============================================
+   PULSE / LOADING ANIMATIONS
+   ============================================ */
+
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Skeleton loader animation */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   MODAL BACKDROP ANIMATION
+   ============================================ */
+
+.backdrop-fade {
+  opacity: 0;
+  animation: backdropFade 0.1s ease-out forwards;
+  animation-delay: 0s !important;
+}
+
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   SWIPE / PULL TO REFRESH ANIMATIONS
+   ============================================ */
+
+.swipe-animation {
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+}
+
+/* ============================================
+   OPTIMIZATION FOR BUDGET PHONES
+   ============================================ */
+
+/* Use will-change sparingly - only for elements that actually animate */
+.animate-will-change {
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hardware acceleration for smoother animations */
+.transform-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ============================================
+   END CSS ANIMATIONS
+   ============================================ */
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES (continued)
+   ═══════════════════════════════════════════════════════════════ */
 
 html {
   -webkit-tap-highlight-color: transparent;
@@ -117,7 +465,7 @@ body {
   line-height: 1.5;
   letter-spacing: -0.018em;
   color: var(--text-1);
-  background-color: var(--bg); /* Use the updated darker background */
+  background-color: var(--bg);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -151,543 +499,36 @@ body > * {
    ═══════════════════════════════════ */
 
 @layer utilities {
+  /* ... (keep all your existing glass utilities) ... */
+  
   /* ═══════════════════════════════════
-     ENHANCED GLASS MORPHISM UTILITIES
+     CSS ANIMATION UTILITIES
      ═══════════════════════════════════ */
   
-  /* Premium Glass Navigation (Header & BottomNav) */
-  .glass-nav {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur-strong)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(180%);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow-strong);
+  .animate-fade-in {
+    animation: fadeInClean 0.2s ease-out forwards;
   }
   
-  /* Standard Glass Card */
-  .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: var(--radius-card);
+  .animate-fade-in-up {
+    animation: fadeInUp 0.4s ease-out forwards;
   }
   
-  /* Light Glass (for subtle overlays) */
-  .glass-light {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: var(--shadow-sm);
+  .animate-slide-in-up {
+    animation: slideInUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
   
-  /* Strong Glass (for modals) */
-  .glass-strong {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: var(--shadow-xl);
+  .animate-scale-in {
+    animation: scaleIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
   
-  /* Legacy support */
-  .glass-regular {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: var(--radius-card);
-  }
-  .glass-thick {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: var(--shadow-xl);
-  }
-  .glass-thin {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: var(--shadow-sm);
-  }
-  .glass-ultra-thin {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px) saturate(140%);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: var(--shadow-sm);
-  }
-
-  /* Safe area padding for mobile devices */
-  .safe-area-top { padding-top: env(safe-area-inset-top); }
-  .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-  .safe-area-left { padding-left: env(safe-area-inset-left); }
-  .safe-area-right { padding-right: env(safe-area-inset-right); }
-  
-  /* Responsive container utilities */
-  .container-responsive {
-    width: 100%;
-    max-width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  @media (min-width: 640px) {
-    .container-responsive { max-width: 640px; padding-left: 1.5rem; padding-right: 1.5rem; }
-  }
-  @media (min-width: 768px) {
-    .container-responsive { max-width: 768px; padding-left: 2rem; padding-right: 2rem; }
-  }
-  @media (min-width: 1024px) {
-    .container-responsive { max-width: 1024px; }
-  }
-
-  /* Typography Enhancements */
-  .text-display-large {
-    font-weight: 200;
-    letter-spacing: -0.04em;
+  .animate-pulse-subtle {
+    animation: pulse 1.5s ease-in-out infinite;
   }
   
-  .text-display-medium {
-    font-weight: 300;
-    letter-spacing: -0.03em;
-  }
-
-  .text-section-label {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: clamp(10px, 2.5vw, 12px);
-    font-weight: 500;
-    color: var(--text-2);
-  }
-
-  /* Fluid typography for large numbers */
-  .fluid-number {
-    font-size: clamp(1.5rem, 5vw + 0.5rem, 2.5rem);
-    line-height: 1.1;
-  }
-
-  /* Mobile card utilities */
-  .card-mobile {
-    border-radius: 20px;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    padding: 0.75rem;
-    border: 2px solid rgb(96 165 250 / 0.6);
-  }
-  @media (min-width: 640px) {
-    .card-mobile { padding: 1rem; }
-  }
-  @media (min-width: 768px) {
-    .card-mobile { padding: 1.5rem; }
-  }
-  .card-mobile-responsive {
-    border-radius: 20px;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    padding: 0.75rem;
-    border: 2px solid rgb(96 165 250 / 0.6);
-    width: 100%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  @media (min-width: 640px) {
-    .card-mobile-responsive { padding: 1rem; }
-  }
-  @media (min-width: 768px) {
-    .card-mobile-responsive { padding: 1.5rem; }
-  }
-  
-  /* Touch-friendly button utilities */
-  .button-touch {
-    min-height: 44px;
-    min-width: 44px;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-  }
-  
-  /* General no-select for app-like feel */
-  .no-select {
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-  }
-  
-  /* Responsive text utilities */
-  .text-responsive-sm { font-size: 0.75rem; line-height: 1rem; }
-  @media (min-width: 640px) {
-    .text-responsive-sm { font-size: 0.875rem; line-height: 1.25rem; }
-  }
-  .text-responsive-base { font-size: 0.875rem; line-height: 1.25rem; }
-  @media (min-width: 640px) {
-    .text-responsive-base { font-size: 1rem; line-height: 1.5rem; }
-  }
-  .text-responsive-lg { font-size: 1rem; line-height: 1.5rem; }
-  @media (min-width: 640px) {
-    .text-responsive-lg { font-size: 1.125rem; line-height: 1.75rem; }
-  }
-  .text-responsive-xl { font-size: 1.125rem; line-height: 1.75rem; }
-  @media (min-width: 640px) {
-    .text-responsive-xl { font-size: 1.25rem; line-height: 1.75rem; }
-  }
-  .text-responsive-2xl { font-size: 1.25rem; line-height: 1.75rem; }
-  @media (min-width: 640px) {
-    .text-responsive-2xl { font-size: 1.5rem; line-height: 2rem; }
-  }
-  
-  /* Responsive grid utilities */
-  .grid-responsive-2 { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  @media (min-width: 640px) {
-    .grid-responsive-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  .grid-responsive-3 { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  @media (min-width: 640px) {
-    .grid-responsive-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1024px) {
-    .grid-responsive-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-  .grid-responsive-4 { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  @media (min-width: 640px) {
-    .grid-responsive-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1024px) {
-    .grid-responsive-4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  }
-  @media (min-width: 1280px) {
-    .grid-responsive-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  }
-
-  /* Mobile navigation utilities */
-  .nav-mobile-fixed {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    padding-bottom: env(safe-area-inset-bottom);
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-top: 1px solid var(--border);
-  }
-  
-  .nav-mobile-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 56px;
-    padding: 0.5rem 0.25rem;
-    touch-action: manipulation;
-  }
-
-  /* Fixed header utilities */
-  .header-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    padding-top: env(safe-area-inset-top);
-    background: transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Bottom navigation fixes */
-  .bottom-nav-fixed {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 70 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Enhanced shadow utilities for floating effect */
-  .shadow-float {
-    box-shadow: 
-      0 20px 40px -5px rgba(0, 0, 0, 0.25),
-      0 8px 16px -4px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  }
-
-  .shadow-float-lg {
-    box-shadow: 
-      0 25px 50px -10px rgba(0, 0, 0, 0.3),
-      0 12px 24px -6px rgba(0, 0, 0, 0.2),
-      0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-  }
-
-  .shadow-float-hover {
-    box-shadow: 
-      0 30px 60px -12px rgba(0, 0, 0, 0.35),
-      0 15px 30px -8px rgba(0, 0, 0, 0.25),
-      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  }
-
-  /* Main content spacing for fixed layout */
-  .content-with-fixed-nav {
-    padding-top: 5rem;
-    padding-bottom: 8rem;
-  }
-
-  /* Modal positioning to avoid header overlap */
-  .modal-fixed-position {
-    position: fixed !important;
-    inset: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 9999 !important;
-    padding: 6rem 1rem 1rem !important; /* Top padding to account for header */
-  }
-
-  @media (min-width: 640px) {
-    .modal-fixed-position {
-      padding: 5rem 1rem 1rem !important; /* Less top padding on desktop */
-    }
-  }
-
-  /* Typography utilities */
-  .font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
-  .font-body { font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
-
-  /* ═══════════════════════════════════
-     AURA MODAL STYLES (Apple Frost)
-     ═══════════════════════════════════ */
-  
-  .aura-modal {
-    background: rgba(168, 200, 232, 0.15);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 2px solid rgba(74, 141, 184, 0.6);
-    box-shadow: 
-      0 20px 40px -10px rgba(0, 0, 0, 0.15), 
-      0 0 0 1px rgba(74, 141, 184, 0.3) inset;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  /* Grey blend in the top corners */
-  .aura-modal::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(200, 200, 205, 0.4) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-  
-  .aura-modal::after {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(185, 185, 190, 0.3) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-
-  .aura-modal-content {
-    position: relative;
-    z-index: 1;
-    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
-  }
-
-  /* ═══════════════════════════════════
-     HOME PAGE BENTO GRID STYLES
-     ═══════════════════════════════════ */
-
-  .home-bento-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto auto auto;
-    gap: 16px;
-    margin-bottom: 1rem;
-  }
-
-  .bento-cell {
-    background: rgba(168, 200, 232, 0.15);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 2px solid rgba(74, 141, 184, 0.6);
-    box-shadow: 
-      0 20px 40px -10px rgba(0, 0, 0, 0.15), 
-      0 0 0 1px rgba(74, 141, 184, 0.3) inset;
-    border-radius: var(--radius-card);
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .bento-cell::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(200, 200, 205, 0.4) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-  
-  .bento-cell::after {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(185, 185, 190, 0.3) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-
-  .bento-cell.featured { grid-column: 1 / -1; }
-  .bento-cell.full-width { grid-column: 1 / -1; }
-  .bento-cell.half-width { grid-column: span 1; }
-
-  /* Action Buttons Grid */
-  .action-buttons-enhanced {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .action-button-card {
-    background: rgba(168, 200, 232, 0.15);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 2px solid rgba(74, 141, 184, 0.6);
-    box-shadow: 
-      0 20px 40px -10px rgba(0, 0, 0, 0.15), 
-      0 0 0 1px rgba(74, 141, 184, 0.3) inset;
-    border-radius: var(--radius-card);
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s var(--spring);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .action-button-card::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(200, 200, 205, 0.4) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-  
-  .action-button-card::after {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(185, 185, 190, 0.3) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-
-  .action-button-card:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(74, 141, 184, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-color: var(--powder-mid);
-  }
-
-  /* Stats Enhanced */
-  .stats-enhanced {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .stat-card {
-    background: rgba(168, 200, 232, 0.15);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 2px solid rgba(74, 141, 184, 0.6);
-    box-shadow: 
-      0 20px 40px -10px rgba(0, 0, 0, 0.15), 
-      0 0 0 1px rgba(74, 141, 184, 0.3) inset;
-    border-radius: var(--radius-card);
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(200, 200, 205, 0.4) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-  
-  .stat-card::after {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle at center, rgba(185, 185, 190, 0.3) 0%, transparent 70%);
-    filter: blur(30px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
-
-  /* Responsive Design */
-  @media (min-width: 640px) {
-    .home-bento-grid { grid-template-columns: 1fr 1fr; }
-    .action-buttons-enhanced { grid-template-columns: repeat(3, 1fr); }
-    .stats-enhanced { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  @media (min-width: 768px) {
-    .home-bento-grid { max-width: 768px; margin: 0 auto 1rem; }
-  }
-
-  @media (min-width: 1024px) {
-    .home-bento-grid { grid-template-columns: repeat(3, 1fr); max-width: 1200px; }
-  }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
 }
 
 /* ═══════════════════════════════════

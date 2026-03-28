@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Lock, Timer, AlertCircle, Mail } from 'lucide-react';
 
 interface PINLockoutProps {
@@ -45,26 +44,12 @@ export default function PINLockout({ lockoutTime, onContactSupport, onTimeExpire
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md mx-auto"
-    >
+    <div className="fade-in">
       <div className="text-center mb-6">
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, 5, -5, 0]
-          }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-          className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4"
+        <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-fade-in"
         >
           <Lock size={40} className="text-white" />
-        </motion.div>
+        </div>
         
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Account Temporarily Locked
@@ -75,12 +60,7 @@ export default function PINLockout({ lockoutTime, onContactSupport, onTimeExpire
         </p>
 
         {/* Countdown Timer */}
-        <motion.div
-          key={timeRemaining}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6"
-        >
+        <div className="scale-in">
           <div className="flex items-center justify-center gap-3 text-red-700">
             <Timer size={24} className="animate-pulse" />
             <div>
@@ -88,7 +68,7 @@ export default function PINLockout({ lockoutTime, onContactSupport, onTimeExpire
               <div className="text-sm">remaining</div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Security Information */}
         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
@@ -128,13 +108,9 @@ export default function PINLockout({ lockoutTime, onContactSupport, onTimeExpire
         {/* Progress Bar */}
         <div className="mt-6">
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <motion.div
-              className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full"
-              initial={{ width: "100%" }}
-              animate={{ 
-                width: `${(timeRemaining / lockoutTime) * 100}%` 
-              }}
-              transition={{ duration: 1, ease: "linear" }}
+            <div
+              className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-1000 ease-linear"
+              style={{ width: `${(timeRemaining / lockoutTime) * 100}%` }}
             />
           </div>
           <div className="text-xs text-gray-500 mt-1 text-center">
@@ -142,6 +118,6 @@ export default function PINLockout({ lockoutTime, onContactSupport, onTimeExpire
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

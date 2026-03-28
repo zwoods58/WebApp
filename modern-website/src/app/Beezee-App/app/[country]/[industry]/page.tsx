@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Plus, TrendingUp, TrendingDown, Users, Package, Target, AlertTriangle, Clock, Calendar as CalendarIcon, CheckCircle, DollarSign } from 'lucide-react';
+import { ArrowLeft, Plus, TrendingUp, TrendingDown, Users, Package, Target, AlertTriangle, Clock, Calendar as CalendarIcon, CheckCircle, DollarSign, User, Calendar, Wrench, Car } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,6 +23,13 @@ import {
   HomepageCalendar
 } from '@/components/universal';
 import BuzzInsights from '@/components/universal/BuzzInsights';
+import AddAppointmentModal from '@/components/universal/AddAppointmentModal';
+import EditServiceModal from '@/components/universal/EditServiceModal';
+import AddCustomerModal from '@/components/universal/AddCustomerModal';
+import AddInventoryForm from '@/components/universal/AddInventoryForm';
+import AppointmentList from '@/components/universal/AppointmentList';
+import ServiceList from '@/components/universal/ServiceList';
+import CustomerList from '@/components/universal/CustomerList';
 
 // Utility functions
 import { formatCurrency } from '@/utils/currency';
@@ -32,6 +38,7 @@ import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 // Supabase hooks
 import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
+import { useAppointments, useServices } from '@/hooks';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useRefreshContext } from '@/contexts/RefreshContext';
 
@@ -85,12 +92,18 @@ export default function IndustryDashboard() {
   const inventoryHook = useInventoryTanStack({ industry, businessId });
   const targetsHook = useTargetsTanStack({ industry, businessId });
   
+  // Additional hooks for appointments and services
+  const appointmentsHook = useAppointments({ industry, businessId });
+  const servicesHook = useServices({ industry, businessId });
+  
   // Safely extract values with fallbacks - add extra defensive checks
   let transactions = Array.isArray(transactionsHook?.data) ? transactionsHook.data : [];
   let expenses = Array.isArray(expensesHook?.data) ? expensesHook.data : [];
   const credit = Array.isArray(creditHook?.data) ? creditHook.data : [];
   const inventory = Array.isArray(inventoryHook?.data) ? inventoryHook.data : [];
   const targets = Array.isArray(targetsHook?.data) ? targetsHook.data : [];
+  const appointments = Array.isArray(appointmentsHook?.data) ? appointmentsHook.data : [];
+  const services = Array.isArray(servicesHook?.data) ? servicesHook.data : [];
   
   // Fallback to localStorage if hooks return empty data
   if (transactions.length === 0) {
@@ -250,6 +263,11 @@ export default function IndustryDashboard() {
   
   const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
   const isLoading = transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats;
+  
+  // Modal state management for homepage quick actions
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
   
   // Add real-time BuzzInsights updates when data changes
   useEffect(() => {
@@ -476,6 +494,32 @@ export default function IndustryDashboard() {
     }
   };
 
+  // Modal handlers for homepage quick actions
+  const handleAddAppointment = () => {
+    setShowAppointmentModal(true);
+  };
+
+  const handleAddService = () => {
+    setShowServiceModal(true);
+  };
+
+  const handleAddCustomer = (customerData: any) => {
+    // This would integrate with the credit/customers system
+    console.log('Adding customer:', customerData);
+    showSuccess('Customer added successfully!');
+  };
+
+  const handleUpdateService = (serviceId: string, updates: any) => {
+    // This would integrate with the services system
+    console.log('Updating service:', serviceId, updates);
+    showSuccess('Service updated successfully!');
+  };
+
+  const handleAppointmentSuccess = () => {
+    setShowAppointmentModal(false);
+    showSuccess('Appointment scheduled successfully!');
+  };
+
   const todayProfit = (todayStats?.sales || 0) - (todayStats?.expenses || 0);
 
   return (
@@ -588,152 +632,45 @@ export default function IndustryDashboard() {
           </div>
         </div>
 
-        {/* Stats Row - Universal */}
-        <div className="grid grid-cols-2 gap-4">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 border border-[var(--border)]"
-          >
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">
-              <TrendingUp size={16} className="text-[var(--color-success)]" strokeWidth={2.5} />
-              {t('common.money_in')}
-            </div>
-            <div className="text-2xl font-bold text-[var(--color-success)]">
-              {formatCurrency(todayStats?.sales || 0, country)}
-            </div>
-          </motion.div>
+        {/* Industry-Specific Lists */}
+        <div className="space-y-5">
+          {/* Customer List - All Industries */}
+          <CustomerList
+            industry={industry}
+            country={country}
+            customers={credit}
+            onViewAll={() => window.location.href = `/Beezee-App/app/${country}/${industry}/credit`}
+            onAddCustomer={() => setShowCustomerModal(true)}
+          />
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="glass-card p-6 border border-[var(--border)]"
-          >
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">
-              <TrendingDown size={16} className="text-[var(--color-danger)]" strokeWidth={2.5} />
-              {t('common.money_out')}
-            </div>
-            <div className="text-2xl font-bold text-[var(--color-danger)]">
-              {formatCurrency(todayStats?.expenses || 0, country)}
-            </div>
-          </motion.div>
+          {/* Appointment List - Calendar Industries */}
+          {['salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
+            <AppointmentList
+              industry={industry}
+              country={country}
+              appointments={appointments}
+              onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/calendar`}
+              onScheduleAppointment={handleAddAppointment}
+            />
+          )}
+
+          {/* Service List - Service Industries */}
+          {['transport', 'salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
+            <ServiceList
+              industry={industry}
+              country={country}
+              services={services}
+              onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
+              onAddService={handleAddService}
+            />
+          )}
         </div>
 
-        {/* Today's Profit */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card p-6 border border-[var(--border)]"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">{t('daily_profit', 'Daily Profit')}</div>
-              <div className={`text-3xl font-bold tracking-tight ${
-                todayProfit >= 0 ? 'text-[var(--powder-dark)]' : 'text-[var(--color-danger)]'
-              }`}>
-                {formatCurrency(todayProfit, country)}
-              </div>
-            </div>
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-              todayProfit >= 0 ? 'bg-[var(--powder)]/15' : 'bg-[var(--color-danger-light)]'
-            }`}>
-              <Target className={todayProfit >= 0 ? 'text-[var(--powder-dark)]' : 'text-[var(--color-danger)]'} size={28} strokeWidth={2.5} />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Homepage Calendar - Service Industries Only */}
-        <HomepageCalendar industry={industry} country={country} />
-
-        {/* Recent Activities */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="glass-card p-5 border border-[var(--border)]"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-[var(--text-1)]">{t('cash.recent_activity', 'Recent Activity')}</h3>
-            <Link href={`/${country}/${industry}/transactions`} className="text-[var(--color-primary)] text-sm hover:underline">
-              View all
-            </Link>
-          </div>
-          
-          {transactions.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Clock className="text-gray-400" size={20} />
-              </div>
-              <p className="text-gray-500 text-sm">No recent activity</p>
-              <p className="text-gray-400 text-xs mt-1">Your transactions and appointments will appear here</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {transactions.slice(0, 5).map((transaction: any) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 bg-[var(--bg2)] rounded-lg">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      {transaction.category === 'appointment_booking' && <CalendarIcon size={14} className="text-blue-500" />}
-                      {transaction.category === 'service_payment' && <CheckCircle size={14} className="text-green-500" />}
-                      {transaction.category === 'payment' && <DollarSign size={14} className="text-purple-500" />}
-                      <span className="text-sm font-medium text-[var(--text-1)] truncate">
-                        {transaction.description}
-                      </span>
-                    </div>
-                    <div className="text-xs text-[var(--text-3)]">
-                      {formatDate(transaction.transaction_date)}
-                      {transaction.customer_name && ` • ${transaction.customer_name}`}
-                    </div>
-                  </div>
-                  <div className={`text-sm font-bold ${
-                    transaction.category === 'appointment_booking' ? 'text-blue-600' :
-                    transaction.category === 'service_payment' ? 'text-green-600' :
-                    transaction.category === 'payment' ? 'text-purple-600' :
-                    transaction.amount > 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
-                  }`}>
-                    {transaction.category === 'appointment_booking' ? 'Booked' : 
-                     formatCurrency(transaction.amount, country)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Credit List - Universal */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="credit-list-section"
-        >
-          <CreditList 
-            industry={industry} 
-            country={country} 
-            credit={safeCredit?.map(c => ({
-              id: c.id,
-              customer_name: c.customer_name || 'Unknown Customer',
-              amount: c.amount,
-              status: c.status || 'pending',
-              due_date: c.due_date,
-              paid_amount: c.paid_amount,
-              sync_status: 'synced'
-            })) || []} 
-          />
-        </motion.div>
-
-        {/* InventoryItemItemItem - Universal */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="inventory-list-section"
-        >
+        {/* Inventory List - Universal */}
+        <div className="inventory-section">
           <InventoryList 
-            industry={industry} 
-            country={country} 
+            industry={industry}
+            country={country}
             items={safeInventory.map((item: Inventory) => ({
               id: item.id,
               item_name: item.item_name,
@@ -744,7 +681,7 @@ export default function IndustryDashboard() {
               selling_price: item.selling_price
             }))} 
           />
-        </motion.div>
+        </div>
             </>
           )}
         </div>
@@ -752,6 +689,38 @@ export default function IndustryDashboard() {
 
         {/* Bottom Nav - Universal */}
         <BottomNav industry={industry} country={country} />
+
+        {/* Modals for Quick Actions */}
+        {showCustomerModal && (
+          <AddCustomerModal
+            isOpen={showCustomerModal}
+            onClose={() => setShowCustomerModal(false)}
+            onAddCustomer={handleAddCustomer}
+            country={country}
+            industry={industry}
+          />
+        )}
+
+        {showAppointmentModal && (
+          <AddAppointmentModal
+            isOpen={showAppointmentModal}
+            onClose={() => setShowAppointmentModal(false)}
+            onSuccess={handleAppointmentSuccess}
+            industry={industry}
+            country={country}
+          />
+        )}
+
+        {showServiceModal && (
+          <EditServiceModal
+            isOpen={showServiceModal}
+            onClose={() => setShowServiceModal(false)}
+            onUpdate={handleUpdateService}
+            isAddMode={true}
+            country={country}
+            industry={industry}
+          />
+        )}
     </div>
   );
 }

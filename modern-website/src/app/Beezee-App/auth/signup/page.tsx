@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Globe, User, Phone, DollarSign, Building, Mail, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -201,18 +200,12 @@ function BeezeeSignupContent() {
       />
 
       <div className="flex-1 container mx-auto px-6 py-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="max-w-4xl mx-auto"
-          >
-            {renderStep()}
-          </motion.div>
-        </AnimatePresence>
+        <div
+          key={currentStep}
+          className="max-w-4xl mx-auto fade-in"
+        >
+          {renderStep()}
+        </div>
       </div>
 
       {/* PWA Install Modal */}
@@ -242,19 +235,16 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
 
       {/* Content centered in the middle */}
       <div className="flex-1 flex flex-col justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto"
+        <div
+          className="max-w-2xl mx-auto fade-in-up"
         >
-          <h1 className="text-4xl font-bold text-[var(--text-1)] mb-6 tracking-[-0.02em]">
-            Get Started
+          <h1 className="text-4xl font-bold text-[var(--text-1)] mb-4 leading-tight">
+            Welcome to BeeZee
           </h1>
-          
           <p className="text-xl text-[var(--text-2)] mb-8 leading-relaxed">
             Join thousands of African entrepreneurs managing their business with ease.
           </p>
-        </motion.div>
+        </div>
       </div>
 
       {/* Buttons at the very bottom */}

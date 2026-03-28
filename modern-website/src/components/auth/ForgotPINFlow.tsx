@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Shield, Lock, CheckCircle, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useForgotPIN } from '@/hooks/useForgotPIN';
 import { formatPhoneNumber } from '@/utils/phoneUtils';
@@ -143,15 +142,10 @@ export default function ForgotPINFlow({ onSuccess, onCancel }: ForgotPINFlowProp
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
       <div className="flex-1 container mx-auto px-6 py-16">
         <div className="max-w-md mx-auto">
-          <AnimatePresence mode="wait">
+          
             {/* Step 1: Phone Number */}
             {forgotPIN.step === 'phone' && (
-              <motion.div
-                key="phone"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
+              <div class="fade-in">
                 <div className="text-center mb-8">
                   <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
                     <Phone size={40} strokeWidth={1.5} />
@@ -219,17 +213,12 @@ export default function ForgotPINFlow({ onSuccess, onCancel }: ForgotPINFlowProp
                     </div>
                   </form>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Step 2: Security Questions */}
             {forgotPIN.step === 'questions' && forgotPIN.questions && (
-              <motion.div
-                key="questions"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
+              <div class="fade-in">
                 <div className="text-center mb-8">
                   <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
                     <Shield size={40} strokeWidth={1.5} />
@@ -305,17 +294,12 @@ export default function ForgotPINFlow({ onSuccess, onCancel }: ForgotPINFlowProp
                     </div>
                   </form>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Step 3: New PIN */}
             {forgotPIN.step === 'newPin' && (
-              <motion.div
-                key="newPin"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
+              <div class="fade-in">
                 <div className="text-center mb-8">
                   <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
                     <Lock size={40} strokeWidth={1.5} />
@@ -412,17 +396,12 @@ export default function ForgotPINFlow({ onSuccess, onCancel }: ForgotPINFlowProp
                     </button>
                   </form>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Step 4: Success */}
             {forgotPIN.step === 'success' && (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
+              <div class="fade-in">
                 <div className="text-center">
                   <div className="w-20 h-20 bg-green-100 rounded-3xl flex items-center justify-center text-green-600 mx-auto mb-6">
                     <CheckCircle size={40} strokeWidth={1.5} />
@@ -441,9 +420,9 @@ export default function ForgotPINFlow({ onSuccess, onCancel }: ForgotPINFlowProp
                     Go to Login
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          
         </div>
       </div>
     </div>

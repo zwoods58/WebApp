@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -632,21 +631,12 @@ export default function ReportsPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {t('reports.title', 'Reports')}
-        </motion.h1>
+        </h1>
 
         {/* Period Selector */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6"
-        >
+        <div className="fade-in mt-8">
           <div className="bg-white rounded-xl border border-gray-200 p-1 flex">
             {['week', 'month', 'quarter', 'year'].map((period) => (
               <button
@@ -662,15 +652,10 @@ export default function ReportsPage() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Report Type Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6"
-        >
+        <div className="fade-in mt-6">
           <div className="flex gap-2 overflow-x-auto">
             {[
               { id: 'overview', label: t('reports.overview', 'Overview'), icon: BarChart3 },
@@ -695,15 +680,10 @@ export default function ReportsPage() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Export Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
+        <div className="fade-in mt-6">
           <button
             onClick={handleExportReport}
             disabled={isExporting}
@@ -712,15 +692,10 @@ export default function ReportsPage() {
             <Download size={20} />
             {isExporting ? 'Generating PDF...' : t('reports.export', 'Export Report')}
           </button>
-        </motion.div>
+        </div>
 
         {/* Report Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl border border-gray-200 p-4"
-        >
+        <div className="fade-in mt-8">
           {selectedReport === 'overview' && (
             <div className="space-y-4">
               {/* Revenue Card */}
@@ -1137,7 +1112,7 @@ export default function ReportsPage() {
               )}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />

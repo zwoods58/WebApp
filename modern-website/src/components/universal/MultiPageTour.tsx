@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, ArrowLeft, Target, TrendingUp, Users, Package, FileText, DollarSign, MoreHorizontal, Home, Plus, Minus } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -485,13 +484,7 @@ function TourTooltip({
   return (
     <>
       {/* Overlay */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80]"
-        onClick={onSkip}
-      />
+      <div class="fade-in">
 
       {/* Spotlight overlay */}
       {spotlightPosition && (
@@ -510,12 +503,7 @@ function TourTooltip({
       )}
 
       {/* Tour Content */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        className="fixed z-[82] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-1rem)] max-w-sm px-4"
-      >
+      <div class="scale-in">
         <div className="glass-strong rounded-3xl p-4 sm:p-6 shadow-float-lg">
           {/* Page Progress */}
           <div className="flex items-center justify-between mb-4">
@@ -607,7 +595,7 @@ function TourTooltip({
             </span>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }

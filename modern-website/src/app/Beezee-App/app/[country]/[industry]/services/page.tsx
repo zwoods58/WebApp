@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Package, 
   Plus, 
@@ -450,22 +449,13 @@ export default function ServicesPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {pageTitle}
-        </motion.h1>
+        </h1>
 
         {/* Tab Slider - Only show for industries that have services */}
         {shouldShowServicesTab && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6"
-          >
+          <div className="fade-in mt-8">
             <div className="bg-gray-100 rounded-xl p-1 flex">
               <button
                 onClick={() => setActiveTab('services')}
@@ -496,24 +486,14 @@ export default function ServicesPage() {
                 </button>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Services View - Only show for industries that have services */}
         {shouldShowServicesTab && activeTab === 'services' && (
-          <motion.div
-            initial={{ opacity: 0, x: activeTab === 'services' ? 0 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
+          <div className="fade-in mt-8">
             {/* Summary Cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid grid-cols-2 gap-3 mb-6"
-            >
+            <div className="fade-in">
               <div className="bg-white p-4 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                   <Package className="text-gray-600" size={16} />
@@ -523,7 +503,7 @@ export default function ServicesPage() {
                 <div className="text-xs text-gray-500">{availableServices} {t('services.available')}</div>
               </div>
               
-              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200">
+              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 mt-4">
                 <div className="flex items-center gap-2 text-sm text-orange-700 mb-1">
                   <AlertTriangle size={16} />
                   {t('services.low_stock')}
@@ -531,15 +511,10 @@ export default function ServicesPage() {
                 <div className="text-2xl font-bold text-orange-600">{lowStockItems}</div>
                 <div className="text-xs text-orange-500">{t('services.products_need_restock')}</div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Revenue & Rating */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-2 gap-3 mb-6"
-            >
+            <div className="fade-in mt-6">
               <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                 <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                   <DollarSign size={16} />
@@ -550,7 +525,7 @@ export default function ServicesPage() {
                 </div>
               </div>
 
-              <div className="bg-purple-50 p-4 rounded-xl border border-purple-200">
+              <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mt-4">
                 <div className="flex items-center gap-2 text-sm text-purple-700 mb-1">
                   <TrendingUp size={16} />
                   Avg Price
@@ -559,15 +534,10 @@ export default function ServicesPage() {
                   {formatCurrency(Math.round(averageServicePrice * 100) / 100, country)}
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Add Service Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-4"
-            >
+            <div className="fade-in mt-6">
               <button
                 onClick={() => setShowAddModal(true)}
                 className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
@@ -575,15 +545,10 @@ export default function ServicesPage() {
                 <Plus size={20} />
                 {t('services.add_service')}
               </button>
-            </motion.div>
+            </div>
 
             {/* Search and Filter */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-4 space-y-3"
-            >
+            <div className="fade-in mt-6">
               <div className="relative">
                 <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -595,7 +560,7 @@ export default function ServicesPage() {
                 />
               </div>
 
-              <div className="flex gap-2 overflow-x-auto">
+              <div className="flex gap-2 overflow-x-auto mt-4">
                 {categories.map(category => (
                   <button
                     key={category}
@@ -610,32 +575,21 @@ export default function ServicesPage() {
                   </button>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
             {/* Services List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="space-y-4"
-            >
+            <div className="fade-in mt-6">
               {filteredServices.length === 0 ? (
                 <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
                   <div className="text-gray-400 mb-2">
                     <Package size={48} className="mx-auto" />
                   </div>
-                  <p className="text-gray-600">{t('services.no_services_found')}</p>
+                  <p className="text-gray-600 font-medium">{t('services.no_services_found')}</p>
                   <p className="text-sm text-gray-500 mt-1">{t('services.start_by_adding_first_service')}</p>
                 </div>
               ) : (
                 filteredServices.map((service: any, index: number) => (
-                  <motion.div
-                    key={service.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + index * 0.05 }}
-                    className="bg-white rounded-xl border border-gray-200 overflow-hidden"
-                  >
+                  <div key={service.id} className="fade-in">
                     {/* Service Header */}
                     <div 
                       className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -740,28 +694,18 @@ export default function ServicesPage() {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
 
         {/* Inventory View - Only show for non-transport industries */}
         {shouldShowInventoryTab && (!shouldShowServicesTab || activeTab === 'inventory') && (
-          <motion.div
-            initial={{ opacity: 0, x: activeTab === 'inventory' ? 0 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
+          <div className="fade-in">
             {/* Summary Cards */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid grid-cols-2 gap-3 mb-6"
-            >
+            <div className="fade-in">
               <div className="bg-white p-4 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                   <Box className="text-gray-600" size={16} />
@@ -771,7 +715,7 @@ export default function ServicesPage() {
                 <div className="text-xs text-gray-500">{t('inventory.left', 'in stock')}</div>
               </div>
               
-              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200">
+              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 mt-4">
                 <div className="flex items-center gap-2 text-sm text-orange-700 mb-1">
                   <AlertTriangle size={16} />
                   {t('inventory.low_stock')}
@@ -779,15 +723,10 @@ export default function ServicesPage() {
                 <div className="text-2xl font-bold text-orange-600">{lowStockItems}</div>
                 <div className="text-xs text-orange-500">{t('inventory.reorder_soon', 'items need restock')}</div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Inventory Value Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-6"
-            >
+            <div className="fade-in mt-4">
               <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                 <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                   <DollarSign size={16} />
@@ -797,15 +736,10 @@ export default function ServicesPage() {
                   {formatCurrency(totalInventoryValue, country)}
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Add Inventory Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-4"
-            >
+            <div className="fade-in mt-6">
               <button
                 onClick={() => setShowAddInventoryModal(true)}
                 disabled={!business?.id}
@@ -814,15 +748,10 @@ export default function ServicesPage() {
                 <Plus size={20} />
                 {business?.id ? t('inventory.add_new_item') : 'Loading business data...'}
               </button>
-            </motion.div>
+            </div>
 
             {/* Search and Filter */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-4"
-            >
+            <div className="fade-in mt-8">
               <div className="relative">
                 <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -833,14 +762,10 @@ export default function ServicesPage() {
                   className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
-            </motion.div>
+            </div>
 
             {/* Inventory List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
+            <div className="fade-in mt-6">
               {filteredInventory.length === 0 ? (
                 <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
                   <div className="text-gray-400 mb-2">
@@ -856,15 +781,7 @@ export default function ServicesPage() {
                     const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
                     
                     return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.7 + index * 0.05 }}
-                        className={`bg-white rounded-xl border border-gray-200 overflow-hidden ${
-                          isLowStock ? 'border-orange-200' : ''
-                        }`}
-                      >
+                      <div className="fade-in">
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
@@ -940,13 +857,13 @@ export default function ServicesPage() {
                             <Trash2 size={16} className="text-red-600" />
                           </button>
                         </div>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
@@ -625,7 +624,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       </div>
 
       {/* Add Appointment Modal */}
-      <AnimatePresence>
+      
         {showAddModal && (
           <AddAppointmentModal
             isOpen={showAddModal}
@@ -642,25 +641,13 @@ export default function Calendar({ industry, country }: CalendarProps) {
             country={country}
           />
         )}
-      </AnimatePresence>
+      
 
       {/* Cancel Appointment Modal - Mobile Responsive */}
-      <AnimatePresence>
+      
         {showCancelModal && appointmentToCancel && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowCancelModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowCancelModal(false)}>
+            <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-scale-in" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">Cancel Appointment</h3>
               <div className="mb-6">
                 <p className="text-gray-600 mb-2">
@@ -695,10 +682,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
                   No, Keep
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      
 
       <BottomNav industry={industry} country={country} />
     </div>

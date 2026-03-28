@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -104,25 +103,18 @@ export default function WhatsAppShare({
       </button>
 
       {/* Phone Number Modal */}
-      <AnimatePresence>
-        {showPhoneModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPhoneModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            />
+      {showPhoneModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-fade"
+            onClick={() => setShowPhoneModal(false)}
+          />
 
-            {/* Modal */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
-            >
+          {/* Modal */}
+          <div
+            className="relative bg-white rounded-2xl p-6 w-full max-w-sm scale-in shadow-xl"
+          >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-900">
@@ -179,10 +171,9 @@ export default function WhatsAppShare({
                   </button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
     </>
   );
 }

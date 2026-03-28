@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, ArrowLeft, Target, TrendingUp, Users, Package, FileText, DollarSign } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -151,12 +150,12 @@ export default function WelcomeTour({ isOpen, onComplete, onSkip, industry = 're
   return (
     <>
       {/* Overlay */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80]"
-        onClick={handleSkip}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-fade z-40"
+        style={{ 
+          willChange: 'opacity',
+          WebkitTransform: 'translateZ(0)'
+        }}
       />
 
       {/* Spotlight overlay */}
@@ -176,16 +175,11 @@ export default function WelcomeTour({ isOpen, onComplete, onSkip, industry = 're
       )}
 
       {/* Tour Content */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        className="fixed z-[82] max-w-sm mx-auto"
+      <div
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 z-50 max-w-sm w-full mx-4 scale-in"
         style={{
-          bottom: step.position === 'top' ? 'auto' : '80px',
-          top: step.position === 'top' ? '80px' : 'auto',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          maxHeight: '80vh',
+          overflowY: 'auto'
         }}
       >
         <div className="glass-strong rounded-3xl p-6 shadow-float-lg mx-4">
@@ -256,7 +250,7 @@ export default function WelcomeTour({ isOpen, onComplete, onSkip, industry = 're
             </span>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }

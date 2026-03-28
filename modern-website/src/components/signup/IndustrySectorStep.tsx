@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Briefcase } from 'lucide-react';
 import { getSectorsByIndustry, getIndustryById } from '@/data/industries';
 
@@ -30,11 +29,7 @@ export function IndustrySectorStep({
 
   return (
     <div className="py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
+      <div className="animate-fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <span className="text-3xl">{industryData?.icon || '🏢'}</span>
         </div>
@@ -44,18 +39,15 @@ export function IndustrySectorStep({
         <p className="text-[var(--text-2)] max-w-md mx-auto">
           Choose your specific sector to personalize your experience
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid gap-6 mb-8">
         {sectors.length > 0 ? (
           sectors.map((sector, index) => (
-            <motion.button
+            <button
               key={sector.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
               onClick={() => handleSectorSelect(sector.id)}
-              className={`p-6 rounded-xl border-2 transition-all flex items-center gap-4 ${
+              className={`p-6 rounded-xl border-2 transition-all flex items-center gap-4 animate-fade-in ${
                 selectedSector === sector.id
                   ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20 shadow-lg'
                   : 'border-[var(--border)] hover:border-[var(--powder-mid)] hover:shadow-md'
@@ -71,15 +63,11 @@ export function IndustrySectorStep({
                 )}
               </div>
               {selectedSector === sector.id && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                >
+                <div className="animate-fade-in">
                   <span className="text-[var(--powder-dark)] font-bold text-xl">✓</span>
-                </motion.div>
+                </div>
               )}
-            </motion.button>
+            </button>
           ))
         ) : (
           <div className="text-center py-12">

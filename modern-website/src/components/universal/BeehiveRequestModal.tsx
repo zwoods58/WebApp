@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Trash2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -107,24 +106,12 @@ export default function BeehiveRequestModal({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/20 backdrop-blur-xl"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
 
-        {/* Modal */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          className="relative w-full max-w-lg bg-gray-100/80 backdrop-blur-xl rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden border border-white/20"
-        >
+      {/* Modal */}
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto animate-scale-in bg-white rounded-2xl p-6">
           {/* Apple-style Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
             <div className="w-16" />
@@ -264,41 +251,36 @@ export default function BeehiveRequestModal({
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Delete Confirmation Dialog */}
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute inset-0 flex items-center justify-center p-4 z-10"
-          >
-            <div className="bg-gray-100/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-white/20">
-              <h3 className="text-lg font-bold text-black mb-2">
-                {t('beehive.delete_confirm', 'Delete this request?')}
-              </h3>
-              <p className="text-black/70 mb-6">
-                {t('beehive.delete_confirm_message', 'This action cannot be undone.')}
-              </p>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-3 bg-gray-200/50 rounded-xl font-medium text-black hover:bg-gray-300/50 transition-colors"
-                >
-                  {t('common.cancel', 'Cancel')}
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
-                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
-                >
-                  {t('common.delete', 'Delete')}
-                </button>
-              </div>
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="absolute inset-0 flex items-center justify-center p-4 z-60">
+          <div className="bg-gray-100/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-white/20 animate-fade-in">
+            <h3 className="text-lg font-bold text-black mb-2">
+              {t('beehive.delete_confirm', 'Delete this request?')}
+            </h3>
+            <p className="text-black/70 mb-6">
+              {t('beehive.delete_confirm_message', 'This action cannot be undone.')}
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 px-4 py-3 bg-gray-200/50 rounded-xl font-medium text-black hover:bg-gray-300/50 transition-colors"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isSubmitting}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {t('common.delete', 'Delete')}
+              </button>
             </div>
-          </motion.div>
-        )}
-      </div>
-    </AnimatePresence>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

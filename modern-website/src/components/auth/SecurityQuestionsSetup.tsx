@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Shield, ChevronDown, AlertCircle } from 'lucide-react';
 import { useSecurityQuestions } from '@/hooks/useSecurityQuestions';
 import { SecurityQuestionsSetup as SecurityQuestionsSetupType } from '@/types/security';
@@ -86,11 +85,7 @@ export default function SecurityQuestionsSetup({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
-      >
+      <div class="fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <Shield size={40} strokeWidth={1.5} />
         </div>
@@ -103,14 +98,9 @@ export default function SecurityQuestionsSetup({
         <p className="text-[var(--text-3)] text-sm">
           You'll need to answer this question to reset your PIN
         </p>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8"
-      >
+      <div class="fade-in">
         {(error || validationError) && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-2">
             <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
@@ -182,7 +172,7 @@ export default function SecurityQuestionsSetup({
             )}
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

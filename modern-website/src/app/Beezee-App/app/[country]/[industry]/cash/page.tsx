@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Calendar, Filter, Search, ArrowUpDown, Copy, MessageSquare, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -321,159 +320,149 @@ export default function CashPage() {
   return (
     <div className="scroll-container bg-[var(--bg)]">
       <Header industry={industry} country={country} />
-
-      <main className="scroll-content">
-        <div className="p-5 max-w-md mx-auto pb-20">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-[var(--text-1)] mb-6"
-          >
-            {t('cash')}
-          </motion.h1>
-
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 gap-4 mb-6"
-          >
-            <div className="add-transaction-btn">
-              <MoneyInButton 
-                industry={industry}
-                country={country}
-                onSuccess={handleMoneyIn}
-              />
-            </div>
-            <div className="add-transaction-btn">
-              <MoneyOutButton 
-                industry={industry}
-                country={country}
-                onSuccess={handleMoneyOut}
-              />
-            </div>
-          </motion.div>
-
-          {/* Today's Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-3 gap-3 mb-6"
-          >
-            <div className="glass-card p-4 border border-[var(--border)]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
-                <TrendingUp size={14} strokeWidth={2.5} />
-                {t('cash.in')}
-              </div>
-              <div className="text-lg font-bold text-[var(--color-success)]">
-                {formatCurrency(todayMoneyIn, country)}
-              </div>
-            </div>
-
-            <div className="glass-card p-4 border border-[var(--border)]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
-                <TrendingDown size={14} strokeWidth={2.5} />
-                {t('cash.out')}
-              </div>
-              <div className="text-lg font-bold text-[var(--color-danger)]">
-                {formatCurrency(todayMoneyOut, country)}
-              </div>
-            </div>
-
-            <div className="glass-card p-4 border border-[var(--border)]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
-                <ArrowUpDown size={14} strokeWidth={2.5} />
-                {t('cash.profit')}
-              </div>
-              <div className={`text-lg font-bold ${
-                todayProfit >= 0 ? 'text-[var(--powder-dark)]' : 'text-[var(--color-danger)]'
+      
+      <main className="container mx-auto px-4 py-6 max-w-md">
+        {/* Sync Status */}
+        {(isOffline || isSyncing) && (
+          <div className="mb-4 p-3 rounded-lg border border-[var(--border)] bg-[var(--glass)] animate-fade-in">
+            <div className="flex items-center gap-2 text-sm">
+              {isSyncing && <RefreshCw size={16} className="animate-spin" />}
+              <span className={`font-medium ${
+                isOffline ? 'text-orange-600' : 'text-blue-600'
               }`}>
-                {formatCurrency(todayProfit, country)}
+                {isOffline 
+                  ? t('common.offline_mode', 'Offline Mode')
+                  : isSyncing 
+                  ? t('common.syncing_data', 'Syncing data...')
+                  : t('common.online', 'Online')
+                }
+              </span>
+              {totalPending > 0 && (
+                <span className="text-xs text-gray-500">
+                  ({totalPending} {t('common.pending', 'pending')})
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="flex gap-3 mb-6 mt-8">
+          <div className="add-transaction-btn flex-1">
+            <MoneyInButton 
+              industry={industry}
+              country={country}
+              onSuccess={handleMoneyIn}
+            />
+          </div>
+          <div className="add-transaction-btn flex-1">
+            <MoneyOutButton 
+              industry={industry}
+              country={country}
+              onSuccess={handleMoneyOut}
+            />
+          </div>
+        </div>
+
+        {/* Today's Summary */}
+        <div className="grid grid-cols-3 gap-3 mb-6 mt-8 animate-fade-in">
+          <div className="glass-card p-4 border border-[var(--border)]">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
+              <TrendingUp size={14} strokeWidth={2.5} />
+              {t('cash.in')}
+            </div>
+            <div className="text-lg font-bold text-[var(--color-success)]">
+              {formatCurrency(todayMoneyIn, country)}
+            </div>
+          </div>
+
+          <div className="glass-card p-4 border border-[var(--border)]">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
+              <TrendingDown size={14} strokeWidth={2.5} />
+              {t('cash.out')}
+            </div>
+            <div className="text-lg font-bold text-[var(--color-danger)]">
+              {formatCurrency(todayMoneyOut, country)}
+            </div>
+          </div>
+
+          <div className="glass-card p-4 border border-[var(--border)]">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-3)] mb-2">
+              <ArrowUpDown size={14} strokeWidth={2.5} />
+              {t('cash.profit')}
+            </div>
+            <div className={`text-lg font-bold ${
+              todayProfit >= 0 ? 'text-[var(--powder-dark)]' : 'text-[var(--color-danger)]'
+            }`}>
+              {formatCurrency(todayProfit, country)}
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="mb-6 animate-fade-in">
+          <div className="relative mb-3">
+            <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder={t('cash.search_cash_flow')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 glass-card border border-[var(--border)] rounded-xl focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)]"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFilterType('all')}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+                filterType === 'all'
+                  ? 'bg-[var(--powder-dark)] text-white'
+                  : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
+              }`}
+            >
+              {t('cash.all')}
+            </button>
+            <button
+              onClick={() => setFilterType('in')}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+                filterType === 'in'
+                  ? 'bg-[var(--color-success)] text-white'
+                  : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
+              }`}
+            >
+              {t('cash.money_in')}
+            </button>
+            <button
+              onClick={() => setFilterType('out')}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
+                filterType === 'out'
+                  ? 'bg-[var(--color-danger)] text-white'
+                  : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
+              }`}
+            >
+              {t('cash.money_out')}
+            </button>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="animate-fade-in">
+          <h3 className="font-bold text-[var(--text-1)] mb-4">{t('cash.recent_activity')}</h3>
+          
+          {filteredCashFlow.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-gray-400 mb-2">
+                <ArrowUpDown size={48} className="mx-auto" />
               </div>
+              <p className="text-gray-600">{t('cash.no_cash_activity_found')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('cash.start_by_recording_first_transaction')}</p>
             </div>
-          </motion.div>
-
-          {/* Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-4 space-y-3"
-          >
-            <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder={t('cash.search_cash_flow')}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 glass-card border border-[var(--border)] rounded-xl focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)]"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilterType('all')}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-                  filterType === 'all'
-                    ? 'bg-[var(--powder-dark)] text-white'
-                    : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
-                }`}
-              >
-                {t('cash.all')}
-              </button>
-              <button
-                onClick={() => setFilterType('in')}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-                  filterType === 'in'
-                    ? 'bg-[var(--color-success)] text-white'
-                    : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
-                }`}
-              >
-                {t('cash.money_in')}
-              </button>
-              <button
-                onClick={() => setFilterType('out')}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold transition-colors ${
-                  filterType === 'out'
-                    ? 'bg-[var(--color-danger)] text-white'
-                    : 'glass-card text-[var(--text-2)] border border-[var(--border)]'
-                }`}
-              >
-                {t('cash.money_out')}
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Recent Activity */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass-card p-5 border border-[var(--border)] transaction-list"
-          >
-            <h3 className="font-bold text-[var(--text-1)] mb-4">{t('cash.recent_activity')}</h3>
-            
-            {filteredCashFlow.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-gray-400 mb-2">
-                  <ArrowUpDown size={48} className="mx-auto" />
-                </div>
-                <p className="text-gray-600">{t('cash.no_cash_activity_found')}</p>
-                <p className="text-sm text-gray-500 mt-1">{t('cash.start_by_recording_first_transaction')}</p>
-              </div>
-            ) : (
-              <div className="space-y-1">
-                {filteredCashFlow.map((item: any, index: number) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + index * 0.05 }}
-                    className="flex items-center justify-between py-3 border-b border-[var(--border-soft)] last:border-b-0 hover:bg-[var(--bg2)] transition-colors"
-                  >
+          ) : (
+            <div className="space-y-2">
+              {filteredCashFlow.map((item: any, index: number) => (
+                <div key={item.id} className="glass-card p-4 border border-[var(--border)] animate-fade-in">
+                  <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="font-semibold text-[var(--text-1)] mb-1">
                         {item.description}
@@ -505,7 +494,7 @@ export default function CashPage() {
                       </div>
                     </div>
                     
-                    <div className="text-right">
+                    <div className="text-right ml-4">
                       <div className={`text-lg font-bold ${
                         item.type === 'in' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
                       }`}>
@@ -540,18 +529,18 @@ export default function CashPage() {
                         </button>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </motion.div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
       {/* WhatsApp Share Modal */}
       {showShareModal && selectedItemForShare && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm animate-slide-up">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('receipt.share_receipt', 'Share Receipt')}</h3>
             
             <div className="bg-gray-50 p-3 rounded-lg mb-4">

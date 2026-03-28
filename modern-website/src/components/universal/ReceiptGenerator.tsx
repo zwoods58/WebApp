@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, Check, FileText } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
@@ -133,34 +132,31 @@ export default function ReceiptGenerator({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-fade"
+        onClick={onClose}
+      />
 
-        {/* Modal */}
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <FileText size={20} className="text-blue-600" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">
-                {t('receipt.title', 'Receipt')}
-              </h2>
+      {/* Modal */}
+      <div
+        className="relative bg-white rounded-2xl p-6 w-full max-w-md scale-in shadow-xl"
+        style={{
+          maxHeight: '90vh',
+          overflowY: 'auto'
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <FileText size={20} className="text-blue-600" />
             </div>
+            <h2 className="text-xl font-bold text-gray-900">
+              {t('receipt.title', 'Receipt')}
+            </h2>
+          </div>
             <button
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -204,8 +200,7 @@ export default function ReceiptGenerator({
               buttonClassName="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
             />
           </div>
-        </motion.div>
       </div>
-    </AnimatePresence>
+    </div>
   );
 }

@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-
 export const SkeletonBase: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <div 

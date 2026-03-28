@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Users, Plus, Clock, CheckCircle, AlertCircle, Calendar, Search, Filter, Copy, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -290,21 +289,12 @@ export default function CreditPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-6"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {t('credit')}
-        </motion.h1>
+        </h1>
 
         {/* Summary Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-3 mb-6"
-        >
+        <div className="fade-in mt-8">
           <div className="bg-white p-4 rounded-xl border border-gray-200">
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
               <Users className="text-gray-600" size={16} />
@@ -316,7 +306,7 @@ export default function CreditPage() {
             <div className="text-xs text-gray-500">{creditData.length} {t('credit.customers')}</div>
           </div>
 
-          <div className="bg-red-50 p-4 rounded-xl border border-red-200">
+          <div className="bg-red-50 p-4 rounded-xl border border-red-200 mt-4">
             <div className="flex items-center gap-2 text-sm text-red-700 mb-1">
               <AlertCircle size={16} />
               {t('credit.overdue')}
@@ -326,15 +316,10 @@ export default function CreditPage() {
             </div>
             <div className="text-xs text-red-500">{overdueCredit.length} {t('credit.overdue')}</div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Add Credit Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-4"
-        >
+        <div className="fade-in mt-6">
           <button
             onClick={() => setShowAddModal(true)}
             className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
@@ -342,15 +327,10 @@ export default function CreditPage() {
             <Plus size={20} />
             {t('credit.add_credit_customer')}
           </button>
-        </motion.div>
+        </div>
 
         {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-4 space-y-3"
-        >
+        <div className="fade-in mt-6">
           <div className="relative">
             <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -362,7 +342,7 @@ export default function CreditPage() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={() => setFilterStatus('all')}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -394,16 +374,11 @@ export default function CreditPage() {
               {t('credit.paid')}
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Overdue Alerts */}
         {overdueCredit.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4"
-          >
+          <div className="fade-in">
             <h3 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
               <AlertCircle size={20} />
               {t('credit.overdue_payments')}
@@ -424,16 +399,11 @@ export default function CreditPage() {
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* All Credit */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white rounded-xl p-4 border border-gray-200"
-        >
+        <div className="fade-in mt-6">
           <h3 className="font-semibold text-gray-900 mb-3">{t('credit.all_customers')}</h3>
           
           {filteredCredit.length === 0 ? (
@@ -451,11 +421,7 @@ export default function CreditPage() {
                 const overdue = isOverdue(item.due_date || '', item.status);
                 
                 return (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 + index * 0.05 }}
+                  <div 
                     onClick={() => handleCustomerClick(item)}
                     className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
                       overdue 
@@ -535,12 +501,12 @@ export default function CreditPage() {
                         </div>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />

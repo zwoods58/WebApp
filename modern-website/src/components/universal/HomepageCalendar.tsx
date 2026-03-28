@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Calendar as CalendarIcon, Clock, ChevronRight, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/LanguageContext';
@@ -66,11 +65,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
 
   if (isLoading) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-5 border border-[var(--border)]"
-      >
+      <div class="fade-in">
         <div className="animate-pulse">
           <div className="h-6 bg-[var(--bg2)] rounded-lg mb-4 w-32"></div>
           <div className="space-y-3">
@@ -78,17 +73,12 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
             <div className="h-16 bg-[var(--bg2)] rounded-lg"></div>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.25 }}
-      className="glass-card p-5 border border-[var(--border)]"
-    >
+    <div class="fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -121,12 +111,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
           </div>
           <div className="space-y-2">
             {todayAppointments.slice(0, 2).map((appointment: Appointment) => (
-              <motion.div
-                key={appointment.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="p-3 bg-[var(--bg2)] rounded-xl border border-[var(--border-soft)]"
-              >
+              <div class="fade-in">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="font-medium text-[var(--text-1)] text-sm">{appointment.customer_name}</div>
@@ -145,7 +130,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
             {todayAppointments.length > 2 && (
               <div className="text-center py-2">
@@ -169,12 +154,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
           </div>
           <div className="space-y-2">
             {upcomingAppointments.map((appointment: Appointment) => (
-              <motion.div
-                key={appointment.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="p-3 bg-[var(--bg2)] rounded-xl border border-[var(--border-soft)]"
-              >
+              <div class="fade-in">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="font-medium text-[var(--text-1)] text-sm">{appointment.customer_name}</div>
@@ -189,7 +169,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -218,6 +198,6 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
         <CalendarIcon size={18} />
         {t('calendar.manage_appointments', 'Manage Appointments')}
       </Link>
-    </motion.div>
+    </div>
   );
 }

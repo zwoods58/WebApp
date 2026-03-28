@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, TrendingUp, Calendar, Filter, Search, Receipt, Copy, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -29,7 +28,7 @@ export default function TransactionsPage() {
   const [isOnline, setIsOnline] = useState(true);
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
-  const { data: transactions, isLoading, addTransaction, isAdding, isPaused } = useTransactionsTanStack({ 
+  const { data: transactions, isLoading, addTransaction, isAdding } = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
   });
@@ -170,12 +169,8 @@ export default function TransactionsPage() {
         </div>
         
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-green-50 p-4 rounded-xl border border-green-200"
-          >
+        <div className="grid grid-cols-2 gap-3 mb-6 mt-8">
+          <div className="bg-green-50 p-4 rounded-xl border border-green-200">
             <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
               <TrendingUp size={16} />
               {t('common.today', 'Today')}
@@ -183,14 +178,9 @@ export default function TransactionsPage() {
             <div className="text-2xl font-bold text-green-600">
               {formatCurrency(todaySales, country)}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-blue-50 p-4 rounded-xl border border-blue-200"
-          >
+          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
             <div className="flex items-center gap-2 text-sm text-blue-700 mb-1">
               <Calendar size={16} />
               {t('common.total', 'Total')}
@@ -198,16 +188,11 @@ export default function TransactionsPage() {
             <div className="text-2xl font-bold text-blue-600">
               {formatCurrency(totalSales, country)}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="bg-white rounded-xl p-4 border border-gray-200 mb-6"
-        >
+        <div className="bg-white rounded-xl p-4 border border-gray-200 mb-6 mt-8">
           <h3 className="font-bold text-gray-900 mb-4">{t('cash.recent_activity', 'Recent Activity')}</h3>
           
           {transactions.length === 0 ? (
@@ -221,12 +206,9 @@ export default function TransactionsPage() {
           ) : (
             <div className="space-y-1">
               {transactions.slice(0, 5).map((transaction, index) => (
-                <motion.div
+                <div
                   key={transaction.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + index * 0.05 }}
-                  className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
                 >
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900 mb-1">
@@ -263,7 +245,7 @@ export default function TransactionsPage() {
                           e.stopPropagation();
                           handleCopyReceipt(transaction);
                         }}
-                        className={`p-1.5 rounded-lg transition-colors ${
+                        className={`p-1.5 rounded-lg ${
                           copiedTransaction === transaction.id
                             ? 'bg-green-100 text-green-600'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -278,40 +260,30 @@ export default function TransactionsPage() {
                           e.stopPropagation();
                           handleShareReceipt(transaction);
                         }}
-                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"
                         title={t('credit.share_via_whatsapp', 'Share via WhatsApp')}
                       >
                         <MessageSquare size={14} />
                       </button>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Add Transaction Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6"
-        >
+        <div className="mb-6">
           <MoneyInButton 
             industry={industry} 
             country={country}
             onSuccess={handleNewTransaction}
           />
-        </motion.div>
+        </div>
 
         {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-4 space-y-3"
-        >
+        <div className="mb-4 space-y-3">
           <div className="relative">
             <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -326,7 +298,7 @@ export default function TransactionsPage() {
           <div className="flex gap-2">
             <button
               onClick={() => setFilterDate('all')}
-              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                 filterDate === 'all'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 border border-gray-200'
@@ -336,7 +308,7 @@ export default function TransactionsPage() {
             </button>
             <button
               onClick={() => setFilterDate(new Date().toISOString().split('T')[0])}
-              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                 filterDate === new Date().toISOString().split('T')[0]
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 border border-gray-200'
@@ -346,7 +318,7 @@ export default function TransactionsPage() {
             </button>
             <button
               onClick={() => setFilterDate('2026-03-10')}
-              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                 filterDate === '2026-03-10'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 border border-gray-200'
@@ -355,15 +327,10 @@ export default function TransactionsPage() {
               {t('common.yesterday', 'Yesterday')}
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Transactions List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="space-y-3"
-        >
+        <div className="space-y-3">
           {filteredTransactions.length === 0 ? (
             <div className="bg-white rounded-xl p-8 text-center border border-gray-200">
               <div className="text-gray-400 mb-2">
@@ -374,12 +341,9 @@ export default function TransactionsPage() {
             </div>
           ) : (
             filteredTransactions.map((transaction, index) => (
-              <motion.div
+              <div
                 key={transaction.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                className="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all"
+                className="bg-white rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md hover:border-blue-300"
                 onClick={() => handleTransactionClick(transaction)}
               >
                 <div className="flex items-center justify-between">
@@ -418,7 +382,7 @@ export default function TransactionsPage() {
                           e.stopPropagation();
                           handleCopyReceipt(transaction);
                         }}
-                        className={`p-1 rounded transition-colors ${
+                        className={`p-1 rounded ${
                           copiedTransaction === transaction.id
                             ? 'bg-green-100 text-green-600'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -433,7 +397,7 @@ export default function TransactionsPage() {
                           e.stopPropagation();
                           handleShareReceipt(transaction);
                         }}
-                        className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
                         title={t('receipt.share_whatsapp', 'Share via WhatsApp')}
                       >
                         <MessageSquare size={12} />
@@ -444,7 +408,7 @@ export default function TransactionsPage() {
                           e.stopPropagation();
                           handleTransactionClick(transaction);
                         }}
-                        className="p-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                        className="p-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200"
                         title={t('receipt.view_details', 'View Receipt Details')}
                       >
                         <Receipt size={12} />
@@ -452,10 +416,10 @@ export default function TransactionsPage() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))
           )}
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />
@@ -491,7 +455,7 @@ export default function TransactionsPage() {
                   handleCopyReceipt(selectedTransactionForShare);
                   handleCloseShareModal();
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium"
               >
                 <Copy size={18} />
                 {t('common.copy_to_clipboard', 'Copy to Clipboard')}
@@ -501,12 +465,12 @@ export default function TransactionsPage() {
                 message={generateReceiptText(selectedTransactionForShare)}
                 phoneNumber={selectedTransactionForShare.customer_phone}
                 buttonText={t('receipt.share_whatsapp', 'Share via WhatsApp')}
-                buttonClassName="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
+                buttonClassName="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium"
               />
 
               <button
                 onClick={handleCloseShareModal}
-                className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50"
               >
                 {t('common.cancel', 'Cancel')}
               </button>

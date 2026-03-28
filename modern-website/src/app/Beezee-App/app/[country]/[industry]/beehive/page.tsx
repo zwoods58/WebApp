@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Users, 
   MessageSquare, 
@@ -209,30 +208,16 @@ export default function BeehivePage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-2"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-2 fade-in">
           {t('beehive.title', 'BeeHive Community')}
-        </motion.h1>
+        </h1>
         
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-gray-600 mb-6"
-        >
+        <p className="text-gray-600 mb-6 fade-in">
           {t('beehive.description', 'Share ideas and help improve BeeZee for everyone')}
-        </motion.p>
+        </p>
 
         {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-6"
-        >
+        <div className="fade-in mt-8">
           <div className="relative mb-3">
             <Search className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
@@ -265,15 +250,10 @@ export default function BeehivePage() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Add Request Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
+        <div className="fade-in mt-6">
           <button
             onClick={handleAddRequest}
             className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
@@ -281,15 +261,10 @@ export default function BeehivePage() {
             <Plus size={20} />
             {t('beehive.add_request', 'Add New Request')}
           </button>
-        </motion.div>
+        </div>
 
         {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-3 gap-3 mb-6"
-        >
+        <div className="fade-in mt-6">
           <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
             <div className="text-lg font-bold text-blue-600">{requests.length}</div>
             <div className="text-xs text-gray-600">{t('beehive.total_requests', 'Total')}</div>
@@ -302,27 +277,16 @@ export default function BeehivePage() {
             <div className="text-lg font-bold text-yellow-600">{requests.filter((r: BeehiveRequest) => r.status === 'in_progress').length}</div>
             <div className="text-xs text-gray-600">{t('beehive.in_progress', 'In Progress')}</div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Requests List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-3"
-        >
+        <div className="fade-in mt-8">
           {filteredRequests.map((request: BeehiveRequest, index: number) => {
             const userVote = getUserVote(request.id);
             const timeAgo = new Date(request.created_at).toLocaleDateString();
             
             return (
-              <motion.div
-                key={request.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
-                className="bg-white rounded-xl border border-gray-200 p-4"
-              >
+              <div className="fade-in">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
@@ -408,18 +372,14 @@ export default function BeehivePage() {
                     }}
                   />
                 )}
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
 
         {/* Empty State */}
         {filteredRequests.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
+          <div className="fade-in">
             <Users size={48} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {t('beehive.no_requests', 'No requests found')}
@@ -433,7 +393,7 @@ export default function BeehivePage() {
             >
               {t('beehive.add_first_request', 'Add First Request')}
             </button>
-          </motion.div>
+          </div>
         )}
       </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -150,11 +149,7 @@ export default function TourPage() {
 
       <div className="p-4 max-w-md mx-auto">
         {/* Progress Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-semibold text-gray-800">
               {t('tour.step', 'Step')} {currentStep + 1} {t('tour.of', 'of')} {tourSteps.length}
@@ -164,22 +159,15 @@ export default function TourPage() {
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <motion.div
-              className="bg-blue-600 h-2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${((completedSteps.length + (isPlaying ? 1 : 0)) / tourSteps.length) * 100}%` }}
-              transition={{ duration: 0.5 }}
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${((completedSteps.length + (isPlaying ? 1 : 0)) / tourSteps.length) * 100}%` }}
             />
           </div>
-        </motion.div>
+        </div>
 
         {/* Tour Content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-xl p-6 mb-6"
-        >
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
@@ -234,15 +222,10 @@ export default function TourPage() {
               </button>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Navigation Controls */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex justify-between items-center"
-        >
+        <div className="flex justify-between items-center">
           <button
             onClick={handlePrevious}
             disabled={currentStep === 0}
@@ -293,15 +276,10 @@ export default function TourPage() {
               </>
             )}
           </button>
-        </motion.div>
+        </div>
 
         {/* Step Indicators */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex justify-center gap-2"
-        >
+        <div className="flex justify-center gap-2">
           {tourSteps.map((step, index) => (
             <button
               key={step.id}
@@ -315,15 +293,10 @@ export default function TourPage() {
               }`}
             />
           ))}
-        </motion.div>
+        </div>
 
         {/* Quick Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8"
-        >
+        <div className="mt-8">
           <h3 className="text-center font-semibold text-gray-800 mb-4">
             {t('tour.quick_links', 'Quick Links')}
           </h3>
@@ -365,7 +338,7 @@ export default function TourPage() {
               </div>
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />

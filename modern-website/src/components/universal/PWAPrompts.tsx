@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -62,13 +61,14 @@ export const PWAInstallPrompt: React.FC = () => {
   };
 
   return (
-    <AnimatePresence>
+    <>
       {showPrompt && deferredPrompt && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-20 left-4 right-4 z-[90] glass-regular rounded-2xl p-4 shadow-float border border-[var(--border)]"
+        <div
+          className="fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-xl shadow-xl z-50 flex items-center justify-between slide-in-up"
+          style={{
+            willChange: 'transform',
+            WebkitTransform: 'translateZ(0)'
+          }}
         >
           <button 
             onClick={handleDismiss}
@@ -93,8 +93,8 @@ export const PWAInstallPrompt: React.FC = () => {
           >
             {t('pwa.add_to_home', 'Add to Home Screen')}
           </button>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };

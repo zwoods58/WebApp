@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   MessageCircle, 
   Phone, 
@@ -132,30 +131,16 @@ export default function HelpPage() {
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-gray-900 mb-2"
-        >
+        <h1 className="text-2xl font-bold text-gray-900 mb-2 spring-enter">
           {t('help.title', 'Help & Support')}
-        </motion.h1>
+        </h1>
         
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-gray-600 mb-6"
-        >
+        <p className="text-gray-600 mb-6 spring-enter">
           {t('help.description', 'Find answers and get help when you need it')}
-        </motion.p>
+        </p>
 
         {/* Search */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="relative mb-6"
-        >
+        <div className="fade-in">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
           <input
             type="text"
@@ -164,15 +149,10 @@ export default function HelpPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-        </motion.div>
+        </div>
 
         {/* Quick Help Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-2 gap-3 mb-6"
-        >
+        <div className="fade-in">
           <Link
             href={`/Beezee-App/app/${country}/${industry}/tour`}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl p-4 text-center hover:shadow-lg transition-shadow"
@@ -191,15 +171,10 @@ export default function HelpPage() {
               {t('help.call_support', 'Call Support')}
             </div>
           </a>
-        </motion.div>
+        </div>
 
         {/* Help Categories */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-6"
-        >
+        <div className="fade-in">
           <div className="flex gap-2 overflow-x-auto mb-4">
             <button
               onClick={() => setSelectedCategory('all')}
@@ -228,13 +203,7 @@ export default function HelpPage() {
 
           <div className="space-y-3">
             {filteredArticles.map((article, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.05 }}
-                className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-              >
+              <div className="fade-in">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900 mb-1">{article.title}</h3>
@@ -248,44 +217,28 @@ export default function HelpPage() {
                   </div>
                   <ChevronRight size={20} className="text-gray-400" />
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* FAQ Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-6"
-        >
+        <div className="fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             {t('help.frequently_asked', 'Frequently Asked Questions')}
           </h2>
           <div className="space-y-3">
             {faqItems.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                className="bg-white rounded-xl border border-gray-200 p-4"
-              >
+              <div className="fade-in">
                 <h3 className="font-medium text-gray-900 mb-2">{faq.question}</h3>
                 <p className="text-sm text-gray-600">{faq.answer}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Contact Support */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-4 mb-6"
-        >
+        <div className="fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             {t('help.contact_support', 'Contact Support')}
           </h2>
@@ -358,14 +311,10 @@ export default function HelpPage() {
               {t('help.send_message', 'Send Message')}
             </button>
           </form>
-        </motion.div>
+        </div>
 
         {/* Resources */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-        >
+        <div className="fade-in">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             {t('help.resources', 'Resources')}
           </h2>
@@ -405,7 +354,7 @@ export default function HelpPage() {
               <ChevronRight size={20} className="text-gray-400" />
             </a>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <BottomNav industry={industry} country={country} />

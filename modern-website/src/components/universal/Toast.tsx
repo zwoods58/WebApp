@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -53,24 +52,40 @@ const toastConfig = {
 export default function Toast({ id, type, title, message, duration = 5000, onClose }: ToastProps) {
   const config = toastConfig[type];
   const Icon = config.icon;
+  const [isVisible, setIsVisible] = useState(false);
+  const [progressWidth, setProgressWidth] = useState(100);
 
   useEffect(() => {
+    // Trigger enter animation
+    setIsVisible(true);
+    
     if (duration > 0) {
+      // Progress bar animation
+      const progressInterval = setInterval(() => {
+        setProgressWidth(prev => {
+          const decrement = (100 / (duration / 50)); // Update every 50ms
+          return Math.max(0, prev - decrement);
+        });
+      }, 50);
+
+      // Auto-dismiss timer
       const timer = setTimeout(() => {
-        onClose(id);
+        setIsVisible(false);
+        setTimeout(() => onClose(id), 200); // Allow exit animation to complete
       }, duration);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearInterval(progressInterval);
+      };
     }
   }, [id, duration, onClose]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -50, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -50, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      className={`${config.bgColor} ${config.borderColor} border rounded-xl shadow-lg p-4 min-w-[320px] max-w-[400px] relative overflow-hidden`}
+    <div
+      className={`${config.bgColor} ${config.borderColor} border rounded-xl shadow-lg p-4 min-w-[320px] max-w-[400px] relative overflow-hidden ${
+        isVisible ? 'toast-enter' : 'toast-exit'
+      }`}
     >
       {/* Close button */}
       <button
@@ -100,14 +115,12 @@ export default function Toast({ id, type, title, message, duration = 5000, onClo
 
       {/* Progress bar for auto-dismiss */}
       {duration > 0 && (
-        <motion.div
-          initial={{ width: '100%' }}
-          animate={{ width: '0%' }}
-          transition={{ duration: duration / 1000, ease: 'linear' }}
-          className={`absolute bottom-0 left-0 h-1 ${config.iconColor} opacity-30`}
+        <div
+          className={`absolute bottom-0 left-0 h-1 ${config.iconColor} opacity-30 progress-bar`}
+          style={{ width: `${progressWidth}%` }}
         />
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -120,13 +133,11 @@ export interface ToastContainerProps {
 export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
   return (
     <div className="fixed top-20 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
-      <AnimatePresence mode="popLayout">
-        {toasts.map((toast) => (
-          <div key={toast.id} className="pointer-events-auto">
-            <Toast {...toast} onClose={onClose} />
-          </div>
-        ))}
-      </AnimatePresence>
+      {toasts.map((toast) => (
+        <div key={toast.id} className="pointer-events-auto">
+          <Toast {...toast} onClose={onClose} />
+        </div>
+      ))}
     </div>
   );
 }
