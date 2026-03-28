@@ -8,6 +8,7 @@ import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname } from 'next/navigation';
 import BottomNav from '@/components/universal/BottomNav';
+import ScrollToTop from '@/components/universal/ScrollToTop';
 import { initConnectionMonitoring, cleanupConnectionMonitoring, getOnlineStatus } from '@/lib/connection-manager';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
@@ -113,7 +114,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const industry = pathMatch?.[2] || '';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-20 pt-0">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Global connection status indicator */}
       <ConnectionStatus />
       
@@ -147,7 +148,10 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         </div>
       )}
       
-      {children}
+      {/* Main content area - grows dynamically */}
+      <div className="flex-1 mb-20">
+        {children}
+      </div>
       
       {/* PWA Install Prompt */}
       <PWAInstallPrompt />
@@ -156,6 +160,9 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       {country && industry && (
         <BottomNav industry={industry} country={country} />
       )}
+      
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }

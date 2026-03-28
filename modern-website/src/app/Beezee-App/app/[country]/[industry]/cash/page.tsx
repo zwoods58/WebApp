@@ -318,10 +318,10 @@ export default function CashPage() {
   
   // ✅ STEP 12: Main render
   return (
-    <div className="scroll-container bg-[var(--bg)]">
+    <div className="min-h-screen bg-[var(--bg)]">
       <Header industry={industry} country={country} />
       
-      <main className="container mx-auto px-4 py-6 max-w-md">
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-md">
         {/* Sync Status */}
         {(isOffline || isSyncing) && (
           <div className="mb-4 p-3 rounded-lg border border-[var(--border)] bg-[var(--glass)] animate-fade-in">

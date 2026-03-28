@@ -523,12 +523,12 @@ export default function IndustryDashboard() {
   const todayProfit = (todayStats?.sales || 0) - (todayStats?.expenses || 0);
 
   return (
-    <div className="scroll-container bg-[var(--bg)]">
+    <div className="min-h-screen bg-[var(--bg)]">
         {/* Header */}
         <Header industry={industry} country={country} />
 
-        {/* Main Content - Scrollable */}
-        <main className="scroll-content">
+        {/* Main Content - Dynamic scrolling */}
+        <main className="flex-1">
           <div className="p-5 space-y-5 max-w-md mx-auto pb-20">
           {isLoading ? (
             <DashboardSkeleton />

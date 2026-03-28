@@ -271,9 +271,21 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
-      {/* Header removed - no back navigation */}
+      {/* Logo centered at top - mobile app friendly */}
+      <div className="flex justify-center items-center pt-16 pb-6 flex-shrink-0">
+        <div className="relative">
+          <Image
+            src="/beezee-icon-192x192.png"
+            alt="BeeZee Icon"
+            width={96}
+            height={96}
+            className="rounded-2xl shadow-xl"
+            priority
+          />
+        </div>
+      </div>
 
-      <div className="flex-1 container mx-auto px-6 py-16">
+      <div className="flex-1 container mx-auto px-6 py-4">
         <div className="max-w-md mx-auto">
           {/* Phone Step */}
           {loginStep === 'phone' && (
@@ -281,15 +293,6 @@ export default function Login() {
               <div
                 className="text-center mb-12 fade-in"
               >
-                <div className="mx-auto mb-6">
-                  <Image
-                    src="/beezee-icon-192x192.png"
-                    alt="BeeZee Icon"
-                    width={64}
-                    height={64}
-                    className="rounded-2xl"
-                  />
-                </div>
                 <h1 className="text-3xl font-bold text-[var(--text-1)] mb-4">
                   {t('auth.welcome_back', 'Welcome Back')}
                 </h1>

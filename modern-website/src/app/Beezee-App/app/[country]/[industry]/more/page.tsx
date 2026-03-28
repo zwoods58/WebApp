@@ -102,12 +102,12 @@ export default function MorePage() {
   }, [industry, country, business]);
 
   return (
-    <div className="scroll-container bg-[var(--bg)]">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Header */}
       <Header industry={industry} country={country} />
 
-      {/* Main Content - Scrollable */}
-      <main className="scroll-content">
+      {/* Main Content - Dynamic scrolling */}
+      <main className="flex-1">
         <div className="p-5 max-w-md mx-auto pb-32">
         <h1 className="text-2xl font-bold text-[var(--text-1)] mb-6 spring-enter">
           {t('nav.more', 'More')}
@@ -155,7 +155,7 @@ export default function MorePage() {
         {/* Menu Sections */}
         <div className="mt-8">
         {menuSections.map((section, sectionIndex) => (
-          <div className="fade-in mb-6">
+          <div key={sectionIndex} className="fade-in mb-6">
             <h2 className="text-sm font-bold text-[var(--text-3)] uppercase tracking-wider mb-3">
               {section.title}
             </h2>

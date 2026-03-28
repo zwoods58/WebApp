@@ -112,8 +112,8 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 min-h-[64px]" style={{ backgroundColor: '#ffffff' }}>
-        <div className="flex justify-around items-center max-w-md mx-auto h-16 px-2">
+      <nav className="fixed bottom-4 left-4 right-4 z-50" style={{ maxWidth: '448px', margin: '0 auto' }}>
+        <div className="bg-white rounded-full shadow-xl border border-gray-100 px-4 py-3 flex justify-around items-center min-h-[60px] backdrop-blur-lg bg-white/95">
           {navItems.map((item) => {
             const active = isActive(item.path);
             const Icon = item.icon;
@@ -135,27 +135,27 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
                     handleNavigationError(error as Error);
                   }
                 }}
-                className={`flex flex-col items-center justify-center w-full h-full gap-1.5 no-select button-touch transition-all duration-200 ${
+                className={`flex flex-col items-center justify-center min-w-[44px] h-full gap-1 no-select button-touch transition-all duration-300 relative ${
                   active 
-                    ? 'text-[var(--powder-dark)]' 
+                    ? 'text-[var(--powder-dark)] scale-105' 
                     : isOffline
                       ? 'text-gray-400' // Muted color when offline
-                      : 'text-[var(--text-3)] hover:text-[var(--powder-mid)]'
+                      : 'text-[var(--text-3)] hover:text-[var(--powder-mid)] hover:scale-105'
                 }`}
               >
-                <div className={`relative transition-all duration-200 ${active ? 'scale-110' : 'scale-100'}`}>
+                <div className={`relative transition-all duration-300 ${active ? 'scale-110' : 'scale-100'}`}>
                   <Icon 
-                    size={24} 
+                    size={20} 
                     strokeWidth={active ? 2.5 : 2} 
                   />
                   {active && (
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[var(--powder-dark)] rounded-full"></div>
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-[var(--powder-dark)] rounded-full animate-pulse"></div>
                   )}
                   {isOffline && !active && (
                     <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full"></div>
                   )}
                 </div>
-                <span className={`text-[10px] font-medium tracking-wide ${active ? 'font-bold' : ''} ${isOffline && !active ? 'text-gray-400' : ''}`}>
+                <span className={`text-[9px] font-medium tracking-wide whitespace-nowrap ${active ? 'font-bold' : ''} ${isOffline && !active ? 'text-gray-400' : ''}`}>
                   {t(item.nameKey)}
                 </span>
               </Link>

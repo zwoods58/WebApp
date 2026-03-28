@@ -566,10 +566,11 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Proper scroll container setup */
+/* Remove fixed scroll container setup for dynamic scrolling */
 .scroll-container {
-  height: 100vh;
-  overflow: hidden;
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -577,13 +578,13 @@ body {
 
 .scroll-content {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
-  height: 0; /* Force flex child to respect flex: 1 */
-  padding-top: 64px; /* Space for fixed header */
-  padding-bottom: 72px; /* Space for fixed bottom nav */
+  height: auto; /* Allow dynamic height */
+  padding-top: 0; /* Remove fixed padding */
+  padding-bottom: 0; /* Remove fixed padding */
 }
 
 /* Prevent rubber banding on iOS */
@@ -611,18 +612,18 @@ body {
   z-index: 50 !important;
 }
 
-/* Ensure content scrolls properly */
+/* Ensure content scrolls properly - remove fixed padding for dynamic scrolling */
 main, .content-wrapper {
-  min-height: 100vh;
-  padding-top: 64px; /* Header height */
-  padding-bottom: 72px; /* Bottom nav height */
+  min-height: auto;
+  padding-top: 0; /* Remove fixed header padding */
+  padding-bottom: 0; /* Remove fixed bottom nav padding */
 }
 
-/* Mobile viewport fix */
+/* Mobile viewport fix - remove fixed padding */
 @supports (padding: max(0px)) {
   main, .content-wrapper {
-    padding-top: max(64px, env(safe-area-inset-top));
-    padding-bottom: max(72px, env(safe-area-inset-bottom));
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
