@@ -156,7 +156,7 @@ export default function TransactionsPage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
 
-      <div className="p-4 max-w-md mx-auto pt-16">
+      <div className="p-4 max-w-md mx-auto pt-20">
         {/* Simple Online Status */}
         <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
           <div className="flex items-center justify-center gap-2">

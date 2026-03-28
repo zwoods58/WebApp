@@ -114,7 +114,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const industry = pathMatch?.[2] || '';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       {/* Global connection status indicator */}
       <ConnectionStatus />
       
@@ -148,8 +148,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         </div>
       )}
       
-      {/* Main content area - grows dynamically */}
-      <div className="flex-1 mb-20">
+      {/* Main content area - allow natural scrolling */}
+      <div className="pb-20">
         {children}
       </div>
       

@@ -80,7 +80,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           {/* Backdrop - CSS fade animation */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 backdrop-fade transform-gpu"
+            className="fixed inset-0 bg-gray-100/30 backdrop-blur-md z-40 backdrop-fade transform-gpu"
             style={{ 
               willChange: 'opacity',
               WebkitTransform: 'translateZ(0)'
@@ -89,7 +89,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           
           {/* Modal - No animation for instant display */}
           <div
-            className="fixed bottom-0 left-0 right-0 z-50 glass-card !border-x-0 !border-b-0 !rounded-t-3xl !rounded-b-none shadow-xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[70] glass-card !border-x-0 !border-b-0 !rounded-t-3xl !rounded-b-none shadow-xl overflow-hidden"
             style={{ 
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))'
@@ -99,7 +99,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
               <div className="w-12 h-1.5 bg-[var(--text-3)] opacity-50 rounded-full" />
             </div>
             
-            <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 8rem - env(safe-area-inset-bottom))' }}>
+            <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 glass-regular rounded-xl flex items-center justify-center border border-orange-200/50">
                   <Icon className="text-orange-600" size={24} />

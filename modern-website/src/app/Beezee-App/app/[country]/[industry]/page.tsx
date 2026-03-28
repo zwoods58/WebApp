@@ -529,7 +529,7 @@ export default function IndustryDashboard() {
 
         {/* Main Content - Dynamic scrolling */}
         <main className="flex-1">
-          <div className="p-5 space-y-5 max-w-md mx-auto pb-20">
+          <div className="pt-12 p-5 space-y-5 max-w-md mx-auto pb-20">
           {isLoading ? (
             <DashboardSkeleton />
           ) : (

@@ -127,7 +127,7 @@ export default function Header({ industry, country }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[60] bg-[var(--bg)] safe-area-top">
+      <header className="relative top-0 left-0 right-0 z-[60] bg-[var(--bg)] safe-area-top">
         <div className="max-w-md mx-auto px-5 h-16 flex items-center justify-between">
           {/* Back Button - Hidden on home dashboard */}
           {!isHomeDashboard && (

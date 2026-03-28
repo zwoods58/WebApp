@@ -640,6 +640,17 @@ main, .content-wrapper {
    SPLASH SCREEN ANIMATIONS
    ═══════════════════════════════════════════════════════════════ */
 
+/* Scroll target for scroll-to-top functionality */
+.scroll-target {
+  display: block;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
 /* Subtle pulse animation for logo */
 @keyframes pulse-subtle {
   0%, 100% {

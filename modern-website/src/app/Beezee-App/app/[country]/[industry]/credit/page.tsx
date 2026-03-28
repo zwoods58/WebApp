@@ -422,6 +422,7 @@ export default function CreditPage() {
                 
                 return (
                   <div 
+                    key={item.id || index}
                     onClick={() => handleCustomerClick(item)}
                     className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
                       overdue 

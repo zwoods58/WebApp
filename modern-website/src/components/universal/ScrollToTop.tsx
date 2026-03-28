@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
+    headerRef.current = document.querySelector('header');
+    
     const toggleVisibility = () => {
-      // Show button when page is scrolled down more than 300px
       if (window.pageYOffset > 300) {
         setIsVisible(true);
       } else {
@@ -17,12 +19,14 @@ export default function ScrollToTop() {
     };
 
     window.addEventListener('scroll', toggleVisibility);
+    
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
+    // Simple scroll to fixed position that works for all pages
     window.scrollTo({
-      top: 0,
+      top: 140,
       behavior: 'smooth'
     });
   };
