@@ -117,6 +117,9 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#4A8DB8" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        
+        {/* PWA-specific: Remove theme color to prevent system splash */}
+        <meta name="theme-color" content="transparent" />
       </head>
       <BodyWrapper className={bodyClassName}>
         {children}

@@ -6,20 +6,31 @@ import Image from 'next/image';
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    // Mark as loaded after component mounts
+    // Check if running as installed PWA
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    
+    // Only show splash screen for installed PWA
+    if (!isPWA) {
+      setIsVisible(false);
+      return;
+    }
+
+    // Show immediately for PWA
+    setShouldShow(true);
     setIsLoaded(true);
 
-    // Hide splash screen after 2 seconds
+    // Hide splash screen after app is ready (reduced time for better UX)
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 2000);
+    }, 1500); // Reduced from 2000ms
 
     return () => clearTimeout(timer);
   }, []);
 
-  if (!isVisible) return null;
+  if (!isVisible || !shouldShow) return null;
 
   return (
     <div

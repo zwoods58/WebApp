@@ -11306,6 +11306,19 @@ const translations = {
       rw: "Igiciro cy'ibikomoka", 
       lg: "Omunazzi gw'ebikola" 
     },
+    "food.supplies": {
+      en: "Supplies",
+      sw: "Vifaa vya Chakula", 
+      ha: "Kayayyakin Chakula", 
+      yo: "Ohun elo Ounjẹ", 
+      ig: "Nri Nnyefe", 
+      zu: "Izinto Zokudla", 
+      xh: "Izinto Zokudla", 
+      af: "Voorraad", 
+      tw: "Nneɛma a wɔde di dwuma", 
+      rw: "Ibikoresho by'ibiribwa", 
+      lg: "Ebikola by'emyanya"
+    },
     "food.daily_target": { 
       en: "Daily Target",
       sw: "Lengo la Kila Siku", 
@@ -15019,6 +15032,32 @@ const translations = {
       rw: "Amafaranga zisohoka",
       lg: "Ssaaka ziwumula"
     },
+    "transport.fare_amount": {
+      en: "Fare amount",
+      sw: "Kiasi cha Ada",
+      ha: "Adadin Fiyi",
+      yo: "Iye owo irin-ajo",
+      ig: "Ụkọlọ ụgbọ njem",
+      zu: "Izinga eliqoqo",
+      xh: "Ixabiso lefa",
+      af: "Geld vir Rit",
+      tw: "Boɔmu kɛtɛ",
+      rw: "Igiteranyo cy'urugendo",
+      lg: "Omuwendo gw'oluguuda"
+    },
+    "transport.fuel_cost": {
+      en: "Fuel cost",
+      sw: "Gharama ya Mafuta",
+      ha: "Farashin Man fetur",
+      yo: "Iye owo petrol",
+      ig: "Ọnụ ego mmanụ",
+      zu: "Izinga lepetroli",
+      xh: "Iindlela zolwandle",
+      af: "Brandstofkoste",
+      tw: "Kaasi ahyeade",
+      rw: "Ibihero bya amavuta",
+      lg: "Ssente z'amaanyi"
+    },
     "transport.dashboard.recent_trips_title": {
       en: "Recent Trips",
       sw: "Safari za Karibuni",
@@ -15661,6 +15700,32 @@ const translations = {
       tw: "Materials Management", 
       rw: "Ukurikanywa kw'ibiko", 
       lg: "Okulaba Ebintu" 
+    },
+    "tailor.payment_amount": {
+      en: "Payment amount",
+      sw: "Kiasi cha Malipo", 
+      ha: "Adadin Biya", 
+      yo: "Iye owo isanwo", 
+      ig: "Ụkọlọ ụgwọ", 
+      zu: "Izinga lezimali", 
+      xh: "Ixabiso lezimali", 
+      af: "Betaling bedrag", 
+      tw: "Boɔmu ahotɔ", 
+      rw: "Igiteranyo cy'ihuriro", 
+      lg: "Omuwendo gw'okuweesa"
+    },
+    "tailor.material_cost": {
+      en: "Material cost",
+      sw: "Gharama ya Nyenzo", 
+      ha: "Farashin Kayayyaki", 
+      yo: "Iye owo ohun elo", 
+      ig: "Ọnụ ego ihe", 
+      zu: "Izinga lezinto", 
+      xh: "Iindlela zezinto", 
+      af: "Materiaal koste", 
+      tw: "Kaasi ahyeade", 
+      rw: "Ibihero by'ibikoresho", 
+      lg: "Ssente z'ebintu"
     },
     "tailor.search_materials_placeholder": {
       en: "Search materials...",
@@ -24860,6 +24925,19 @@ const translations = {
       tw: "Sika a Woe",
       rw: "Amabwirize Yakiriye",
       lg: "Emmere Ennyidde"
+    },
+    "freelance.payment_amount": {
+      en: "Payment amount",
+      sw: "Kiasi cha Malipo", 
+      ha: "Adadin Biya", 
+      yo: "Iye owo isanwo", 
+      ig: "Ụkọlọ ụgwọ", 
+      zu: "Izinga lezimali", 
+      xh: "Ixabiso lezimali", 
+      af: "Betaling bedrag", 
+      tw: "Boɔmu ahotɔ", 
+      rw: "Igiteranyo cy'ihuriro", 
+      lg: "Omuwendo gw'okuweesa"
     },
     "freelance.software": { 
       en: "Software",

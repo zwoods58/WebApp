@@ -3,11 +3,11 @@
     "short_name": "BeeZee NG",
     "start_url": "/nigeria/app/",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "transparent",
     "lang": "en",
     "scope": "/nigeria/app/",
     "description": "Financial management for Nigerian informal businesses",
-    "theme_color": "#008751",
+    "theme_color": "transparent",
     "orientation": "portrait",
     "icons": [
         {

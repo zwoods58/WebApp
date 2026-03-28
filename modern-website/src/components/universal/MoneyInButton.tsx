@@ -28,7 +28,7 @@ const industryLabels = {
   salon: { buttonKey: 'nav.services', placeholderKey: 'salon.service_amount', icon: Scissors },
   tailor: { buttonKey: 'nav.jobs', placeholderKey: 'tailor.payment_amount', icon: Ruler },
   repairs: { buttonKey: 'repairs.new_repair', placeholderKey: 'repairs.repair_fee', icon: Wrench },
-  freelance: { buttonKey: 'freelance.new_project', placeholderKey: 'freelance.payment_received', icon: Laptop }
+  freelance: { buttonKey: 'freelance.new_project', placeholderKey: 'freelance.payment_amount', icon: Laptop }
 };
 
 // Helper function to get default due date (30 days from today)

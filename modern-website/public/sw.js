@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v39';
+const CACHE_VERSION = 'v40';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -546,9 +546,12 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // API calls - Cache-only when offline, cache-then-network when online
+  // ✅ UPDATED: API calls - ONLY cache internal APIs, NOT Supabase
+  // TanStack Query + IndexedDB handle Supabase data, so we just pass through
   // ============================================================
-  if (url.pathname.startsWith('/api/') || url.hostname.includes('supabase.co')) {
+  
+  // Internal APIs (/api/*) - Cache-then-network
+  if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       (async () => {
         // OFFLINE: Return cached data only
@@ -562,26 +565,70 @@ self.addEventListener('fetch', (event) => {
           });
         }
         
-        // ONLINE: Try cache first, then network WITH TIMEOUT
+        // ONLINE: Cache-then-network (return cached instantly, update in background)
         const cached = await caches.match(request);
-        if (cached) {
-          return cached;
-        }
         
-        // No cache - fetch from network
-        try {
-          const networkResponse = await fetchWithTimeout(request, 3000);
+        // Fetch in background
+        const fetchPromise = fetchWithTimeout(request, 5000).then(async (networkResponse) => {
           if (networkResponse.ok) {
             const cache = await caches.open(API_CACHE);
             cache.put(request, networkResponse.clone());
+            console.log('[SW] ✅ Updated cached API:', url.pathname);
           }
           return networkResponse;
+        }).catch((error) => {
+          console.warn('[SW] ⚠️ Background API fetch failed:', url.pathname);
+          return null;
+        });
+        
+        // Return cached instantly if available
+        if (cached) {
+          console.log('[SW] ✅ Serving cached API (background update):', url.pathname);
+          // Don't await - let it update in background
+          fetchPromise.catch(() => {});
+          return cached;
+        }
+        
+        // No cache, wait for network
+        console.log('[SW] 📡 Fetching API from network:', url.pathname);
+        const networkResponse = await fetchPromise;
+        if (networkResponse) return networkResponse;
+        
+        return new Response(JSON.stringify({ error: 'OFFLINE' }), { 
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      })()
+    );
+    return;
+  }
+  
+  // ============================================================
+  // ✅ UPDATED: Supabase calls - NEVER CACHE (let TanStack Query handle it)
+  // ============================================================
+  if (url.hostname.includes('supabase.co')) {
+    event.respondWith(
+      (async () => {
+        // OFFLINE: Return offline response - TanStack Query will serve from IndexedDB
+        if (isOffline || !navigator.onLine) {
+          console.log('[SW] 📴 Offline - Supabase request skipped, letting TanStack Query use IndexedDB');
+          return new Response(
+            JSON.stringify({ error: 'OFFLINE', message: 'Using cached data from IndexedDB' }),
+            { status: 503, headers: { 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        // ONLINE: Just pass through - no caching
+        console.log('[SW] 🌐 Passing through Supabase request:', url.pathname);
+        try {
+          const response = await fetchWithTimeout(request, 10000);
+          return response;
         } catch (error) {
-          console.log('[SW] ❌ API network failed/timeout:', request.url);
-          return new Response(JSON.stringify({ error: 'OFFLINE' }), { 
-            status: 503,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          console.log('[SW] ⚠️ Supabase fetch failed, returning offline fallback');
+          return new Response(
+            JSON.stringify({ error: 'OFFLINE', message: 'Network error' }),
+            { status: 503, headers: { 'Content-Type': 'application/json' } }
+          );
         }
       })()
     );

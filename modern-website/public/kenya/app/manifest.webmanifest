@@ -3,11 +3,11 @@
     "short_name": "BeeZee KE",
     "start_url": "/kenya/app/",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "transparent",
     "lang": "en",
     "scope": "/kenya/app/",
     "description": "Financial management for Kenyan informal businesses",
-    "theme_color": "#006600",
+    "theme_color": "transparent",
     "orientation": "portrait",
     "icons": [
         {

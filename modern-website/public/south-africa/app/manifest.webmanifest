@@ -3,11 +3,11 @@
     "short_name": "BeeZee ZA",
     "start_url": "/south-africa/app/",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "transparent",
     "lang": "en",
     "scope": "/south-africa/app/",
     "description": "Financial management for South African informal businesses",
-    "theme_color": "#F59E0B",
+    "theme_color": "transparent",
     "orientation": "portrait",
     "icons": [
         {
