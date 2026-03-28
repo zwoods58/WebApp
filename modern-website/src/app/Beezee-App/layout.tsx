@@ -10,7 +10,6 @@ import { usePathname } from 'next/navigation';
 import BottomNav from '@/components/universal/BottomNav';
 import { initConnectionMonitoring, cleanupConnectionMonitoring, getOnlineStatus } from '@/lib/connection-manager';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
-import SplashScreen from '@/components/SplashScreen';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
@@ -115,9 +114,6 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col pb-20 pt-0">
-      {/* Splash Screen */}
-      <SplashScreen />
-      
       {/* Global connection status indicator */}
       <ConnectionStatus />
       
