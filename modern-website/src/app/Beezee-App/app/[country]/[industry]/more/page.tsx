@@ -48,11 +48,25 @@ export default function MorePage() {
     }
   };
 
-  const handleShareApp = () => {
+  const handleShareApp = async () => {
     const appUrl = 'https://atarwebb.com/Beezee-App/auth/signup';
-    const shareMessage = t('more.share_app_message', 'Check out BeeZee - the amazing business management app that helps me track sales, inventory, appointments, and more! 🐝\n\nDownload it here: {url}').replace('{url}', appUrl);
+    const shareMessage = t('more.share_app_message', '🐝 Check out BeeZee - The amazing business management app!\n\n📊 Track sales & inventory\n📅 Manage appointments\n💰 Monitor finances\n📈 Business analytics\n\n👉 Download here: {url}\n\nTransform your business today! 🚀').replace('{url}', appUrl);
     
-    // Create WhatsApp share URL
+    // Try native Web Share API first (for mobile devices)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'BeeZee - Business Management App',
+          text: shareMessage,
+          url: appUrl
+        });
+        return;
+      } catch (error) {
+        console.log('Native share failed, falling back to WhatsApp');
+      }
+    }
+    
+    // Fallback to WhatsApp
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
