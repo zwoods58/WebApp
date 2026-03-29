@@ -165,8 +165,31 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
               .eq('id', authData.business.id)
               .single();
 
-            if (error || !business) {
-              console.log('❌ Business no longer exists in database, clearing session');
+            // Check if error is a network/offline error
+            if (error) {
+              const isOfflineError = error.message?.includes('fetch') || 
+                                    error.message?.includes('Failed to fetch') ||
+                                    error.code === 'PGRST301' ||
+                                    !navigator.onLine;
+              
+              if (isOfflineError) {
+                console.log('📴 Offline error during database check, using cached session');
+                // Continue with cached session
+              } else if (!business) {
+                console.log('❌ Business no longer exists in database, clearing session');
+                clearInvalidSessions();
+                setAuthState({
+                  business: null,
+                  user: null,
+                  loading: false,
+                  error: null,
+                  isAuthenticated: false,
+                  session: null,
+                });
+                return;
+              }
+            } else if (!business) {
+              console.log('❌ Business not found in database, clearing session');
               clearInvalidSessions();
               setAuthState({
                 business: null,
@@ -179,9 +202,9 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
               return;
             }
 
-            // Update localStorage with fresh data if changed
-            if (business.country !== authData.business.country ||
-                business.industry !== authData.business.industry) {
+            // Update localStorage with fresh data if changed (only if business exists)
+            if (business && (business.country !== authData.business.country ||
+                business.industry !== authData.business.industry)) {
               console.log('🔄 Updating business data from database:', {
                 oldCountry: authData.business.country,
                 newCountry: business.country,
@@ -200,7 +223,10 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
             // Check if it's a network error (offline scenario)
             const isNetworkError = dbError instanceof TypeError || 
                                    (dbError as any)?.message?.includes('fetch') ||
-                                   (dbError as any)?.message?.includes('network');
+                                   (dbError as any)?.message?.includes('network') ||
+                                   (dbError as any)?.message?.includes('Failed to fetch') ||
+                                   (dbError as any)?.code === 'PGRST301' || // Supabase offline error
+                                   !navigator.onLine; // Double-check navigator.onLine
             
             if (isNetworkError) {
               console.log('📴 Offline detected during database check, using cached session');

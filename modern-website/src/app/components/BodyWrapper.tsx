@@ -6,6 +6,7 @@ import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { swManager } from '@/lib/serviceWorker';
+import SplashScreen from '@/components/SplashScreen';
 
 interface BodyWrapperProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ interface BodyWrapperProps {
 
 export default function BodyWrapper({ children, className = '' }: BodyWrapperProps) {
   const [isClient, setIsClient] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const { performGlobalRefresh } = useGlobalRefresh();
   const pathname = usePathname();
 
@@ -36,6 +38,10 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
     });
   };
 
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
+
   // Only show OfflineIndicator on non-BeeZee pages (BeeZee has its own)
   const isBeezeePage = pathname?.startsWith('/Beezee-App');
 
@@ -49,6 +55,9 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
           <AppLayout>
             {children}
           </AppLayout>
+          
+          {/* Custom Splash Screen - shows only on initial startup */}
+          <SplashScreen onFinish={handleSplashFinish} />
         </body>
       </QueryProvider>
     </>

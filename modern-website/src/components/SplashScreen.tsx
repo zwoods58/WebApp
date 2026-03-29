@@ -1,179 +1,78 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
-export default function SplashScreen() {
+interface SplashScreenProps {
+  onFinish?: () => void;
+}
+
+export default function SplashScreen({ onFinish }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    // Check if running as installed PWA
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                  (window.navigator as any).standalone === true ||
-                  document.referrer.includes('android-app://');
+    // Check if this is the first time the app is loading
+    const hasSeenSplash = sessionStorage.getItem('beezee_splash_seen');
     
-    // Only show splash screen for installed PWA
-    if (!isPWA) {
-      setIsVisible(false);
-      return;
+    if (!hasSeenSplash) {
+      setShouldShow(true);
+      // Mark that user has seen the splash screen
+      sessionStorage.setItem('beezee_splash_seen', 'true');
+      
+      // Hide splash screen after 2.5 seconds
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setTimeout(() => {
+          onFinish?.();
+        }, 300); // Allow fade out animation
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Don't show splash screen if already seen
+      onFinish?.();
     }
+  }, [onFinish]);
 
-    // Prevent body scrolling when splash is active
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100vw';
-    document.body.style.height = '100vh';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.documentElement.style.position = 'fixed';
-    document.documentElement.style.width = '100vw';
-    document.documentElement.style.height = '100vh';
-    document.documentElement.style.margin = '0';
-    document.documentElement.style.padding = '0';
-    
-    // Also prevent any touch scrolling on mobile
-    document.body.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-    document.documentElement.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-
-    // Show immediately for PWA
-    setShouldShow(true);
-
-    // Hide splash screen after app is ready
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      // Restore scrolling when splash is hidden
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.margin = '';
-      document.body.style.padding = '';
-      document.documentElement.style.position = '';
-      document.documentElement.style.width = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.margin = '';
-      document.documentElement.style.padding = '';
-      
-      // Remove touch event listeners
-      document.body.removeEventListener('touchmove', (e) => e.preventDefault(), { passive: false } as any);
-      document.documentElement.removeEventListener('touchmove', (e) => e.preventDefault(), { passive: false } as any);
-    }, 2000); // Slightly longer to ensure app loads
-
-    return () => {
-      clearTimeout(timer);
-      // Restore scrolling on cleanup
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.margin = '';
-      document.body.style.padding = '';
-      document.documentElement.style.position = '';
-      document.documentElement.style.width = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.margin = '';
-      document.documentElement.style.padding = '';
-      
-      // Remove touch event listeners
-      document.body.removeEventListener('touchmove', (e) => e.preventDefault(), { passive: false } as any);
-      document.documentElement.removeEventListener('touchmove', (e) => e.preventDefault(), { passive: false } as any);
-    };
-  }, []);
-
-  if (!isVisible || !shouldShow) return null;
+  if (!shouldShow) {
+    return null;
+  }
 
   return (
-    <>
-      {/* Backdrop to prevent content from showing through */}
-      <div 
-        className="fixed inset-0 bg-white splash-screen-force-full" 
-        style={{ 
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          width: '100vw',
-          height: '100vh',
-          minWidth: '100vw',
-          minHeight: '100vh',
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-          overflow: 'hidden',
-          zIndex: 99999,
-          margin: 0,
-          padding: 0,
-          boxSizing: 'border-box'
-        }} 
-      />
-      
-      {/* Main splash screen content */}
-      <div
-        className="fixed inset-0 flex flex-col splash-screen-force-full"
-        style={{ 
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          backgroundColor: '#ffffff',
-          backgroundImage: 'linear-gradient(to bottom, #ffffff, #f9fafb)',
-          width: '100vw',
-          height: '100vh',
-          minWidth: '100vw',
-          minHeight: '100vh',
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-          overflow: 'hidden',
-          zIndex: 100000,
-          margin: 0,
-          padding: 0,
-          boxSizing: 'border-box'
-        }}
-      >
-      {/* Main Content Container - takes up full height */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        {/* Logo with pulse animation */}
-        <div className="mb-6 animate-pulse-subtle">
-          <Image
-            src="/beezee-icon-192x192.png"
-            alt="BeeZee"
-            width={120}
-            height={120}
-            className="w-[120px] h-[120px] md:w-[120px] md:h-[120px]"
-            priority
-          />
+    <div 
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-system-blue via-primary-blue to-secondary-blue transition-opacity duration-300 ${
+        isVisible ? 'opacity-100' : 'opacity-0'
+      }`}
+    >
+      <div className="text-center">
+        {/* Logo/Icon */}
+        <div className="mb-8 relative">
+          <div className="w-24 h-24 mx-auto relative">
+            <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl transform rotate-3"></div>
+            <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl transform -rotate-3"></div>
+            <div className="relative inset-0 bg-gradient-to-br from-system-blue to-primary-blue rounded-2xl shadow-2xl flex items-center justify-center">
+              <span className="text-white text-4xl font-bold">BZ</span>
+            </div>
+          </div>
+          
+          {/* Pulse animation */}
+          <div className="absolute inset-0 w-24 h-24 mx-auto rounded-2xl bg-system-blue opacity-20 animate-ping"></div>
         </div>
 
-        {/* Brand Name */}
-        <h1 className="text-2xl font-bold text-gray-800 mb-2 font-inter-tight">
-          BeeZee
-        </h1>
+        {/* App Name */}
+        <h1 className="text-4xl font-bold text-white mb-2">BeeZee</h1>
+        <p className="text-white/80 text-sm mb-8">Business Management Solution</p>
 
-        {/* Tagline */}
-        <p className="text-sm font-medium text-gray-500 mb-8 font-inter-tight">
-          Your Digital Black Book
-        </p>
-
-        {/* Loading Dots */}
-        <div className="flex gap-2">
-          <div className="w-2 h-2 bg-[#4A8DB8] rounded-full animate-bounce-dot animation-delay-0"></div>
-          <div className="w-2 h-2 bg-[#4A8DB8] rounded-full animate-bounce-dot animation-delay-150"></div>
-          <div className="w-2 h-2 bg-[#4A8DB8] rounded-full animate-bounce-dot animation-delay-300"></div>
+        {/* Loading dots */}
+        <div className="flex justify-center space-x-2">
+          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
         </div>
-      </div>
 
-      {/* Footer - positioned at bottom */}
-      <div className="pb-6 animate-fade-in-delayed text-center">
-        <p className="text-[11px] text-gray-400 font-inter-tight">
-          Powered by AtarWebb
-        </p>
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
       </div>
     </div>
-    </>
   );
 }
