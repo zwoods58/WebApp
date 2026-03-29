@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v41';
+const CACHE_VERSION = 'v42';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -482,7 +482,19 @@ self.addEventListener('fetch', (event) => {
         const cacheKey = url.pathname;
         
         // OFFLINE: Cache-only mode (instant!)
-        if (isOffline || !navigator.onLine) {
+        const swOffline = isOffline;
+        const browserOffline = !navigator.onLine;
+        const isActuallyOffline = swOffline || browserOffline;
+        
+        console.log('[SW] 📊 Offline check:', {
+          pathname: url.pathname,
+          swOffline,
+          browserOffline,
+          isActuallyOffline,
+          cacheKey
+        });
+        
+        if (isActuallyOffline) {
           const cached = await caches.match(cacheKey);
           if (cached) {
             console.log('[SW] ✅ Serving from cache (offline):', cacheKey);
@@ -515,8 +527,16 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         } catch (error) {
-          // Network failed or timed out - return offline.html
-          console.log('[SW] ❌ Network failed/timeout, serving offline.html');
+          // Network failed or timed out - try to serve from cache as fallback
+          console.log('[SW] 📴 Network failed, trying cache fallback:', cacheKey);
+          const cached = await caches.match(cacheKey);
+          if (cached) {
+            console.log('[SW] ✅ Serving from cache (network fallback):', cacheKey);
+            return cached;
+          }
+          
+          // No cache available - serve offline.html
+          console.log('[SW] ❌ No cache available, serving offline.html');
           const offlinePage = await caches.match('/offline.html');
           return offlinePage || new Response('Offline', { status: 503 });
         }
