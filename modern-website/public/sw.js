@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v42';
+const CACHE_VERSION = 'v43';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -495,17 +495,66 @@ self.addEventListener('fetch', (event) => {
         });
         
         if (isActuallyOffline) {
-          const cached = await caches.match(cacheKey);
-          if (cached) {
-            console.log('[SW] ✅ Serving from cache (offline):', cacheKey);
-            return cached;
+          // Enhanced cache lookup - try multiple strategies
+          const cacheKeys = [
+            cacheKey,                    // Original pathname
+            request.url,                 // Full URL
+            url.pathname + '/',           // With trailing slash
+            url.pathname.replace(/\/$/, '') // Without trailing slash
+          ];
+          
+          console.log('[SW] 🔍 Trying cache keys for offline page:', { pathname: url.pathname, cacheKeys });
+          
+          for (const key of cacheKeys) {
+            const cached = await caches.match(key);
+            if (cached) {
+              console.log('[SW] ✅ Found cached page with key:', key);
+              return cached;
+            }
           }
           
-          // Not cached - return offline.html
-          console.log('[SW] ❌ Page not cached, serving offline.html:', cacheKey);
+          // Try cross-version cache search
+          const cacheVersions = ['v42', 'v41', 'v40'];
+          for (const version of cacheVersions) {
+            const cache = await caches.open(`beezee-pages-${version}`);
+            const cached = await cache.match(request);
+            if (cached) {
+              console.log('[SW] ✅ Found in cache version:', version);
+              return cached;
+            }
+          }
+          
+          console.log('[SW] ❌ Page not found in any cache, trying offline.html:', cacheKey);
           const offlinePage = await caches.match('/offline.html');
-          return offlinePage || new Response('Offline', { 
-            status: 503,
+          if (offlinePage) return offlinePage;
+          
+          // Last resort: serve a simple HTML page instead of 503
+          return new Response(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>BeeZee - Offline</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f9fafb; }
+                  .container { max-width: 400px; margin: 50px auto; text-align: center; }
+                  .icon { width: 48px; height: 48px; margin: 0 auto 20px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+                  .offline-text { color: #92400e; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+                  .message { color: #6b7280; margin-bottom: 20px; }
+                  .refresh-btn { background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="icon">📱</div>
+                  <div class="offline-text">You're Offline</div>
+                  <div class="message">Cached page not available. Please check your connection and try again.</div>
+                  <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
+                </div>
+              </body>
+            </html>
+          `, { 
+            status: 200,
             headers: { 'Content-Type': 'text/html' }
           });
         }
@@ -554,18 +603,43 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         // OFFLINE: Cache-only mode (instant!)
         if (isOffline || !navigator.onLine) {
+          console.log('[SW] 📵 Offline mode - serving static asset:', url.pathname);
+          
           const cached = await fetchFromCacheOnly(request);
-          if (cached) return cached;
+          if (cached) {
+            console.log('[SW] ✅ Serving static from cache (offline):', url.pathname);
+            return cached;
+          }
+          
+          // Try cross-version cache search for static assets
+          const cacheVersions = ['v42', 'v41', 'v40'];
+          for (const version of cacheVersions) {
+            const cache = await caches.open(`beezee-static-${version}`);
+            const cached = await cache.match(request);
+            if (cached) {
+              console.log('[SW] ✅ Found static asset in cache version:', version);
+              return cached;
+            }
+          }
           
           // Missing chunk - return empty module to prevent hang
           if (url.pathname.endsWith('.js')) {
+            console.log('[SW] ⚠️ Missing JS chunk offline, returning empty module:', url.pathname);
             return new Response(
               `console.warn("Offline: Chunk not available - ${url.pathname}");`,
               { headers: { 'Content-Type': 'application/javascript' } }
             );
           }
           
-          // Missing asset - return 503
+          if (url.pathname.endsWith('.css')) {
+            console.log('[SW] ⚠️ Missing CSS chunk offline, returning empty CSS:', url.pathname);
+            return new Response(
+              `/* Offline: CSS not available - ${url.pathname} */`,
+              { headers: { 'Content-Type': 'text/css' } }
+            );
+          }
+          
+          console.log('[SW] ❌ Missing static asset offline:', url.pathname);
           return new Response('Offline', { status: 503 });
         }
         
@@ -624,10 +698,53 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         // OFFLINE: Return cached data only
         if (isOffline || !navigator.onLine) {
-          const cached = await fetchFromCacheOnly(request);
-          if (cached) return cached;
+          console.log('[SW] 📵 Offline mode - serving cached API data:', url.pathname);
           
-          return new Response(JSON.stringify({ error: 'OFFLINE' }), { 
+          // Try multiple cache strategies for API responses
+          const cached = await fetchFromCacheOnly(request);
+          if (cached) {
+            console.log('[SW] ✅ Serving cached API response:', url.pathname);
+            return cached;
+          }
+          
+          // Try cross-version cache search for API data
+          const cacheVersions = ['v42', 'v41', 'v40'];
+          for (const version of cacheVersions) {
+            const cache = await caches.open(`beezee-api-${version}`);
+            const cached = await cache.match(request);
+            if (cached) {
+              console.log('[SW] ✅ Found API data in cache version:', version);
+              return cached;
+            }
+          }
+          
+          // For specific endpoints, try to return empty data instead of errors
+          if (url.pathname.includes('/api/transactions')) {
+            console.log('[SW] 📦 Returning empty transactions array');
+            return new Response(JSON.stringify([]), { 
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          
+          if (url.pathname.includes('/api/expenses')) {
+            console.log('[SW] 📦 Returning empty expenses array');
+            return new Response(JSON.stringify([]), { 
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          
+          if (url.pathname.includes('/api/inventory')) {
+            console.log('[SW] 📦 Returning empty inventory array');
+            return new Response(JSON.stringify([]), { 
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          
+          console.log('[SW] ❌ No cached API data found for:', url.pathname);
+          return new Response(JSON.stringify({ error: 'OFFLINE', message: 'No cached data available' }), { 
             status: 503,
             headers: { 'Content-Type': 'application/json' }
           });
