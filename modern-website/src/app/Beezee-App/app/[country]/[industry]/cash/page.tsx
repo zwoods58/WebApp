@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, Calendar, Filter, Search, ArrowUpDown, Copy, MessageSquare, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar, Filter, Search, ArrowUpDown, Copy, MessageSquare, RefreshCw, WifiOff } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -19,7 +19,7 @@ import {
 import MoneyInButton from '@/components/universal/MoneyInButton';
 import MoneyOutButton from '@/components/universal/MoneyOutButton';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
-import { handleCreditTransaction } from '@/services/creditService'; // ✅ ADDED
+import { handleCreditTransaction } from '@/services/creditService';
 
 export default function CashPage() {
   // ✅ STEP 1: ALL hooks called at top level, unconditionally
@@ -30,6 +30,71 @@ export default function CashPage() {
   
   const { business, loading: authLoading } = useUnifiedAuth();
   const businessId = business?.id;
+  
+  // ✅ STEP 2: Network status detection
+  const [isNetworkOffline, setIsNetworkOffline] = useState(false);
+  
+  useEffect(() => {
+    const handleOnline = () => setIsNetworkOffline(false);
+    const handleOffline = () => setIsNetworkOffline(true);
+    
+    setIsNetworkOffline(!navigator.onLine);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
+  // ✅ STEP 3: Show offline component if network is offline
+  if (isNetworkOffline) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3">
+          <h1 className="text-lg font-semibold text-gray-900">Cash Transactions</h1>
+        </div>
+        
+        {/* Offline Message */}
+        <div className="p-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+            <WifiOff className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-yellow-900 mb-2">
+              You're Offline
+            </h2>
+            <p className="text-yellow-700 mb-4">
+              Cash transactions are not available offline. Please check your internet connection and try again.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+          </div>
+          
+          {/* Recent Transactions Placeholder */}
+          <div className="mt-6 bg-white rounded-xl border border-gray-200">
+            <div className="p-4 border-b border-gray-200">
+              <h3 className="font-medium text-gray-900">Recent Transactions</h3>
+            </div>
+            <div className="p-8 text-center text-gray-500">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <WifiOff className="w-8 h-8 text-gray-400" />
+              </div>
+              <p>Connect to the internet to view your cash transactions</p>
+            </div>
+          </div>
+        </div>
+        
+        <BottomNav industry={industry} country={country} />
+      </div>
+    );
+  }
   
   // ✅ STEP 2: Toast hook
   const { showSuccess, showError, showWarning, showInfo } = useToast();
