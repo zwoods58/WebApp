@@ -1,9 +1,8 @@
 {
-  "rootDirectory": "modern-website",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "buildCommand": "cd modern-website && npm run build",
+  "outputDirectory": "modern-website/.next",
+  "devCommand": "cd modern-website && npm run dev",
+  "installCommand": "cd modern-website && npm install",
   "framework": "nextjs",
   "rewrites": [
     {
