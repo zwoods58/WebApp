@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splash Screen Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes ping {
+            75%, 100% { 
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        .animate-ping {
+            animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app">
+        <h1 class="text-2xl font-bold text-center mt-8">Splash Screen Test</h1>
+        <p class="text-center mt-4">Open browser console to see splash behavior</p>
+        <button onclick="testSplash()" class="mx-auto block mt-8 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            Test Splash Screen
+        </button>
+        <div id="result" class="mt-8 text-center"></div>
+    </div>
+
+    <script>
+        function testSplash() {
+            const result = document.getElementById('result');
+            
+            // Clear session storage to simulate first visit
+            sessionStorage.removeItem('beezee_splash_seen');
+            
+            // Check if splash should show
+            const hasSeenSplash = sessionStorage.getItem('beezee_splash_seen');
+            const shouldShow = !hasSeenSplash;
+            
+            if (shouldShow) {
+                sessionStorage.setItem('beezee_splash_seen', 'true');
+                result.innerHTML = `
+                    <div class="inline-block p-4 bg-green-100 rounded-lg">
+                        <p class="text-green-800 font-semibold">✅ Splash screen WOULD show on first visit</p>
+                        <p class="text-sm text-gray-600 mt-2">Session storage set: beezee_splash_seen = true</p>
+                    </div>
+                `;
+            } else {
+                result.innerHTML = `
+                    <div class="inline-block p-4 bg-yellow-100 rounded-lg">
+                        <p class="text-yellow-800 font-semibold">⚠️ Splash screen would NOT show (already seen)</p>
+                        <p class="text-sm text-gray-600 mt-2">Session storage: beezee_splash_seen = ${sessionStorage.getItem('beezee_splash_seen')}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto test on load
+        window.onload = () => {
+            setTimeout(testSplash, 500);
+        };
+    </script>
+</body>
+</html>

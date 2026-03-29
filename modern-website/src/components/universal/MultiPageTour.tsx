@@ -484,7 +484,7 @@ function TourTooltip({
   return (
     <>
       {/* Overlay */}
-      <div class="fade-in">
+      <div className="fade-in">
 
       {/* Spotlight overlay */}
       {spotlightPosition && (
@@ -503,7 +503,7 @@ function TourTooltip({
       )}
 
       {/* Tour Content */}
-      <div class="scale-in">
+      <div className="scale-in">
         <div className="glass-strong rounded-3xl p-4 sm:p-6 shadow-float-lg">
           {/* Page Progress */}
           <div className="flex items-center justify-between mb-4">
@@ -595,6 +595,7 @@ function TourTooltip({
             </span>
           </div>
         </div>
+      </div>
       </div>
     </>
   );

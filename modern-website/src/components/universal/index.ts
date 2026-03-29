@@ -17,5 +17,6 @@ export { default as BeehiveRequestModal } from './BeehiveRequestModal';
 export { default as WhatsAppShare } from './WhatsAppShare';
 export { default as ReceiptGenerator } from './ReceiptGenerator';
 export { default as BuzzInsights } from './BuzzInsights';
+export { default as PageLoading, InlineLoading, PageLoadingBar } from './PageLoading';
 export * from './Skeletons';
 

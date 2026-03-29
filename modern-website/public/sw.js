@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v40';
+const CACHE_VERSION = 'v41';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -48,6 +48,14 @@ self.addEventListener('offline', () => {
   console.log('[SW] 📴 Gone offline - switching to cache-only mode');
 });
 
+// Listen for messages from main thread (connection manager)
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'OFFLINE_STATUS') {
+    isOffline = event.data.isOffline;
+    console.log('[SW] 📊 Offline status updated from main thread:', isOffline ? 'OFFLINE' : 'ONLINE');
+  }
+});
+
 // Check initial state
 if (typeof navigator !== 'undefined') {
   isOffline = !navigator.onLine;
@@ -72,22 +80,37 @@ if (IS_DEV) {
 console.log('[SW] Smart caching mode - will cache user routes after login');
 
 // ============================================================
-// INSTALL - Cache only public pages (FAST!)
+// INSTALL - Cache static assets
 // ============================================================
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
-  console.log('[SW] Caching public routes:', PUBLIC_ROUTES);
+  console.log('[SW] 🚀 Installing service worker v41...');
   
+  // Clear old caches before installing new ones
   event.waitUntil(
-    caches.open(PAGE_CACHE).then((cache) => {
-      return cache.addAll(PUBLIC_ROUTES);
-    }).then(() => {
-      console.log('[SW] ✅ Public routes cached');
-      return self.skipWaiting();
-    }).catch((error) => {
-      console.error('[SW] Install failed:', error);
-      return self.skipWaiting();
-    })
+    (async () => {
+      // Clear all old versions
+      const cacheNames = await caches.keys();
+      const oldCaches = cacheNames.filter(name => 
+        name.includes('beezee-') && !name.includes('v41')
+      );
+      
+      console.log('[SW] 🧹 Clearing old caches:', oldCaches);
+      await Promise.all(oldCaches.map(name => caches.delete(name)));
+      
+      // Install new caches
+      const staticCache = await caches.open(STATIC_CACHE);
+      console.log('[SW] 📦 Caching static assets...');
+      
+      try {
+        await staticCache.addAll(PUBLIC_ROUTES);
+        console.log('[SW] ✅ Static assets cached successfully');
+      } catch (error) {
+        console.warn('[SW] ⚠️ Some static assets failed to cache:', error);
+      }
+      
+      // Force the new service worker to become active
+      self.skipWaiting();
+    })()
   );
 });
 
@@ -95,24 +118,23 @@ self.addEventListener('install', (event) => {
 // ACTIVATE - Clean up old caches
 // ============================================================
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating v41...');
   
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== STATIC_CACHE && 
-              cacheName !== API_CACHE && 
-              cacheName !== PAGE_CACHE) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
+    (async () => {
+      // Clear all old caches
+      const cacheNames = await caches.keys();
+      const oldCaches = cacheNames.filter(name => 
+        name.includes('beezee-') && !name.includes('v41')
       );
-    }).then(() => {
-      console.log('[SW] Activation complete');
-      return self.clients.claim();
-    })
+      
+      console.log('[SW] 🧹 Clearing old caches on activate:', oldCaches);
+      await Promise.all(oldCaches.map(name => caches.delete(name)));
+      
+      // Take control of all pages immediately
+      await clients.claim();
+      console.log('[SW] ✅ Service worker v41 activated and claimed all clients');
+    })()
   );
 });
 
@@ -387,6 +409,23 @@ async function cacheStaticAssets() {
 }
 
 // ============================================================
+// Helper function to check if a route is a user route that should be cached
+// ============================================================
+function isUserRoute(pathname) {
+  return pathname.startsWith('/Beezee-App/app/') && 
+         (pathname.includes('/cash') ||
+          pathname.includes('/credit') ||
+          pathname.includes('/services') ||
+          pathname.includes('/stock') ||
+          pathname.includes('/beehive') ||
+          pathname.includes('/calendar') ||
+          pathname.includes('/reports') ||
+          pathname.includes('/more') ||
+          pathname.includes('/settings') ||
+          pathname.match(/^\/Beezee-App\/app\/[^\/]+\/[^\/]+\/?$/)); // Dashboard route
+}
+
+// ============================================================
 // FETCH - Cache First for everything
 // ============================================================
 self.addEventListener('fetch', (event) => {
@@ -416,11 +455,56 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - NEVER CACHE (always network)
+  // RSC Requests - Cache user routes, skip others
   // ============================================================
   if (url.searchParams.has('_rsc')) {
-    event.respondWith(fetch(request));
-    return;
+    // Check if this is a user route that should be cached
+    if (isUserRoute(url.pathname)) {
+      // Handle as a user route with caching
+      event.respondWith(
+        (async () => {
+          const cacheKey = url.pathname; // Cache without _rsc parameter
+          
+          // OFFLINE: Cache-only mode
+          if (isOffline || !navigator.onLine) {
+            const cached = await caches.match(cacheKey);
+            if (cached) {
+              console.log('[SW] ✅ Serving RSC from cache (offline):', cacheKey);
+              return cached;
+            }
+            
+            console.log('[SW] ❌ RSC Page not cached, serving offline.html:', cacheKey);
+            const offlinePage = await caches.match('/offline.html');
+            return offlinePage || new Response('Offline', { status: 503 });
+          }
+          
+          // ONLINE: Try network first with timeout, fallback to cache
+          try {
+            const response = await fetchWithTimeout(request);
+            if (response.ok) {
+              const cache = await caches.open(PAGE_CACHE);
+              // Cache without the _rsc parameter
+              const cacheRequest = new Request(url.pathname, { method: 'GET' });
+              cache.put(cacheRequest, response.clone());
+              console.log('[SW] 📡 Cached RSC page:', cacheKey);
+            }
+            return response;
+          } catch (error) {
+            console.log('[SW] 📴 Network failed for RSC, trying cache:', cacheKey);
+            const cached = await caches.match(cacheKey);
+            if (cached) {
+              return cached;
+            }
+            throw error;
+          }
+        })()
+      );
+      return;
+    } else {
+      // Non-user RSC routes - always network
+      event.respondWith(fetch(request));
+      return;
+    }
   }
   
   // ============================================================
@@ -609,24 +693,28 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname.includes('supabase.co')) {
     event.respondWith(
       (async () => {
-        // OFFLINE: Return offline response - TanStack Query will serve from IndexedDB
-        if (isOffline || !navigator.onLine) {
-          console.log('[SW] 📴 Offline - Supabase request skipped, letting TanStack Query use IndexedDB');
+        // OFFLINE: Multiple checks to ensure we block Supabase when offline
+        const swOffline = isOffline;
+        const browserOffline = !navigator.onLine;
+        const isActuallyOffline = swOffline || browserOffline;
+        
+        if (isActuallyOffline) {
+          console.log('[SW] 📴 OFFLINE MODE - Blocking Supabase request, TanStack Query will use IndexedDB:', url.pathname);
           return new Response(
-            JSON.stringify({ error: 'OFFLINE', message: 'Using cached data from IndexedDB' }),
+            JSON.stringify({ error: 'OFFLINE', message: 'App is offline - using cached data from IndexedDB' }),
             { status: 503, headers: { 'Content-Type': 'application/json' } }
           );
         }
         
         // ONLINE: Just pass through - no caching
-        console.log('[SW] 🌐 Passing through Supabase request:', url.pathname);
+        console.log('[SW] 🌐 Online - Passing through Supabase request:', url.pathname);
         try {
           const response = await fetchWithTimeout(request, 10000);
           return response;
         } catch (error) {
-          console.log('[SW] ⚠️ Supabase fetch failed, returning offline fallback');
+          console.log('[SW] ⚠️ Supabase fetch failed, treating as offline');
           return new Response(
-            JSON.stringify({ error: 'OFFLINE', message: 'Network error' }),
+            JSON.stringify({ error: 'OFFLINE', message: 'Network error - using cached data' }),
             { status: 503, headers: { 'Content-Type': 'application/json' } }
           );
         }

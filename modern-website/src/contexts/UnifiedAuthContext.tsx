@@ -5,6 +5,7 @@ import { setBusinessContext } from '@/lib/supabaseContext';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { SUPPORTED_COUNTRIES, validatePhoneFormat } from '@/utils/phoneUtils';
 import { persistentStorage } from '@/utils/persistentStorage';
+import { getOnlineStatus } from '@/lib/connection-manager';
 
 export interface Business {
   id: string;
@@ -91,6 +92,53 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     localStorage.removeItem('beezee_simple_auth');
   }, []);
 
+  // Helper function to check if error is network/offline related
+  const isOfflineError = useCallback((error: any): boolean => {
+    if (!error) return false;
+    
+    const errorMessage = error.message || '';
+    const errorCode = error.code || '';
+    
+    // Check for various network error patterns
+    const networkErrorPatterns = [
+      'fetch',
+      'network',
+      'Failed to fetch',
+      'NetworkError',
+      'ERR_INTERNET_DISCONNECTED',
+      'ERR_CONNECTION_REFUSED',
+      'ERR_NAME_NOT_RESOLVED',
+      'ERR_CONNECTION_TIMED_OUT',
+      'ETIMEDOUT',
+      'ENOTFOUND',
+      'ECONNREFUSED',
+      'ECONNRESET',
+      '503', // Service Unavailable
+      '502', // Bad Gateway
+      '504', // Gateway Timeout
+      '0',   // Often indicates CORS/network issues in fetch
+      'PGRST301', // Supabase offline error
+      'offline',
+      'connection'
+    ];
+    
+    // Check error message
+    const hasNetworkError = networkErrorPatterns.some(pattern => 
+      errorMessage.toLowerCase().includes(pattern.toLowerCase())
+    );
+    
+    // Check error code
+    const hasNetworkCode = networkErrorPatterns.includes(errorCode);
+    
+    // Check if browser is offline
+    const isBrowserOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+    
+    // Check connection manager status
+    const isConnectionManagerOffline = !getOnlineStatus();
+    
+    return hasNetworkError || hasNetworkCode || isBrowserOffline || isConnectionManagerOffline;
+  }, []);
+
   // Validate session freshness and integrity
   const isSessionValid = useCallback((authData: any): boolean => {
     if (!authData || !authData.business || !authData.session) {
@@ -154,42 +202,42 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
       
       // Validate session before restoring
       if (authData && isSessionValid(authData)) {
-        // 🔥 DATABASE VALIDATION: Verify business still exists (skip if offline)
-        const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
+        // � OFFLINE-FIRST: Completely skip database validation when offline
+        const isOnline = getOnlineStatus();
         
-        if (isOnline) {
-          try {
-            const { data: business, error } = await supabaseAdmin
-              .from('businesses')
-              .select('id, country, industry')
-              .eq('id', authData.business.id)
-              .single();
+        if (!isOnline) {
+          console.log('📴 Offline mode detected - skipping ALL database operations, using cached session only');
+          
+          // Set auth state from cached data without any database validation
+          setAuthState({
+            business: authData.business,
+            user: authData.business, // Alias for compatibility
+            loading: false,
+            error: null,
+            isAuthenticated: true,
+            session: authData.session,
+          });
+          
+          console.log('✅ Auth state restored from cache (offline mode)');
+          return;
+        }
+        
+        // Only perform database validation when online
+        console.log('🌐 Online mode detected - performing database validation');
+        
+        try {
+          const { data: business, error } = await supabaseAdmin
+            .from('businesses')
+            .select('id, country, industry')
+            .eq('id', authData.business.id)
+            .single();
 
-            // Check if error is a network/offline error
-            if (error) {
-              const isOfflineError = error.message?.includes('fetch') || 
-                                    error.message?.includes('Failed to fetch') ||
-                                    error.code === 'PGRST301' ||
-                                    !navigator.onLine;
-              
-              if (isOfflineError) {
-                console.log('📴 Offline error during database check, using cached session');
-                // Continue with cached session
-              } else if (!business) {
-                console.log('❌ Business no longer exists in database, clearing session');
-                clearInvalidSessions();
-                setAuthState({
-                  business: null,
-                  user: null,
-                  loading: false,
-                  error: null,
-                  isAuthenticated: false,
-                  session: null,
-                });
-                return;
-              }
+          if (error) {
+            if (isOfflineError(error)) {
+              console.log('📴 Network error during database check, falling back to cached session');
+              // Fall back to cached session
             } else if (!business) {
-              console.log('❌ Business not found in database, clearing session');
+              console.log('❌ Business no longer exists in database, clearing session');
               clearInvalidSessions();
               setAuthState({
                 business: null,
@@ -201,65 +249,73 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
               });
               return;
             }
-
-            // Update localStorage with fresh data if changed (only if business exists)
-            if (business && (business.country !== authData.business.country ||
-                business.industry !== authData.business.industry)) {
-              console.log('🔄 Updating business data from database:', {
-                oldCountry: authData.business.country,
-                newCountry: business.country,
-                oldIndustry: authData.business.industry, 
-                newIndustry: business.industry
-              });
-              
-              authData.business.country = business.country;
-              authData.business.industry = business.industry;
-              authData.session.country = business.country;
-              authData.session.industry = business.industry;
-            }
-
-          } catch (dbError) {
-            console.error('❌ Database validation error:', dbError);
-            // Check if it's a network error (offline scenario)
-            const isNetworkError = dbError instanceof TypeError || 
-                                   (dbError as any)?.message?.includes('fetch') ||
-                                   (dbError as any)?.message?.includes('network') ||
-                                   (dbError as any)?.message?.includes('Failed to fetch') ||
-                                   (dbError as any)?.code === 'PGRST301' || // Supabase offline error
-                                   !navigator.onLine; // Double-check navigator.onLine
-            
-            if (isNetworkError) {
-              console.log('📴 Offline detected during database check, using cached session');
-              // Continue with cached session when offline
-            } else {
-              // Only clear session for non-network errors
-              clearInvalidSessions();
-              setAuthState({
-                business: null,
-                user: null,
-                loading: false,
-                error: null,
-                isAuthenticated: false,
-                session: null,
-              });
-              return;
-            }
+          } else if (!business) {
+            console.log('❌ Business not found in database, clearing session');
+            clearInvalidSessions();
+            setAuthState({
+              business: null,
+              user: null,
+              loading: false,
+              error: null,
+              isAuthenticated: false,
+              session: null,
+            });
+            return;
           }
-        } else {
-          console.log('📴 Offline mode detected, skipping database validation');
+
+          // Update localStorage with fresh data if changed (only if business exists)
+          if (business && (business.country !== authData.business.country ||
+              business.industry !== authData.business.industry)) {
+            console.log('🔄 Updating business data from database:', {
+              oldCountry: authData.business.country,
+              newCountry: business.country,
+              oldIndustry: authData.business.industry, 
+              newIndustry: business.industry
+            });
+            
+            authData.business.country = business.country;
+            authData.business.industry = business.industry;
+            authData.session.country = business.country;
+            authData.session.industry = business.industry;
+          }
+
+        } catch (dbError) {
+          console.error('❌ Database validation error:', dbError);
+          
+          if (isOfflineError(dbError)) {
+            console.log('📴 Network error during validation, falling back to cached session');
+            // Fall back to cached session when network issues occur
+          } else {
+            // Only clear session for non-network errors
+            console.log('❌ Non-network error during validation, clearing session');
+            clearInvalidSessions();
+            setAuthState({
+              business: null,
+              user: null,
+              loading: false,
+              error: null,
+              isAuthenticated: false,
+              session: null,
+            });
+            return;
+          }
         }
 
-        // Validate the stored data structure
+        // Validate the stored data structure and set context (only when online)
         if (authData.business.id && authData.session.businessId) {
-          // Set business context for RLS policies
-          try {
-            await setBusinessContext(
-              authData.business.id, 
-              authData.business.country, 
-              authData.business.industry
-            );
-          } catch (contextError) {
-            console.error('⚠️ Failed to set business context:', contextError);
+          // Set business context for RLS policies (only when online)
+          if (isOnline) {
+            try {
+              await setBusinessContext(
+                authData.business.id, 
+                authData.business.country, 
+                authData.business.industry
+              );
+            } catch (contextError) {
+              console.error('⚠️ Failed to set business context:', contextError);
+            }
+          } else {
+            console.log('📴 Skipping business context setup in offline mode');
           }
 
           // Set auth state from stored data
@@ -345,8 +401,8 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   }, [authState]);
 
   const signInWithPIN = useCallback(async (phone: string, pin: string) => {
-    // Check if offline
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    // Check if offline using connection manager
+    if (!getOnlineStatus()) {
       return { 
         error: { 
           message: 'You are currently offline. Please connect to the internet to sign in.' 
@@ -470,8 +526,8 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   }, [validatePhone]);
 
   const signInDirect = useCallback(async (phone: string) => {
-    // Check if offline
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    // Check if offline using connection manager
+    if (!getOnlineStatus()) {
       return { 
         error: { 
           message: 'You are currently offline. Please connect to the internet to sign in.' 

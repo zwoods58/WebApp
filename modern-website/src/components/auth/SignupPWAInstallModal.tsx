@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Download, Smartphone, Zap, Wifi, Home, ArrowRight } from 'lucide-react';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
 
@@ -12,6 +12,13 @@ interface SignupPWAInstallModalProps {
 
 const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, onClose, onContinue }) => {
   const { canInstall, isInstalling, install, skipInstall } = usePWAInstall();
+
+  // Auto-continue when PWA install is not available
+  useEffect(() => {
+    if (!canInstall && isOpen) {
+      onContinue();
+    }
+  }, [canInstall, isOpen, onContinue]);
 
   const handleInstall = async () => {
     const success = await install();
@@ -33,12 +40,6 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
     onClose();
     onContinue();
   };
-
-  // If PWA install is not available, don't show the modal
-  if (!canInstall && isOpen) {
-    handleContinue();
-    return null;
-  }
 
   if (!isOpen || !canInstall) return null;
 

@@ -20,7 +20,8 @@ import {
   BottomNav, 
   Header,
   DashboardSkeleton,
-  HomepageCalendar
+  HomepageCalendar,
+  PageLoading
 } from '@/components/universal';
 import BuzzInsights from '@/components/universal/BuzzInsights';
 import AddAppointmentModal from '@/components/universal/AddAppointmentModal';
@@ -224,13 +225,10 @@ export default function IndustryDashboard() {
 
   // Additional safety check - add early return if critical data is missing
   if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
-    console.error('❌ Critical: One or more hooks failed to initialize');
+    console.log('🔍 Hooks not ready, showing loading');
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-lg font-semibold mb-2">Loading...</div>
-          <div className="text-sm text-gray-600">Initializing application...</div>
-        </div>
+        <PageLoading message="Initializing application..." fullScreen={false} />
       </div>
     );
   }

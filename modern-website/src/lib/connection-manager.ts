@@ -38,6 +38,20 @@ async function setOnline(online: boolean): Promise<void> {
   isOnline = online;
   console.log(`[Network] State changed: ${online ? 'online' : 'offline'}`);
   
+  // Notify service worker of offline status change
+  if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      registration.active?.postMessage({
+        type: 'OFFLINE_STATUS',
+        isOffline: !online
+      });
+      console.log(`[Network] 📡 Notified service worker: ${online ? 'ONLINE' : 'OFFLINE'}`);
+    } catch (err) {
+      console.warn('[Network] Could not notify service worker of status change:', err);
+    }
+  }
+  
   // Notify all listeners
   listeners.forEach(listener => listener(online));
   

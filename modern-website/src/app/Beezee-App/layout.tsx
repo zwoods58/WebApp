@@ -148,7 +148,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         </div>
       )}
       
-      {/* Main content area - allow natural scrolling */}
+      {/* Main content area */}
       <div className="pb-20">
         {children}
       </div>

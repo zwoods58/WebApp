@@ -4,7 +4,6 @@ import React from 'react';
 import { RefreshProvider } from '@/contexts/RefreshContext';
 import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
 import { ErrorBoundary } from 'react-error-boundary';
-import SplashScreen from '@/components/SplashScreen';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,7 +31,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <UnifiedAuthProvider>
         <RefreshProvider>
-          <SplashScreen />
           {children}
         </RefreshProvider>
       </UnifiedAuthProvider>

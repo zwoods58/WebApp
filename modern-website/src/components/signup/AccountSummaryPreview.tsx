@@ -45,7 +45,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
   };
 
   const renderSummaryItem = (label: string, value: string, isCompleted: boolean) => (
-    <div class="fade-in">
+    <div className="fade-in">
       <div className="flex-1 text-left">
         <div className="text-sm text-[var(--text-2)] mb-1">{label}</div>
         <div className={`text-base font-medium ${
@@ -62,7 +62,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
 
   return (
     <div className="py-12">
-      <div class="fade-in">
+      <div className="fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <span className="text-2xl font-bold">✓</span>
         </div>
@@ -77,8 +77,10 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
             {getCompletionPercentage()}% Complete
           </div>
           <div className="w-24 h-2 bg-[var(--bg2)] rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-[var(--powder-dark)]"animate={{ width: `${getCompletionPercentage()}%` }}/>
+            <div
+              className="h-full bg-[var(--powder-dark)] transition-all duration-500 ease-out"
+              style={{ width: `${getCompletionPercentage()}%` }}
+            />
           </div>
         </div>
       </div>
@@ -127,7 +129,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
         )}
       </div>
 
-      <div class="fade-in">
+      <div className="fade-in">
         <div className="flex items-center gap-2 text-system-blue">
           <span className="text-[var(--powder-dark)] font-bold">✓</span>
           <span className="text-sm font-medium">
@@ -138,7 +140,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
 
       {/* Error Display */}
       {error && (
-        <div class="fade-in">
+        <div className="fade-in">
           <div className="flex items-center gap-2 text-red-400">
             <span className="text-sm font-medium">
               {error}

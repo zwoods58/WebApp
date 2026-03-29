@@ -10,8 +10,12 @@ import { useTransactionsTanStack, useExpensesTanStack } from '@/hooks';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
-import Header from '@/components/universal/Header';
-import BottomNav from '@/components/universal/BottomNav';
+import { 
+  Header, 
+  BottomNav,
+  PageLoading,
+  PageLoadingBar
+} from '@/components/universal';
 import MoneyInButton from '@/components/universal/MoneyInButton';
 import MoneyOutButton from '@/components/universal/MoneyOutButton';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
@@ -286,10 +290,7 @@ export default function CashPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading...</div>
-        </div>
+        <PageLoading message="Loading cash flow..." fullScreen={false} />
       </div>
     );
   }

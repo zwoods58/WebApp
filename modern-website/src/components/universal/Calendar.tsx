@@ -51,38 +51,28 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
   const { addTransaction } = useTransactionsTanStack({ businessId: business?.id, industry });
 
-  // Show error if business is not available
-  if (!businessLoading && !business) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 mb-4">Business information not available</div>
-          <p className="text-gray-600">Please sign in to access the calendar</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove business dependency checks to allow offline rendering
 
-  // Helper functions
+  // Helper functions with safe defaults for offline mode
   const getTodayAppointments = () => {
-    if (!appointments) return [];
+    if (!appointments || !Array.isArray(appointments)) return [];
     const today = new Date().toISOString().split('T')[0];
     return appointments.filter((apt: Appointment) => apt.appointment_date === today);
   };
 
   const getUpcomingAppointments = () => {
-    if (!appointments) return [];
+    if (!appointments || !Array.isArray(appointments)) return [];
     const today = new Date().toISOString().split('T')[0];
     return appointments.filter((apt: Appointment) => apt.appointment_date > today && apt.status === 'pending');
   };
 
   const getAppointmentsByStatus = (status: string) => {
-    if (!appointments) return [];
+    if (!appointments || !Array.isArray(appointments)) return [];
     return appointments.filter((apt: Appointment) => apt.status === status);
   };
 
   const getServiceById = (id: string) => {
-    if (!services) return null;
+    if (!services || !Array.isArray(services)) return null;
     return services.find((s: Service) => s.id === id);
   };
 
@@ -398,16 +388,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
     return days;
   };
 
-  if (businessLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // Remove business loading check to allow offline rendering
 
   return (
     <div className="min-h-screen bg-gray-50">
