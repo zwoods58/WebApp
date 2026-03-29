@@ -3,7 +3,7 @@ import { kyshiApi } from '@/lib/kyshi';
 
 export async function GET() {
   try {
-    const plans = await kyshiApi.listPlans();
+    const plans = await kyshiApi().listPlans();
     
     return NextResponse.json({
       success: true,

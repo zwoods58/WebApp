@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscription
-    const subscription = await kyshiApi.createSubscription({
+    const subscription = await kyshiApi().createSubscription({
       customer: customerEmail,
       plan: planId,
     });
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const subscriptions = await kyshiApi.listSubscriptions();
+    const subscriptions = await kyshiApi().listSubscriptions();
     
     return NextResponse.json({
       success: true,

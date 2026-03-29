@@ -68,7 +68,8 @@ class KyshiApiClient {
     this.baseUrl = process.env.KYSHI_BASE_URL || 'https://kyshi-mor-dev-qkuod6snia-nw.a.run.app/api/v1';
     this.secretKey = process.env.KYSHI_SECRET_KEY || '';
     
-    if (!this.secretKey) {
+    // Only throw error in runtime, not during build
+    if (typeof window !== 'undefined' && !this.secretKey) {
       throw new Error('KYSHI_SECRET_KEY environment variable is not set');
     }
   }
@@ -169,8 +170,15 @@ class KyshiApiClient {
   }
 }
 
-// Singleton instance
-export const kyshiApi = new KyshiApiClient();
+// Lazy initialization to avoid build-time errors
+let kyshiApiInstance: KyshiApiClient | null = null;
+
+export const kyshiApi = (): KyshiApiClient => {
+  if (!kyshiApiInstance) {
+    kyshiApiInstance = new KyshiApiClient();
+  }
+  return kyshiApiInstance;
+};
 
 // Utility functions for Kenya weekly subscription
 export const createKenyaWeeklyPlan = async (): Promise<KyshiPlan> => {
@@ -182,12 +190,12 @@ export const createKenyaWeeklyPlan = async (): Promise<KyshiPlan> => {
     localCurrency: 'KES',
   };
 
-  return kyshiApi.createPlan(planData);
+  return kyshiApi().createPlan(planData);
 };
 
 export const testKyshiConnection = async (): Promise<{ success: boolean; message: string }> => {
   try {
-    const isConnected = await kyshiApi.testConnection();
+    const isConnected = await kyshiApi().testConnection();
     return {
       success: isConnected,
       message: isConnected ? 'Kyshi API connection successful' : 'Kyshi API connection failed',
