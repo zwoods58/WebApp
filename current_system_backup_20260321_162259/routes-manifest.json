@@ -1,0 +1,459 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [
+      {
+        "source": "/kenya/app/:path*",
+        "destination": "/kenya/app/:path*",
+        "regex": "^/kenya/app(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+      },
+      {
+        "source": "/south-africa/app/:path*",
+        "destination": "/south-africa/app/:path*",
+        "regex": "^/south-africa/app(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+      },
+      {
+        "source": "/nigeria/app/:path*",
+        "destination": "/nigeria/app/:path*",
+        "regex": "^/nigeria/app(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+      }
+    ],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/admin/tables/[tableName]",
+      "regex": "^/admin/tables/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtableName": "nxtPtableName"
+      },
+      "namedRegex": "^/admin/tables/(?<nxtPtableName>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/beehive",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/beehive(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/beehive(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/calendar",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/calendar(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/calendar(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/cash",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/cash(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/cash(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/credit",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/credit(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/credit(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/help",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/help(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/help(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/more",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/more(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/more(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/notifications",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/notifications(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/notifications(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/reports",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/reports(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/reports(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/services",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/services(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/services(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/settings",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/settings(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/settings(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/stock",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/stock(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/stock(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/tour",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/tour(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/tour(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/app/[country]/[industry]/transactions",
+      "regex": "^/Beezee\\-App/app/([^/]+?)/([^/]+?)/transactions(?:/)?$",
+      "routeKeys": {
+        "nxtPcountry": "nxtPcountry",
+        "nxtPindustry": "nxtPindustry"
+      },
+      "namedRegex": "^/Beezee\\-App/app/(?<nxtPcountry>[^/]+?)/(?<nxtPindustry>[^/]+?)/transactions(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics",
+      "regex": "^/admin/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics/beehive",
+      "regex": "^/admin/analytics/beehive(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics/beehive(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics/conversion",
+      "regex": "^/admin/analytics/conversion(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics/conversion(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics/revenue",
+      "regex": "^/admin/analytics/revenue(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics/revenue(?:/)?$"
+    },
+    {
+      "page": "/admin/analytics/users",
+      "regex": "^/admin/analytics/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/analytics/users(?:/)?$"
+    },
+    {
+      "page": "/admin/auth/login",
+      "regex": "^/admin/auth/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/auth/login(?:/)?$"
+    },
+    {
+      "page": "/admin/beehive",
+      "regex": "^/admin/beehive(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/beehive(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard",
+      "regex": "^/admin/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard(?:/)?$"
+    },
+    {
+      "page": "/admin/data",
+      "regex": "^/admin/data(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/data(?:/)?$"
+    },
+    {
+      "page": "/admin/marketing",
+      "regex": "^/admin/marketing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/marketing(?:/)?$"
+    },
+    {
+      "page": "/admin/revenue",
+      "regex": "^/admin/revenue(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/revenue(?:/)?$"
+    },
+    {
+      "page": "/admin/tables",
+      "regex": "^/admin/tables(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/tables(?:/)?$"
+    },
+    {
+      "page": "/admin/users",
+      "regex": "^/admin/users(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/users(?:/)?$"
+    },
+    {
+      "page": "/admin-login",
+      "regex": "^/admin\\-login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin\\-login(?:/)?$"
+    },
+    {
+      "page": "/api/admin/metrics/beehive",
+      "regex": "^/api/admin/metrics/beehive(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/metrics/beehive(?:/)?$"
+    },
+    {
+      "page": "/api/admin/metrics/overview",
+      "regex": "^/api/admin/metrics/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/metrics/overview(?:/)?$"
+    },
+    {
+      "page": "/api/auth/check-phone",
+      "regex": "^/api/auth/check\\-phone(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/check\\-phone(?:/)?$"
+    },
+    {
+      "page": "/api/auth/lookup-business",
+      "regex": "^/api/auth/lookup\\-business(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/lookup\\-business(?:/)?$"
+    },
+    {
+      "page": "/api/auth/signup",
+      "regex": "^/api/auth/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/signup(?:/)?$"
+    },
+    {
+      "page": "/api/auth/verify-pin",
+      "regex": "^/api/auth/verify\\-pin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/verify\\-pin(?:/)?$"
+    },
+    {
+      "page": "/api/beehive",
+      "regex": "^/api/beehive(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/beehive(?:/)?$"
+    },
+    {
+      "page": "/api/expenses",
+      "regex": "^/api/expenses(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/expenses(?:/)?$"
+    },
+    {
+      "page": "/api/manifest",
+      "regex": "^/api/manifest(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/manifest(?:/)?$"
+    },
+    {
+      "page": "/api/transactions",
+      "regex": "^/api/transactions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/transactions(?:/)?$"
+    },
+    {
+      "page": "/atarwebb",
+      "regex": "^/atarwebb(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/atarwebb(?:/)?$"
+    },
+    {
+      "page": "/beezee",
+      "regex": "^/beezee(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/beezee(?:/)?$"
+    },
+    {
+      "page": "/beezee/privacy",
+      "regex": "^/beezee/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/beezee/privacy(?:/)?$"
+    },
+    {
+      "page": "/beezee/refunds",
+      "regex": "^/beezee/refunds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/beezee/refunds(?:/)?$"
+    },
+    {
+      "page": "/beezee/terms",
+      "regex": "^/beezee/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/beezee/terms(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/auth/login",
+      "regex": "^/Beezee\\-App/auth/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Beezee\\-App/auth/login(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/auth/signup",
+      "regex": "^/Beezee\\-App/auth/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Beezee\\-App/auth/signup(?:/)?$"
+    },
+    {
+      "page": "/Beezee-App/route",
+      "regex": "^/Beezee\\-App/route(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/Beezee\\-App/route(?:/)?$"
+    },
+    {
+      "page": "/comparison",
+      "regex": "^/comparison(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/comparison(?:/)?$"
+    },
+    {
+      "page": "/demo",
+      "regex": "^/demo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/demo(?:/)?$"
+    },
+    {
+      "page": "/offline-test",
+      "regex": "^/offline\\-test(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/offline\\-test(?:/)?$"
+    },
+    {
+      "page": "/privacy",
+      "regex": "^/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacy(?:/)?$"
+    },
+    {
+      "page": "/simple-test",
+      "regex": "^/simple\\-test(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/simple\\-test(?:/)?$"
+    },
+    {
+      "page": "/tanstack-comparison",
+      "regex": "^/tanstack\\-comparison(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tanstack\\-comparison(?:/)?$"
+    },
+    {
+      "page": "/tanstack-test",
+      "regex": "^/tanstack\\-test(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tanstack\\-test(?:/)?$"
+    },
+    {
+      "page": "/terms",
+      "regex": "^/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/terms(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
