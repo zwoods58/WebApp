@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
 import { businessSignupSchema } from '@/lib/validation/schemas';
-import { validateRequest, handleValidationError } from '@/middleware/validate';
+import { validateRequest, handleValidationError, formatValidationErrors } from '@/middleware/validate';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
 import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
 
@@ -34,7 +34,26 @@ async function signupHandler(request: NextRequest) {
     // Validate with Zod schema
     const validation = validateRequest(businessSignupSchema, body);
     if (!validation.success) {
-      return handleValidationError(validation.error);
+      const formattedErrors = formatValidationErrors(validation.error);
+      console.error('❌ [API] Validation failed:', {
+        errors: validation.error.issues,
+        formattedErrors,
+        receivedBody: {
+          ...body,
+          pin: body.pin ? '***' : 'none',
+          securityQuestions: body.securityQuestions ? {
+            questionId: body.securityQuestions.questionId,
+            hasAnswer: !!body.securityQuestions.answer
+          } : 'NOT PROVIDED'
+        }
+      });
+      
+      return NextResponse.json({
+        success: false,
+        existingUser: false,
+        error: 'Invalid input data',
+        details: formattedErrors
+      }, { status: 400 });
     }
 
     // Sanitize validated data
