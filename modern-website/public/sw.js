@@ -455,11 +455,23 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - Cache user routes, skip others
+  // RSC Requests - Cache only server-side pages, skip client components
   // ============================================================
   if (url.searchParams.has('_rsc')) {
     // Check if this is a user route that should be cached
     if (isUserRoute(url.pathname)) {
+      // Skip RSC caching for client components that require auth/data
+      const clientComponentRoutes = ['/cash', '/credit', '/services', '/stock'];
+      const isClientComponent = clientComponentRoutes.some(route => 
+        url.pathname.includes(route)
+      );
+      
+      if (isClientComponent) {
+        // For client components, don't handle RSC requests - let them fail gracefully
+        console.log('[SW] ⚠️ Skipping RSC for client component:', url.pathname);
+        return; // Let the browser handle it normally
+      }
+      
       // Handle as a user route with caching
       event.respondWith(
         (async () => {
@@ -517,8 +529,48 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         const cacheKey = url.pathname;
         
+        // Check if this is a client component route
+        const clientComponentRoutes = ['/cash', '/credit', '/services', '/stock'];
+        const isClientComponent = clientComponentRoutes.some(route => 
+          url.pathname.includes(route)
+        );
+        
         // OFFLINE: Cache-only mode (instant!)
         if (isOffline || !navigator.onLine) {
+          // For client components, don't try to serve cached page - serve offline fallback
+          if (isClientComponent) {
+            console.log('[SW] 📱 Client component offline, serving fallback:', cacheKey);
+            // Return a simple HTML page with offline message for client components
+            return new Response(`
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <title>BeeZee - Offline</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
+                  <style>
+                    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f9fafb; }
+                    .container { max-width: 400px; margin: 50px auto; text-align: center; }
+                    .icon { width: 48px; height: 48px; margin: 0 auto 20px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+                    .offline-text { color: #92400e; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+                    .message { color: #6b7280; margin-bottom: 20px; }
+                    .refresh-btn { background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="icon">📱</div>
+                    <div class="offline-text">You're Offline</div>
+                    <div class="message">This page requires an internet connection. Please check your connection and try again.</div>
+                    <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
+                  </div>
+                </body>
+              </html>
+            `, {
+              status: 503,
+              headers: { 'Content-Type': 'text/html' }
+            });
+          }
+          
           const cached = await caches.match(cacheKey);
           if (cached) {
             console.log('[SW] ✅ Serving from cache (offline):', cacheKey);
