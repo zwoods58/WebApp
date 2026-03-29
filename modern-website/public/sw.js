@@ -455,122 +455,34 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - Cache only server-side pages, skip client components
+  // RSC Requests - Let client components pass through
   // ============================================================
   if (url.searchParams.has('_rsc')) {
-    // Check if this is a user route that should be cached
-    if (isUserRoute(url.pathname)) {
-      // Skip RSC caching for client components that require auth/data
-      const clientComponentRoutes = ['/cash', '/credit', '/services', '/stock'];
-      const isClientComponent = clientComponentRoutes.some(route => 
-        url.pathname.includes(route)
-      );
-      
-      if (isClientComponent) {
-        // For client components, don't handle RSC requests - let them fail gracefully
-        console.log('[SW] ⚠️ Skipping RSC for client component:', url.pathname);
-        return; // Let the browser handle it normally
-      }
-      
-      // Handle as a user route with caching
-      event.respondWith(
-        (async () => {
-          const cacheKey = url.pathname; // Cache without _rsc parameter
-          
-          // OFFLINE: Cache-only mode
-          if (isOffline || !navigator.onLine) {
-            const cached = await caches.match(cacheKey);
-            if (cached) {
-              console.log('[SW] ✅ Serving RSC from cache (offline):', cacheKey);
-              return cached;
-            }
-            
-            console.log('[SW] ❌ RSC Page not cached, serving offline.html:', cacheKey);
-            const offlinePage = await caches.match('/offline.html');
-            return offlinePage || new Response('Offline', { status: 503 });
-          }
-          
-          // ONLINE: Try network first with timeout, fallback to cache
-          try {
-            const response = await fetchWithTimeout(request);
-            if (response.ok) {
-              const cache = await caches.open(PAGE_CACHE);
-              // Cache without the _rsc parameter
-              const cacheRequest = new Request(url.pathname, { method: 'GET' });
-              cache.put(cacheRequest, response.clone());
-              console.log('[SW] 📡 Cached RSC page:', cacheKey);
-            }
-            return response;
-          } catch (error) {
-            console.log('[SW] 📴 Network failed for RSC, trying cache:', cacheKey);
-            const cached = await caches.match(cacheKey);
-            if (cached) {
-              return cached;
-            }
-            throw error;
-          }
-        })()
-      );
-      return;
-    } else {
-      // Non-user RSC routes - always network
-      event.respondWith(fetch(request));
-      return;
-    }
+    // For development, let all RSC requests pass through to avoid blocking
+    console.log('[SW] 🌐 Letting RSC request pass through:', url.pathname);
+    return; // Don't handle - let browser fetch normally
   }
   
   // ============================================================
-  // HTML Pages - Cache-only when offline, cache-first with timeout when online
+  // HTML Pages - Simplified caching for development
   // ============================================================
   if (request.destination === 'document' || 
       url.pathname === '/' ||
       url.pathname.startsWith('/Beezee-App/')) {
+    
+    // For development, be less aggressive - let most requests pass through
+    if (url.pathname.includes('/cash') || url.pathname.includes('/credit') || 
+        url.pathname.includes('/services') || url.pathname.includes('/stock')) {
+      console.log('[SW] 🌐 Letting client component page pass through:', url.pathname);
+      return; // Don't handle - let browser fetch normally
+    }
+    
     event.respondWith(
       (async () => {
         const cacheKey = url.pathname;
         
-        // Check if this is a client component route
-        const clientComponentRoutes = ['/cash', '/credit', '/services', '/stock'];
-        const isClientComponent = clientComponentRoutes.some(route => 
-          url.pathname.includes(route)
-        );
-        
         // OFFLINE: Cache-only mode (instant!)
         if (isOffline || !navigator.onLine) {
-          // For client components, don't try to serve cached page - serve offline fallback
-          if (isClientComponent) {
-            console.log('[SW] 📱 Client component offline, serving fallback:', cacheKey);
-            // Return a simple HTML page with offline message for client components
-            return new Response(`
-              <!DOCTYPE html>
-              <html>
-                <head>
-                  <title>BeeZee - Offline</title>
-                  <meta name="viewport" content="width=device-width, initial-scale=1">
-                  <style>
-                    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f9fafb; }
-                    .container { max-width: 400px; margin: 50px auto; text-align: center; }
-                    .icon { width: 48px; height: 48px; margin: 0 auto 20px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-                    .offline-text { color: #92400e; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
-                    .message { color: #6b7280; margin-bottom: 20px; }
-                    .refresh-btn { background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-                  </style>
-                </head>
-                <body>
-                  <div class="container">
-                    <div class="icon">📱</div>
-                    <div class="offline-text">You're Offline</div>
-                    <div class="message">This page requires an internet connection. Please check your connection and try again.</div>
-                    <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
-                  </div>
-                </body>
-              </html>
-            `, {
-              status: 503,
-              headers: { 'Content-Type': 'text/html' }
-            });
-          }
-          
           const cached = await caches.match(cacheKey);
           if (cached) {
             console.log('[SW] ✅ Serving from cache (offline):', cacheKey);
