@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v43';
+const CACHE_VERSION = 'v44';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -193,6 +193,38 @@ async function fetchWithTimeout(request, timeout = 3000) {
     }
     throw error;
   }
+}
+
+// Helper function to generate offline page
+function generateOfflinePage() {
+  return new Response(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>BeeZee - Offline</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+          body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f9fafb; }
+          .container { max-width: 400px; margin: 50px auto; text-align: center; }
+          .icon { width: 48px; height: 48px; margin: 0 auto 20px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+          .offline-text { color: #92400e; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+          .message { color: #6b7280; margin-bottom: 20px; }
+          .refresh-btn { background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="icon">📱</div>
+          <div class="offline-text">You're Offline</div>
+          <div class="message">Cached page not available. Please check your connection and try again.</div>
+          <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
+        </div>
+      </body>
+    </html>
+  `, { 
+    status: 200,
+    headers: { 'Content-Type': 'text/html' }
+  });
 }
 
 /**
@@ -464,18 +496,11 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // HTML Pages - Simplified caching for development
+  // HTML Pages - Cache-first with offline support
   // ============================================================
   if (request.destination === 'document' || 
       url.pathname === '/' ||
       url.pathname.startsWith('/Beezee-App/')) {
-    
-    // For development, be less aggressive - let most requests pass through
-    if (url.pathname.includes('/cash') || url.pathname.includes('/credit') || 
-        url.pathname.includes('/services') || url.pathname.includes('/stock')) {
-      console.log('[SW] 🌐 Letting client component page pass through:', url.pathname);
-      return; // Don't handle - let browser fetch normally
-    }
     
     event.respondWith(
       (async () => {
@@ -529,34 +554,7 @@ self.addEventListener('fetch', (event) => {
           if (offlinePage) return offlinePage;
           
           // Last resort: serve a simple HTML page instead of 503
-          return new Response(`
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <title>BeeZee - Offline</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <style>
-                  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 20px; background: #f9fafb; }
-                  .container { max-width: 400px; margin: 50px auto; text-align: center; }
-                  .icon { width: 48px; height: 48px; margin: 0 auto 20px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-                  .offline-text { color: #92400e; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
-                  .message { color: #6b7280; margin-bottom: 20px; }
-                  .refresh-btn { background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <div class="icon">📱</div>
-                  <div class="offline-text">You're Offline</div>
-                  <div class="message">Cached page not available. Please check your connection and try again.</div>
-                  <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
-                </div>
-              </body>
-            </html>
-          `, { 
-            status: 200,
-            headers: { 'Content-Type': 'text/html' }
-          });
+          return generateOfflinePage();
         }
         
         // ONLINE: Try cache first, then network WITH TIMEOUT
@@ -570,7 +568,7 @@ self.addEventListener('fetch', (event) => {
           // Use fetchWithTimeout as fallback for unreliable navigator.onLine
           console.log('[SW] 📡 Fetching from network:', cacheKey);
           const response = await fetchWithTimeout(request, 5000); // 5s timeout for HTML
-          if (response.ok) {
+          if (response.ok && !response.url.includes('/auth/login')) {
             const cache = await caches.open(PAGE_CACHE);
             cache.put(cacheKey, response.clone());
           }
@@ -587,7 +585,7 @@ self.addEventListener('fetch', (event) => {
           // No cache available - serve offline.html
           console.log('[SW] ❌ No cache available, serving offline.html');
           const offlinePage = await caches.match('/offline.html');
-          return offlinePage || new Response('Offline', { status: 503 });
+          return offlinePage || generateOfflinePage();
         }
       })()
     );
@@ -611,31 +609,11 @@ self.addEventListener('fetch', (event) => {
             return cached;
           }
           
-          // Try cross-version cache search for static assets
-          const cacheVersions = ['v42', 'v41', 'v40'];
-          for (const version of cacheVersions) {
-            const cache = await caches.open(`beezee-static-${version}`);
-            const cached = await cache.match(request);
-            if (cached) {
-              console.log('[SW] ✅ Found static asset in cache version:', version);
-              return cached;
-            }
-          }
-          
           // Missing chunk - return empty module to prevent hang
           if (url.pathname.endsWith('.js')) {
-            console.log('[SW] ⚠️ Missing JS chunk offline, returning empty module:', url.pathname);
             return new Response(
               `console.warn("Offline: Chunk not available - ${url.pathname}");`,
               { headers: { 'Content-Type': 'application/javascript' } }
-            );
-          }
-          
-          if (url.pathname.endsWith('.css')) {
-            console.log('[SW] ⚠️ Missing CSS chunk offline, returning empty CSS:', url.pathname);
-            return new Response(
-              `/* Offline: CSS not available - ${url.pathname} */`,
-              { headers: { 'Content-Type': 'text/css' } }
             );
           }
           
@@ -700,27 +678,15 @@ self.addEventListener('fetch', (event) => {
         if (isOffline || !navigator.onLine) {
           console.log('[SW] 📵 Offline mode - serving cached API data:', url.pathname);
           
-          // Try multiple cache strategies for API responses
+          // Simple cache lookup
           const cached = await fetchFromCacheOnly(request);
           if (cached) {
             console.log('[SW] ✅ Serving cached API response:', url.pathname);
             return cached;
           }
           
-          // Try cross-version cache search for API data
-          const cacheVersions = ['v42', 'v41', 'v40'];
-          for (const version of cacheVersions) {
-            const cache = await caches.open(`beezee-api-${version}`);
-            const cached = await cache.match(request);
-            if (cached) {
-              console.log('[SW] ✅ Found API data in cache version:', version);
-              return cached;
-            }
-          }
-          
-          // For specific endpoints, try to return empty data instead of errors
+          // Return empty data for common endpoints
           if (url.pathname.includes('/api/transactions')) {
-            console.log('[SW] 📦 Returning empty transactions array');
             return new Response(JSON.stringify([]), { 
               status: 200,
               headers: { 'Content-Type': 'application/json' }
@@ -728,15 +694,6 @@ self.addEventListener('fetch', (event) => {
           }
           
           if (url.pathname.includes('/api/expenses')) {
-            console.log('[SW] 📦 Returning empty expenses array');
-            return new Response(JSON.stringify([]), { 
-              status: 200,
-              headers: { 'Content-Type': 'application/json' }
-            });
-          }
-          
-          if (url.pathname.includes('/api/inventory')) {
-            console.log('[SW] 📦 Returning empty inventory array');
             return new Response(JSON.stringify([]), { 
               status: 200,
               headers: { 'Content-Type': 'application/json' }
@@ -744,7 +701,7 @@ self.addEventListener('fetch', (event) => {
           }
           
           console.log('[SW] ❌ No cached API data found for:', url.pathname);
-          return new Response(JSON.stringify({ error: 'OFFLINE', message: 'No cached data available' }), { 
+          return new Response(JSON.stringify({ error: 'OFFLINE' }), { 
             status: 503,
             headers: { 'Content-Type': 'application/json' }
           });
