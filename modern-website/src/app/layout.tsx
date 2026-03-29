@@ -16,18 +16,18 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AtarWebb | The Invisible Architect",
-  description: "We build the silent infrastructures that power the world's most complex ambitions. Enterprise-grade software development, cloud architecture, and digital transformation solutions.",
-  keywords: "software development, cloud architecture, enterprise solutions, digital transformation, web development, mobile apps, infrastructure, technology consulting",
-  authors: [{ name: "AtarWebb" }],
-  creator: "AtarWebb",
-  publisher: "AtarWebb",
+  title: "BeeZee | Your Digital Black Book",
+  description: "Your Digital Black Book - Financial management for informal businesses across Africa",
+  keywords: "business management, financial tracking, informal business, Africa, SME, digital black book, beekeeping",
+  authors: [{ name: "BeeZee" }],
+  creator: "BeeZee",
+  publisher: "BeeZee",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://atarwebb.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://beezee.app'),
   alternates: {
     canonical: '/',
     languages: {
@@ -39,24 +39,24 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    title: 'AtarWebb | The Invisible Architect',
-    description: 'We build the silent infrastructures that power the world\'s most complex ambitions. Enterprise-grade software development and cloud architecture solutions.',
-    siteName: 'AtarWebb',
+    title: 'BeeZee | Your Digital Black Book',
+    description: 'Your Digital Black Book - Financial management for informal businesses across Africa',
+    siteName: 'BeeZee',
     images: [
       {
-        url: '/atarwebb-favicon-white.png',
+        url: '/beezee-icon-512x512.png',
         width: 512,
         height: 512,
-        alt: 'AtarWebb Logo',
+        alt: 'BeeZee Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AtarWebb | The Invisible Architect',
-    description: 'We build the silent infrastructures that power the world\'s most complex ambitions.',
-    images: ['/atarwebb-favicon-white.png'],
-    creator: '@atarwebb',
+    title: 'BeeZee | Your Digital Black Book',
+    description: 'Your Digital Black Book - Financial management for informal businesses across Africa',
+    images: ['/beezee-icon-512x512.png'],
+    creator: '@beezee_app',
   },
   robots: {
     index: true,

@@ -3,7 +3,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { Wifi, WifiOff, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { onConnectionChange } from '@/lib/connection-manager';
 import { db } from '@/lib/database';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -85,44 +84,30 @@ export function ConnectionStatus() {
   return (
     <div className="fixed bottom-20 right-4 z-[55] flex flex-col gap-2">
       {/* Status Toast (Online/Offline) */}
-      <AnimatePresence>
-        {showStatusToast && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`${
-              isOnline ? 'bg-green-600' : 'bg-red-600'
-            } text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[200px]`}
-          >
-            {isOnline ? (
-              <Wifi className="w-5 h-5 flex-shrink-0" />
-            ) : (
-              <WifiOff className="w-5 h-5 flex-shrink-0" />
-            )}
-            <span className="text-sm font-medium">{statusMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showStatusToast && (
+        <div
+          className={`${
+            isOnline ? 'bg-green-600' : 'bg-red-600'
+          } text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[200px] slide-in-up`}
+        >
+          {isOnline ? (
+            <Wifi className="w-5 h-5 flex-shrink-0" />
+          ) : (
+            <WifiOff className="w-5 h-5 flex-shrink-0" />
+          )}
+          <span className="text-sm font-medium">{statusMessage}</span>
+        </div>
+      )}
       
       {/* Pending Toast (Yellow) */}
-      <AnimatePresence>
-        {showPendingToast && pendingCount > 0 && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="bg-yellow-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[200px]"
-          >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <span className="text-sm font-medium">
-              {pendingCount} pending {pendingCount === 1 ? 'change' : 'changes'}
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showPendingToast && pendingCount > 0 && (
+        <div className="bg-yellow-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[200px] slide-in-up">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <span className="text-sm font-medium">
+            {pendingCount} pending {pendingCount === 1 ? 'change' : 'changes'}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
