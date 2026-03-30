@@ -94,7 +94,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: '/atarwebb-manifest.json',
 };
 
 export default function RootLayout({
@@ -108,13 +107,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Mobile-friendly Meta Tags */}
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="AtarWebb" />
-        <meta name="application-name" content="AtarWebb" />
-        <meta name="msapplication-TileColor" content="#4A8DB8" />
-        <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
         
         {/* Additional Meta Tags */}
@@ -126,7 +118,7 @@ export default function RootLayout({
         <meta property="fb:app_id" content="your-facebook-app-id" />
         <meta property="linkedin:owner" content="your-linkedin-company-id" />
         
-        {/* Direct favicon link to override any defaults */}
+        {/* Favicon */}
         <link rel="icon" href="/atarwebb-favicon-white.png" sizes="32x32" />
         <link rel="icon" href="/atarwebb-favicon-white.png" sizes="192x192" />
         <link rel="icon" href="/atarwebb-favicon-white.png" sizes="512x512" />
