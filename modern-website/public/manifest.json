@@ -4,10 +4,11 @@
   "description": "Your Digital Black Book - Financial management for informal businesses",
   "start_url": "/Beezee-App/",
   "display": "standalone",
-  "background_color": "transparent",
-  "theme_color": "transparent",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "scope": "/Beezee-App/",
+  "scope": "/",
   "id": "/Beezee-App/",
   "icons": [
     {
@@ -63,6 +64,9 @@
   "lang": "en",
   "dir": "ltr",
   "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": ["focus-existing", "auto"]
+  },
   "shortcuts": [
     {
       "name": "Dashboard",
