@@ -2,13 +2,13 @@
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
   "description": "Your Digital Black Book - Financial management for informal businesses",
-  "start_url": "/Beezee-App/",
+  "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "/Beezee-App/",
   "id": "/Beezee-App/",
   "icons": [
     {
@@ -72,7 +72,7 @@
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "Open your business dashboard",
-      "url": "/Beezee-App/",
+      "url": "/Beezee-App/auth/signup",
       "icons": [
         {
           "src": "/beezee-icon-192x192.png",

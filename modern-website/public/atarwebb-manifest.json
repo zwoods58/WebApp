@@ -1,0 +1,36 @@
+{
+  "name": "AtarWebb - Digital Solutions",
+  "short_name": "AtarWebb",
+  "description": "Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4A8DB8",
+  "orientation": "any",
+  "scope": "/",
+  "id": "/",
+  "icons": [
+    {
+      "src": "/atarwebb-favicon-white.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/atarwebb-favicon-white.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/atarwebb-favicon-white.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "technology", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}

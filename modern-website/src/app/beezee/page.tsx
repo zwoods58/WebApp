@@ -63,7 +63,8 @@ export const metadata: Metadata = {
     icon: '/beezee-icon-192x192.png',
     apple: '/beezee-icon-192x192.png',
     shortcut: '/favicon.ico'
-  }
+  },
+  manifest: '/manifest.json'
 };
 
 export default function BeezeeLanding() {

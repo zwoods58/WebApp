@@ -7,27 +7,28 @@ const CACHE_VERSION = 'v44';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
+const BASE_PATH = '/Beezee-App';
 
 // Public routes that can be cached during install (no auth required)
 const PUBLIC_ROUTES = [
-  '/',
-  '/manifest.json',
-  '/offline.html',
+  BASE_PATH + '/',
+  BASE_PATH + '/manifest.json',
+  BASE_PATH + '/offline.html',
   '/Beezee-App/',
   '/Beezee-App/setup',
   // PWA Icons
-  '/beezee-icon-16x16.png',
-  '/beezee-icon-32x32.png',
-  '/beezee-icon-72x72.png',
-  '/beezee-icon-96x96.png',
-  '/beezee-icon-128x128.png',
-  '/beezee-icon-144x144.png',
-  '/beezee-icon-152x152.png',
-  '/beezee-icon-192x192.png',
-  '/beezee-icon-384x384.png',
-  '/beezee-icon-512x512.png',
-  '/favicon.ico',
-  '/beezee-logo.png',
+  BASE_PATH + '/beezee-icon-16x16.png',
+  BASE_PATH + '/beezee-icon-32x32.png',
+  BASE_PATH + '/beezee-icon-72x72.png',
+  BASE_PATH + '/beezee-icon-96x96.png',
+  BASE_PATH + '/beezee-icon-128x128.png',
+  BASE_PATH + '/beezee-icon-144x144.png',
+  BASE_PATH + '/beezee-icon-152x152.png',
+  BASE_PATH + '/beezee-icon-192x192.png',
+  BASE_PATH + '/beezee-icon-384x384.png',
+  BASE_PATH + '/beezee-icon-512x512.png',
+  BASE_PATH + '/favicon.ico',
+  BASE_PATH + '/beezee-logo.png',
 ];
 
 // Store user's country and industry in SW memory
@@ -403,7 +404,7 @@ async function cacheStaticAssets() {
   
   try {
     // Fetch the homepage to extract asset URLs
-    const response = await fetch('/');
+    const response = await fetch(BASE_PATH + '/');
     const html = await response.text();
     
     // Extract all .js and .css file paths from the HTML
@@ -550,7 +551,7 @@ self.addEventListener('fetch', (event) => {
           }
           
           console.log('[SW] ❌ Page not found in any cache, trying offline.html:', cacheKey);
-          const offlinePage = await caches.match('/offline.html');
+          const offlinePage = await caches.match(BASE_PATH + '/offline.html');
           if (offlinePage) return offlinePage;
           
           // Last resort: serve a simple HTML page instead of 503
@@ -584,7 +585,7 @@ self.addEventListener('fetch', (event) => {
           
           // No cache available - serve offline.html
           console.log('[SW] ❌ No cache available, serving offline.html');
-          const offlinePage = await caches.match('/offline.html');
+          const offlinePage = await caches.match(BASE_PATH + '/offline.html');
           return offlinePage || generateOfflinePage();
         }
       })()

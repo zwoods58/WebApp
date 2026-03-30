@@ -31,7 +31,7 @@ export default function CashPage() {
   const { business, loading: authLoading } = useUnifiedAuth();
   const businessId = business?.id;
   
-  // ✅ STEP 2: Network status detection
+  // ✅ STEP 2: Network status detection (for UI indicator only, NOT to block)
   const [isNetworkOffline, setIsNetworkOffline] = useState(false);
   
   useEffect(() => {
@@ -49,57 +49,10 @@ export default function CashPage() {
     };
   }, []);
   
-  // ✅ STEP 3: Show offline component if network is offline
-  if (isNetworkOffline) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <h1 className="text-lg font-semibold text-gray-900">Cash Transactions</h1>
-        </div>
-        
-        {/* Offline Message */}
-        <div className="p-4">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
-            <WifiOff className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
-            <h2 className="text-lg font-semibold text-yellow-900 mb-2">
-              You're Offline
-            </h2>
-            <p className="text-yellow-700 mb-4">
-              Cash transactions are not available offline. Please check your internet connection and try again.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </button>
-          </div>
-          
-          {/* Recent Transactions Placeholder */}
-          <div className="mt-6 bg-white rounded-xl border border-gray-200">
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="font-medium text-gray-900">Recent Transactions</h3>
-            </div>
-            <div className="p-8 text-center text-gray-500">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <WifiOff className="w-8 h-8 text-gray-400" />
-              </div>
-              <p>Connect to the internet to view your cash transactions</p>
-            </div>
-          </div>
-        </div>
-        
-        <BottomNav industry={industry} country={country} />
-      </div>
-    );
-  }
-  
-  // ✅ STEP 2: Toast hook
+  // ✅ STEP 3: Toast hook
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
-  // ✅ STEP 3: Data hooks - ALWAYS called, but with safe defaults
+  // ✅ STEP 4: Data hooks - ALWAYS called
   const transactionsHook = useTransactionsTanStack({ 
     businessId: businessId,
     industry: business?.industry || industry,
@@ -111,7 +64,7 @@ export default function CashPage() {
     country: country
   });
   
-  // ✅ STEP 4: Safely extract data with fallbacks
+  // ✅ STEP 5: Safely extract data with fallbacks
   const transactions = transactionsHook?.data || [];
   const expenses = expensesHook?.data || [];
   const isTransactionsOffline = transactionsHook?.isOffline || false;
@@ -123,32 +76,34 @@ export default function CashPage() {
   const isTransactionsLoading = transactionsHook?.isLoading || false;
   const isExpensesLoading = expensesHook?.isLoading || false;
   
-  // ✅ STEP 5: Derived state
-  const isOffline = isTransactionsOffline || isExpensesOffline;
+  // ✅ STEP 6: Derived state
+  const isOffline = isTransactionsOffline || isExpensesOffline || isNetworkOffline;
   const isSyncing = isTransactionsPending || isExpensesPending;
   const totalPending = (isTransactionsPending ? 1 : 0) + (isExpensesPending ? 1 : 0);
   
-  // ✅ STEP 6: useState hooks - all called unconditionally
+  // ✅ STEP 7: useState hooks
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'in' | 'out'>('all');
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedItemForShare, setSelectedItemForShare] = useState<any>(null);
   
-  // ✅ STEP 7: Combined data for display
+  // ✅ STEP 8: Combined data for display
   const allCashFlow = [
     ...transactions.map((t: any) => ({ ...t, type: 'in' as const })),
     ...expenses.map((e: any) => ({ ...e, type: 'out' as const }))
   ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   
-  // ✅ STEP 8: useEffect hooks - all called unconditionally
+  // ✅ STEP 9: useEffect hooks
   useEffect(() => {
     console.log('[CashPage] Business ID:', businessId);
     console.log('[CashPage] Transactions count:', transactions.length);
     console.log('[CashPage] Expenses count:', expenses.length);
-  }, [businessId, transactions.length, expenses.length]);
+    console.log('[CashPage] Offline status:', isOffline);
+    console.log('[CashPage] Network offline:', isNetworkOffline);
+  }, [businessId, transactions.length, expenses.length, isOffline, isNetworkOffline]);
   
-  // ✅ STEP 9: Handler functions
+  // ✅ STEP 10: Handler functions (same as before)
   const handleMoneyIn = async (transactionData: any) => {
     console.log('🚀 [CashPage] handleMoneyIn START', { businessId, isOffline });
     
@@ -158,7 +113,6 @@ export default function CashPage() {
       return;
     }
     
-    // Remove due_date from transaction data as it belongs to credit table, not transactions table
     const { due_date, ...cleanTransactionData } = transactionData;
     
     const fullTransactionData = {
@@ -169,22 +123,10 @@ export default function CashPage() {
       created_at: new Date().toISOString()
     };
 
-    console.log('� [CashPage] Transaction data prepared:', {
-      fullTransactionData,
-      isOffline,
-      hasAddTransaction: typeof addTransaction === 'function'
-    });
-
     try {
-      // Step 1: Create the transaction
-      console.log('� [CashPage] Calling addTransaction...');
       const result = await addTransaction(fullTransactionData);
-      console.log('✅ [CashPage] addTransaction completed:', { result, isOffline });
       
-      // Step 2: If payment method is 'credit', handle credit record
       if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
-        console.log('💳 [CashPage] Credit transaction detected, processing credit record...');
-        
         const { credit, wasExisting } = await handleCreditTransaction(
           transactionData.customer_name,
           transactionData.amount,
@@ -199,32 +141,28 @@ export default function CashPage() {
             `Transaction added! Credit balance updated for "${credit.customer_name}". ` +
             `New total owed: ${formatCurrency(credit.amount, country)}`
           );
-          console.log(`✅ [CashPage] Added ${formattedAmount} to existing credit for ${credit.customer_name}`);
         } else {
           showSuccess(
             `Transaction added! New credit record created for "${credit.customer_name}" for ${formattedAmount}. ` +
             `Due date: ${new Date(credit.due_date!).toLocaleDateString()}`
           );
-          console.log(`✅ [CashPage] Created new credit record for ${credit.customer_name}`);
         }
       } else {
-        showSuccess('Transaction added successfully');
-        console.log('✅ [CashPage] Regular transaction completed successfully');
+        if (isOffline) {
+          showInfo('Transaction added - will sync when you\'re back online');
+        } else {
+          showSuccess('Transaction added successfully');
+        }
       }
       
     } catch (error) {
       console.error('❌ [CashPage] Failed to add transaction:', error);
       showError('Failed to add transaction. Please try again.');
     }
-    
-    console.log('🏁 [CashPage] handleMoneyIn END');
   };
   
   const handleMoneyOut = async (expenseData: any) => {
-    console.log('🚀 [CashPage] handleMoneyOut START', { businessId, isOffline });
-    
     if (!businessId) {
-      console.error('❌ [CashPage] No business ID for expense');
       showError('Please set up your business profile first before adding expenses.');
       return;
     }
@@ -240,33 +178,19 @@ export default function CashPage() {
       created_at: new Date().toISOString()
     };
 
-    console.log('📝 [CashPage] Expense data prepared:', {
-      fullExpenseData,
-      isOffline,
-      hasAddExpense: typeof addExpense === 'function'
-    });
-
     try {
-      // Use TanStack mutation which handles online/offline automatically
-      console.log('💾 [CashPage] Calling addExpense...');
       const result = await addExpense(fullExpenseData);
-      console.log('✅ [CashPage] addExpense completed:', { result, isOffline });
       
-      // Show appropriate success message based on online status
       if (isOffline) {
         showInfo('Expense added - will sync when you\'re back online');
-        console.log('✅ [CashPage] Expense queued for offline sync');
       } else {
         showSuccess('Expense added successfully');
-        console.log('✅ [CashPage] Expense saved online');
       }
       
     } catch (error) {
       console.error('❌ [CashPage] Failed to add expense:', error);
       showError('Failed to add expense. Please try again.');
     }
-    
-    console.log('🏁 [CashPage] handleMoneyOut END');
   };
   
   const filteredCashFlow = allCashFlow.filter(item => {
@@ -314,7 +238,6 @@ export default function CashPage() {
       setCopiedItem(item.id);
       setTimeout(() => setCopiedItem(null), 2000);
     } catch (error) {
-      console.error('Failed to copy item:', error);
       const textArea = document.createElement('textarea');
       textArea.value = itemText;
       document.body.appendChild(textArea);
@@ -351,7 +274,7 @@ export default function CashPage() {
     .reduce((sum, item) => sum + item.amount, 0);
   const todayProfit = todayMoneyIn - todayMoneyOut;
   
-  // ✅ STEP 10: Loading state - AFTER all hooks
+  // ✅ STEP 11: Loading state
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
@@ -360,7 +283,7 @@ export default function CashPage() {
     );
   }
   
-  // ✅ STEP 11: No business warning - AFTER all hooks
+  // ✅ STEP 12: No business warning
   if (!businessId && !authLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg)]">
@@ -382,22 +305,23 @@ export default function CashPage() {
     );
   }
   
-  // ✅ STEP 12: Main render
+  // ✅ STEP 13: Main render - REMOVED the offline block!
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <Header industry={industry} country={country} />
       
       <main className="flex-1 container mx-auto px-4 pt-24 py-6 max-w-md">
-        {/* Sync Status */}
+        {/* Sync Status - Shows offline indicator but doesn't block */}
         {(isOffline || isSyncing) && (
           <div className="mb-4 p-3 rounded-lg border border-[var(--border)] bg-[var(--glass)] animate-fade-in">
             <div className="flex items-center gap-2 text-sm">
               {isSyncing && <RefreshCw size={16} className="animate-spin" />}
+              {isOffline && !isSyncing && <WifiOff size={16} className="text-orange-500" />}
               <span className={`font-medium ${
                 isOffline ? 'text-orange-600' : 'text-blue-600'
               }`}>
                 {isOffline 
-                  ? t('common.offline_mode', 'Offline Mode')
+                  ? t('common.offline_mode', 'Offline Mode - Showing Cached Data')
                   : isSyncing 
                   ? t('common.syncing_data', 'Syncing data...')
                   : t('common.online', 'Online')

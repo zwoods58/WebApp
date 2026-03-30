@@ -16,18 +16,18 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BeeZee | Your Digital Black Book",
-  description: "Your Digital Black Book - Financial management for informal businesses across Africa",
-  keywords: "business management, financial tracking, informal business, Africa, SME, digital black book, beekeeping",
-  authors: [{ name: "BeeZee" }],
-  creator: "BeeZee",
-  publisher: "BeeZee",
+  title: "AtarWebb - Digital Solutions",
+  description: "Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools to help your business thrive in the digital age.",
+  keywords: "technology solutions, software development, web applications, digital transformation, business technology, custom software, innovation",
+  authors: [{ name: "AtarWebb" }],
+  creator: "AtarWebb",
+  publisher: "AtarWebb",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://beezee.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://atarwebb.com'),
   alternates: {
     canonical: '/',
     languages: {
@@ -39,24 +39,25 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    title: 'BeeZee | Your Digital Black Book',
-    description: 'Your Digital Black Book - Financial management for informal businesses across Africa',
-    siteName: 'BeeZee',
+    title: 'AtarWebb - Digital Solutions',
+    description: 'Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools to help your business thrive.',
+    siteName: 'AtarWebb',
     images: [
       {
-        url: '/beezee-icon-512x512.png',
+        url: '/atarwebb-favicon-white.png',
         width: 512,
         height: 512,
-        alt: 'BeeZee Logo',
+        alt: 'AtarWebb Logo',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BeeZee | Your Digital Black Book',
-    description: 'Your Digital Black Book - Financial management for informal businesses across Africa',
-    images: ['/beezee-icon-512x512.png'],
-    creator: '@beezee_app',
+    title: 'AtarWebb - Digital Solutions',
+    description: 'Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools.',
+    images: ['/atarwebb-favicon-white.png'],
+    creator: '@atarwebb',
+    site: '@atarwebb',
   },
   robots: {
     index: true,
@@ -76,26 +77,24 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/beezee-icon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/beezee-icon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/beezee-icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/beezee-icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '32x32', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '192x192', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
-      { url: '/beezee-icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/beezee-icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '192x192', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/atarwebb-favicon-white.png',
     other: [
       {
         rel: 'apple-touch-icon-precomposed',
-        url: '/beezee-icon-192x192.png',
+        url: '/atarwebb-favicon-white.png',
         sizes: '192x192',
       },
     ],
   },
-  manifest: '/manifest.json',
+  manifest: '/atarwebb-manifest.json',
 };
 
 export default function RootLayout({
@@ -108,18 +107,30 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* PWA Meta Tags for Standalone Mode */}
+        {/* Mobile-friendly Meta Tags */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="BeeZee" />
-        <meta name="application-name" content="BeeZee" />
+        <meta name="apple-mobile-web-app-title" content="AtarWebb" />
+        <meta name="application-name" content="AtarWebb" />
         <meta name="msapplication-TileColor" content="#4A8DB8" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
         
-        {/* PWA-specific: Remove theme color to prevent system splash */}
-        <meta name="theme-color" content="transparent" />
+        {/* Additional Meta Tags */}
+        <meta name="theme-color" content="#4A8DB8" />
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
+        
+        {/* Social Media Links */}
+        <meta property="fb:app_id" content="your-facebook-app-id" />
+        <meta property="linkedin:owner" content="your-linkedin-company-id" />
+        
+        {/* Direct favicon link to override any defaults */}
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="32x32" />
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="192x192" />
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/atarwebb-favicon-white.png" />
       </head>
       <BodyWrapper className={bodyClassName}>
         {children}

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import PWAInstallModal from './PWAInstallModal';
+import { useRouter } from 'next/navigation';
 
 const regions = [
     {
@@ -38,7 +38,11 @@ const regions = [
 
 const GlobalPulseCTA = () => {
     const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
-    const [isPWAInstallModalOpen, setIsPWAInstallModalOpen] = useState(false);
+    const router = useRouter();
+
+    const handleGetStarted = () => {
+        router.push('/Beezee-App/auth/signup');
+    };
 
     return (
         <section id="pwa-selection" className="relative bg-studio-white py-32 overflow-hidden border-t border-glass-border">
@@ -57,7 +61,7 @@ const GlobalPulseCTA = () => {
 
                         <div className="flex flex-col gap-4">
                             <div
-                                onClick={() => setIsPWAInstallModalOpen(true)}
+                                onClick={handleGetStarted}
                                 className="group relative cursor-pointer"
                             >
                                 <div className="relative z-10 flex items-center justify-between px-8 py-6 bg-white/50 backdrop-blur-md border border-glass-border rounded-xl transition-all duration-300 ease-[0.25,1,0.5,1] group-hover:bg-white/80 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] group-hover:-translate-y-0.5 group-hover:border-system-blue/30">
@@ -103,7 +107,7 @@ const GlobalPulseCTA = () => {
                                 {regions.map((region) => (
                                     <div
                                         key={region.id}
-                                        onClick={() => setIsPWAInstallModalOpen(true)}
+                                        onClick={handleGetStarted}
                                         className="absolute text-center cursor-pointer"
                                         style={{ left: `${region.coords.x}%`, top: `${region.coords.y}%` }}
                                     >
@@ -145,10 +149,6 @@ const GlobalPulseCTA = () => {
                 </div>
             </div>
 
-            <PWAInstallModal
-                isOpen={isPWAInstallModalOpen}
-                onClose={() => setIsPWAInstallModalOpen(false)}
-            />
         </section>
     );
 };
