@@ -25,15 +25,12 @@ export class SyncProcessor {
   startAutoSync(intervalMs: number = 10000): void {
     if (this.syncInterval) return;
 
-    console.log('[SyncProcessor] Starting auto-sync every', intervalMs, 'ms');
+    console.log('[SyncProcessor] ⚠️ Auto-sync disabled - using sync manager instead');
+    console.log('[SyncProcessor] All sync requests now go through syncManager.requestSync()');
     
-    // Initial sync
-    this.processPendingOperations();
-
-    // Periodic sync
-    this.syncInterval = setInterval(() => {
-      this.processPendingOperations();
-    }, intervalMs);
+    // Don't start auto-sync - let sync manager handle all sync requests
+    // This prevents conflicts between auto-sync and manual sync triggers
+    return;
   }
 
   /**

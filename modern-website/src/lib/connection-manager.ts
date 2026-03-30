@@ -1,5 +1,6 @@
 import { db } from './database';
 import { swManager } from './serviceWorker';
+import { syncManager } from './sync-manager';
 import { syncProcessor } from './sync-processor';
 
 type ConnectionCallback = (isOnline: boolean) => void;
@@ -65,20 +66,10 @@ async function setOnline(online: boolean): Promise<void> {
  * Trigger sync of offline operations
  */
 async function triggerSync(): Promise<void> {
-  console.log('[Network] Connection restored, triggering sync');
+  console.log('[Network] Connection restored, triggering sync through sync manager');
   
-  // Small delay for network stability
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  try {
-    // Use sync processor to process queued operations
-    await syncProcessor.forceSync();
-    
-    // Also trigger service worker sync (for background sync API)
-    await swManager.triggerSync();
-  } catch (error) {
-    console.error('[Network] Sync trigger failed:', error);
-  }
+  // Use sync manager instead of direct sync processor calls
+  await syncManager.requestSync('connection-restored');
 }
 
 /**
@@ -134,7 +125,7 @@ export async function initConnectionMonitoring(): Promise<void> {
   const pendingCount = await db.getPendingCount(await getCurrentBusinessId());
   if (pendingCount > 0 && isOnline) {
     console.log(`[Network] Found ${pendingCount} pending operations on startup`);
-    await triggerSync();
+    await syncManager.requestSync('startup-check');
   }
 }
 
