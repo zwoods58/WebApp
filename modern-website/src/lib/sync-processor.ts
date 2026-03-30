@@ -48,7 +48,7 @@ export class SyncProcessor {
   }
 
   /**
-   * Process all pending operations in the queue
+   * Process all pending operations in the queue with batching
    */
   async processPendingOperations(): Promise<void> {
     if (this.isSyncing) {
@@ -75,24 +75,39 @@ export class SyncProcessor {
         return;
       }
 
-      console.log(`[SyncProcessor] Processing ${pendingOps.length} pending operations`);
+      console.log(`[SyncProcessor] Processing ${pendingOps.length} pending operations in batches`);
 
-      // Process operations sequentially to maintain order
-      for (const operation of pendingOps) {
-        try {
-          await this.processOperation(operation);
-        } catch (error) {
-          console.error('[SyncProcessor] Failed to process operation:', operation.id, error);
-          
-          // Update retry count
-          await db.operations_queue.update(operation.id, {
-            retryCount: (operation.retryCount || 0) + 1,
-            status: (operation.retryCount || 0) >= 3 ? 'failed' : 'pending'
-          });
+      // Process in batches of 5 operations with 1-second delays
+      const BATCH_SIZE = 5;
+      const BATCH_DELAY = 1000; // 1 second between batches
+      
+      for (let i = 0; i < pendingOps.length; i += BATCH_SIZE) {
+        const batch = pendingOps.slice(i, i + BATCH_SIZE);
+        console.log(`[SyncProcessor] Processing batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(pendingOps.length/BATCH_SIZE)} (${batch.length} operations)`);
+        
+        // Process each operation in the current batch
+        for (const operation of batch) {
+          try {
+            await this.processOperation(operation);
+          } catch (error) {
+            console.error('[SyncProcessor] Failed to process operation:', operation.id, error);
+            
+            // Update retry count
+            await db.operations_queue.update(operation.id, {
+              retryCount: (operation.retryCount || 0) + 1,
+              status: (operation.retryCount || 0) >= 3 ? 'failed' : 'pending'
+            });
+          }
+        }
+        
+        // Add delay between batches (except after the last batch)
+        if (i + BATCH_SIZE < pendingOps.length) {
+          console.log(`[SyncProcessor] Batch completed, waiting ${BATCH_DELAY}ms before next batch...`);
+          await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
         }
       }
 
-      console.log('[SyncProcessor] Sync completed');
+      console.log('[SyncProcessor] All batches completed - Sync finished');
     } catch (error) {
       console.error('[SyncProcessor] Sync process failed:', error);
     } finally {
