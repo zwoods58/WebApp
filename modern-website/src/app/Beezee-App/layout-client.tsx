@@ -12,6 +12,7 @@ import ScrollToTop from '@/components/universal/ScrollToTop';
 import { initConnectionMonitoring, cleanupConnectionMonitoring, getOnlineStatus } from '@/lib/connection-manager';
 import { ConnectionStatus } from '@/components/ConnectionStatus';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import { cleanupBadOperations } from '@/lib/cleanup-bad-operations';
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,13 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
   const [updateShownForVersion, setUpdateShownForVersion] = useState<string | null>(null);
+  
+  // One-time cleanup of bad operations before sync starts
+  useEffect(() => {
+    cleanupBadOperations().catch(err => 
+      console.error('[Layout] Cleanup failed:', err)
+    );
+  }, []);
   
   // Initialize connection monitoring
   useEffect(() => {

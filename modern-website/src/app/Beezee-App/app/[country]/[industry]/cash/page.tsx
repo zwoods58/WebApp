@@ -106,6 +106,7 @@ export default function CashPage() {
   // ✅ STEP 10: Handler functions (same as before)
   const handleMoneyIn = async (transactionData: any) => {
     console.log('🚀 [CashPage] handleMoneyIn START', { businessId, isOffline });
+    console.log('[CashPage] handleMoneyIn received:', transactionData);
     
     if (!businessId) {
       console.error('❌ [CashPage] No business ID');

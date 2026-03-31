@@ -106,9 +106,9 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
       customer_name: formData.customer_name,
       payment_method: formData.payment_method,
       transaction_date: new Date().toISOString().split('T')[0],
-      due_date: formData.due_date,
     };
 
+    console.log('[MoneyInButton] Transaction data:', transactionData);
     onSuccess(transactionData);
     setShowModal(false);
     setFormData({ 

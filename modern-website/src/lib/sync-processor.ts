@@ -3,6 +3,34 @@ import { supabase } from './supabase';
 import { getOnlineStatus } from './connection-manager';
 
 /**
+ * Strip internal fields that should not be synced to Supabase
+ */
+function stripInternalFields(data: any): any {
+  const {
+    syncStatus,
+    _deleted,
+    _offlineId,
+    _pendingUpdate,
+    _deletedAt,
+    ...cleanData
+  } = data;
+  
+  // Log which fields were stripped
+  const strippedFields = [];
+  if (syncStatus !== undefined) strippedFields.push('syncStatus');
+  if (_deleted !== undefined) strippedFields.push('_deleted');
+  if (_offlineId !== undefined) strippedFields.push('_offlineId');
+  if (_pendingUpdate !== undefined) strippedFields.push('_pendingUpdate');
+  if (_deletedAt !== undefined) strippedFields.push('_deletedAt');
+  
+  if (strippedFields.length > 0) {
+    console.log('[stripInternalFields] Stripped fields:', strippedFields);
+  }
+  
+  return cleanData;
+}
+
+/**
  * Process pending operations from the queue and sync to Supabase
  */
 export class SyncProcessor {
@@ -87,13 +115,34 @@ export class SyncProcessor {
           try {
             await this.processOperation(operation);
           } catch (error) {
-            console.error('[SyncProcessor] Failed to process operation:', operation.id, error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const newRetryCount = (operation.retryCount || 0) + 1;
+            const isFailed = newRetryCount >= 3;
             
-            // Update retry count
-            await db.operations_queue.update(operation.id, {
-              retryCount: (operation.retryCount || 0) + 1,
-              status: (operation.retryCount || 0) >= 3 ? 'failed' : 'pending'
+            console.error('[SyncProcessor] Failed to process operation:', {
+              id: operation.id,
+              type: operation.type,
+              table: operation.table,
+              retryCount: newRetryCount,
+              willMarkAsFailed: isFailed,
+              error: errorMessage
             });
+            
+            // Update retry count and mark as failed if max retries reached
+            await db.operations_queue.update(operation.id, {
+              retryCount: newRetryCount,
+              status: isFailed ? 'failed' : 'pending',
+              errorMessage: errorMessage
+            });
+            
+            if (isFailed) {
+              console.error(`[SyncProcessor] ❌ Operation ${operation.id} marked as FAILED after 3 retries:`, {
+                table: operation.table,
+                type: operation.type,
+                error: errorMessage,
+                data: operation.data
+              });
+            }
           }
         }
         
@@ -116,7 +165,11 @@ export class SyncProcessor {
    * Process a single operation
    */
   private async processOperation(operation: QueuedOperation): Promise<void> {
-    console.log(`[SyncProcessor] Processing ${operation.type} on ${operation.table}:`, operation.id);
+    console.log(`[SyncProcessor] Processing ${operation.type} on ${operation.table}:`, {
+      operationId: operation.id,
+      entityId: operation.entityId || operation.data?.id,
+      timestamp: new Date(operation.timestamp).toISOString()
+    });
 
     const { table, type, data } = operation;
 
@@ -136,15 +189,19 @@ export class SyncProcessor {
 
     // Mark as completed and remove from queue
     await db.operations_queue.delete(operation.id);
-    console.log(`[SyncProcessor] ✅ Completed ${operation.type} on ${operation.table}`);
+    console.log(`[SyncProcessor] ✅ Completed ${operation.type} on ${operation.table}`, {
+      operationId: operation.id
+    });
   }
 
   /**
    * Sync CREATE operation to Supabase
    */
   private async syncCreate(table: string, data: any): Promise<void> {
-    // Remove sync-related fields
-    const { syncStatus, _deleted, ...cleanData } = data;
+    // Remove sync-related and internal fields
+    const cleanData = stripInternalFields(data);
+
+    console.log('[syncCreate] cleanData:', cleanData);
 
     const { error } = await supabase
       .from(table)
@@ -162,7 +219,8 @@ export class SyncProcessor {
    * Sync UPDATE operation to Supabase
    */
   private async syncUpdate(table: string, data: any): Promise<void> {
-    const { id, syncStatus, _deleted, ...cleanData } = data;
+    const { id } = data;
+    const cleanData = stripInternalFields(data);
 
     const { error } = await supabase
       .from(table)
@@ -218,6 +276,24 @@ export class SyncProcessor {
   async forceSync(): Promise<void> {
     console.log('[SyncProcessor] Force sync triggered');
     await this.processPendingOperations();
+  }
+
+  /**
+   * Get failed operations for debugging
+   */
+  async getFailedOperations(businessId?: string): Promise<QueuedOperation[]> {
+    if (businessId) {
+      return await db.operations_queue
+        .where('businessId')
+        .equals(businessId)
+        .and(op => op.status === 'failed')
+        .toArray();
+    }
+    
+    return await db.operations_queue
+      .where('status')
+      .equals('failed')
+      .toArray();
   }
 }
 

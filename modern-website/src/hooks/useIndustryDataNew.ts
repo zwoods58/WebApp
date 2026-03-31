@@ -223,6 +223,8 @@ export const useIndustryDataNew = ({
         created_at: newData.created_at || new Date().toISOString(),
       };
 
+      console.log('[createMutation] dataToStore:', dataToStore);
+
       // Add to offline queue
       const operation: QueuedOperation = {
         id: operationId,
