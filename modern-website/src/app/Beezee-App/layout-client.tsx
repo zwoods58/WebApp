@@ -44,6 +44,24 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       cleanupConnectionMonitoring();
       clearInterval(interval);
     };
+  }, []);
+
+  // Suppress RSC 503 errors when offline
+  useEffect(() => {
+    const handleFetchError = (event: PromiseRejectionEvent) => {
+      // Check if this is a fetch error with our offline header
+      const response = event.reason?.response;
+      if (response?.status === 503 && response?.headers?.get('X-Offline') === 'true') {
+        console.log('[Layout] Suppressing offline RSC error');
+        event.preventDefault(); // Prevent unhandled rejection
+      }
+    };
+    
+    window.addEventListener('unhandledrejection', handleFetchError);
+    
+    return () => {
+      window.removeEventListener('unhandledrejection', handleFetchError);
+    };
   }, [])
 
   // ✅ Service Worker Update Detection (with loop prevention)

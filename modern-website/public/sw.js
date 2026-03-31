@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v44';
+const CACHE_VERSION = 'v45';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -488,10 +488,31 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - Let client components pass through
+  // RSC Requests - Block when offline, pass through when online
   // ============================================================
   if (url.searchParams.has('_rsc')) {
-    // For development, let all RSC requests pass through to avoid blocking
+    // Check if offline
+    const swOffline = isOffline;
+    const browserOffline = !navigator.onLine;
+    const isActuallyOffline = swOffline || browserOffline;
+    
+    if (isActuallyOffline) {
+      // Return 503 immediately - do not pass through to network
+      console.log('[SW] 📴 Blocking offline RSC request:', url.pathname);
+      event.respondWith(
+        new Response(null, {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: {
+            'X-Offline': 'true',
+            'Content-Type': 'text/plain'
+          }
+        })
+      );
+      return;
+    }
+    
+    // Online: let RSC requests pass through normally
     console.log('[SW] 🌐 Letting RSC request pass through:', url.pathname);
     return; // Don't handle - let browser fetch normally
   }
