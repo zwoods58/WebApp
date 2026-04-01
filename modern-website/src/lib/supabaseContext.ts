@@ -1,8 +1,7 @@
-import { supabaseAdmin } from './supabaseAdmin';
-
 /**
  * Sets the business context for RLS policies
  * This must be called after authentication to enable data isolation
+ * Now calls a secure API route instead of accessing service role key client-side
  */
 export async function setBusinessContext(
   businessId: string,
@@ -10,51 +9,37 @@ export async function setBusinessContext(
   industry: string
 ): Promise<void> {
   try {
-    // Get country code from country name
-    const countryCode = getCountryCode(country);
-    
-    // Skip in development if service key not available
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      if (process.env.NODE_ENV === 'development') {
-        // Silently skip in development - not critical for local dev
-        return;
-      }
-      console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY not found, skipping business context');
-      return;
-    }
-    
-    // Call the Supabase function to set session context
-    const { data, error } = await supabaseAdmin.rpc('set_business_context', {
-      p_business_id: businessId,
-      p_country: countryCode,
-      p_industry: industry.toLowerCase()
+    // Call the secure API route to set business context
+    const response = await fetch('/api/auth/set-business-context', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        businessId,
+        country,
+        industry
+      })
     });
 
-    if (error) {
-      // Check if function doesn't exist (common in dev)
-      if (error.code === '42883' || error.message?.includes('function') || error.message?.includes('does not exist')) {
-        if (process.env.NODE_ENV === 'development') {
-          // Silently skip in development
-          return;
-        }
-        console.warn('⚠️ set_business_context function not found in database - skipping (non-critical)');
-        return;
-      }
-      
-      // For other errors, log but don't throw (non-critical)
-      console.warn('⚠️ Failed to set business context (non-critical):', error.message);
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn('⚠️ Failed to set business context (non-critical):', error.error || 'Unknown error');
+      return;
+    }
+
+    const result = await response.json();
+    
+    if (result.skipped) {
+      // Function doesn't exist in database - not critical
       return;
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('✅ Business context set:', { businessId, country: countryCode, industry });
+      console.log('✅ Business context set:', { businessId, country, industry });
     }
   } catch (error: any) {
     // Gracefully handle errors - business context is not critical for app functionality
-    if (process.env.NODE_ENV === 'development') {
-      // Silently skip in development
-      return;
-    }
     console.warn('⚠️ Could not set business context (non-critical):', error?.message || 'Unknown error');
   }
 }

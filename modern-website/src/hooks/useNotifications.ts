@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export type NotificationType = 
@@ -35,7 +35,7 @@ export function useNotifications() {
 
     try {
       setLoading(true);
-      const { data, error: fetchError } = await supabaseAdmin
+      const { data, error: fetchError } = await supabase
         .from('notifications')
         .select('*')
         .eq('business_id', business.id)
@@ -55,7 +55,7 @@ export function useNotifications() {
 
   const markAsRead = async (notificationId: string) => {
     try {
-      const { error: updateError } = await supabaseAdmin
+      const { error: updateError } = await supabase
         .from('notifications')
         .update({ read: true })
         .eq('id', notificationId);
@@ -77,7 +77,7 @@ export function useNotifications() {
     if (!business?.id) return;
 
     try {
-      const { error: updateError } = await supabaseAdmin
+      const { error: updateError } = await supabase
         .from('notifications')
         .update({ read: true })
         .eq('business_id', business.id)
@@ -96,7 +96,7 @@ export function useNotifications() {
 
   const deleteNotification = async (notificationId: string) => {
     try {
-      const { error: deleteError } = await supabaseAdmin
+      const { error: deleteError } = await supabase
         .from('notifications')
         .delete()
         .eq('id', notificationId);
@@ -116,7 +116,7 @@ export function useNotifications() {
     if (!business?.id) return;
 
     try {
-      const { error: deleteError } = await supabaseAdmin
+      const { error: deleteError } = await supabase
         .from('notifications')
         .delete()
         .eq('business_id', business.id);

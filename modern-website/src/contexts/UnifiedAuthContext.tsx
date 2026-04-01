@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { setBusinessContext } from '@/lib/supabaseContext';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 import { SUPPORTED_COUNTRIES, validatePhoneFormat } from '@/utils/phoneUtils';
 import { persistentStorage } from '@/utils/persistentStorage';
 import { getOnlineStatus } from '@/lib/connection-manager';
@@ -226,7 +226,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
         console.log('🌐 Online mode detected - performing database validation');
         
         try {
-          const { data: business, error } = await supabaseAdmin
+          const { data: business, error } = await supabase
             .from('businesses')
             .select('id, country, industry')
             .eq('id', authData.business.id)

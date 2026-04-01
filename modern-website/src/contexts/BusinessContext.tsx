@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { supabase } from '@/lib/supabase';
 
 export interface Business {
   id: string;
@@ -58,7 +58,7 @@ export function BusinessProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBusinessFromDatabase = useCallback(async (phone: string): Promise<Business | null> => {
     try {
-      const { data, error: dbError } = await supabaseAdmin
+      const { data, error: dbError } = await supabase
         .from('businesses')
         .select('*')
         .eq('phone_number', phone)

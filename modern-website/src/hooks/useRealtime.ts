@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
 // Debounce function to prevent excessive calls
@@ -47,7 +46,7 @@ export function useRealtime({ subscriptions, enabled = true }: UseRealtimeOption
       return globalSubscriptions.get(channelName)!;
     }
 
-    const channel = supabaseAdmin
+    const channel = supabase
       .channel(channelName)
       .on(
         'postgres_changes' as any,
@@ -88,7 +87,7 @@ export function useRealtime({ subscriptions, enabled = true }: UseRealtimeOption
         .filter(c => c === channel).length > 1;
       
       if (!isUsedElsewhere) {
-        supabaseAdmin.removeChannel(channel);
+        supabase.removeChannel(channel);
         // Remove from global registry by finding the key
         for (const [key, value] of globalSubscriptions.entries()) {
           if (value === channel) {
@@ -112,7 +111,7 @@ export function useRealtime({ subscriptions, enabled = true }: UseRealtimeOption
 
   const unsubscribeAll = useCallback(() => {
     channelsRef.current.forEach(channel => {
-      supabaseAdmin.removeChannel(channel);
+      supabase.removeChannel(channel);
       // Remove from global registry by finding the key
       for (const [key, value] of globalSubscriptions.entries()) {
         if (value === channel) {
