@@ -48,18 +48,33 @@ interface UnifiedAuthContextType extends UnifiedAuthState {
 const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(undefined);
 
 // Helper function to notify Service Worker about user routes
-async function notifyServiceWorker(country: string, industry: string) {
+async function notifyServiceWorker(country: string, industry: string, retryCount = 0) {
   if (typeof window === 'undefined') return;
   
   if ('serviceWorker' in navigator) {
     try {
+      // Wait for service worker to be ready and activated
       const registration = await navigator.serviceWorker.ready;
-      registration.active?.postMessage({
-        type: 'CACHE_USER_ROUTES',
-        country: country.toLowerCase(),
-        industry: industry.toLowerCase()
-      });
-      console.log('📦 Service Worker notified to cache routes:', { country, industry });
+      
+      // Wait a bit for the SW to fully activate
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (registration.active) {
+        registration.active.postMessage({
+          type: 'CACHE_USER_ROUTES',
+          country: country.toLowerCase(),
+          industry: industry.toLowerCase()
+        });
+        console.log('📦 Service Worker notified to cache routes:', { country, industry });
+      } else {
+        // Retry up to 3 times if SW not active yet
+        if (retryCount < 3) {
+          console.warn(`⚠️ Service Worker not active yet, retrying in 2 seconds... (attempt ${retryCount + 1}/3)`);
+          setTimeout(() => notifyServiceWorker(country, industry, retryCount + 1), 2000);
+        } else {
+          console.error('❌ Service Worker failed to activate after 3 retries');
+        }
+      }
     } catch (err) {
       console.warn('⚠️ Could not notify service worker:', err);
     }
