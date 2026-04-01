@@ -51,7 +51,7 @@ export default function KmInputModal({ isOpen, onClose, onConfirm, service, coun
       
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 scale-in">
+        <div className="bg-[var(--color-background-primary)] rounded-2xl shadow-xl max-w-md w-full p-6 scale-in">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
               <Package className="text-blue-600" size={24} />

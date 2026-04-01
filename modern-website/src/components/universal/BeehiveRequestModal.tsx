@@ -111,7 +111,7 @@ export default function BeehiveRequestModal({
       <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto animate-scale-in bg-white rounded-2xl p-6">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto animate-scale-in bg-[var(--color-background-primary)] rounded-2xl p-6">
           {/* Apple-style Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
             <div className="w-16" />
