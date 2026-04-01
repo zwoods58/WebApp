@@ -182,7 +182,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     {t('payment_method', 'Payment Method')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {['cash', 'transfer', 'credit'].map((method) => (
+                    {['cash', 'mobile_money', 'credit'].map((method) => (
                       <button
                         key={method}
                         type="button"

@@ -317,7 +317,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                   </label>
                   
                   <div className="grid grid-cols-3 gap-2">
-                    {['cash', 'transfer', 'credit'].map((method) => (
+                    {['cash', 'mobile_money', 'credit'].map((method) => (
                       <button
                         key={method}
                         type="button"
