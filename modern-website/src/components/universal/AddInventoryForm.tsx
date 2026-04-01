@@ -75,7 +75,7 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
       
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto scale-in shadow-xl">
+        <div className="bg-white rounded-2xl max-w-md w-full h-full min-h-0 overflow-y-auto scale-in shadow-xl">
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">

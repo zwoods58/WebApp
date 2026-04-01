@@ -222,7 +222,7 @@ export default function AddAppointmentModal({
       <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
 
       {/* Modal - Mobile Responsive */}
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-[var(--color-background-primary)] rounded-2xl p-6 animate-scale-in">
+      <div className="relative w-full max-w-md h-full min-h-0 overflow-y-auto bg-[var(--color-background-primary)] rounded-2xl p-6 animate-scale-in">
         {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="w-8 sm:w-16" />
