@@ -214,7 +214,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         required
                       >
-                        <option value="">Select service</option>
+                        <option value="">{t('transport.select_service', 'Select service')}</option>
                         {services.map((service: Service) => (
                           <option key={service.id} value={service.id}>
                             {service.service_name}
@@ -225,7 +225,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
 
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        Distance (km)
+                        {t('transport.distance_km', 'Distance (km)')}
                       </label>
                       <input
                         type="number"
@@ -247,13 +247,13 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                       />
                       <label htmlFor="useBaseAmount" className="text-sm text-[var(--text-2)]">
-                        Use base amount only
+                        {t('transport.use_base_amount', 'Use base amount only')}
                       </label>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        Tips (optional)
+                        {t('transport.tips_optional', 'Tips (optional)')}
                       </label>
                       <input
                         type="number"
@@ -269,15 +269,15 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     {formData.service_id && (
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-green-900">Calculated Fare:</span>
+                          <span className="text-sm font-medium text-green-900">{t('transport.calculated_fare', 'Calculated Fare:')}</span>
                           <span className="text-lg font-bold text-green-900">
                             {country === 'ke' ? 'KSh' : '$'} {calculateTransportFare().toFixed(2)}
                           </span>
                         </div>
                         <div className="text-xs text-green-600 mt-1">
                           {formData.use_base_amount 
-                            ? `Base amount only${formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} tips` : ''}`
-                            : `${formData.distance || '0'} km × rate${formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} tips` : ''}`
+                            ? t('transport.base_amount_only', 'Base amount only') + (formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} ${t('transport.tips', 'tips')}` : '')
+                            : `${formData.distance || '0'} km × ${t('transport.rate', 'rate')}` + (formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} ${t('transport.tips', 'tips')}` : '')
                           }
                         </div>
                       </div>
