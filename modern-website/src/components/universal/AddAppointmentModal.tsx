@@ -69,7 +69,7 @@ export default function AddAppointmentModal({
     service_name: '',
     appointment_date: '',
     appointment_time: '',
-    duration: 60,
+    duration: 1,
     notes: ''
   });
 
@@ -86,7 +86,7 @@ export default function AddAppointmentModal({
         service_name: '',
         appointment_date: '',
         appointment_time: '',
-        duration: 60,
+        duration: 1,
         notes: ''
       });
       setErrors({});
@@ -127,7 +127,7 @@ export default function AddAppointmentModal({
       ...prev,
       service_id: serviceId,
       service_name: selectedService?.service_name || '',
-      duration: selectedService?.duration || 60
+      duration: selectedService?.duration || 1
     }));
     if (errors.service_id) {
       setErrors(prev => ({ ...prev, service_id: undefined }));
@@ -369,15 +369,15 @@ export default function AddAppointmentModal({
             {/* Duration */}
             <div>
               <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.duration_minutes', 'Duration (minutes)')}
+                {t('calendar.duration_hours', 'Duration (hours)')}
               </label>
               <input
                 type="number"
                 value={formData.duration}
-                onChange={(e) => handleInputChange('duration', parseInt(e.target.value) || 60)}
-                min="15"
-                max="480"
-                step="15"
+                onChange={(e) => handleInputChange('duration', parseInt(e.target.value) || 1)}
+                min="1"
+                max="8"
+                step="1"
                 className="w-full px-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black text-base sm:text-sm"
               />
             </div>
