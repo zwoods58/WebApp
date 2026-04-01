@@ -1,16 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { ArrowLeft, Plus, TrendingUp, TrendingDown, Users, Package, Target, AlertTriangle, Clock, Calendar as CalendarIcon, CheckCircle, DollarSign, User, Calendar, Wrench, Car } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+
+// Context and hooks - import these first to avoid circular dependencies
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useBusinessProfile, useCurrency } from '@/contexts/BusinessProfileContext';
-import { formatDate } from '@/utils/currency';
+import { useToastContext } from '@/providers/ToastProvider';
+import { useRefreshContext } from '@/contexts/RefreshContext';
 
-// Universal Components
+// Utility functions
+import { formatDate, formatCurrency } from '@/utils/currency';
+import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
+
+// Supabase hooks
+import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
+import type { Inventory } from '@/hooks/useInventoryTanStack';
+import { useAppointments, useServices } from '@/hooks';
+
+// Universal Components - use dynamic imports for heavy components
 import { 
   DailyTarget, 
   MoneyInButton, 
@@ -23,25 +36,16 @@ import {
   HomepageCalendar,
   PageLoading
 } from '@/components/universal';
-import BuzzInsights from '@/components/universal/BuzzInsights';
-import AddAppointmentModal from '@/components/universal/AddAppointmentModal';
-import EditServiceModal from '@/components/universal/EditServiceModal';
-import AddCustomerModal from '@/components/universal/AddCustomerModal';
-import AddInventoryForm from '@/components/universal/AddInventoryForm';
-import AppointmentList from '@/components/universal/AppointmentList';
-import ServiceList from '@/components/universal/ServiceList';
-import CustomerList from '@/components/universal/CustomerList';
 
-// Utility functions
-import { formatCurrency } from '@/utils/currency';
-import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
-
-// Supabase hooks
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
-import type { Inventory } from '@/hooks/useInventoryTanStack';
-import { useAppointments, useServices } from '@/hooks';
-import { useToastContext } from '@/providers/ToastProvider';
-import { useRefreshContext } from '@/contexts/RefreshContext';
+// Dynamic imports for modal components to reduce initial bundle size
+const BuzzInsights = dynamic(() => import('@/components/universal/BuzzInsights'), { ssr: false });
+const AddAppointmentModal = dynamic(() => import('@/components/universal/AddAppointmentModal'), { ssr: false });
+const EditServiceModal = dynamic(() => import('@/components/universal/EditServiceModal'), { ssr: false });
+const AddCustomerModal = dynamic(() => import('@/components/universal/AddCustomerModal'), { ssr: false });
+const AddInventoryForm = dynamic(() => import('@/components/universal/AddInventoryForm'), { ssr: false });
+const AppointmentList = dynamic(() => import('@/components/universal/AppointmentList'), { ssr: false });
+const ServiceList = dynamic(() => import('@/components/universal/ServiceList'), { ssr: false });
+const CustomerList = dynamic(() => import('@/components/universal/CustomerList'), { ssr: false });
 
 // Define types for better type safety
 interface Transaction {
