@@ -525,6 +525,8 @@ export default function IndustryDashboard() {
 
   const handleAppointmentSuccess = () => {
     setShowAppointmentModal(false);
+    // Invalidate appointments query to update both homepage and calendar
+    queryClient.invalidateQueries({ queryKey: ['appointments', industry, country, businessId] });
     showSuccess('Appointment scheduled successfully!');
   };
 
