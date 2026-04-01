@@ -232,6 +232,16 @@ export default function IndustryDashboard() {
       </div>
     );
   }
+
+  // 🔒 LOADING GATE: Prevent data-dependent UI from rendering until businessId is confirmed
+  if (authLoading || !businessId) {
+    console.log('🔍 Waiting for business authentication...', { authLoading, businessId });
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <PageLoading message="Loading your business..." fullScreen={false} />
+      </div>
+    );
+  }
   
   // Get daily target from business settings (primary), signup profile (secondary), or database targets (fallback)
   const businessDailyTarget = business?.settings?.daily_target || 0;
