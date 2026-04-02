@@ -3,11 +3,15 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v52';
+const CACHE_VERSION = 'v53';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
 const BASE_PATH = '/Beezee-App';
+
+// RSC Request Throttling
+let activeRSCRequests = 0;
+const MAX_CONCURRENT_RSC = 2;
 
 // Public routes that can be cached during install (no auth required)
 const PUBLIC_ROUTES = [
@@ -740,49 +744,93 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - Serve cached HTML when offline for navigation
+  // RSC Requests - Cache with offline support and throttling
   // ============================================================
   if (url.searchParams.has('_rsc')) {
-    // Check if offline
     const swOffline = isOffline;
     const browserOffline = !navigator.onLine;
     const isActuallyOffline = swOffline || browserOffline;
     
-    if (isActuallyOffline) {
-      console.log('[SW] 📴 RSC request offline, trying cache:', url.pathname);
-      
-      event.respondWith(
-        (async () => {
-          // Try to find cached HTML for this route
-          const basePath = url.pathname;
-          const cacheKeys = [
-            basePath,
-            basePath + '/',
-            basePath.replace(/\/$/, '')
-          ];
-          
-          for (const key of cacheKeys) {
-            const cached = await caches.match(key);
-            if (cached) {
-              console.log('[SW] ✅ Serving cached HTML for RSC request:', key);
-              return cached;
+    // Handle RSC request with throttling and caching
+    event.respondWith(
+      (async () => {
+        // Throttle RSC requests to prevent flooding
+        if (!isActuallyOffline) {
+          while (activeRSCRequests >= MAX_CONCURRENT_RSC) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          activeRSCRequests++;
+        }
+        
+        try {
+          if (isActuallyOffline) {
+            // Offline: Try to serve cached RSC response
+            console.log('[SW] 📴 RSC request offline, checking cache:', url.pathname);
+            
+            // Try to find cached RSC response first
+            const cachedRSC = await caches.match(request);
+            if (cachedRSC) {
+              console.log('[SW] ✅ Serving cached RSC response:', url.pathname);
+              return cachedRSC;
             }
+            
+            // Try to find cached HTML for this route
+            const basePath = url.pathname;
+            const cacheKeys = [
+              basePath,
+              basePath + '/',
+              basePath.replace(/\/$/, '')
+            ];
+            
+            for (const key of cacheKeys) {
+              const cached = await caches.match(key);
+              if (cached) {
+                console.log('[SW] ✅ Serving cached HTML for RSC request:', key);
+                return cached;
+              }
+            }
+            
+            // No cached RSC - return lightweight empty response (not 503!)
+            console.log('[SW] 📴 Returning empty RSC response (offline):', url.pathname);
+            return new Response('[]', {
+              status: 200,
+              headers: {
+                'Content-Type': 'text/x-component',
+                'X-Offline': 'true'
+              }
+            });
           }
           
-          // No cache found - return minimal RSC response instead of 503
-          console.log('[SW] ⚠️ No cache for RSC request, returning empty response');
-          return new Response('[]', {
-            status: 200,
-            headers: { 'Content-Type': 'text/x-component' }
-          });
-        })()
-      );
-      return;
-    }
-    
-    // Online: let RSC requests pass through normally
-    console.log('[SW] 🌐 Letting RSC request pass through:', url.pathname);
-    return; // Don't handle - let browser fetch normally
+          // Online: Fetch and cache RSC response for offline use
+          console.log('[SW] 🌐 Fetching and caching RSC request:', url.pathname);
+          try {
+            const response = await fetch(request);
+            if (response.ok) {
+              const cache = await caches.open(PAGE_CACHE);
+              cache.put(request, response.clone());
+              console.log('[SW] 💾 Cached RSC response:', url.pathname);
+            }
+            return response;
+          } catch (error) {
+            console.error('[SW] RSC fetch failed:', error);
+            // Fallback to cached response
+            const cached = await caches.match(request);
+            if (cached) return cached;
+            // Ultimate fallback: empty response
+            return new Response('[]', { 
+              status: 200,
+              headers: { 'Content-Type': 'text/x-component' }
+            });
+          }
+        } finally {
+          // Decrement counter for online requests
+          if (!isActuallyOffline) {
+            activeRSCRequests--;
+          }
+        }
+      })()
+    );
+    return;
   }
   
   // ============================================================
