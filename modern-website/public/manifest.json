@@ -1,7 +1,7 @@
 {
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
-  "description": "Your Digital Black Book - Offline-first financial management for informal businesses",
+  "description": "Your Digital Black Book - Offline-first financial management with smart credit tracking for informal businesses",
   "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
@@ -73,6 +73,19 @@
       "short_name": "Dashboard",
       "description": "Open your business dashboard",
       "url": "/Beezee-App/auth/signup",
+      "icons": [
+        {
+          "src": "/beezee-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Credit Tracking",
+      "short_name": "Credit",
+      "description": "Manage customer credit and payments",
+      "url": "/Beezee-App/app/ke/retail/credit",
       "icons": [
         {
           "src": "/beezee-icon-192x192.png",
