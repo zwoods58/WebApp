@@ -36,16 +36,13 @@ export default function CreditPage() {
     businessId: business?.id 
   });
   
-  // ✅ ADDED: Refresh credit data when businessId is available and online
+  // ✅ ADDED: Refresh credit data when businessId is available
   useEffect(() => {
-    // Only refetch when online and business exists
-    if (navigator.onLine && business?.id) {
+    if (business?.id) {
       console.log('🔄 [CreditPage] Refreshing credit data for business:', business.id);
       refetch();
-    } else if (!navigator.onLine && business?.id) {
-      console.log('📵 [CreditPage] Skipping refresh - offline');
     }
-  }, [navigator.onLine, business?.id, refetch]);
+  }, [business?.id, refetch]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'outstanding' | 'partial' | 'paid'>('all');
@@ -55,18 +52,6 @@ export default function CreditPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
-
-  // Helper function to check if credit is overdue (moved here to fix ReferenceError)
-  const isOverdue = (dueDate: string, status: string) => {
-    if (status === 'paid' || !dueDate) return false;
-    
-    const dueDateTime = new Date(dueDate);
-    const currentDateTime = new Date();
-    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Only consider overdue after 1 full day past due date
-    return daysPastDue >= 1;
-  };
 
   // Calculate credit statistics from data
   const creditData = credit || [];
@@ -125,10 +110,8 @@ export default function CreditPage() {
       await addCredit(fullCreditData);
       showSuccess('Credit added successfully');
       setShowAddModal(false);
-      // ✅ Force refresh after adding (only if online)
-      if (navigator.onLine) {
-        await refetch();
-      }
+      // ✅ Force refresh after adding
+      await refetch();
     } catch (error) {
       console.error('Failed to add credit:', error);
       showError('Failed to add credit. Please try again.');
@@ -139,10 +122,8 @@ export default function CreditPage() {
     try {
       updateCredit({ id, data: updates });
       showSuccess('Credit updated successfully');
-      // ✅ Force refresh after update (only if online)
-      if (navigator.onLine) {
-        await refetch();
-      }
+      // ✅ Force refresh after update
+      await refetch();
     } catch (error) {
       console.error('Failed to update credit:', error);
       showError('Failed to update credit');
@@ -199,10 +180,8 @@ export default function CreditPage() {
         }
       });
       
-      // ✅ Force refresh to show updated balance (only if online)
-      if (navigator.onLine) {
-        await refetch();
-      }
+      // ✅ Force refresh to show updated balance
+      await refetch();
       
       showSuccess('Payment recorded successfully');
       setShowPaymentModal(false);
@@ -299,6 +278,17 @@ export default function CreditPage() {
       default:
         return 'text-gray-600 bg-gray-50 border-gray-200';
     }
+  };
+
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
   };
 
   return (

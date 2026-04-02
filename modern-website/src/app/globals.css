@@ -1,775 +1,1543 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Figtree:wght@300;400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
+
+
 /* ═══════════════════════════════════════════════════════════════
+
    BEEZEE — Aura PWA Design System
+
    Premium financial PWA with glass materials and cool powder blue tones
+
    ═══════════════════════════════════════════════════════════════ */
+
+
 
 :root,
+
 :root[data-theme="light"],
+
 html[data-theme="light"],
+
 html:not([data-theme="dark"]) {
+
   /* ─── Refined Powder Blue Palette ─── */
+
   --bg: #F8F9FA;
+
   --bg2: #EBEEF1;
+
   --bg-card: #FFFFFF;
 
+
+
   --powder-light: #D4E4F7;
+
   --powder: #A8C8E8;
+
   --powder-mid: #7AAECE;
+
   --powder-dark: #4A8DB8;
+
   --powder-darker: #2E6B95;
 
+
+
   --text-1: #1A2332;
+
   --text-2: #4A5F78;
+
   --text-3: #7A8FA5;
+
   --text-4: #A8B8C8;
 
+
+
   --border: rgba(74, 141, 184, 0.25);
+
   --border-soft: rgba(74, 141, 184, 0.15);
+
   --border-strong: rgba(74, 141, 184, 0.35);
 
+
+
   /* ─── Semantic Colors ─── */
+
   --color-bg: var(--bg);
+
   --color-bg-gradient: var(--bg);
+
   --color-primary: var(--powder-dark);
+
   --color-success: #10B981;
+
   --color-success-light: #D1FAE5;
+
   --color-danger: #EF4444;
+
   --color-danger-light: #FEE2E2;
+
   --color-warning: #F59E0B;
+
   --color-warning-light: #FEF3C7;
 
+
+
   --color-ink: var(--text-1);
+
   --color-ink-secondary: var(--text-2);
+
   --color-ink-tertiary: var(--text-3);
 
+
+
   /* ─── Glass Morphism ─── */
+
   --glass-bg: rgba(255, 255, 255, 0.85);
+
   --glass-border: rgba(255, 255, 255, 0.6);
+
   --glass-blur: 24px;
+
   --glass-blur-strong: 32px;
+
   --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
+
   --glass-shadow-strong: 0 12px 40px rgba(31, 38, 135, 0.12);
 
+
+
   /* ─── Spacing System (8px base) ─── */
+
   --space-1: 4px;
+
   --space-2: 8px;
+
   --space-3: 12px;
+
   --space-4: 16px;
+
   --space-5: 20px;
+
   --space-6: 24px;
+
   --space-8: 32px;
+
   --space-10: 40px;
+
   --space-12: 48px;
 
+
+
   /* ─── Border Radius ─── */
+
   --radius-sm: 8px;
+
   --radius-md: 12px;
+
   --radius-lg: 16px;
+
   --radius-xl: 20px;
+
   --radius-2xl: 24px;
+
   --radius-card: 28px;
+
   --radius-button: 12px;
+
   --radius-pill: 999px;
 
+
+
   /* ─── Shadows ─── */
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.06);
+
   --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.08);
+
   --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.1);
 
+
+
   /* ─── Animation Tokens ─── */
+
   --spring: cubic-bezier(0.32, 0.72, 0, 1);
+
   --ease-apple: var(--spring);
+
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
   --duration-fast: 150ms;
+
   --duration-normal: 300ms;
+
   --duration-slow: 500ms;
+
 }
 
+
+
 /* ═══════════════════════════════════════════════════════════════
+
    CSS ANIMATIONS FOR FRAMER MOTION REPLACEMENT
+
    Lightweight, GPU-accelerated, perfect for budget phones
+
    ═══════════════════════════════════════════════════════════════ */
 
+
+
 /* ============================================
+
    FADE ANIMATIONS
+
    ============================================ */
+
+
 
 /* Fade In */
+
 .fade-in {
+
   animation: fadeIn 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes fadeIn {
+
   from {
+
     opacity: 0;
+
     transform: translateY(20px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
+
+
 
 @keyframes fadeInClean {
+
   from {
+
     opacity: 0;
+
   }
+
   to {
+
     opacity: 1;
+
   }
+
 }
+
+
 
 /* Fade In Up */
+
 .fade-in-up {
+
   animation: fadeInUp 0.4s ease-out forwards;
+
 }
+
+
 
 @keyframes fadeInUp {
+
   from {
+
     opacity: 0;
+
     transform: translateY(30px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
+
+
 
 /* Fade In Down */
+
 .fade-in-down {
+
   animation: fadeInDown 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes fadeInDown {
+
   from {
+
     opacity: 0;
+
     transform: translateY(-20px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
+
+
 
 /* Fade In Left */
+
 .fade-in-left {
+
   animation: fadeInLeft 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes fadeInLeft {
+
   from {
+
     opacity: 0;
+
     transform: translateX(-20px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateX(0);
+
   }
+
 }
+
+
 
 /* Fade In Right */
+
 .fade-in-right {
+
   animation: fadeInRight 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes fadeInRight {
+
   from {
+
     opacity: 0;
+
     transform: translateX(20px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateX(0);
+
   }
+
 }
 
+
+
 /* ============================================
+
    SLIDE ANIMATIONS
+
    ============================================ */
+
+
 
 /* Slide In Up (for modals) */
+
 .slide-in-up {
+
   transform: translateY(100%);
+
   opacity: 0;
+
   animation: slideInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
 }
+
+
 
 @keyframes slideInUp {
+
   from {
+
     transform: translateY(100%);
+
     opacity: 0;
+
   }
+
   to {
+
     transform: translateY(0);
+
     opacity: 1;
+
   }
+
 }
+
+
 
 /* Slide In Down */
+
 .slide-in-down {
+
   animation: slideInDown 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes slideInDown {
+
   from {
+
     transform: translateY(-100%);
+
   }
+
   to {
+
     transform: translateY(0);
+
   }
+
 }
+
+
 
 /* Slide In Left */
+
 .slide-in-left {
+
   animation: slideInLeft 0.3s ease-out forwards;
+
 }
+
+
 
 @keyframes slideInLeft {
+
   from {
+
     transform: translateX(-100%);
+
   }
+
   to {
+
     transform: translateX(0);
+
   }
+
 }
 
+
+
 /* ============================================
+
    SCALE ANIMATIONS
+
    ============================================ */
+
+
 
 /* Scale In (for modals/popups) */
+
 .scale-in {
+
   animation: scaleIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
 }
+
+
 
 @keyframes scaleIn {
+
   from {
+
     opacity: 0;
+
     transform: scale(0.98);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: scale(1);
+
   }
+
 }
+
+
 
 /* Scale In Small */
+
 .scale-in-sm {
+
   animation: scaleInSm 0.2s ease-out forwards;
+
 }
+
+
 
 @keyframes scaleInSm {
+
   from {
+
     opacity: 0;
+
     transform: scale(0.98);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: scale(1);
+
   }
+
 }
 
+
+
 /* ============================================
+
    DELAY CLASSES (for staggered animations)
+
    ============================================ */
+
+
 
 .delay-0 { animation-delay: 0s; }
+
 .delay-1 { animation-delay: 0.05s; }
+
 .delay-2 { animation-delay: 0.1s; }
+
 .delay-3 { animation-delay: 0.15s; }
+
 .delay-4 { animation-delay: 0.2s; }
+
 .delay-5 { animation-delay: 0.25s; }
+
 .delay-6 { animation-delay: 0.3s; }
+
 .delay-7 { animation-delay: 0.35s; }
+
 .delay-8 { animation-delay: 0.4s; }
 
+
+
 /* ============================================
+
    PROGRESS BAR ANIMATION
+
    ============================================ */
+
+
 
 .progress-bar {
+
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
   will-change: width;
+
 }
 
+
+
 /* ============================================
+
    BUTTON INTERACTIONS (tap feedback)
+
    ============================================ */
+
+
 
 .button-tap {
+
   transition: transform 0.05s ease-out;
+
   cursor: pointer;
+
 }
+
+
 
 .button-tap:active {
+
   transform: scale(0.97);
+
 }
+
+
 
 /* For touch devices only - no hover effects */
+
 @media (hover: none) and (pointer: coarse) {
+
   .button-tap-hover {
+
     transform: none !important;
+
   }
+
 }
 
+
+
 /* ============================================
+
    TOAST / NOTIFICATION ANIMATIONS
+
    ============================================ */
+
+
 
 .toast-enter {
+
   animation: slideInDown 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
 }
+
+
 
 .toast-exit {
+
   animation: fadeOut 0.2s ease-in forwards;
+
 }
+
+
 
 @keyframes fadeOut {
+
   from {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
   to {
+
     opacity: 0;
+
     transform: translateY(-20px);
+
   }
+
 }
 
+
+
 /* ============================================
+
    PULSE / LOADING ANIMATIONS
+
    ============================================ */
+
+
 
 .pulse {
+
   animation: pulse 1.5s ease-in-out infinite;
+
 }
+
+
 
 @keyframes pulse {
+
   0%, 100% {
+
     opacity: 0.6;
+
   }
+
   50% {
+
     opacity: 1;
+
   }
+
 }
+
+
 
 /* Skeleton loader animation */
+
 .skeleton-shimmer {
+
   background: linear-gradient(
+
     90deg,
+
     #f0f0f0 0%,
+
     #e0e0e0 50%,
+
     #f0f0f0 100%
+
   );
+
   background-size: 200% 100%;
+
   animation: shimmer 1.5s infinite;
+
 }
+
+
 
 @keyframes shimmer {
+
   0% {
+
     background-position: -200% 0;
+
   }
+
   100% {
+
     background-position: 200% 0;
+
   }
+
 }
 
+
+
 /* ============================================
+
    MODAL BACKDROP ANIMATION
+
    ============================================ */
+
+
 
 .backdrop-fade {
-  opacity: 1;
-  background-color: white;
+
+  opacity: 0;
+
   animation: backdropFade 0.1s ease-out forwards;
+
   animation-delay: 0s !important;
+
 }
+
+
 
 @keyframes backdropFade {
+
   from {
-    opacity: 1;
-    background-color: white;
+
+    opacity: 0;
+
   }
+
   to {
+
     opacity: 1;
-    background-color: white;
+
   }
+
 }
 
+
+
 /* ============================================
+
    SWIPE / PULL TO REFRESH ANIMATIONS
+
    ============================================ */
+
+
 
 .swipe-animation {
+
   transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+
   will-change: transform;
+
 }
 
+
+
 /* ============================================
+
    OPTIMIZATION FOR BUDGET PHONES
+
    ============================================ */
+
+
 
 /* Use will-change sparingly - only for elements that actually animate */
+
 .animate-will-change {
+
   will-change: transform, opacity;
+
 }
+
+
 
 /* Reduce motion for users who prefer it */
+
 @media (prefers-reduced-motion: reduce) {
+
   *,
+
   *::before,
+
   *::after {
+
     animation-duration: 0.01ms !important;
+
     animation-iteration-count: 1 !important;
+
     transition-duration: 0.01ms !important;
+
     scroll-behavior: auto !important;
+
   }
+
 }
+
+
 
 /* Hardware acceleration for smoother animations */
+
 .transform-gpu {
+
   transform: translateZ(0);
+
   backface-visibility: hidden;
+
   perspective: 1000px;
+
 }
+
+
 
 /* ============================================
+
    END CSS ANIMATIONS
+
    ============================================ */
 
+
+
 /* ═══════════════════════════════════════════════════════════════
+
    BASE STYLES (continued)
+
    ═══════════════════════════════════════════════════════════════ */
+
+
 
 html {
+
   -webkit-tap-highlight-color: transparent;
+
   -webkit-font-smoothing: antialiased;
+
   -moz-osx-font-smoothing: grayscale;
+
   text-rendering: optimizeLegibility;
+
   height: 100%;
+
   scrollbar-width: none; /* Firefox */
+
   -ms-overflow-style: none; /* IE and Edge */
+
   color-scheme: light; /* Force light mode */
+
 }
+
+
 
 html::-webkit-scrollbar {
+
   display: none; /* Chrome, Safari, Opera */
+
 }
 
+
+
 body {
+
   margin: 0;
+
   padding: 0;
+
   font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+
   font-weight: 300;
+
   font-size: 16px;
+
   line-height: 1.5;
+
   letter-spacing: -0.018em;
+
   color: var(--text-1);
+
   background-color: var(--bg);
+
   min-height: 100vh;
+
   position: relative;
+
   overflow-x: hidden;
+
 }
+
+
 
 /* ─── Ambient Radial Gradients ─── */
+
 body::before {
+
   content: '';
+
   position: fixed;
+
   top: 0;
+
   left: 0;
+
   width: 100%;
+
   height: 100%;
+
   pointer-events: none;
+
   z-index: 0;
+
   background: 
+
     radial-gradient(ellipse 60% 40% at 15% 10%, rgba(200, 200, 205, 0.4) 0%, transparent 50%),
+
     radial-gradient(ellipse 50% 35% at 85% 15%, rgba(180, 180, 185, 0.3) 0%, transparent 50%),
+
     radial-gradient(ellipse 70% 30% at 50% 90%, rgba(190, 190, 195, 0.25) 0%, transparent 60%),
+
     radial-gradient(ellipse 40% 25% at 10% 80%, rgba(185, 185, 190, 0.2) 0%, transparent 50%);
+
 }
+
+
 
 /* ─── Content Layer ─── */
+
 body > * {
+
   position: relative;
+
   z-index: 2;
+
 }
 
+
+
 /* ═══════════════════════════════════
+
    GLASS MATERIAL UTILITIES
+
    ═══════════════════════════════════ */
+
+
 
 @layer utilities {
+
   /* ... (keep all your existing glass utilities) ... */
+
   
+
   /* ═══════════════════════════════════
+
      CSS ANIMATION UTILITIES
+
      ═══════════════════════════════════ */
+
   
+
   .animate-fade-in {
+
     animation: fadeInClean 0.2s ease-out forwards;
+
   }
+
   
+
   .animate-fade-in-up {
+
     animation: fadeInUp 0.4s ease-out forwards;
+
   }
+
   
+
   .animate-slide-in-up {
+
     animation: slideInUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
   }
+
   
+
   .animate-scale-in {
+
     animation: scaleIn 0.25s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
   }
+
   
+
   .delay-1 { animation-delay: 0.1s; }
+
   .delay-2 { animation-delay: 0.2s; }
+
   .delay-3 { animation-delay: 0.3s; }
+
   .delay-4 { animation-delay: 0.4s; }
+
 }
+
+
 
 /* ═══════════════════════════════════
+
    FORCE LIGHT MODE - OVERRIDE ALL DARK MODE
+
    ═══════════════════════════════════ */
 
+
+
 @media (prefers-color-scheme: dark) {
+
   :root {
+
     --bg: #F8F9FA !important;
+
     --bg2: #EBEEF1 !important;
+
     --bg-card: #FFFFFF !important;
+
     --text-1: #1A2332 !important;
+
     --text-2: #4A5F78 !important;
+
     --text-3: #7A8FA5 !important;
+
     --text-4: #A8B8C8 !important;
+
   }
+
 }
+
+
 
 /* Force light mode for all elements */
+
 * {
+
   color-scheme: light !important;
+
 }
 
+
+
 html, body {
+
   color-scheme: light !important;
+
   background-color: var(--bg) !important;
+
   color: var(--text-1) !important;
+
   height: 100%;
+
   overflow-x: hidden;
+
 }
+
+
 
 /* Ensure proper scrolling for mobile */
+
 body {
+
   overscroll-behavior: none;
+
   -webkit-overflow-scrolling: touch;
+
 }
+
+
 
 /* Remove fixed scroll container setup for dynamic scrolling */
+
 .scroll-container {
+
   height: auto;
+
   min-height: 100vh;
+
   overflow: visible;
+
   display: flex;
+
   flex-direction: column;
+
   position: relative;
+
 }
 
+
+
 .scroll-content {
+
   flex: 1;
+
   overflow-y: visible;
+
   -webkit-overflow-scrolling: touch;
+
   overscroll-behavior: contain;
+
   scroll-behavior: smooth;
+
   height: auto; /* Allow dynamic height */
+
   padding-top: 0; /* Remove fixed padding */
+
   padding-bottom: 0; /* Remove fixed padding */
+
 }
+
+
 
 /* Prevent rubber banding on iOS */
+
 .scroll-content::-webkit-scrollbar {
+
   display: none;
+
 }
+
+
 
 .scroll-content {
+
   scrollbar-width: none; /* Firefox */
+
   -ms-overflow-style: none; /* IE and Edge */
+
 }
+
+
 
 /* Fixed navigation z-index management */
+
 .fixed {
+
   z-index: 50;
+
 }
+
+
 
 /* Higher z-index for header */
+
 .z-40 {
+
   z-index: 40 !important;
+
 }
+
+
 
 /* Highest z-index for bottom nav */
+
 .z-50 {
+
   z-index: 50 !important;
+
 }
+
+
 
 /* Ensure content scrolls properly - remove fixed padding for dynamic scrolling */
+
 main, .content-wrapper {
+
   min-height: auto;
+
   padding-top: 0; /* Remove fixed header padding */
+
   padding-bottom: 0; /* Remove fixed bottom nav padding */
+
 }
+
+
 
 /* Mobile viewport fix - remove fixed padding */
+
 @supports (padding: max(0px)) {
+
   main, .content-wrapper {
+
     padding-top: 0;
+
     padding-bottom: 0;
+
   }
+
 }
+
+
 
 /* Prevent content from being hidden under fixed elements */
+
 .pb-safe {
+
   padding-bottom: env(safe-area-inset-bottom, 0);
+
 }
+
+
 
 .safe-area-top {
+
   padding-top: env(safe-area-inset-top, 0);
+
 }
+
+
 
 /* ═══════════════════════════════════════════════════════════════
+
    SPLASH SCREEN ANIMATIONS
+
    ═══════════════════════════════════════════════════════════════ */
 
+
+
 /* Scroll target for scroll-to-top functionality */
+
 .scroll-target {
+
   display: block;
+
   width: 0;
+
   height: 0;
+
   margin: 0;
+
   padding: 0;
+
   border: none;
+
   outline: none;
+
 }
+
+
 
 /* Subtle pulse animation for logo */
+
 @keyframes pulse-subtle {
+
   0%, 100% {
+
     transform: scale(1);
+
     opacity: 1;
+
   }
+
   50% {
+
     transform: scale(1.05);
+
     opacity: 0.95;
+
   }
+
 }
+
+
 
 .animate-pulse-subtle {
+
   animation: pulse-subtle 2s ease-in-out infinite;
+
 }
+
+
 
 /* Bounce animation for loading dots */
+
 @keyframes bounce-dot {
+
   0%, 80%, 100% {
+
     transform: translateY(0);
+
     opacity: 0.7;
+
   }
+
   40% {
+
     transform: translateY(-8px);
+
     opacity: 1;
+
   }
+
 }
+
+
 
 .animate-bounce-dot {
+
   animation: bounce-dot 1.4s ease-in-out infinite;
+
 }
+
+
 
 /* Animation delays for sequential dot bounce */
+
 .animation-delay-0 {
+
   animation-delay: 0s;
+
 }
+
+
 
 .animation-delay-150 {
+
   animation-delay: 0.15s;
+
 }
+
+
 
 .animation-delay-300 {
+
   animation-delay: 0.3s;
+
 }
+
+
 
 /* Fade in animation for footer */
+
 @keyframes fade-in-delayed {
+
   0% {
+
     opacity: 0;
+
     transform: translateY(10px);
+
   }
+
   100% {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
+
+
 
 .animate-fade-in-delayed {
+
   animation: fade-in-delayed 0.5s ease-out 0.3s forwards;
+
   opacity: 0;
+
 }
+
+
 
 /* PWA Splash Screen - Prevent Black Background */
+
 html, body {
+
   background-color: #ffffff !important;
+
 }
+
+
 
 /* Ensure white background during PWA startup */
+
 @media (display-mode: standalone) {
+
   html, body {
+
     background-color: #ffffff !important;
+
   }
+
   
+
   /* Only affect splash screen, not other components */
+
   .splash-screen,
+
   .splash-screen * {
+
     background-color: #ffffff !important;
+
   }
+
   
+
   /* Ensure navigation and other UI elements keep their backgrounds */
+
   nav,
+
   nav *,
+
   .fixed,
+
   .bg-white {
+
     background-color: inherit !important;
+
   }
+
 }
+
+
 
 /* Force full viewport coverage for splash screen */
+
 .splash-screen-force-full {
+
   position: fixed !important;
+
   top: 0 !important;
+
   left: 0 !important;
+
   right: 0 !important;
+
   bottom: 0 !important;
+
   width: 100vw !important;
+
   height: 100vh !important;
+
   min-width: 100vw !important;
+
   min-height: 100vh !important;
+
   max-width: 100vw !important;
+
   max-height: 100vh !important;
+
   overflow: hidden !important;
+
   z-index: 999999 !important;
+
   margin: 0 !important;
+
   padding: 0 !important;
+
   box-sizing: border-box !important;
+
 }
+
+
 
 /* Slide up animation for PWA install prompt */
+
 @keyframes slide-up {
+
   0% {
+
     opacity: 0;
+
     transform: translateY(100px);
+
   }
+
   100% {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
 
+
+
 .animate-slide-up {
+
   animation: slide-up 0.4s ease-out forwards;
+
 }

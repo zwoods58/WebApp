@@ -139,7 +139,23 @@ class PersistentStorage {
         return null;
       }
 
-      const storageItem: PersistentStorageItem<T> = JSON.parse(item);
+      let storageItem: PersistentStorageItem<T>;
+      
+      try {
+        storageItem = JSON.parse(item);
+      } catch (parseError) {
+        console.warn(`⚠️ Failed to parse ${key}, trying backup...`, parseError instanceof Error ? parseError.message : String(parseError));
+        return this.getFromBackup<T>(key);
+      }
+      
+      // Validate required fields for auth data
+      if (key === 'beezee_unified_auth') {
+        const authData = storageItem.data as any;
+        if (!authData || !authData.business || !authData.session) {
+          console.warn(`⚠️ Invalid data structure for ${key}, trying backup...`);
+          return this.getFromBackup<T>(key);
+        }
+      }
       
       // In development, skip strict checksum validation to avoid false positives
       // from hot-reload and data structure changes

@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v53';
+const CACHE_VERSION = 'v54';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -128,10 +128,28 @@ self.addEventListener('install', (event) => {
       console.log('[SW] 📦 Caching static assets...');
       
       try {
-        await staticCache.addAll(PUBLIC_ROUTES);
-        console.log('[SW] ✅ Static assets cached successfully');
+        let cachedCount = 0;
+        let failedCount = 0;
+        
+        for (const route of PUBLIC_ROUTES) {
+          try {
+            const response = await fetch(route);
+            if (response.ok) {
+              await staticCache.put(route, response);
+              cachedCount++;
+            } else {
+              failedCount++;
+              console.warn(`[SW] ⚠️ Failed to cache ${route}: ${response.status}`);
+            }
+          } catch (err) {
+            failedCount++;
+            console.warn(`[SW] ⚠️ Error caching ${route}:`, err.message);
+          }
+        }
+        
+        console.log(`[SW] ✅ Cached ${cachedCount}/${PUBLIC_ROUTES.length} assets (${failedCount} failed)`);
       } catch (error) {
-        console.warn('[SW] ⚠️ Some static assets failed to cache:', error);
+        console.warn('[SW] ⚠️ Cache operation error:', error);
       }
       
       // Force the new service worker to become active
