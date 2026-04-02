@@ -160,10 +160,11 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
             }}
           />
           
-          {/* Modal - Solid white background */}
+          {/* Modal - Solid white background with inline style for PWA */}
           <div
-            className="fixed bottom-0 left-0 right-0 z-[70] bg-white border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[70] border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
             style={{ 
+              backgroundColor: '#ffffff',
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))'
             }}
@@ -174,7 +175,10 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
             
             <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                <div 
+              className="w-12 h-12 rounded-xl flex items-center justify-center border border-green-200"
+              style={{ backgroundColor: '#f0fdf4' }}
+            >
                   <Icon className="text-green-600" size={24} />
                 </div>
                 <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t(labels.buttonKey)}</h3>
@@ -194,7 +198,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       required
                       value={formData.amount}
                       onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                      className="w-full pl-14 pr-4 py-4 bg-white rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
+                      className="w-full pl-14 pr-4 py-4 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
+                      style={{ backgroundColor: '#ffffff' }}
                       placeholder="0.00"
                       inputMode="decimal"
                     />
