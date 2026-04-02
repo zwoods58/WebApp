@@ -1,7 +1,7 @@
 {
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
-  "description": "Your Digital Black Book - Financial management for informal businesses",
+  "description": "Your Digital Black Book - Offline-first financial management for informal businesses",
   "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
