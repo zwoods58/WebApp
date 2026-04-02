@@ -46,7 +46,32 @@ export default function CreditList({ industry, country, credit }: CreditListProp
   const { t } = useLanguage();
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
   
-  const outstandingCredit = credit.filter(c => c.status === 'outstanding');
+  // Helper function to check if credit is overdue (1+ days past due)
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
+  };
+
+  // Helper function to get effective status (overdue items become outstanding)
+  const getEffectiveStatus = (credit: any) => {
+    if (credit.status === 'paid') return 'paid';
+    if (credit.status === 'partial') return 'partial';
+    
+    // For non-paid items, check if overdue
+    if (isOverdue(credit.due_date || '', credit.status)) {
+      return 'outstanding'; // Overdue items show as outstanding
+    }
+    
+    return credit.status; // Return original status if not overdue
+  };
+  
+  const outstandingCredit = credit.filter(c => c.status === 'outstanding' || isOverdue(c.due_date || '', c.status));
   const partialCredit = credit.filter(c => c.status === 'partial');
   const totalOwed = outstandingCredit.reduce((sum, c) => sum + c.amount, 0) +
                    partialCredit.reduce((sum, c) => sum + (c.amount - (c.paid_amount || 0)), 0);
@@ -116,6 +141,7 @@ export default function CreditList({ industry, country, credit }: CreditListProp
             : item.amount;
           const isLast = index === credit.length - 1;
           const isPending = item.sync_status === 'pending' || item.sync_status === 'syncing';
+          const effectiveStatus = getEffectiveStatus(item);
 
           return (
             <PendingItemWrapper
@@ -128,7 +154,7 @@ export default function CreditList({ industry, country, credit }: CreditListProp
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {getStatusIcon(item.status)}
+                    {getStatusIcon(effectiveStatus)}
                     <div>
                       <div className="font-semibold text-[var(--text-1)] leading-tight flex items-center gap-2">
                         {item.customer_name}
@@ -153,8 +179,8 @@ export default function CreditList({ industry, country, credit }: CreditListProp
                     <div className="font-bold text-[var(--text-1)] text-base">
                       {formatCurrency(remainingAmount, country)}
                     </div>
-                    <div className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${getStatusColor(item.status)}`}>
-                      {item.sync_status === 'syncing' ? 'Syncing...' : item.status}
+                    <div className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${getStatusColor(effectiveStatus)}`}>
+                      {item.sync_status === 'syncing' ? 'Syncing...' : effectiveStatus}
                     </div>
                   </div>
                 </div>
