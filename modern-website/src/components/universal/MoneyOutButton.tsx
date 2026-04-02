@@ -77,11 +77,13 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
       {showModal && (
         <>
-          {/* Backdrop - CSS fade animation */}
+          {/* Backdrop - 100% SOLID WHITE */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 bg-black/50 z-40 backdrop-fade transform-gpu"
+            className="fixed inset-0 bg-white z-40 transform-gpu"
             style={{ 
+              backgroundColor: '#ffffff',
+              background: '#ffffff',
               willChange: 'opacity',
               WebkitTransform: 'translateZ(0)'
             }}
