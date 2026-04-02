@@ -36,13 +36,16 @@ export default function CreditPage() {
     businessId: business?.id 
   });
   
-  // ✅ ADDED: Refresh credit data when businessId is available
+  // ✅ ADDED: Refresh credit data when businessId is available and online
   useEffect(() => {
-    if (business?.id) {
+    // Only refetch when online and business exists
+    if (navigator.onLine && business?.id) {
       console.log('🔄 [CreditPage] Refreshing credit data for business:', business.id);
       refetch();
+    } else if (!navigator.onLine && business?.id) {
+      console.log('📵 [CreditPage] Skipping refresh - offline');
     }
-  }, [business?.id, refetch]);
+  }, [navigator.onLine, business?.id, refetch]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'outstanding' | 'partial' | 'paid'>('all');
@@ -110,8 +113,10 @@ export default function CreditPage() {
       await addCredit(fullCreditData);
       showSuccess('Credit added successfully');
       setShowAddModal(false);
-      // ✅ Force refresh after adding
-      await refetch();
+      // ✅ Force refresh after adding (only if online)
+      if (navigator.onLine) {
+        await refetch();
+      }
     } catch (error) {
       console.error('Failed to add credit:', error);
       showError('Failed to add credit. Please try again.');
@@ -122,8 +127,10 @@ export default function CreditPage() {
     try {
       updateCredit({ id, data: updates });
       showSuccess('Credit updated successfully');
-      // ✅ Force refresh after update
-      await refetch();
+      // ✅ Force refresh after update (only if online)
+      if (navigator.onLine) {
+        await refetch();
+      }
     } catch (error) {
       console.error('Failed to update credit:', error);
       showError('Failed to update credit');
@@ -180,8 +187,10 @@ export default function CreditPage() {
         }
       });
       
-      // ✅ Force refresh to show updated balance
-      await refetch();
+      // ✅ Force refresh to show updated balance (only if online)
+      if (navigator.onLine) {
+        await refetch();
+      }
       
       showSuccess('Payment recorded successfully');
       setShowPaymentModal(false);
@@ -514,7 +523,7 @@ export default function CreditPage() {
 
       {/* Add Credit Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('credit.add_credit_customer')}</h3>
             
@@ -539,7 +548,7 @@ export default function CreditPage() {
 
       {/* WhatsApp Share Modal */}
       {showShareModal && selectedCreditForShare && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('credit.share_credit_details', 'Share Credit Details')}</h3>
             

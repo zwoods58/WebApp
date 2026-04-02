@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, TrendingUp, Calendar, Filter, Search, Receipt, Copy, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -156,18 +156,9 @@ export default function TransactionsPage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
 
+      
       <div className="p-4 max-w-md mx-auto pt-20">
-        {/* Simple Online Status */}
-        <div className="mb-4 p-3 bg-gray-100 rounded-lg text-center">
-          <div className="flex items-center justify-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-sm text-gray-600">
-              {isOnline ? 'Online' : 'Offline'}
-              {isAdding && ' - Pending items'}
-            </span>
-          </div>
-        </div>
-        
+                
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6 mt-8">
           <div className="bg-green-50 p-4 rounded-xl border border-green-200">
@@ -438,7 +429,7 @@ export default function TransactionsPage() {
 
       {/* WhatsApp Share Modal */}
       {showShareModal && selectedTransactionForShare && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('receipt.share_receipt', 'Share Receipt')}</h3>
             

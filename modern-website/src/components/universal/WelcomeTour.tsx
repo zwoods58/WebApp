@@ -151,7 +151,7 @@ export default function WelcomeTour({ isOpen, onComplete, onSkip, industry = 're
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-fade z-40"
+        className="fixed inset-0 bg-white backdrop-fade z-40"
         style={{ 
           willChange: 'opacity',
           WebkitTransform: 'translateZ(0)'

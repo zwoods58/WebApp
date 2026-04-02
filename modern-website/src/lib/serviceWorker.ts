@@ -32,7 +32,22 @@ export class ServiceWorkerManager {
         scope: '/'
       });
       
-      console.log('[SW] Registered with scope:', this.registration.scope);
+      console.log('[SW] ✅ Registered with scope:', this.registration.scope);
+      console.log('[SW] 📍 Current page:', window.location.pathname);
+      console.log('[SW] 🎮 Controller exists:', !!navigator.serviceWorker.controller);
+      
+      // Wait for controller to be available
+      if (!navigator.serviceWorker.controller) {
+        console.log('[SW] ⏳ Waiting for controller...');
+        await new Promise<void>((resolve) => {
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('[SW] ✅ Controller now active!');
+            resolve();
+          }, { once: true });
+          // Timeout after 5 seconds
+          setTimeout(() => resolve(), 5000);
+        });
+      }
       
       // Handle updates
       this.registration.addEventListener('updatefound', () => {

@@ -627,7 +627,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       {/* Cancel Appointment Modal - Mobile Responsive */}
       
         {showCancelModal && appointmentToCancel && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowCancelModal(false)}>
+          <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4 animate-fade-in" onClick={() => setShowCancelModal(false)}>
             <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-scale-in" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-semibold mb-4">Cancel Appointment</h3>
               <div className="mb-6">

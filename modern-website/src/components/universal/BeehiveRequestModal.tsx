@@ -108,7 +108,7 @@ export default function BeehiveRequestModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
+      <div className="absolute inset-0 bg-white animate-fade-in" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-md h-full min-h-0 overflow-y-auto animate-scale-in bg-[var(--color-background-primary)] rounded-2xl p-6">

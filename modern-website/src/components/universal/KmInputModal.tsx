@@ -41,7 +41,7 @@ export default function KmInputModal({ isOpen, onClose, onConfirm, service, coun
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 backdrop-fade transform-gpu"
+        className="fixed inset-0 bg-white z-40 backdrop-fade transform-gpu"
         onClick={onClose}
         style={{ 
           willChange: 'opacity',

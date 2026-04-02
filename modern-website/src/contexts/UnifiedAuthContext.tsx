@@ -5,7 +5,7 @@ import { setBusinessContext } from '@/lib/supabaseContext';
 import { supabase } from '@/lib/supabase';
 import { SUPPORTED_COUNTRIES, validatePhoneFormat } from '@/utils/phoneUtils';
 import { persistentStorage } from '@/utils/persistentStorage';
-import { getOnlineStatus } from '@/lib/connection-manager';
+import { getNetworkStatus, testInternetConnectivity } from '@/lib/network-status';
 
 export interface Business {
   id: string;
@@ -49,35 +49,71 @@ const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(und
 
 // Helper function to notify Service Worker about user routes
 async function notifyServiceWorker(country: string, industry: string, retryCount = 0) {
-  if (typeof window === 'undefined') return;
+  console.log('[Auth] 🚀 notifyServiceWorker called!', { country, industry, retryCount });
+  
+  if (typeof window === 'undefined') {
+    console.warn('[Auth] ❌ Window not available - skipping SW notification');
+    return;
+  }
   
   if ('serviceWorker' in navigator) {
     try {
+      console.log('[Auth] 🔔 Attempting to notify service worker...', { country, industry, retryCount });
+      console.log('[Auth] 📍 Current page:', window.location.pathname);
+      console.log('[Auth] 🎮 Controller exists:', !!navigator.serviceWorker.controller);
+      
       // Wait for service worker to be ready and activated
       const registration = await navigator.serviceWorker.ready;
+      console.log('[Auth] ✅ Service worker ready, scope:', registration.scope);
+      console.log('[Auth] 📋 Registration details:', {
+        active: !!registration.active,
+        installing: !!registration.installing,
+        waiting: !!registration.waiting,
+        scope: registration.scope
+      });
       
       // Wait a bit for the SW to fully activate
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (registration.active) {
-        registration.active.postMessage({
+        const message = {
           type: 'CACHE_USER_ROUTES',
           country: country.toLowerCase(),
           industry: industry.toLowerCase()
-        });
-        console.log('📦 Service Worker notified to cache routes:', { country, industry });
+        };
+        console.log('[Auth] 📦 Sending message to SW:', message);
+        
+        // Send to both active and controller for maximum compatibility
+        registration.active.postMessage(message);
+        console.log('[Auth] ✅ Message sent to registration.active!');
+        
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage(message);
+          console.log('[Auth] ✅ Message sent to controller!');
+        } else {
+          console.warn('[Auth] ⚠️ No controller available');
+        }
+        
+        // Wait a bit and check if SW received the message
+        setTimeout(() => {
+          console.log('[Auth] 🔍 Message sent, waiting for SW response...');
+        }, 500);
+        
       } else {
+        console.warn('[Auth] ⚠️ Service Worker not active yet');
         // Retry up to 3 times if SW not active yet
         if (retryCount < 3) {
-          console.warn(`⚠️ Service Worker not active yet, retrying in 2 seconds... (attempt ${retryCount + 1}/3)`);
+          console.warn(`[Auth] 🔄 Retrying in 2 seconds... (attempt ${retryCount + 1}/3)`);
           setTimeout(() => notifyServiceWorker(country, industry, retryCount + 1), 2000);
         } else {
-          console.error('❌ Service Worker failed to activate after 3 retries');
+          console.error('[Auth] ❌ Service Worker failed to activate after 3 retries');
         }
       }
     } catch (err) {
-      console.warn('⚠️ Could not notify service worker:', err);
+      console.error('[Auth] ❌ Error notifying service worker:', err);
     }
+  } else {
+    console.warn('[Auth] ⚠️ Service Worker not supported in this browser');
   }
 }
 
@@ -148,10 +184,10 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     // Check if browser is offline
     const isBrowserOffline = typeof navigator !== 'undefined' && !navigator.onLine;
     
-    // Check connection manager status
-    const isConnectionManagerOffline = !getOnlineStatus();
+    // Check network status
+    const isNetworkOffline = !getNetworkStatus();
     
-    return hasNetworkError || hasNetworkCode || isBrowserOffline || isConnectionManagerOffline;
+    return hasNetworkError || hasNetworkCode || isBrowserOffline || isNetworkOffline;
   }, []);
 
   // Validate session freshness and integrity
@@ -217,8 +253,8 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
       
       // Validate session before restoring
       if (authData && isSessionValid(authData)) {
-        // � OFFLINE-FIRST: Completely skip database validation when offline
-        const isOnline = getOnlineStatus();
+        // 📴 OFFLINE-FIRST: Completely skip database validation when offline
+        const isOnline = getNetworkStatus();
         
         if (!isOnline) {
           console.log('📴 Offline mode detected - skipping ALL database operations, using cached session only');
@@ -416,8 +452,8 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   }, [authState]);
 
   const signInWithPIN = useCallback(async (phone: string, pin: string) => {
-    // Check if offline using connection manager
-    if (!getOnlineStatus()) {
+    // Check if offline using network status
+    if (!getNetworkStatus()) {
       return { 
         error: { 
           message: 'You are currently offline. Please connect to the internet to sign in.' 
@@ -541,8 +577,8 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   }, [validatePhone]);
 
   const signInDirect = useCallback(async (phone: string) => {
-    // Check if offline using connection manager
-    if (!getOnlineStatus()) {
+    // Check if offline using network status
+    if (!getNetworkStatus()) {
       return { 
         error: { 
           message: 'You are currently offline. Please connect to the internet to sign in.' 

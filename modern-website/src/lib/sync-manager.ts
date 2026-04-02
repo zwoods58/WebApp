@@ -1,6 +1,6 @@
 import { syncProcessor } from './sync-processor';
 import { swManager } from './serviceWorker';
-import { getOnlineStatus } from './connection-manager';
+import { testInternetConnectivity } from '@/lib/network-status';
 
 /**
  * Single Sync Controller - Prevents multiple sync processes from running simultaneously
@@ -35,7 +35,8 @@ class SyncManager {
     }
 
     // Check if online first
-    if (!getOnlineStatus()) {
+    const isOnline = await testInternetConnectivity();
+    if (!isOnline) {
       console.log('[SyncManager] Offline, ignoring sync request');
       return;
     }
@@ -64,7 +65,8 @@ class SyncManager {
     }
 
     // Double check online status
-    if (!getOnlineStatus()) {
+    const isOnline = await testInternetConnectivity();
+    if (!isOnline) {
       console.log('[SyncManager] Status changed to offline, cancelling sync');
       this.isSyncRequested = false;
       return;

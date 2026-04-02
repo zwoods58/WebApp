@@ -34,7 +34,8 @@ import {
   Header,
   DashboardSkeleton,
   HomepageCalendar,
-  PageLoading
+  PageLoading,
+  OfflineFallback
 } from '@/components/universal';
 
 // Dynamic imports for modal components to reduce initial bundle size
@@ -72,6 +73,7 @@ export default function IndustryDashboard() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const queryClient = useQueryClient();
+  const isOffline = typeof window !== 'undefined' ? !navigator.onLine : false;
   
   console.log('🔍 Basic Hooks Loaded:', { t: !!t, params: !!params, country, industry, queryClient: !!queryClient });
   
@@ -158,6 +160,33 @@ export default function IndustryDashboard() {
   const safeInventory = inventory || [];
   const safeTargets = targets || [];
   
+  // Helper function for BuzzInsights data - defined here to avoid hoisting issues
+  const calculateTopSellers = (transactions: Transaction[], inventory: Inventory[]) => {
+    if (!transactions || !inventory || !Array.isArray(transactions) || !Array.isArray(inventory)) return [];
+    
+    const sales = transactions.reduce((acc: Record<string, number>, t: Transaction) => {
+      if (t.metadata?.inventory_item_id) {
+        const itemId = t.metadata.inventory_item_id;
+        acc[itemId] = (acc[itemId] || 0) + (t.metadata.quantity_sold || 1);
+      }
+      return acc;
+    }, {});
+    
+    return Object.entries(sales)
+      .map(([itemId, quantity]: [string, number]) => {
+        const item = inventory.find((i: Inventory) => i.id === itemId);
+        if (!item) return null;
+        return {
+          name: item.item_name,
+          quantity: quantity as number,
+          revenue: (quantity as number) * (item.selling_price || 0)
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 3);
+  };
+  
   // Debug: Log hook returns to identify issues
   console.log('🔍 Hook Debug:', {
     transactionsHook: !!transactionsHook,
@@ -181,9 +210,44 @@ export default function IndustryDashboard() {
     rawTargets: targetsHook?.data
   });
   
+  // State management - must be before any early returns
+  const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showCustomerModal, setShowCustomerModal] = useState(false);
+  
+  // Get daily target from business settings (primary), signup profile (secondary), or database targets (fallback)
+  const businessDailyTarget = business?.settings?.daily_target || 0;
+  const signupDailyTarget = profile?.dailyTarget || 0;
+  const effectiveDailyTarget = businessDailyTarget || signupDailyTarget || (safeTargets.find(t => t.target_type === 'sales' && t.period === 'daily')?.target_value || 500);
+  // Offline-aware loading state - don't show loading when offline and we have cached data
+  const isLoading = (transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats) && !isOffline;
+  
+  // Define handleRefresh BEFORE it's used in useEffect to avoid TDZ error
+  const handleRefresh = async () => {
+    console.log('Dashboard refresh triggered - refetching all data');
+    
+    try {
+      // Trigger refetch for all data hooks simultaneously
+      await Promise.all([
+        refetchTransactions(),
+        refetchExpenses(),
+        refetchCredit(),
+        refetchInventory(),
+        refetchTargets()
+      ]);
+      
+      showSuccess(t('refresh.data_refreshed', 'Data refreshed successfully!'));
+      console.log('✅ All dashboard data refreshed successfully');
+    } catch (error) {
+      console.error('❌ Error refreshing dashboard data:', error);
+      showError(t('refresh.refresh_failed', 'Failed to refresh some data. Please try again.'));
+    }
+  };
+  
   // Debug BuzzInsights data
   useEffect(() => {
-    console.log('� BuzzInsights Debug Data:', {
+    console.log('📊 BuzzInsights Debug Data:', {
       inventoryLength: safeInventory.length,
       transactionsLength: safeTransactions.length,
       inventoryItems: safeInventory.slice(0, 3).map((item: Inventory) => ({
@@ -202,55 +266,6 @@ export default function IndustryDashboard() {
       inventoryValue: safeInventory.reduce((sum: number, item: Inventory) => sum + (item.quantity * (item.selling_price || 0)), 0)
     });
   }, [safeInventory, safeTransactions]);
-  
-  // 🔥 ROUTE VALIDATION: Ensure user is on correct industry/country page
-  useEffect(() => {
-    if (authLoading) return;
-    
-    if (!business) {
-      console.log('🔓 User not authenticated, redirecting to login');
-      router.replace('/Beezee-App/auth/login');
-      return;
-    }
-    
-    // Redirect if wrong industry/country
-    if (business.country?.toLowerCase() !== country || 
-        business.industry?.toLowerCase() !== industry) {
-      console.log('🔄 Wrong route, redirecting to correct industry/country:', {
-        currentRoute: { country, industry },
-        businessData: { country: business.country, industry: business.industry }
-      });
-      router.replace(`/Beezee-App/app/${business.country?.toLowerCase()}/${business.industry?.toLowerCase()}`);
-      return;
-    }
-    
-    console.log('✅ Route validation passed:', { country, industry, business: business.business_name });
-  }, [business, country, industry, authLoading, router]);
-
-  // Additional safety check - add early return if critical data is missing
-  if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
-    console.log('🔍 Hooks not ready, showing loading');
-    return (
-      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Initializing application..." fullScreen={false} />
-      </div>
-    );
-  }
-
-  // 🔒 LOADING GATE: Prevent data-dependent UI from rendering until businessId is confirmed
-  if (authLoading || !businessId) {
-    console.log('🔍 Waiting for business authentication...', { authLoading, businessId });
-    return (
-      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Loading your business..." fullScreen={false} />
-      </div>
-    );
-  }
-  
-  // Get daily target from business settings (primary), signup profile (secondary), or database targets (fallback)
-  const businessDailyTarget = business?.settings?.daily_target || 0;
-  const signupDailyTarget = profile?.dailyTarget || 0;
-  const effectiveDailyTarget = businessDailyTarget || signupDailyTarget || (safeTargets.find(t => t.target_type === 'sales' && t.period === 'daily')?.target_value || 500);
   
   // Sync profile with business settings when business data loads
   useEffect(() => {
@@ -272,14 +287,6 @@ export default function IndustryDashboard() {
       expensesCount: safeExpenses.length
     });
   }, [business, businessId, businessDailyTarget, signupDailyTarget, effectiveDailyTarget, safeTransactions.length, safeExpenses.length]);
-  
-  const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
-  const isLoading = transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats;
-  
-  // Modal state management for homepage quick actions
-  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
-  const [showServiceModal, setShowServiceModal] = useState(false);
-  const [showCustomerModal, setShowCustomerModal] = useState(false);
   
   // Add real-time BuzzInsights updates when data changes
   useEffect(() => {
@@ -308,9 +315,6 @@ export default function IndustryDashboard() {
 
     window.addEventListener('storage', storageListener);
 
-    // ✅ REMOVED: setInterval polling - TanStack Query + Service Worker handle sync automatically
-    // The polling was causing disruptive refreshes when offline
-
     return () => {
       window.removeEventListener('storage', storageListener);
     };
@@ -335,7 +339,6 @@ export default function IndustryDashboard() {
         
         if (localStorageBusinessId && business) {
           console.log('Business ID found:', localStorageBusinessId);
-          // Notification monitoring has been disabled
         }
       } catch (error) {
         console.error('Error parsing session data:', error);
@@ -346,43 +349,110 @@ export default function IndustryDashboard() {
   useEffect(() => {
     // Only calculate stats when data is ready and business context is loaded
     if (!businessId || transactionsLoading || expensesLoading) {
-      console.log('🔍 Debug - Skipping stats calculation, data not ready:', {
-        businessId,
-        transactionsLoading,
-        expensesLoading
-      });
       return;
     }
-    const today = new Date().toISOString().split('T')[0];
-    console.log('🔍 Debug - Today Stats Calculation:', {
-      today,
-      transactions: safeTransactions.length,
-      expenses: safeExpenses.length,
-      businessId: businessId,
-      allTransactions: safeTransactions,
-      allExpenses: safeExpenses
-    });
-    
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const todaySales = safeTransactions
-      .filter((t: Transaction) => t.transaction_date === today)
-      .reduce((sum: number, t: Transaction) => sum + Number(t.amount), 0);
-      
+      .filter((t: Transaction) => {
+        const transactionDate = new Date(t.transaction_date);
+        transactionDate.setHours(0, 0, 0, 0);
+        return transactionDate.getTime() === today.getTime();
+      })
+      .reduce((sum: number, t: Transaction) => sum + (t.amount || 0), 0);
+
     const todayExpenses = safeExpenses
-      .filter((e: Expense) => e.expense_date === today)
-      .reduce((sum: number, e: Expense) => sum + Number(e.amount), 0);
+      .filter((e: Expense) => {
+        const expenseDate = new Date(e.expense_date);
+        expenseDate.setHours(0, 0, 0, 0);
+        return expenseDate.getTime() === today.getTime();
+      })
+      .reduce((sum: number, e: Expense) => sum + (e.amount || 0), 0);
 
-    console.log('🔍 Debug - Filtered Results:', {
-      todaySales,
-      todayExpenses,
-      todayTransactions: safeTransactions.filter((t: Transaction) => t.transaction_date === today),
-      todayExpensesData: safeExpenses.filter((e: Expense) => e.expense_date === today)
-    });
+    setTodayStats({ sales: todaySales, expenses: todayExpenses });
+  }, [businessId, safeTransactions, safeExpenses, transactionsLoading, expensesLoading]);
+  
+  // 🔥 ROUTE VALIDATION: Ensure user is on correct industry/country page
+  useEffect(() => {
+    if (authLoading) return;
+    
+    const isOnline = navigator.onLine;
+    
+    if (!business) {
+      if (!isOnline) {
+        console.log('� Offline - skipping auth redirect');
+        return;
+      }
+      console.log('�🔓 User not authenticated, redirecting to login');
+      router.replace('/Beezee-App/auth/login');
+      return;
+    }
+    
+    // Redirect if wrong industry/country
+    if (business.country?.toLowerCase() !== country || 
+        business.industry?.toLowerCase() !== industry) {
+      if (!isOnline) {
+        console.log('🔌 Offline - skipping route correction');
+        return;
+      }
+      console.log('🔄 Wrong route, redirecting to correct industry/country:', {
+        currentRoute: { country, industry },
+        businessData: { country: business.country, industry: business.industry }
+      });
+      router.replace(`/Beezee-App/app/${business.country?.toLowerCase()}/${business.industry?.toLowerCase()}`);
+      return;
+    }
+    
+    console.log('✅ Route validation passed:', { country, industry, business: business.business_name });
+  }, [business, country, industry, authLoading, router]);
 
-    setTodayStats({ 
-      sales: todaySales || 0, 
-      expenses: todayExpenses || 0 
-    });
-  }, [safeTransactions, safeExpenses, businessId, transactionsLoading, expensesLoading]);
+  // Additional safety check - add early return if critical data is missing
+  if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
+    console.log('🔍 Hooks not ready, showing loading');
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <PageLoading message="Initializing application..." fullScreen={false} />
+      </div>
+    );
+  }
+
+  // 🔒 LOADING GATE: Prevent data-dependent UI from rendering until businessId is confirmed
+  // Show loading only when online and auth is loading
+  if (authLoading && !isOffline) {
+    console.log('🔍 Waiting for business authentication...', { authLoading, businessId });
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <PageLoading message="Loading your business..." fullScreen={false} />
+      </div>
+    );
+  }
+  
+  // If offline and no business, show offline fallback
+  if (isOffline && !business) {
+    console.log('🔌 Offline and no business data - showing fallback');
+    return <OfflineFallback message="Please login while online first to cache your business data" />;
+  }
+  
+  // If offline and auth still loading after hooks, show fallback
+  if (isOffline && authLoading) {
+    console.log('🔌 Offline and auth loading - showing fallback');
+    return <OfflineFallback message="Loading cached business data..." />;
+  }
+  
+  // Online but no businessId - redirect to login
+  if (!isOffline && !businessId) {
+    console.log('🔍 No business ID - redirecting to login');
+    router.replace('/Beezee-App/auth/login');
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <PageLoading message="Redirecting to login..." fullScreen={false} />
+      </div>
+    );
+  }
+  
+  // All hooks have been called above - safe to render now
 
   const handleMoneyIn = async (transactionData: any) => {
     try {
@@ -414,31 +484,6 @@ export default function IndustryDashboard() {
   };
 
   // Helper functions for BuzzInsights data
-  const calculateTopSellers = (transactions: Transaction[], inventory: Inventory[]) => {
-    if (!transactions || !inventory || !Array.isArray(transactions) || !Array.isArray(inventory)) return [];
-    
-    const sales = transactions.reduce((acc: Record<string, number>, t: Transaction) => {
-      if (t.metadata?.inventory_item_id) {
-        const itemId = t.metadata.inventory_item_id;
-        acc[itemId] = (acc[itemId] || 0) + (t.metadata.quantity_sold || 1);
-      }
-      return acc;
-    }, {});
-    
-    return Object.entries(sales)
-      .map(([itemId, quantity]: [string, number]) => {
-        const item = inventory.find((i: Inventory) => i.id === itemId);
-        if (!item) return null;
-        return {
-          name: item.item_name,
-          quantity: quantity as number,
-          revenue: (quantity as number) * (item.selling_price || 0)
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-      .sort((a, b) => b.quantity - a.quantity)
-      .slice(0, 3);
-  };
 
   const calculateAverageOverdueDays = (overdueCredits: any[]) => {
     if (!overdueCredits || overdueCredits.length === 0) return 0;
@@ -485,26 +530,7 @@ export default function IndustryDashboard() {
     }
   };
 
-  const handleRefresh = async () => {
-    console.log('Dashboard refresh triggered - refetching all data');
-    
-    try {
-      // Trigger refetch for all data hooks simultaneously
-      await Promise.all([
-        refetchTransactions(),
-        refetchExpenses(),
-        refetchCredit(),
-        refetchInventory(),
-        refetchTargets()
-      ]);
-      
-      showSuccess(t('refresh.data_refreshed', 'Data refreshed successfully!'));
-      console.log('✅ All dashboard data refreshed successfully');
-    } catch (error) {
-      console.error('❌ Error refreshing dashboard data:', error);
-      showError(t('refresh.refresh_failed', 'Failed to refresh some data. Please try again.'));
-    }
-  };
+  // handleRefresh moved above to fix initialization order
 
   // Modal handlers for homepage quick actions
   const handleAddAppointment = () => {

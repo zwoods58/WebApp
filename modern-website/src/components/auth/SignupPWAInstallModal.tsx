@@ -46,7 +46,7 @@ const SignupPWAInstallModal: React.FC<SignupPWAInstallModalProps> = ({ isOpen, o
   return (
     <>
       {/* Backdrop with blur */}
-      <div className="fixed inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
+      <div className="fixed inset-0 bg-white animate-fade-in" onClick={onClose} />
 
       {/* Modal Container */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[110] p-4">

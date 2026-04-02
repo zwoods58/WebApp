@@ -60,11 +60,17 @@ export default function Login() {
     if (!authLoading && !isRedirecting) {
       setIsCheckingAuth(false);
       
+      const isOnline = navigator.onLine;
+      
       // Only redirect if user is authenticated AND hasn't shown intent to login
       // Don't redirect if user is actively trying to re-authenticate
       // Don't redirect during the brief moment when ProtectedRoute is checking auth
       // This prevents the redirect loop: Dashboard -> Login -> Dashboard
       if (isAuthenticated && user && !window.location.pathname.includes('/app/') && !hasUserIntent) {
+        if (!isOnline) {
+          console.log('🔌 Offline - skipping auto-redirect');
+          return;
+        }
         console.log('🔄 User already authenticated and no login intent, redirecting to dashboard...');
         // Add a small delay to ensure this isn't just a transient state during page refresh
         const redirectTimer = setTimeout(() => {
@@ -419,7 +425,7 @@ export default function Login() {
 
       {/* Forgot PIN Modal/Flow */}
       {showForgotPIN && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-4">
           <div className="bg-[var(--bg)] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <ForgotPINFlow
               onSuccess={() => {

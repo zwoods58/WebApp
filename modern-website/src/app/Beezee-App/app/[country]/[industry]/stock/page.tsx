@@ -482,7 +482,7 @@ export default function StockPage() {
 
       {/* Add Item Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('inventory.add_new_item', 'Add New Item')}</h3>
             <AddItemForm onSubmit={handleAddItem} onCancel={() => setShowAddModal(false)} t={t} industry={industry} />
@@ -492,7 +492,7 @@ export default function StockPage() {
 
       {/* Sell Item Modal */}
       {showSellModal && selectedItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('sell', 'Sell')} {t('inventory.items', 'Item')}</h3>
             
@@ -512,7 +512,7 @@ export default function StockPage() {
       
       {/* Edit Item Modal */}
       {showEditModal && selectedItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('inventory.edit_item', 'Edit Item')}</h3>
             <EditItemForm 

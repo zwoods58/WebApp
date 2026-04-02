@@ -40,11 +40,17 @@ export default function MorePage() {
       console.log('🔓 Signing out...');
       await signOut();
       // Redirect to login page after successful signout
-      router.push('/Beezee-App/auth/login');
+      if (navigator.onLine) {
+        router.push('/Beezee-App/auth/login');
+      } else {
+        console.log('🔌 Offline - signout successful but staying on page');
+      }
     } catch (error) {
       console.error('❌ Signout error:', error);
       // Still redirect even if there's an error
-      router.push('/Beezee-App/auth/login');
+      if (navigator.onLine) {
+        router.push('/Beezee-App/auth/login');
+      }
     }
   };
 

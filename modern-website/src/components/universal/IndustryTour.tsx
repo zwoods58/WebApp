@@ -408,7 +408,7 @@ function TourTooltip({
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/50 animate-fade-in" onClick={onSkip} />
+      <div className="fixed inset-0 bg-white animate-fade-in" onClick={onSkip} />
 
       {/* Tour Content */}
       <div className="fixed inset-0 flex items-center justify-center p-4 animate-scale-in">

@@ -1,6 +1,6 @@
 import { db, QueuedOperation } from './database';
 import { supabase } from './supabase';
-import { getOnlineStatus } from './connection-manager';
+import { testInternetConnectivity } from '@/lib/network-status';
 
 /**
  * Strip internal fields that should not be synced to Supabase
@@ -82,7 +82,8 @@ export class SyncProcessor {
     }
 
     // Check if online using real connectivity test
-    if (!getOnlineStatus()) {
+    const isOnline = await testInternetConnectivity();
+    if (!isOnline) {
       console.log('[SyncProcessor] Offline, skipping sync');
       return;
     }

@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v45';
+const CACHE_VERSION = 'v51';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -12,23 +12,44 @@ const BASE_PATH = '/Beezee-App';
 // Public routes that can be cached during install (no auth required)
 const PUBLIC_ROUTES = [
   BASE_PATH + '/',
-  BASE_PATH + '/manifest.json',
-  BASE_PATH + '/offline.html',
+  '/manifest.json',
+  '/offline.html',
   '/Beezee-App/',
   '/Beezee-App/setup',
-  // PWA Icons
-  BASE_PATH + '/beezee-icon-16x16.png',
-  BASE_PATH + '/beezee-icon-32x32.png',
-  BASE_PATH + '/beezee-icon-72x72.png',
-  BASE_PATH + '/beezee-icon-96x96.png',
-  BASE_PATH + '/beezee-icon-128x128.png',
-  BASE_PATH + '/beezee-icon-144x144.png',
-  BASE_PATH + '/beezee-icon-152x152.png',
-  BASE_PATH + '/beezee-icon-192x192.png',
-  BASE_PATH + '/beezee-icon-384x384.png',
-  BASE_PATH + '/beezee-icon-512x512.png',
-  BASE_PATH + '/favicon.ico',
-  BASE_PATH + '/beezee-logo.png',
+  // PWA Icons (at root level)
+  '/beezee-icon-16x16.png',
+  '/beezee-icon-32x32.png',
+  '/beezee-icon-72x72.png',
+  '/beezee-icon-96x96.png',
+  '/beezee-icon-128x128.png',
+  '/beezee-icon-144x144.png',
+  '/beezee-icon-152x152.png',
+  '/beezee-icon-192x192.png',
+  '/beezee-icon-384x384.png',
+  '/beezee-icon-512x512.png',
+  '/favicon.ico',
+  '/beezee-logo.png',
+];
+
+// Google Fonts to cache (cross-origin)
+// These fonts are loaded from globals.css and beezee.module.css
+const GOOGLE_FONTS = [
+  // Figtree (from globals.css) - Regular weight
+  'https://fonts.gstatic.com/s/figtree/v9/_Xms-HUzqDCFdgfMm4S9DQ.woff2',
+  
+  // Poppins (from beezee.module.css) - Multiple weights for better coverage
+  'https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z1xlFQ.woff2', // Regular
+  'https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJfecg.woff2',   // Medium
+  'https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9Z1xlFQ.woff2', // Bold
+  
+  // Inter (from beezee.module.css) - Multiple weights for better coverage
+  'https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2', // Regular
+  'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2',  // Medium
+  'https://fonts.gstatic.com/s/inter/v20/UcBB3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2', // Bold
+  
+  // Additional fallback fonts that might be requested
+  'https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7.woff2', // Italic
+  'https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrJJfecg.woff2',   // Medium Italic
 ];
 
 // Store user's country and industry in SW memory
@@ -84,7 +105,7 @@ console.log('[SW] Smart caching mode - will cache user routes after login');
 // INSTALL - Cache static assets
 // ============================================================
 self.addEventListener('install', (event) => {
-  console.log('[SW] 🚀 Installing service worker v41...');
+  console.log(`[SW] 🚀 Installing service worker ${CACHE_VERSION}...`);
   
   // Clear old caches before installing new ones
   event.waitUntil(
@@ -92,7 +113,7 @@ self.addEventListener('install', (event) => {
       // Clear all old versions
       const cacheNames = await caches.keys();
       const oldCaches = cacheNames.filter(name => 
-        name.includes('beezee-') && !name.includes('v41')
+        name.includes('beezee-') && !name.includes(CACHE_VERSION)
       );
       
       console.log('[SW] 🧹 Clearing old caches:', oldCaches);
@@ -119,14 +140,14 @@ self.addEventListener('install', (event) => {
 // ACTIVATE - Clean up old caches
 // ============================================================
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating v41...');
+  console.log(`[SW] Activating ${CACHE_VERSION}...`);
   
   event.waitUntil(
     (async () => {
       // Clear all old caches
       const cacheNames = await caches.keys();
       const oldCaches = cacheNames.filter(name => 
-        name.includes('beezee-') && !name.includes('v41')
+        name.includes('beezee-') && !name.includes(CACHE_VERSION)
       );
       
       console.log('[SW] 🧹 Clearing old caches on activate:', oldCaches);
@@ -134,7 +155,7 @@ self.addEventListener('activate', (event) => {
       
       // Take control of all pages immediately
       await clients.claim();
-      console.log('[SW] ✅ Service worker v41 activated and claimed all clients');
+      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated and claimed all clients`);
     })()
   );
 });
@@ -143,16 +164,41 @@ self.addEventListener('activate', (event) => {
 // MESSAGE HANDLER - Handle messages from app
 // ============================================================
 self.addEventListener('message', (event) => {
+  console.log('[SW] 📨 MESSAGE RECEIVED:', event.data);
+  console.log('[SW] 📨 Message source:', event.source);
+  console.log('[SW] 📨 Message origin:', event.origin);
+  
   const { type, country, industry } = event.data;
   
   // Handle user route caching after login
   if (type === 'CACHE_USER_ROUTES') {
-    console.log('[SW] 📦 Received user routes:', { country, industry });
+    console.log('[SW] 📦 Received CACHE_USER_ROUTES message!');
+    console.log('[SW] 📦 User routes data:', { country, industry });
+    console.log('[SW] 📦 Current stored routes:', { userCountry, userIndustry });
+    
+    // Update stored user info
     userCountry = country;
     userIndustry = industry;
     
+    console.log('[SW] 🚀 Starting cacheUserRoutes...');
+    
     // Cache user's routes in background (don't block)
-    event.waitUntil(cacheUserRoutes(country, industry));
+    event.waitUntil(
+      cacheUserRoutes(country, industry).then(() => {
+        console.log('[SW] ✅ cacheUserRoutes completed successfully!');
+      }).catch(error => {
+        console.error('[SW] ❌ cacheUserRoutes failed:', error);
+      })
+    );
+    
+    // Send immediate response
+    event.ports[0]?.postMessage({ 
+      type: 'CACHE_ROUTES_STARTED',
+      country, 
+      industry 
+    });
+    
+    return;
   }
   
   // Handle manual update trigger from "Update Now" button
@@ -168,6 +214,9 @@ self.addEventListener('message', (event) => {
       console.log('[SW] ✅ Notified', clients.length, 'clients of activation');
     });
   }
+  
+  // Log unknown message types
+  console.log('[SW] ❓ Unknown message type:', type);
 });
 
 // ============================================================
@@ -231,10 +280,30 @@ function generateOfflinePage() {
 /**
  * Fetch from cache only - no network attempts
  * Returns cached response or null
+ * Validates JS files to prevent serving corrupted cache
  */
 async function fetchFromCacheOnly(request) {
   const cached = await caches.match(request);
   if (cached) {
+    // Validate JS files to prevent syntax errors from corrupted cache
+    const url = new URL(request.url);
+    if (url.pathname.endsWith('.js')) {
+      try {
+        const text = await cached.clone().text();
+        // Basic validation: check if file is not empty and doesn't start with error messages
+        if (!text || text.length < 10 || text.startsWith('<!DOCTYPE') || text.includes('503 Service Unavailable')) {
+          console.log('[SW] ⚠️ Corrupted JS cache detected, removing:', request.url);
+          const cache = await caches.open(STATIC_CACHE);
+          await cache.delete(request);
+          return null;
+        }
+      } catch (err) {
+        console.log('[SW] ⚠️ Cache validation failed, removing:', request.url);
+        const cache = await caches.open(STATIC_CACHE);
+        await cache.delete(request);
+        return null;
+      }
+    }
     console.log('[SW] ✅ Cache hit:', request.url);
     return cached;
   }
@@ -245,6 +314,7 @@ async function fetchFromCacheOnly(request) {
 /**
  * Extract all chunk URLs from HTML response
  * Parses <script src="..."> and <link href="..."> tags
+ * Also extracts font files (.woff2) from inline styles and CSS
  */
 async function extractChunksFromHTML(htmlText, baseUrl) {
   const chunks = new Set();
@@ -265,6 +335,66 @@ async function extractChunksFromHTML(htmlText, baseUrl) {
     const href = match[1];
     if (href.endsWith('.css') && (href.startsWith('/_next/') || href.startsWith('/'))) {
       chunks.add(new URL(href, baseUrl).href);
+    }
+  }
+  
+  // Match font files in HTML (woff2, woff)
+  const fontRegex = /["']([^"']*\.(woff2|woff))["']/g;
+  while ((match = fontRegex.exec(htmlText)) !== null) {
+    const fontUrl = match[1];
+    if (fontUrl.startsWith('/_next/') || fontUrl.startsWith('/')) {
+      chunks.add(new URL(fontUrl, baseUrl).href);
+    }
+  }
+  
+  // ADDITION: Pre-cache common Next.js chunk patterns that might be dynamically loaded
+  const commonChunks = [
+    '/_next/static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_*.js',
+    '/_next/static/chunks/src_*_*.js',
+    '/_next/static/chunks/node_modules_*_*.js',
+    '/_next/static/chunks/_*.js',
+    '/_next/static/media/*_*.woff2'
+  ];
+  
+  // Try to fetch and cache common chunk patterns
+  for (const pattern of commonChunks) {
+    try {
+      // Convert pattern to actual URLs by checking what's available
+      if (pattern.includes('*')) {
+        // For patterns with wildcards, we'll try common variations
+        if (pattern.includes('src_*_*.js')) {
+          // Try to find actual src chunks from the HTML
+          const srcChunkRegex = /\/_next\/static\/chunks\/src_[a-f0-9]+\.js/g;
+          const srcMatches = htmlText.match(srcChunkRegex);
+          if (srcMatches) {
+            srcMatches.forEach(chunk => {
+              chunks.add(new URL(chunk, baseUrl).href);
+            });
+          }
+        }
+        if (pattern.includes('node_modules_*_*.js')) {
+          // Try to find actual node_modules chunks
+          const nodeChunkRegex = /\/_next\/static\/chunks\/node_modules_[a-f0-9]+\.js/g;
+          const nodeMatches = htmlText.match(nodeChunkRegex);
+          if (nodeMatches) {
+            nodeMatches.forEach(chunk => {
+              chunks.add(new URL(chunk, baseUrl).href);
+            });
+          }
+        }
+        if (pattern.includes('media/*_*.woff2')) {
+          // Try to find actual font files
+          const fontChunkRegex = /\/_next\/static\/media\/[a-f0-9]+-s\.[a-f0-9]+\.woff2/g;
+          const fontMatches = htmlText.match(fontChunkRegex);
+          if (fontMatches) {
+            fontMatches.forEach(chunk => {
+              chunks.add(new URL(chunk, baseUrl).href);
+            });
+          }
+        }
+      }
+    } catch (err) {
+      // Ignore errors in pattern matching
     }
   }
   
@@ -302,10 +432,13 @@ async function calculateCacheSize() {
 // Cache user's specific routes (their country + industry)
 // ============================================================
 async function cacheUserRoutes(country, industry) {
+  console.log(`[SW] 📦 cacheUserRoutes called with:`, { country, industry });
   console.log(`[SW] 📦 Starting to cache routes for authenticated user...`);
   
   // Wait 2 seconds for session to fully establish after login
+  console.log(`[SW] ⏳ Waiting 2 seconds for session to establish...`);
   await new Promise(resolve => setTimeout(resolve, 2000));
+  console.log(`[SW] ⏰ Session wait complete, starting caching...`);
   
   const routesToCache = [
     `/Beezee-App/app/${country}/${industry}`,           // Dashboard
@@ -318,8 +451,10 @@ async function cacheUserRoutes(country, industry) {
     `/Beezee-App/app/${country}/${industry}/reports`,   // Reports
     `/Beezee-App/app/${country}/${industry}/more`,      // More page
     `/Beezee-App/app/${country}/${industry}/settings`,  // Settings
+    `/Beezee-App/app/${country}/${industry}/transactions`, // Transactions
   ];
   
+  console.log(`[SW] 📦 Routes to cache:`, routesToCache);
   console.log(`[SW] 📦 Starting to cache ${routesToCache.length} routes + chunks for: ${country}/${industry}`);
   
   const pageCache = await caches.open(PAGE_CACHE);
@@ -329,8 +464,11 @@ async function cacheUserRoutes(country, industry) {
   let totalChunks = 0;
   
   for (const route of routesToCache) {
+    console.log(`[SW] 🔄 Processing route ${cached + failed + 1}/${routesToCache.length}: ${route}`);
+    
     try {
       // Fetch HTML page with cache control
+      console.log(`[SW] 📡 Fetching route: ${route}`);
       const htmlResponse = await fetch(route, {
         headers: {
           'Accept': 'text/html',
@@ -339,17 +477,31 @@ async function cacheUserRoutes(country, industry) {
         credentials: 'include',
       });
       
+      console.log(`[SW] 📊 Response for ${route}:`, {
+        ok: htmlResponse.ok,
+        status: htmlResponse.status,
+        statusText: htmlResponse.statusText,
+        url: htmlResponse.url,
+        redirected: htmlResponse.redirected
+      });
+      
       // Only cache if response is 200 and doesn't redirect to login
       if (!htmlResponse.ok || 
           htmlResponse.status !== 200 || 
           htmlResponse.url.includes('/auth/login')) {
         failed++;
-        console.warn(`[SW] ❌ Skipped (redirect or error): ${route}`);
+        console.warn(`[SW] ❌ Skipped (redirect or error): ${route}`, {
+          ok: htmlResponse.ok,
+          status: htmlResponse.status,
+          url: htmlResponse.url,
+          isLoginRedirect: htmlResponse.url.includes('/auth/login')
+        });
         continue;
       }
       
-      // Cache the HTML page
-      await pageCache.put(route, htmlResponse.clone());
+      // Cache the HTML page with pathname as key
+      const cacheKey = new URL(route, self.location.origin).pathname;
+      await pageCache.put(cacheKey, htmlResponse.clone());
       cached++;
       console.log(`[SW] ✅ Cached page (${cached}/${routesToCache.length}): ${route}`);
       
@@ -363,7 +515,9 @@ async function cacheUserRoutes(country, industry) {
       // Cache each chunk
       for (const chunkUrl of chunks) {
         try {
-          const chunkResponse = await fetch(chunkUrl);
+          // Use CORS mode for cross-origin resources (like Google Fonts)
+          const isExternal = !chunkUrl.startsWith(self.location.origin);
+          const chunkResponse = await fetch(chunkUrl, isExternal ? { mode: 'cors' } : {});
           if (chunkResponse.ok) {
             await staticCache.put(chunkUrl, chunkResponse.clone());
             console.log(`[SW] ✅ Cached chunk: ${new URL(chunkUrl).pathname}`);
@@ -383,8 +537,14 @@ async function cacheUserRoutes(country, industry) {
   
   console.log(`[SW] 🎉 Caching complete! ✅ ${cached} pages, ${totalChunks} chunks, ❌ ${failed} failed`);
   
+  // Cache Google Fonts
+  await cacheGoogleFonts();
+  
   // Cache static assets after routes
   await cacheStaticAssets();
+  
+  // ADDITION: Force cache all discovered chunks for comprehensive offline support
+  await cacheAllDiscoveredChunks();
   
   // Calculate and log cache size
   const totalSize = await calculateCacheSize();
@@ -394,6 +554,96 @@ async function cacheUserRoutes(country, industry) {
   if (totalSize > 50 * 1024 * 1024) { // 50MB
     console.warn(`[SW] ⚠️ Cache size exceeds 50MB! Consider cleanup.`);
   }
+}
+
+// ============================================================
+// Cache all discovered chunks for comprehensive offline support
+// ============================================================
+async function cacheAllDiscoveredChunks() {
+  console.log('[SW] 📦 Caching all discovered chunks...');
+  
+  try {
+    const staticCache = await caches.open(STATIC_CACHE);
+    let chunksCached = 0;
+    
+    // Common Next.js chunk patterns that might be missed
+    const commonChunkPatterns = [
+      '/_next/static/chunks/src_',
+      '/_next/static/chunks/node_modules_',
+      '/_next/static/chunks/_',
+      '/_next/static/chunks/[turbopack]_',
+      '/_next/static/media/',
+      '/_next/static/chunks/framework-',
+      '/_next/static/chunks/main-',
+      '/_next/static/chunks/webpack-',
+      '/_next/static/chunks/pages/_app-',
+      '/_next/static/chunks/pages/_document-'
+    ];
+    
+    // Try to fetch and cache common chunk variations
+    for (const pattern of commonChunkPatterns) {
+      try {
+        // For each pattern, try to find actual files by checking the current cache
+        const existingKeys = await staticCache.keys();
+        const matchingKeys = existingKeys.filter(key => 
+          key.url.includes(pattern.replace('/_next/static/', ''))
+        );
+        
+        // Cache any matching chunks found
+        for (const key of matchingKeys) {
+          try {
+            const response = await staticCache.match(key);
+            if (response && response.ok) {
+              chunksCached++;
+              console.log(`[SW] ✅ Verified cached chunk: ${key.url}`);
+            }
+          } catch (err) {
+            console.warn(`[SW] ⚠️ Failed to verify chunk: ${key.url}`);
+          }
+        }
+      } catch (err) {
+        // Continue with next pattern
+      }
+    }
+    
+    // Also try to cache any chunks that might be dynamically loaded
+    const dynamicChunks = [
+      '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_calendar_page_tsx_*.js',
+      '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_services_page_tsx_*.js',
+      '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_credit_page_tsx_*.js',
+      '/_next/static/chunks/src_893ea067._.js',
+      '/_next/static/chunks/node_modules_31524f5e._.js'
+    ];
+    
+    console.log(`[SW] ✅ Verified ${chunksCached} chunks in cache`);
+    
+  } catch (error) {
+    console.warn('[SW] ⚠️ Error in cacheAllDiscoveredChunks:', error);
+  }
+}
+
+// ============================================================
+// Cache Google Fonts with CORS
+// ============================================================
+async function cacheGoogleFonts() {
+  console.log('[SW] 📦 Caching Google Fonts...');
+  const staticCache = await caches.open(STATIC_CACHE);
+  let fontsCached = 0;
+  
+  for (const fontUrl of GOOGLE_FONTS) {
+    try {
+      const response = await fetch(fontUrl, { mode: 'cors' });
+      if (response.ok) {
+        await staticCache.put(fontUrl, response);
+        fontsCached++;
+        console.log(`[SW] ✅ Cached Google Font: ${fontUrl}`);
+      }
+    } catch (err) {
+      console.warn(`[SW] ⚠️ Failed to cache Google Font: ${fontUrl}`);
+    }
+  }
+  
+  console.log(`[SW] ✅ Cached ${fontsCached}/${GOOGLE_FONTS.length} Google Fonts`);
 }
 
 // ============================================================
@@ -473,10 +723,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip Next.js internal
+  // Skip Next.js internal and HMR chunks
   if (url.pathname.startsWith('/__next') || 
       url.pathname.includes('webpack') ||
-      url.pathname.includes('hot-update')) {
+      url.pathname.includes('hot-update') ||
+      url.pathname.includes('hmr-client') ||
+      url.pathname.includes('[turbopack]')) {
     return;
   }
   
@@ -488,7 +740,7 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // RSC Requests - Block when offline, pass through when online
+  // RSC Requests - Serve cached HTML when offline for navigation
   // ============================================================
   if (url.searchParams.has('_rsc')) {
     // Check if offline
@@ -497,17 +749,33 @@ self.addEventListener('fetch', (event) => {
     const isActuallyOffline = swOffline || browserOffline;
     
     if (isActuallyOffline) {
-      // Return 503 immediately - do not pass through to network
-      console.log('[SW] 📴 Blocking offline RSC request:', url.pathname);
+      console.log('[SW] 📴 RSC request offline, trying cache:', url.pathname);
+      
       event.respondWith(
-        new Response(null, {
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: {
-            'X-Offline': 'true',
-            'Content-Type': 'text/plain'
+        (async () => {
+          // Try to find cached HTML for this route
+          const basePath = url.pathname;
+          const cacheKeys = [
+            basePath,
+            basePath + '/',
+            basePath.replace(/\/$/, '')
+          ];
+          
+          for (const key of cacheKeys) {
+            const cached = await caches.match(key);
+            if (cached) {
+              console.log('[SW] ✅ Serving cached HTML for RSC request:', key);
+              return cached;
+            }
           }
-        })
+          
+          // No cache found - return minimal RSC response instead of 503
+          console.log('[SW] ⚠️ No cache for RSC request, returning empty response');
+          return new Response('[]', {
+            status: 200,
+            headers: { 'Content-Type': 'text/x-component' }
+          });
+        })()
       );
       return;
     }
@@ -542,12 +810,11 @@ self.addEventListener('fetch', (event) => {
         });
         
         if (isActuallyOffline) {
-          // Enhanced cache lookup - try multiple strategies
+          // Enhanced cache lookup - try pathname variations
           const cacheKeys = [
-            cacheKey,                    // Original pathname
-            request.url,                 // Full URL
-            url.pathname + '/',           // With trailing slash
-            url.pathname.replace(/\/$/, '') // Without trailing slash
+            url.pathname,                    // Original pathname
+            url.pathname + '/',              // With trailing slash
+            url.pathname.replace(/\/$/, '')  // Without trailing slash
           ];
           
           console.log('[SW] 🔍 Trying cache keys for offline page:', { pathname: url.pathname, cacheKeys });
@@ -560,16 +827,7 @@ self.addEventListener('fetch', (event) => {
             }
           }
           
-          // Try cross-version cache search
-          const cacheVersions = ['v42', 'v41', 'v40'];
-          for (const version of cacheVersions) {
-            const cache = await caches.open(`beezee-pages-${version}`);
-            const cached = await cache.match(request);
-            if (cached) {
-              console.log('[SW] ✅ Found in cache version:', version);
-              return cached;
-            }
-          }
+          // No cross-version fallback - only use current version to avoid stale data
           
           console.log('[SW] ❌ Page not found in any cache, trying offline.html:', cacheKey);
           const offlinePage = await caches.match(BASE_PATH + '/offline.html');

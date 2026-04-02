@@ -6,15 +6,15 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: 'offlineFirst',
-      staleTime: 5 * 60 * 1000,
-      gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 1000 * 60 * 30, // 30 minutes (increase from 5)
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      retry: false, // Don't retry when offline - use cached data immediately
+      refetchOnWindowFocus: false, // Don't refetch when window regains focus
+      refetchOnReconnect: false, // Don't refetch when connection is restored
     },
     mutations: {
       networkMode: 'offlineFirst',
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: false, // Don't retry mutations when offline
     },
   },
 })

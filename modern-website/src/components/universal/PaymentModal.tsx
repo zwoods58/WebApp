@@ -78,7 +78,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
 
   return (
     
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-xl flex items-center justify-center z-[70] p-4">
+      <div className="fixed inset-0 bg-white flex items-center justify-center z-[70] p-4">
         <div className="animate-fade-in">
           {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">

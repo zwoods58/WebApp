@@ -1,5 +1,6 @@
 import { useIndustryDataNew } from './useIndustryDataNew'
-import { getOnlineStatus } from '@/lib/connection-manager'
+import { getNetworkStatus } from '@/lib/network-status'
+import { useState, useEffect } from 'react';
 
 export interface Transaction {
   id: string;
@@ -35,6 +36,33 @@ export function useTransactionsTanStack(options: UseTransactionsOptions = {}) {
   // Default to Kenya and retail if not specified
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
+  
+  // Network status detection
+  const [isOffline, setIsOffline] = useState(() => !getNetworkStatus());
+  
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('[Transactions] Network status: ONLINE');
+      setIsOffline(false);
+    };
+    
+    const handleOffline = () => {
+      console.log('[Transactions] Network status: OFFLINE');
+      setIsOffline(true);
+    };
+    
+    // Set initial state
+    setIsOffline(!getNetworkStatus());
+    
+    // Add event listeners
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   
   // Use the new TanStack Query hook with updated API
   const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, isDeleting, error, refetch } = 
@@ -72,7 +100,7 @@ export function useTransactionsTanStack(options: UseTransactionsOptions = {}) {
   return {
     data: filteredData as Transaction[],
     isLoading,
-    isOffline: !getOnlineStatus(), // Use actual network status
+    isOffline,
     addTransaction: create,
     addTransactionAsync: createAsync,
     deleteTransaction: deleteItem,

@@ -276,7 +276,8 @@ export default function CashPage() {
   const todayProfit = todayMoneyIn - todayMoneyOut;
   
   // ✅ STEP 11: Loading state
-  if (authLoading) {
+  // Don't show loading when offline - use cached data instead
+  if (authLoading && !isOffline) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <PageLoading message="Loading cash flow..." fullScreen={false} />
@@ -284,6 +285,7 @@ export default function CashPage() {
     );
   }
   
+    
   // ✅ STEP 12: No business warning
   if (!businessId && !authLoading) {
     return (
@@ -312,30 +314,7 @@ export default function CashPage() {
       <Header industry={industry} country={country} />
       
       <main className="flex-1 container mx-auto px-4 pt-24 py-6 max-w-md">
-        {/* Sync Status - Shows offline indicator but doesn't block */}
-        {(isOffline || isSyncing) && (
-          <div className="mb-4 p-3 rounded-lg border border-[var(--border)] bg-[var(--glass)] animate-fade-in">
-            <div className="flex items-center gap-2 text-sm">
-              {isSyncing && <RefreshCw size={16} className="animate-spin" />}
-              {isOffline && !isSyncing && <WifiOff size={16} className="text-orange-500" />}
-              <span className={`font-medium ${
-                isOffline ? 'text-orange-600' : 'text-blue-600'
-              }`}>
-                {isOffline 
-                  ? t('common.offline_mode', 'Offline Mode - Showing Cached Data')
-                  : isSyncing 
-                  ? t('common.syncing_data', 'Syncing data...')
-                  : t('common.online', 'Online')
-                }
-              </span>
-              {totalPending > 0 && (
-                <span className="text-xs text-gray-500">
-                  ({totalPending} {t('common.pending', 'pending')})
-                </span>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Removed offline indicator - silent offline mode */}
 
         {/* Quick Actions */}
         <div className="flex gap-3 mb-6 mt-8">
@@ -530,7 +509,7 @@ export default function CashPage() {
 
       {/* WhatsApp Share Modal */}
       {showShareModal && selectedItemForShare && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm animate-slide-up">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('receipt.share_receipt', 'Share Receipt')}</h3>
             

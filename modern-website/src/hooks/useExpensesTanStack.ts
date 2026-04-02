@@ -1,5 +1,6 @@
 import { useIndustryDataNew } from './useIndustryDataNew'
-import { getOnlineStatus } from '@/lib/connection-manager'
+import { getNetworkStatus } from '@/lib/network-status'
+import { useState, useEffect } from 'react';
 
 export interface Expense {
   id: string;
@@ -43,14 +44,41 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
+  // Network status detection
+  const [isOffline, setIsOffline] = useState(() => !getNetworkStatus());
+  
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('[Expenses] Network status: ONLINE');
+      setIsOffline(false);
+    };
+    
+    const handleOffline = () => {
+      console.log('[Expenses] Network status: OFFLINE');
+      setIsOffline(true);
+    };
+    
+    // Set initial state
+    setIsOffline(!getNetworkStatus());
+    
+    // Add event listeners
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
   // Use the new TanStack Query hook with updated API
   const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, error, refetch } = 
     useIndustryDataNew({
       industry,
       country,
-      businessId: options.businessId,
       table: 'expenses',
       select: options.select,
+      businessId: options.businessId,
     })
 
   // Filter data based on options (basic implementation)
@@ -89,7 +117,7 @@ export function useExpensesTanStack(options: UseExpensesOptions = {}) {
   return {
     data: filteredData as Expense[],
     isLoading,
-    isOffline: !getOnlineStatus(), // Use actual network status
+    isOffline,
     addExpense: create,
     addExpenseAsync: createAsync,
     deleteExpense: deleteItem,

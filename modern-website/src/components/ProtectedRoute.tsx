@@ -14,6 +14,18 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
     const { business, loading, isAuthenticated } = useUnifiedAuth();
     const router = useRouter();
     const [isStabilizing, setIsStabilizing] = useState(true);
+    const [isOnline, setIsOnline] = useState(true);
+
+    useEffect(() => {
+        const updateOnlineStatus = () => setIsOnline(navigator.onLine);
+        updateOnlineStatus();
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        return () => {
+            window.removeEventListener('online', updateOnlineStatus);
+            window.removeEventListener('offline', updateOnlineStatus);
+        };
+    }, []);
 
     useEffect(() => {
         console.log('🛡️ ProtectedRoute check:', { 
@@ -38,6 +50,11 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
 
         // Auth is loaded, now check authentication status
         if (!isAuthenticated || !business) {
+            if (!isOnline) {
+                console.log('🔌 Offline - skipping login redirect, allowing cached content');
+                setIsStabilizing(false);
+                return;
+            }
             console.log('🚪 Not authenticated, redirecting to login');
             router.push('/Beezee-App/auth/login');
             return;
@@ -45,12 +62,22 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
 
         // Validate business matches route
         if (requiredCountry && business.country.toLowerCase() !== requiredCountry.toLowerCase()) {
+            if (!isOnline) {
+                console.log('🔌 Offline - skipping country redirect');
+                setIsStabilizing(false);
+                return;
+            }
             console.log('🌍 Country mismatch, redirecting to correct route');
             router.push(`/Beezee-App/app/${business.country}/${business.industry}`);
             return;
         }
 
         if (requiredIndustry && business.industry.toLowerCase() !== requiredIndustry.toLowerCase()) {
+            if (!isOnline) {
+                console.log('🔌 Offline - skipping industry redirect');
+                setIsStabilizing(false);
+                return;
+            }
             console.log('🏭 Industry mismatch, redirecting to correct route');
             router.push(`/Beezee-App/app/${business.country}/${business.industry}`);
             return;
@@ -58,7 +85,7 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
 
         console.log('✅ Authentication and route validation passed');
         setIsStabilizing(false);
-    }, [business, loading, isAuthenticated, requiredCountry, requiredIndustry, router]);
+    }, [business, loading, isAuthenticated, requiredCountry, requiredIndustry, router, isOnline]);
 
     if (loading || isStabilizing) {
         return (

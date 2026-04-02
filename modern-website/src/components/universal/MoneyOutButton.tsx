@@ -80,7 +80,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           {/* Backdrop - CSS fade animation */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 bg-gray-100/30 backdrop-blur-md z-40 backdrop-fade transform-gpu"
+            className="fixed inset-0 bg-white z-40 backdrop-fade transform-gpu"
             style={{ 
               willChange: 'opacity',
               WebkitTransform: 'translateZ(0)'
@@ -198,7 +198,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                             : 'bg-white/90 backdrop-blur-md text-[var(--text-2)] border-2 border-transparent hover:bg-white/95 shadow-sm'
                         }`}
                       >
-                        {t(`payment.${method}`, method.charAt(0).toUpperCase() + method.slice(1))}
+                        {t(`payment.${method}`, method === 'mobile_money' ? 'Mobile Money' : method.charAt(0).toUpperCase() + method.slice(1))}
                       </button>
                     ))}
                   </div>

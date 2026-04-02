@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { db, QueuedOperation } from '@/lib/database';
 import { supabase } from '@/lib/supabase';
-import { getOnlineStatus } from '@/lib/connection-manager';
+import { getNetworkStatus } from '@/lib/network-status';
 import { swManager } from '@/lib/serviceWorker';
 import { syncProcessor } from '@/lib/sync-processor';
 
@@ -28,7 +28,7 @@ export const useIndustryDataNew = ({
   const queryClient = useQueryClient();
   const { business } = useUnifiedAuth();
   const businessId = externalBusinessId || business?.id;
-  const isOnline = getOnlineStatus();
+  const isOnline = getNetworkStatus();
 
   const hasRequiredParams = !!(industry && country && table && businessId);
   
@@ -141,11 +141,31 @@ export const useIndustryDataNew = ({
       console.log(`✅ [QUERY ${table}] Returning data`, { count: filteredData.length });
       return filteredData;
     },
-    staleTime: isOnline ? 5 * 60 * 1000 : Infinity,
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    networkMode: 'offlineFirst',
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     enabled: enabled && hasRequiredParams,
   });
 
   const refreshFromSupabase = async () => {
+    // Skip refresh if offline
+    if (!navigator.onLine) {
+      console.log(`📵 [REFRESH ${table}] Skipping refresh - offline`);
+      return;
+    }
+    
+    // Skip if data is fresh and not stale (30 minutes)
+    const lastFetchTime = queryClient.getQueryData([`${table}_lastFetch`, businessId]) as number;
+    const now = Date.now();
+    const thirtyMinutes = 30 * 60 * 1000;
+    
+    if (lastFetchTime && (now - lastFetchTime) < thirtyMinutes) {
+      console.log(`📵 [REFRESH ${table}] Skipping refresh - data is fresh (${Math.round((now - lastFetchTime) / 1000 / 60)} minutes old)`);
+      return;
+    }
+    
     console.log(`🔄 [REFRESH ${table}] Starting background refresh from Supabase`);
     
     try {
@@ -201,6 +221,9 @@ export const useIndustryDataNew = ({
       if (freshData.length > 0) {
         console.log(`🔄 [REFRESH ${table}] Invalidating query cache - this may overwrite optimistic updates`);
         queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
+        
+        // Track last fetch time for freshness checks
+        queryClient.setQueryData([`${table}_lastFetch`, businessId], Date.now());
       }
     } catch (error) {
       console.warn(`❌ [REFRESH ${table}] Background refresh failed:`, error);

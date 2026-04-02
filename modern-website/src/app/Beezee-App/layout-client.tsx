@@ -9,41 +9,64 @@ import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname } from 'next/navigation';
 import BottomNav from '@/components/universal/BottomNav';
 import ScrollToTop from '@/components/universal/ScrollToTop';
-import { initConnectionMonitoring, cleanupConnectionMonitoring, getOnlineStatus } from '@/lib/connection-manager';
-import { ConnectionStatus } from '@/components/ConnectionStatus';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { cleanupBadOperations } from '@/lib/cleanup-bad-operations';
+import { ConnectionToast } from '@/components/universal/ConnectionToast';
+
+// Add custom styles for animations (will be added in useEffect)
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { business } = useUnifiedAuth();
-  const [isOnline, setIsOnline] = useState(true);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
   const [updateShownForVersion, setUpdateShownForVersion] = useState<string | null>(null);
   
+  // Add custom styles for animations (client-side only)
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slide-in-from-right {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      .animate-in.slide-in-from-right {
+        animation: slide-in-from-right 0.3s ease-out;
+      }
+      
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .animate-slide-in-right {
+        animation: slideInRight 0.3s ease-out;
+      }
+    `;
+    if (!document.head.querySelector('style[data-connection-toast]')) {
+      style.setAttribute('data-connection-toast', 'true');
+      document.head.appendChild(style);
+    }
+  }, []);
+
   // One-time cleanup of bad operations before sync starts
   useEffect(() => {
     cleanupBadOperations().catch(err => 
       console.error('[Layout] Cleanup failed:', err)
     );
-  }, []);
-  
-  // Initialize connection monitoring
-  useEffect(() => {
-    // Initialize the new connection manager
-    initConnectionMonitoring();
-    
-    // Listen for online/offline status
-    const checkStatus = () => setIsOnline(getOnlineStatus());
-    checkStatus();
-    
-    const interval = setInterval(checkStatus, 5000);
-    
-    return () => {
-      cleanupConnectionMonitoring();
-      clearInterval(interval);
-    };
   }, []);
 
   // Suppress RSC 503 errors when offline
@@ -141,8 +164,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Global connection status indicator */}
-      <ConnectionStatus />
+      {/* Connection Toast Notification */}
+      <ConnectionToast duration={3000} />
       
       {/* ✅ NEW: Update Available Banner */}
       {updateAvailable && (

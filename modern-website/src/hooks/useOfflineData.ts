@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { db, QueuedOperation } from '@/lib/database';
 import { supabase } from '@/lib/supabase';
-import { getOnlineStatus } from '@/lib/connection-manager';
+import { getNetworkStatus } from '@/lib/network-status';
 import { swManager } from '@/lib/serviceWorker';
 
 /**
@@ -20,7 +20,7 @@ export function useOfflineData<T = any>({
   select?: (data: any) => T;
 }) {
   const queryClient = useQueryClient();
-  const isOnline = getOnlineStatus();
+  const isOnline = getNetworkStatus();
   
   // Query: Get data from IndexedDB first, then sync with Supabase
   const query = useQuery({

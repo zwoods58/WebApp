@@ -37,7 +37,7 @@ export default function ServicesPage() {
   
   // Redirect retail users to stock page - retail doesn't use services
   useEffect(() => {
-    if (industry === 'retail') {
+    if (industry === 'retail' && navigator.onLine) {
       window.location.href = `/Beezee-App/app/${country}/${industry}/stock`;
     }
   }, [industry, country]);
@@ -869,7 +869,7 @@ export default function ServicesPage() {
 
       {/* Modals */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-white flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{t('services.add_service')}</h2>
             <AddServiceForm 
@@ -884,7 +884,7 @@ export default function ServicesPage() {
       )}
 
       {showAddInventoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-white flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{t('services.add_inventory_item', 'Add Item')}</h2>
             <AddInventoryForm 
@@ -922,7 +922,7 @@ export default function ServicesPage() {
 
       {/* Sell Inventory Modal */}
       {showSellModal && selectedInventoryItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Sell Item</h3>
             
@@ -942,7 +942,7 @@ export default function ServicesPage() {
 
       {/* Edit Inventory Modal */}
       {showEditInventoryModal && selectedInventoryItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Inventory Item</h3>
             
@@ -1003,7 +1003,7 @@ function EditServiceModal({ service, onClose, onUpdate, country, industry }: {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Service</h3>
@@ -1036,14 +1036,16 @@ function EditServiceModal({ service, onClose, onUpdate, country, industry }: {
             {(industry === 'salon' || industry === 'freelance') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {industry === 'salon' ? 'Duration (minutes)' : 'Duration (days)'}
+                  {industry === 'salon' ? 'Duration (minutes)' : 'Duration (hours)'}
                 </label>
                 <input
                   type="number"
                   value={formData.duration}
                   onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={industry === 'freelance' ? '7' : '30'}
+                  placeholder={industry === 'freelance' ? '1' : '30'}
+                  min="1"
+                  max="8"
                   step="1"
                 />
               </div>
@@ -1632,14 +1634,16 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
           {(industry === 'salon' || industry === 'freelance') && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {industry === 'salon' ? 'Duration (min)' : 'Duration (days)'}
+                {industry === 'salon' ? 'Duration (min)' : 'Duration (hours)'}
               </label>
               <input
                 type="number"
                 value={formData.duration || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={industry === 'freelance' ? '7' : '30'}
+                placeholder={industry === 'freelance' ? '1' : '30'}
+                min="1"
+                max="8"
                 step="1"
               />
             </div>
@@ -1703,7 +1707,7 @@ function KmInputModal({ service, onClose, onConfirm, country }: { service: any, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
