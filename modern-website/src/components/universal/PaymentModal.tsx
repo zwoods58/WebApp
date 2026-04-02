@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, DollarSign, CheckCircle, Clock } from 'lucide-react';
+import { X, DollarSign, CheckCircle, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -29,6 +29,21 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
   const remainingBalance = customer.status === 'partial' 
     ? customer.amount - customer.paid_amount 
     : customer.amount;
+
+  // Calculate overdue status
+  const isOverdue = () => {
+    if (customer.status === 'paid' || !customer.due_date) return false;
+    
+    const dueDateTime = new Date(customer.due_date);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
+  };
+
+  const daysOverdue = customer.due_date ? Math.max(0, Math.ceil((new Date().getTime() - new Date(customer.due_date).getTime()) / (1000 * 60 * 60 * 24))) : 0;
+  const overdue = isOverdue();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,9 +142,36 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                   </div>
                 )}
 
+                {/* Due Date and Overdue Status */}
+                {customer.due_date && (
+                  <div className={`flex justify-between items-center mb-3 ${overdue ? 'text-red-600' : 'text-black/70'}`}>
+                    <span className="text-sm flex items-center gap-1">
+                      <Calendar size={14} />
+                      {t('credit.due_date', 'Due Date')}
+                    </span>
+                    <span className={`font-semibold ${overdue ? 'text-red-600' : 'text-black'}`}>
+                      {new Date(customer.due_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+
+                {/* Overdue Alert */}
+                {overdue && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-2 mb-3">
+                    <div className="flex items-center gap-2 text-red-600">
+                      <AlertCircle size={16} />
+                      <span className="text-sm font-medium">
+                        {t('credit.overdue_by', 'Overdue by')}: {daysOverdue} {t('credit.days', 'days')}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center pt-3 border-t border-white/30">
                   <span className="text-sm font-semibold text-black">{t('credit.remaining_balance', 'Remaining Balance')}</span>
-                  <span className="text-xl font-bold text-orange-600">{formatCurrency(remainingBalance, country)}</span>
+                  <span className={`text-xl font-bold ${overdue ? 'text-red-600' : 'text-orange-600'}`}>
+                    {formatCurrency(remainingBalance, country)}
+                  </span>
                 </div>
               </div>
 

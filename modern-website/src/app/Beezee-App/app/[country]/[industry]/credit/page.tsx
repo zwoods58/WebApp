@@ -60,7 +60,7 @@ export default function CreditPage() {
   const creditData = credit || [];
   const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
   const partialCredit = creditData.filter((c: any) => c.status === 'partial');
-  const overdueCredit = creditData.filter((c: any) => c.status === 'overdue');
+  const overdueCredit = creditData.filter((c: any) => isOverdue(c.due_date || '', c.status));
   
   const totalOwed = creditData.reduce((sum: number, c: any) => {
     // If status is 'paid', remaining amount is 0
@@ -207,7 +207,7 @@ export default function CreditPage() {
 
   const generateCreditDetailsText = (creditItem: any): string => {
     const remainingAmount = creditItem.status === 'partial' ? creditItem.amount - (creditItem.paid_amount || 0) : creditItem.amount;
-    const daysOverdue = creditItem.due_date ? Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+    const daysOverdue = creditItem.due_date ? Math.max(0, Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24))) : 0;
     
     let text = `${t('credit.reminder_from', 'Credit Reminder from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
     text += `${t('common.customer', 'Customer')}: ${creditItem.customer_name}\n`;
@@ -290,7 +290,14 @@ export default function CreditPage() {
   };
 
   const isOverdue = (dueDate: string, status: string) => {
-    return status !== 'paid' && new Date(dueDate) < new Date();
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
   };
 
   return (
@@ -400,7 +407,7 @@ export default function CreditPage() {
                     <div>
                       <span className="font-medium text-gray-900">{c.customer_name}</span>
                       <span className="text-xs text-red-600 ml-2">
-                        {Math.ceil((new Date().getTime() - new Date(c.due_date || '').getTime()) / (1000 * 60 * 60 * 24))} {t('credit.days_overdue')}
+                        {Math.max(0, Math.ceil((new Date().getTime() - new Date(c.due_date || '').getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')}
                       </span>
                     </div>
                     <span className="font-bold text-red-600">{formatCurrency(remainingAmount, country)}</span>
@@ -450,7 +457,7 @@ export default function CreditPage() {
                             Given: {new Date(item.date_given).toLocaleDateString()}
                             {overdue && (
                               <span className="text-red-600 ml-2 font-medium">
-                                {Math.ceil((new Date().getTime() - new Date(item.due_date || '').getTime()) / (1000 * 60 * 60 * 24))} {t('credit.days_overdue')}
+                                {Math.max(0, Math.ceil((new Date().getTime() - new Date(item.due_date || '').getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')}
                               </span>
                             )}
                           </div>
