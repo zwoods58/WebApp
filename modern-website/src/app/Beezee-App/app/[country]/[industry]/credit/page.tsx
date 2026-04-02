@@ -56,6 +56,18 @@ export default function CreditPage() {
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
 
+  // Helper function to check if credit is overdue (moved here to fix ReferenceError)
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
+  };
+
   // Calculate credit statistics from data
   const creditData = credit || [];
   const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
@@ -287,17 +299,6 @@ export default function CreditPage() {
       default:
         return 'text-gray-600 bg-gray-50 border-gray-200';
     }
-  };
-
-  const isOverdue = (dueDate: string, status: string) => {
-    if (status === 'paid' || !dueDate) return false;
-    
-    const dueDateTime = new Date(dueDate);
-    const currentDateTime = new Date();
-    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Only consider overdue after 1 full day past due date
-    return daysPastDue >= 1;
   };
 
   return (
