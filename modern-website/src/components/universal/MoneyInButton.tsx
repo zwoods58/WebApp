@@ -165,6 +165,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
             className="fixed bottom-0 left-0 right-0 z-[70] border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
             style={{ 
               backgroundColor: '#ffffff',
+              background: '#ffffff',
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))'
             }}
