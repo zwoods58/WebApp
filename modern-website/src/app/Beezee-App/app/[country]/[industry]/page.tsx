@@ -37,6 +37,7 @@ import {
   PageLoading,
   OfflineFallback
 } from '@/components/universal';
+import { UpdateNotification } from '@/components/universal/UpdateNotification';
 
 // Dynamic imports for modal components to reduce initial bundle size
 const BuzzInsights = dynamic(() => import('@/components/universal/BuzzInsights'), { ssr: false });
@@ -564,6 +565,9 @@ export default function IndustryDashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
+        {/* Update Notification */}
+        <UpdateNotification />
+        
         {/* Header */}
         <Header industry={industry} country={country} />
         

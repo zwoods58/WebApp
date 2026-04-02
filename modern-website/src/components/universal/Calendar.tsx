@@ -25,6 +25,7 @@ import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import AddAppointmentModal from './AddAppointmentModal';
+import { UpdateNotification } from './UpdateNotification';
 
 interface CalendarProps {
   industry: string;
@@ -392,6 +393,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <UpdateNotification />
       <Header industry={industry} country={country} />
       
       {/* Offline indicator */}

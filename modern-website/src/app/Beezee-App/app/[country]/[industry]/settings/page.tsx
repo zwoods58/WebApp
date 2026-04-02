@@ -23,7 +23,8 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  ArrowLeft
+  ArrowLeft,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -40,6 +41,20 @@ export default function SettingsPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   const { business } = useUnifiedAuth();
+  
+  const checkForUpdates = async () => {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.update();
+        alert('Checking for updates...');
+      } catch (error) {
+        alert('Failed to check for updates');
+      }
+    } else {
+      alert('Service Worker not supported');
+    }
+  };
   
   // Check if accessed from More page
   const showProfileOnly = searchParams.get('from') === 'more';
@@ -258,6 +273,13 @@ export default function SettingsPage() {
           icon: Trash2,
           action: 'button',
           onClick: () => console.log('Clear cache')
+        },
+        {
+          title: t('settings.check_updates', 'Check for Updates'),
+          description: t('settings.updates_desc', 'See if a new version is available'),
+          icon: RefreshCw,
+          action: 'button',
+          onClick: checkForUpdates
         }
       ]
     },

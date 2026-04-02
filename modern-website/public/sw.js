@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v58';
+const CACHE_VERSION = 'v59';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -159,25 +159,36 @@ self.addEventListener('install', (event) => {
 });
 
 // ============================================================
-// ACTIVATE - Clean up old caches
+// ACTIVATE: Clean old caches and claim clients
 // ============================================================
 self.addEventListener('activate', (event) => {
-  console.log(`[SW] Activating ${CACHE_VERSION}...`);
+  console.log(`[SW] 🔄 Activating ${CACHE_VERSION}...`);
   
   event.waitUntil(
     (async () => {
-      // Clear all old caches
+      // Clean up old caches
       const cacheNames = await caches.keys();
       const oldCaches = cacheNames.filter(name => 
         name.includes('beezee-') && !name.includes(CACHE_VERSION)
       );
       
-      console.log('[SW] 🧹 Clearing old caches on activate:', oldCaches);
-      await Promise.all(oldCaches.map(name => caches.delete(name)));
+      await Promise.all(oldCaches.map(name => {
+        console.log(`[SW] 🗑️ Deleting old cache: ${name}`);
+        return caches.delete(name);
+      }));
       
-      // Take control of all pages immediately
+      // Claim all clients so the SW takes control immediately
       await clients.claim();
-      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated and claimed all clients`);
+      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated and claimed clients`);
+      
+      // Notify all clients that a new version is active
+      const clientsList = await clients.matchAll();
+      clientsList.forEach(client => {
+        client.postMessage({
+          type: 'SW_UPDATE_ACTIVATED',
+          version: CACHE_VERSION
+        });
+      });
     })()
   );
 });
@@ -220,6 +231,19 @@ self.addEventListener('message', (event) => {
       industry 
     });
     
+    return;
+  }
+  
+  // Handle update check request
+  if (type === 'CHECK_UPDATE') {
+    console.log('[SW] 🔍 CHECK_UPDATE received - checking for new version...');
+    event.waitUntil(
+      (async () => {
+        const registration = await self.registration;
+        await registration.update();
+        console.log('[SW] ✅ Update check completed');
+      })()
+    );
     return;
   }
   
