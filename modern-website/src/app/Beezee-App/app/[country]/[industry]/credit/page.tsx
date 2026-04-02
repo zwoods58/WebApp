@@ -53,34 +53,9 @@ export default function CreditPage() {
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
 
-  // Helper function to check if credit is overdue (must be defined before use)
-  const isOverdue = (dueDate: string, status: string) => {
-    if (status === 'paid' || !dueDate) return false;
-    
-    const dueDateTime = new Date(dueDate);
-    const currentDateTime = new Date();
-    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Only consider overdue after 1 full day past due date
-    return daysPastDue >= 1;
-  };
-
-  // Helper function to get effective status (overdue items become outstanding)
-  const getEffectiveStatus = (credit: any) => {
-    if (credit.status === 'paid') return 'paid';
-    if (credit.status === 'partial') return 'partial';
-    
-    // For non-paid items, check if overdue
-    if (isOverdue(credit.due_date || '', credit.status)) {
-      return 'outstanding'; // Overdue items show as outstanding
-    }
-    
-    return credit.status; // Return original status if not overdue
-  };
-
   // Calculate credit statistics from data
   const creditData = credit || [];
-  const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding' || isOverdue(c.due_date || '', c.status));
+  const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
   const partialCredit = creditData.filter((c: any) => c.status === 'partial');
   const overdueCredit = creditData.filter((c: any) => isOverdue(c.due_date || '', c.status));
   
@@ -305,6 +280,17 @@ export default function CreditPage() {
     }
   };
 
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
@@ -397,7 +383,32 @@ export default function CreditPage() {
           </div>
         </div>
 
-        
+        {/* Overdue Alerts */}
+        {overdueCredit.length > 0 && (
+          <div className="fade-in">
+            <h3 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+              <AlertCircle size={20} />
+              {t('credit.overdue_payments')}
+            </h3>
+            <div className="space-y-2">
+              {overdueCredit.map((c: any) => {
+                const remainingAmount = c.status === 'partial' ? c.amount - c.paid_amount : c.amount;
+                return (
+                  <div key={c.id} className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium text-gray-900">{c.customer_name}</span>
+                      <span className="text-xs text-red-600 ml-2">
+                        {Math.max(0, Math.ceil((new Date().getTime() - new Date(c.due_date || '').getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')}
+                      </span>
+                    </div>
+                    <span className="font-bold text-red-600">{formatCurrency(remainingAmount, country)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* All Credit */}
         <div className="fade-in mt-6">
           <h3 className="font-semibold text-gray-900 mb-3">{t('credit.all_customers')}</h3>
@@ -414,7 +425,6 @@ export default function CreditPage() {
             <div className="space-y-3">
               {filteredCredit.map((item: any, index: number) => {
                 const remainingAmount = item.status === 'partial' ? item.amount - item.paid_amount : item.amount;
-                const effectiveStatus = getEffectiveStatus(item);
                 const overdue = isOverdue(item.due_date || '', item.status);
                 
                 return (
@@ -422,16 +432,16 @@ export default function CreditPage() {
                     key={item.id || index}
                     onClick={() => handleCustomerClick(item)}
                     className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
-                      effectiveStatus === 'outstanding'
+                      overdue 
                         ? 'bg-red-50 border-red-200 hover:bg-red-100' 
-                        : effectiveStatus === 'paid'
+                        : item.status === 'paid'
                         ? 'bg-green-50 border-green-200 hover:bg-green-100'
                         : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        {getStatusIcon(effectiveStatus)}
+                        {getStatusIcon(item.status)}
                         <div>
                           <div className="font-medium text-gray-900">{item.customer_name}</div>
                           <div className="text-xs text-gray-500">
@@ -456,8 +466,8 @@ export default function CreditPage() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className={`text-xs px-2 py-1 rounded-full inline-block ${getStatusColor(getEffectiveStatus(item))}`}>
-                        {getEffectiveStatus(item)}
+                      <div className={`text-xs px-2 py-1 rounded-full inline-block ${getStatusColor(item.status)}`}>
+                        {item.status}
                       </div>
                       
                       {/* Copy and Share Buttons */}

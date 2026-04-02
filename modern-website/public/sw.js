@@ -876,15 +876,19 @@ self.addEventListener('fetch', (event) => {
         });
         
         if (isActuallyOffline) {
-          // Enhanced cache lookup - try pathname variations
+          // Enhanced cache lookup - try multiple cache key variations
           const cacheKeys = [
             url.pathname,                    // Original pathname
+            request.url,                    // Full request URL
             url.pathname + '/',              // With trailing slash
-            url.pathname.replace(/\/$/, '')  // Without trailing slash
+            url.pathname.replace(/\/$/, ''), // Without trailing slash
+            BASE_PATH + url.pathname,        // With BASE_PATH prefix
+            BASE_PATH + url.pathname + '/',  // With BASE_PATH and trailing slash
           ];
           
           console.log('[SW] 🔍 Trying cache keys for offline page:', { pathname: url.pathname, cacheKeys });
           
+          // Try each cache key variation in current cache
           for (const key of cacheKeys) {
             const cached = await caches.match(key);
             if (cached) {
@@ -893,13 +897,36 @@ self.addEventListener('fetch', (event) => {
             }
           }
           
-          // No cross-version fallback - only use current version to avoid stale data
+          // Try cross-cache search (older versions) as fallback
+          console.log('[SW] 🔍 Trying cross-cache search for offline page...');
+          const cacheVersions = await caches.keys();
+          for (const cacheName of cacheVersions) {
+            if (cacheName.includes('beezee-pages') || cacheName.includes('beezee-static')) {
+              try {
+                const cache = await caches.open(cacheName);
+                for (const key of cacheKeys) {
+                  const cached = await cache.match(key);
+                  if (cached) {
+                    console.log('[SW] ✅ Found in cross-cache:', cacheName, 'with key:', key);
+                    return cached;
+                  }
+                }
+              } catch (err) {
+                console.warn('[SW] ⚠️ Error accessing cache:', cacheName, err.message);
+              }
+            }
+          }
           
-          console.log('[SW] ❌ Page not found in any cache, trying offline.html:', cacheKey);
+          // Ultimate fallback - offline.html
+          console.log('[SW] ❌ No cached page found, serving offline.html');
           const offlinePage = await caches.match(BASE_PATH + '/offline.html');
-          if (offlinePage) return offlinePage;
+          if (offlinePage) {
+            console.log('[SW] ✅ Serving offline.html');
+            return offlinePage;
+          }
           
-          // Last resort: serve a simple HTML page instead of 503
+          // Last resort - generated offline page
+          console.log('[SW] ❌ No offline.html found, generating fallback page');
           return generateOfflinePage();
         }
         

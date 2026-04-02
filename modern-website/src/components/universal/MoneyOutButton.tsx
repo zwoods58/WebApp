@@ -80,16 +80,16 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           {/* Backdrop - CSS fade animation */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 bg-white z-40 backdrop-fade transform-gpu"
+            className="fixed inset-0 bg-black/50 z-40 backdrop-fade transform-gpu"
             style={{ 
               willChange: 'opacity',
               WebkitTransform: 'translateZ(0)'
             }}
           />
           
-          {/* Modal - No animation for instant display */}
+          {/* Modal - Solid white background */}
           <div
-            className="fixed bottom-0 left-0 right-0 z-[70] glass-card !border-x-0 !border-b-0 !rounded-t-3xl !rounded-b-none shadow-xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[70] bg-white border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
             style={{ 
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))'
@@ -101,7 +101,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
             
             <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 glass-regular rounded-xl flex items-center justify-center border border-orange-200/50">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-200">
                   <Icon className="text-orange-600" size={24} />
                 </div>
                 <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t(labels.buttonKey)}</h3>
@@ -126,7 +126,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                           required
                           value={formData.amount}
                           onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                          className="w-full pl-14 pr-4 py-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
+                          className="w-full pl-14 pr-4 py-4 bg-white rounded-2xl border border-gray-300 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
                           placeholder="0.0"
                           inputMode="decimal"
                           step="0.1"
@@ -142,7 +142,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                           required
                           value={formData.amount}
                           onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                          className="w-full pl-14 pr-4 py-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
+                          className="w-full pl-14 pr-4 py-4 bg-white rounded-2xl border border-gray-300 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
                           placeholder="0.00"
                           inputMode="decimal"
                         />
