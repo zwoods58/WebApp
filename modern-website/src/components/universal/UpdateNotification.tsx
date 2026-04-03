@@ -89,17 +89,20 @@ export function UpdateNotification({ onUpdate }: UpdateNotificationProps) {
   const updateApp = () => {
     if (waitingWorker) {
       setIsUpdating(true);
+      
+      // Send message to activate new worker
       waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-      setShow(false);
       
-      // Fallback: reload after 3 seconds if no controller change
+      // Force reload after a short delay
       setTimeout(() => {
-        if (!navigator.serviceWorker.controller) {
-          window.location.reload();
-        }
-      }, 3000);
+        window.location.reload();
+      }, 500);
       
+      setShow(false);
       if (onUpdate) onUpdate();
+    } else {
+      // Fallback: force reload anyway
+      window.location.reload();
     }
   };
 
@@ -108,31 +111,20 @@ export function UpdateNotification({ onUpdate }: UpdateNotificationProps) {
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 fade-in duration-300">
       <div className="bg-blue-600 text-white rounded-lg shadow-xl p-4 min-w-[280px]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {isUpdating ? (
-              <RefreshCw size={20} className="animate-spin shrink-0" />
-            ) : (
-              <RefreshCw size={20} className="shrink-0" />
-            )}
-            <div>
-              <h3 className="font-semibold text-sm">
-                {isUpdating ? 'Updating...' : 'Update Available'}
-              </h3>
-              <p className="text-xs opacity-90">
-                {isUpdating ? 'Installing new version...' : 'A new version is ready'}
-              </p>
-            </div>
-          </div>
-          {!isUpdating && (
-            <button
-              onClick={() => setShow(false)}
-              className="text-white/70 hover:text-white transition-colors shrink-0"
-              aria-label="Close"
-            >
-              <X size={16} />
-            </button>
+        <div className="flex items-center gap-3">
+          {isUpdating ? (
+            <RefreshCw size={20} className="animate-spin shrink-0" />
+          ) : (
+            <RefreshCw size={20} className="shrink-0" />
           )}
+          <div>
+            <h3 className="font-semibold text-sm">
+              {isUpdating ? 'Updating...' : 'Update Available'}
+            </h3>
+            <p className="text-xs opacity-90">
+              {isUpdating ? 'Installing new version...' : 'A new version is ready'}
+            </p>
+          </div>
         </div>
         {!isUpdating && (
           <button

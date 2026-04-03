@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v61';
+const CACHE_VERSION = 'v69';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -251,8 +251,13 @@ self.addEventListener('message', (event) => {
   
   // Handle manual update trigger from "Update Now" button
   if (type === 'SKIP_WAITING') {
-    console.log('[SW] 🔄 SKIP_WAITING received - activating new version...');
+    console.log('[SW] 🔄 SKIP_WAITING received, activating new version...');
     self.skipWaiting();
+    
+    // Notify client that update is starting
+    if (event.source) {
+      event.source.postMessage({ type: 'SW_UPDATE_STARTED' });
+    }
     
     // Notify all clients that new SW is activated
     self.clients.matchAll().then(clients => {
