@@ -128,6 +128,7 @@ export default function StockPage() {
     
     try {
       console.log('🔍 Deleting item with ID:', item.id, 'Type:', typeof item.id);
+      console.log('🔍 Business ID:', business?.id, 'Industry:', industry, 'Country:', country);
       
       const isValidUUID = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -138,21 +139,36 @@ export default function StockPage() {
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
         console.log(`🗑️ Removing offline item: ${item.item_name}`);
         
-        const currentData = queryClient.getQueryData([industry, country, 'inventory']) || [];
+        // Fix: Use correct query key format to match useIndustryDataNew hook
+        const queryKey = ['inventory', industry, country, business?.id];
+        console.log('🔍 Query key for offline removal:', queryKey);
+        
+        const currentData = (queryClient.getQueryData(queryKey) as any[]) || [];
+        console.log('🔍 Current data length:', currentData.length);
+        
         const updatedData = (currentData as any[]).filter(i => i.id !== item.id);
-        queryClient.setQueryData([industry, country, 'inventory'], updatedData);
+        console.log('🔍 Updated data length:', updatedData.length);
+        
+        queryClient.setQueryData(queryKey, updatedData);
         
         setIsDeleting(false);
         return;
       }
       
-      deleteInventory(item.id);
+      console.log('🔍 Calling deleteInventory with ID:', item.id);
+      await deleteInventory(item.id);
       
       showSuccess(t('inventory.delete_success', `Successfully deleted "${item.item_name}"`));
       console.log(`✅ Item deletion queued: ${item.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        itemId: item.id,
+        businessId: business?.id
+      });
       showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
     } finally {
       setIsDeleting(false);
