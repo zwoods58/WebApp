@@ -297,12 +297,12 @@ export default function AddAppointmentModal({
         }}
       >
       {/* Drag Handle */}
-      <div className="flex justify-center pt-3 pb-2">
+      <div className="flex justify-center pt-3 pb-2 shrink-0">
         <div className="w-12 h-1 bg-gray-300 rounded-full" />
       </div>
       
       {/* Header */}
-      <div className="px-6 pb-3 border-b">
+      <div className="px-6 pb-3 border-b shrink-0">
         <h2 className="text-xl font-semibold">{t('calendar.add_appointment', 'Add Appointment')}</h2>
       </div>
       
@@ -310,12 +310,13 @@ export default function AddAppointmentModal({
       <div 
         className="flex-1 overflow-y-auto px-6 py-4"
         style={{
+          overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
           scrollBehavior: 'smooth'
         }}
       >
         {/* All form fields go here */}
-        <div className="space-y-5">
+        <div className="space-y-5 pb-4">
           {/* Customer Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -464,7 +465,7 @@ export default function AddAppointmentModal({
       </div>
       
       {/* BUTTONS - Fixed at bottom, always visible */}
-      <div className="p-6 border-t bg-white">
+      <div className="p-6 border-t bg-white shrink-0">
         <div className="flex gap-3">
           <button
             onClick={onClose}

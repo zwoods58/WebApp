@@ -2067,6 +2067,32 @@ const translations = {
       rw: "Inyandiko zongeraho...",
       lg: "Ebiwandiiko ebirala..."
     },
+    "calendar.title": {
+      en: "Calendar",
+      sw: "Kalenda",
+      ha: "Kalandar",
+      yo: "Kálẹndà",
+      ig: "Kalenda",
+      zu: "Ikhalenda",
+      xh: "Ikhalenda",
+      af: "Kalender",
+      tw: "Dapɛn",
+      rw: "Kalenda",
+      lg: "Kkalenda"
+    },
+    "calendar.add_appointment_short": {
+      en: "Add appointment",
+      sw: "Ongeza miadi",
+      ha: "Ƙara sadarwa",
+      yo: "Fi àkójọ kún",
+      ig: "Tinye ọrụ ịgbakwunye",
+      zu: "Yongeza ibyiringize",
+      xh: "Yongeza iinkalo",
+      af: "Voeg afspraak by",
+      tw: "Hyɛ nsrahyɛ",
+      rw: "Ongeraho ibyiringize",
+      lg: "Yongera omulimo"
+    },
     "calendar.error.service": {
       en: "Please select a service",
       sw: "Tafadhali chagua huduma",

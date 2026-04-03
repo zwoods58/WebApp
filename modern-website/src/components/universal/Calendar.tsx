@@ -428,7 +428,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                 }}
                 className="mt-2 text-xs text-blue-600 hover:text-blue-800"
               >
-                + Add appointment
+                + {t('calendar.add_appointment_short', 'Add appointment')}
               </button>
             </div>
           )}
@@ -449,7 +449,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
         {/* Header - Mobile Responsive */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Calendar</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('calendar.title', 'Calendar')}</h1>
             <button
               onClick={navigateToToday}
               className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto"
@@ -481,7 +481,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Plus size={16} />
-              Add Appointment
+              {t('calendar.add_appointment', 'Add Appointment')}
             </button>
           </div>
         </div>
