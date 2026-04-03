@@ -13,6 +13,7 @@ import {
   XCircle,
   AlertCircle,
   Info,
+  Trash2,
   Filter,
   Search
 } from 'lucide-react';
@@ -667,13 +668,13 @@ export default function Calendar({ industry, country }: CalendarProps) {
                               handleDeleteAppointment(appointment.id);
                             }}
                             disabled={loadingAppointmentId === appointment.id}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Delete appointment"
+                            className="p-2 rounded-lg hover:bg-gray-800 text-gray-800 disabled:opacity-50 transition-colors"
+                            title="Delete Appointment"
                           >
                             {loadingAppointmentId === appointment.id ? (
-                              <div className="animate-spin w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full"></div>
+                              <div className="w-4 h-4 border-2 border-gray-800 border-t-transparent rounded-full animate-spin" />
                             ) : (
-                              <AlertCircle size={18} />
+                              <Trash2 className="w-4 h-4" />
                             )}
                           </button>
                         </div>

@@ -14,6 +14,7 @@ import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices, useAppointments } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
+import { supabase } from '@/lib/supabase';
 
 type Service = {
   id: string;
@@ -38,6 +39,7 @@ interface FormData {
   service_name: string;
   appointment_date: string;
   appointment_time: string;
+  time_block: string;
   duration: number;
   notes: string;
 }
@@ -69,6 +71,7 @@ export default function AddAppointmentModal({
     service_name: '',
     appointment_date: '',
     appointment_time: '',
+    time_block: '',
     duration: 1,
     notes: ''
   });
@@ -86,6 +89,7 @@ export default function AddAppointmentModal({
         service_name: '',
         appointment_date: '',
         appointment_time: '',
+        time_block: '',
         duration: 1,
         notes: ''
       });
@@ -93,19 +97,35 @@ export default function AddAppointmentModal({
     }
   }, [isOpen]);
 
-  // Generate time slots (24-hour basis, 15-minute intervals)
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 0; hour <= 23; hour++) {
-      for (let minute = 0; minute < 60; minute += 15) {
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        slots.push(timeString);
-      }
-    }
-    return slots;
-  };
+  // Time block options (30-minute intervals)
+  const timeBlocks = [
+    '9:00 AM - 9:30 AM', '9:30 AM - 10:00 AM', '10:00 AM - 10:30 AM',
+    '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM',
+    '12:00 PM - 12:30 PM', '12:30 PM - 1:00 PM', '1:00 PM - 1:30 PM',
+    '1:30 PM - 2:00 PM', '2:00 PM - 2:30 PM', '2:30 PM - 3:00 PM',
+    '3:00 PM - 3:30 PM', '3:30 PM - 4:00 PM', '4:00 PM - 4:30 PM',
+    '4:30 PM - 5:00 PM', '5:00 PM - 5:30 PM', '5:30 PM - 6:00 PM'
+  ];
 
-  const timeSlots = generateTimeSlots();
+  // Check for conflicting appointments
+  const checkConflict = async (date: string, timeBlock: string) => {
+    if (!business?.id) return false;
+    
+    try {
+      const { data: existing } = await supabase
+        .from('appointments')
+        .select('id')
+        .eq('business_id', business.id)
+        .eq('appointment_date', date)
+        .eq('time_block', timeBlock)
+        .maybeSingle();
+      
+      return !!existing;
+    } catch (error) {
+      console.error('Error checking conflict:', error);
+      return false;
+    }
+  };
 
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
@@ -185,6 +205,14 @@ export default function AddAppointmentModal({
 
     setSubmitting(true);
     try {
+      // Check for conflict first
+      const hasConflict = await checkConflict(formData.appointment_date, formData.appointment_time);
+      if (hasConflict) {
+        showError('This time slot is already booked. Please select another time.');
+        setSubmitting(false);
+        return;
+      }
+      
       await addAppointment({
         business_id: business.id,
         industry,
@@ -194,6 +222,9 @@ export default function AddAppointmentModal({
         service_name: formData.service_name,
         appointment_date: formData.appointment_date,
         appointment_time: formData.appointment_time,
+        time_block: formData.appointment_time,
+        start_time: formData.appointment_time.split(' - ')[0],
+        end_time: formData.appointment_time.split(' - ')[1],
         duration: formData.duration,
         notes: formData.notes.trim() || undefined,
         status: 'pending',
@@ -217,16 +248,31 @@ export default function AddAppointmentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-white animate-fade-in" 
+        className="absolute inset-0 bg-black/50 animate-fade-in" 
         onClick={onClose}
-        style={{ backgroundColor: '#ffffff' }}
       />
 
-      {/* Modal - Mobile Responsive */}
-      <div className="relative w-full max-w-md h-full min-h-0 overflow-y-auto bg-[var(--color-background-primary)] rounded-2xl p-6 animate-scale-in">
+      {/* Modal - Mobile Bottom Sheet */}
+      <div
+        className="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-xl overflow-hidden animate-slide-in"
+        style={{ 
+          maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Drag indicator for mobile */}
+        <div className="p-4 flex justify-center sm:hidden">
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+        
+        {/* Scrollable content */}
+        <div className="px-6 pb-8 overflow-y-auto" style={{ 
+          maxHeight: 'calc(100vh - 8rem - env(safe-area-inset-bottom))',
+          WebkitOverflowScrolling: 'touch'
+        }}>
         {/* Apple-style Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="w-8 sm:w-16" />
@@ -357,8 +403,8 @@ export default function AddAppointmentModal({
                   } text-black text-base sm:text-sm`}
                 >
                   <option value="">{t('calendar.select_time', 'Select Time')}</option>
-                  {timeSlots.map(time => (
-                    <option key={time} value={time}>{time}</option>
+                  {timeBlocks.map(timeBlock => (
+                    <option key={timeBlock} value={timeBlock}>{timeBlock}</option>
                   ))}
                 </select>
               </div>
@@ -425,6 +471,7 @@ export default function AddAppointmentModal({
             </div>
           </form>
         </div>
+      </div>
     </div>
   );
 }
