@@ -139,6 +139,16 @@ export default function StockPage() {
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
         console.log(`🗑️ Removing offline item: ${item.item_name}`);
         
+        // Fix: Also remove from IndexedDB for offline items
+        try {
+          // Import and use the database to delete offline item
+          const { db } = await import('@/lib/database');
+          await db.inventory.delete(item.id);
+          console.log(`✅ Offline item removed from IndexedDB: ${item.id}`);
+        } catch (error) {
+          console.error('❌ Failed to remove offline item from IndexedDB:', error);
+        }
+        
         // Fix: Use correct query key format to match useIndustryDataNew hook
         const queryKey = ['inventory', industry, country, business?.id];
         console.log('🔍 Query key for offline removal:', queryKey);
