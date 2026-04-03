@@ -83,18 +83,21 @@ export default function AddAppointmentModal({
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setFormData({
-        customerName: '',
-        customerContact: '',
-        serviceId: '',
-        serviceName: '',
-        servicePrice: 0,
-        date: '',
-        startTime: '',
-        endTime: '',
-        notes: ''
-      });
-      setErrors({});
+      // Prevent body scroll when modal is open
+      document.body.classList.add('modal-open');
+      
+      // Auto focus customer name input
+      const timer = setTimeout(() => {
+        const customerInput = document.querySelector('input[placeholder*="customer name"], input[placeholder*="Customer"]') as HTMLInputElement;
+        if (customerInput) {
+          customerInput.focus();
+        }
+      }, 100);
+      
+      return () => {
+        clearTimeout(timer);
+        document.body.classList.remove('modal-open');
+      };
     }
   }, [isOpen]);
 
