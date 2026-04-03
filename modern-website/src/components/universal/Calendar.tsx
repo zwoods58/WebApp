@@ -496,10 +496,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
                 onChange={(e) => setFilter(e.target.value as any)}
                 className="px-3 py-2 border border-gray-300 rounded-lg w-full sm:w-auto"
               >
-                <option value="all">All</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="all">{t('common.all', 'All')}</option>
+                <option value="scheduled">{t('calendar.scheduled', 'Scheduled')}</option>
+                <option value="completed">{t('calendar.completed', 'Completed')}</option>
+                <option value="cancelled">{t('calendar.cancelled', 'Cancelled')}</option>
               </select>
             </div>
           </div>
@@ -508,7 +508,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search appointments..."
+              placeholder={t('calendar.search_placeholder', 'Search appointments...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg w-full sm:w-auto"
@@ -607,7 +607,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                           </div>
                           <div className="space-y-1">
                             <div className="text-sm text-gray-600 flex items-center gap-2">
-                              <span className="truncate">{appointment.service_name || 'Service'}</span>
+                              <span className="truncate">{appointment.service_name || t('calendar.service', 'Service')}</span>
                             </div>
                             <div className="text-sm text-gray-500 flex items-center gap-2">
                               <Clock size={14} />
@@ -646,7 +646,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                                 }}
                                 disabled={loadingAppointmentId === appointment.id}
                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Cancel appointment"
+                                title={t('calendar.cancel_appointment', 'Cancel appointment')}
                               >
                                 <XCircle size={18} />
                               </button>
@@ -669,7 +669,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                             }}
                             disabled={loadingAppointmentId === appointment.id}
                             className="p-2 rounded-lg hover:bg-gray-800 text-gray-800 disabled:opacity-50 transition-colors"
-                            title="Delete Appointment"
+                            title={t('calendar.delete_appointment', 'Delete Appointment')}
                           >
                             {loadingAppointmentId === appointment.id ? (
                               <div className="w-4 h-4 border-2 border-gray-800 border-t-transparent rounded-full animate-spin" />

@@ -303,7 +303,7 @@ export default function AddAppointmentModal({
       
       {/* Header */}
       <div className="px-6 pb-3 border-b">
-        <h2 className="text-xl font-semibold">Add Appointment</h2>
+        <h2 className="text-xl font-semibold">{t('calendar.add_appointment', 'Add Appointment')}</h2>
       </div>
       
       {/* SCROLLABLE CONTENT - Enhanced smooth scrolling */}
@@ -319,14 +319,14 @@ export default function AddAppointmentModal({
           {/* Customer Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Customer Name *
+              {t('calendar.customer_name', 'Customer Name')} *
             </label>
             <input
               type="text"
               value={formData.customerName}
               onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter customer name"
+              placeholder={t('calendar.customer_name_placeholder', 'Enter customer name')}
               autoFocus
               required
             />
@@ -341,7 +341,7 @@ export default function AddAppointmentModal({
           {/* Date Picker */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date *
+              {t('calendar.select_date', 'Date')} *
             </label>
             <input
               type="date"
@@ -363,7 +363,7 @@ export default function AddAppointmentModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Time *
+                {t('calendar.start_time', 'Start Time')} *
               </label>
               <select
                 value={formData.startTime}
@@ -371,7 +371,7 @@ export default function AddAppointmentModal({
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select time</option>
+                <option value="">{t('calendar.select_time', 'Select time')}</option>
                 {timeOptions.map(time => (
                   <option key={time} value={time}>{time}</option>
                 ))}
@@ -386,7 +386,7 @@ export default function AddAppointmentModal({
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                End Time *
+                {t('calendar.end_time', 'End Time')} *
               </label>
               <select
                 value={formData.endTime}
@@ -394,7 +394,7 @@ export default function AddAppointmentModal({
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="">Select time</option>
+                <option value="">{t('calendar.select_time', 'Select time')}</option>
                 {timeOptions.map(time => (
                   <option key={time} value={time}>{time}</option>
                 ))}
@@ -411,7 +411,7 @@ export default function AddAppointmentModal({
           {/* Service Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Service *
+              {t('calendar.select_service', 'Service')} *
             </label>
             <select
               value={formData.serviceId}
@@ -427,7 +427,7 @@ export default function AddAppointmentModal({
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Select a service</option>
+              <option value="">{t('calendar.select_service', 'Select a service')}</option>
               {services.map(service => (
                 <option key={service.id} value={service.id}>
                   {service.service_name} - ${service.price}
@@ -450,14 +450,14 @@ export default function AddAppointmentModal({
           {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes (Optional)
+              {t('calendar.notes', 'Notes')} ({t('common.optional', 'Optional')})
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
               rows={3}
-              placeholder="Additional notes..."
+              placeholder={t('calendar.notes_placeholder', 'Additional notes...')}
             />
           </div>
         </div>
@@ -470,14 +470,14 @@ export default function AddAppointmentModal({
             onClick={onClose}
             className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium"
           >
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             onClick={handleSubmit}
             disabled={submitting || services.length === 0}
             className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-medium disabled:opacity-50"
           >
-            {submitting ? 'Saving...' : 'Save Appointment'}
+            {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Save Appointment')}
           </button>
         </div>
       </div>
