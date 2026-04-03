@@ -12,7 +12,6 @@ import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
-import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function StockPage() {
   const params = useParams();
@@ -64,8 +63,6 @@ export default function StockPage() {
   const [showSellModal, setShowSellModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = ['all', ...Array.from(new Set(inventory.map((item: any) => item.category || 'uncategorized')))] as string[];
@@ -122,53 +119,47 @@ export default function StockPage() {
     setShowEditModal(true);
   };
 
-  const handleDeleteItem = (item: any) => {
-    setItemToDelete(item);
-    setShowDeleteModal(true);
-  };
-
-  const confirmDeleteItem = async () => {
-    if (!itemToDelete) return;
+  const handleDeleteItem = async (item: any) => {
+    // NATIVE CONFIRM - No external popup
+    const confirmed = window.confirm(`Delete "${item.item_name}"? This action cannot be undone.`);
+    if (!confirmed) return;
     
     setIsDeleting(true);
     
     try {
-      console.log('🔍 Deleting item with ID:', itemToDelete.id, 'Type:', typeof itemToDelete.id);
+      console.log('🔍 Deleting item with ID:', item.id, 'Type:', typeof item.id);
       
       const isValidUUID = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         return uuidRegex.test(id);
       };
       
-      if (!isValidUUID(itemToDelete.id)) {
+      if (!isValidUUID(item.id)) {
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
-        console.log(`🗑️ Removing offline item: ${itemToDelete.item_name}`);
+        console.log(`🗑️ Removing offline item: ${item.item_name}`);
         
         const currentData = queryClient.getQueryData([industry, country, 'inventory']) || [];
-        const updatedData = (currentData as any[]).filter(item => item.id !== itemToDelete.id);
+        const updatedData = (currentData as any[]).filter(i => i.id !== item.id);
         queryClient.setQueryData([industry, country, 'inventory'], updatedData);
         
         setIsDeleting(false);
-        setShowDeleteModal(false);
-        setItemToDelete(null);
         return;
       }
       
-      deleteInventory(itemToDelete.id);
+      deleteInventory(item.id);
       
-      showSuccess(t('inventory.delete_success', `Successfully deleted "${itemToDelete.item_name}"`));
-      console.log(`✅ Item deletion queued: ${itemToDelete.item_name}`);
+      showSuccess(t('inventory.delete_success', `Successfully deleted "${item.item_name}"`));
+      console.log(`✅ Item deletion queued: ${item.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
       showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
     } finally {
       setIsDeleting(false);
-      setShowDeleteModal(false);
-      setItemToDelete(null);
     }
   };
 
+  
   const handleEditSubmit = async (editData: any) => {
     if (!selectedItem || !business?.id) return;
     
@@ -528,22 +519,7 @@ export default function StockPage() {
         </div>
       )}
       
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false);
-          setItemToDelete(null);
-        }}
-        onConfirm={confirmDeleteItem}
-        title={t('inventory.delete_confirm_title', 'Delete Item')}
-        message={itemToDelete ? t('inventory.delete_confirm_message', `Are you sure you want to delete "${itemToDelete.item_name}"? This action cannot be undone.`) : ''}
-        confirmText={t('common.delete', 'Delete')}
-        cancelText={t('common.cancel', 'Cancel')}
-        type="danger"
-        loading={isDeleting}
-      />
-    </div>
+          </div>
   );
 }
 

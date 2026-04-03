@@ -65,6 +65,7 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [activeSection, setActiveSection] = useState('general');
+  const [isResetting, setIsResetting] = useState(false);
 
   // Initialize edited profile when data loads
   useEffect(() => {
@@ -119,6 +120,40 @@ export default function SettingsPage() {
       ...prev,
       [field]: value
     }));
+  };
+
+  const resetAccountData = async () => {
+    const confirmed = window.confirm(
+      'WARNING: This will delete ALL your data (appointments, inventory, services, credit, transactions, expenses).\n\nThis action cannot be undone. Are you absolutely sure?'
+    );
+    
+    if (!confirmed) return;
+    
+    const password = prompt('Type "RESET" to confirm account reset:');
+    if (password !== 'RESET') {
+      alert('Reset cancelled. Type "RESET" to confirm.');
+      return;
+    }
+    
+    setIsResetting(true);
+    try {
+      const response = await fetch('/api/reset-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId: business?.id }),
+      });
+      
+      if (response.ok) {
+        alert('Account has been reset successfully. All data cleared.');
+        window.location.reload();
+      } else {
+        throw new Error('Reset failed');
+      }
+    } catch (error) {
+      alert('Failed to reset account. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   // Define proper types for settings items
@@ -258,6 +293,13 @@ export default function SettingsPage() {
           icon: Trash2,
           action: 'button',
           onClick: () => console.log('Clear cache')
+        },
+        {
+          title: t('settings.reset_account', 'Reset Account Data'),
+          description: t('settings.reset_desc', 'Delete all your data (appointments, inventory, etc.)'),
+          icon: Trash2,
+          action: 'button',
+          onClick: resetAccountData
         }
       ]
     },
