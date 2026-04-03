@@ -65,13 +65,14 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           }
           setShowModal(true);
         }}
-        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-white shadow-lg transition-all bg-gradient-to-r from-[var(--color-danger)] to-rose-500 hover:shadow-xl active:shadow-md no-select button-tap ${
+        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold shadow-lg transition-all hover:shadow-xl active:shadow-md no-select button-tap ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
+        style={{ backgroundColor: '#ffffff', color: '#000000' }}
         disabled={disabled}
       >
-        <Minus size={22} strokeWidth={2.5} />
-        {t('common.money_out')}
+        <Minus size={22} strokeWidth={2.5} className="text-red-600" />
+        <span style={{ color: '#000000' }}>{t('common.money_out')}</span>
       </button>
 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
@@ -209,9 +210,10 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                         }}
                         className={`py-3 rounded-xl font-medium text-sm transition-all button-tap ${
                           formData.payment_method === method
-                            ? 'bg-orange-500/20 text-orange-700 border-2 border-orange-500/50 bg-white/90 backdrop-blur-md shadow-sm'
-                            : 'bg-white/90 backdrop-blur-md text-[var(--text-2)] border-2 border-transparent hover:bg-white/95 shadow-sm'
+                            ? 'bg-orange-500/20 text-orange-700 border-2 border-orange-500/50 shadow-sm'
+                            : 'text-[var(--text-2)] border-2 border-transparent shadow-sm'
                         }`}
+                        style={{ backgroundColor: '#ffffff' }}
                       >
                         {t(`payment.${method}`, method === 'mobile_money' ? 'Mobile Money' : method.charAt(0).toUpperCase() + method.slice(1))}
                       </button>

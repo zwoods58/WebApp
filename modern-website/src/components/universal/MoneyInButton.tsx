@@ -138,13 +138,14 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
           }
           setShowModal(true);
         }}
-        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-white shadow-lg transition-all bg-gradient-to-r from-[var(--color-success)] to-emerald-500 hover:shadow-xl active:shadow-md no-select button-tap ${
+        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold shadow-lg transition-all hover:shadow-xl active:shadow-md no-select button-tap ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
-        }}`}
+        }`}
+        style={{ backgroundColor: '#ffffff', color: '#000000' }}
         disabled={disabled}
       >
-        <Plus size={22} strokeWidth={2.5} />
-        {t('common.money_in')}
+        <Plus size={22} strokeWidth={2.5} className="text-green-600" />
+        <span style={{ color: '#000000' }}>{t('common.money_in')}</span>
       </button>
 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
@@ -225,7 +226,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       <select
                         value={formData.service_id}
                         onChange={(e) => setFormData(prev => ({ ...prev, service_id: e.target.value }))}
-                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        style={{ backgroundColor: '#ffffff' }}
                         required
                       >
                         <option value="">{t('transport.select_service', 'Select service')}</option>
@@ -245,7 +247,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         type="number"
                         value={formData.distance}
                         onChange={(e) => setFormData(prev => ({ ...prev, distance: e.target.value }))}
-                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        style={{ backgroundColor: '#ffffff' }}
                         placeholder="0.0"
                         step="0.1"
                         disabled={formData.use_base_amount}
@@ -273,7 +276,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         type="number"
                         value={formData.tips}
                         onChange={(e) => setFormData(prev => ({ ...prev, tips: e.target.value }))}
-                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        style={{ backgroundColor: '#ffffff' }}
                         placeholder="0.00"
                         step="0.01"
                       />
@@ -307,7 +311,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        style={{ backgroundColor: '#ffffff' }}
                     placeholder={t('common.description_placeholder', 'What was this for?')}
                   />
                 </div>
@@ -320,7 +325,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     type="text"
                     value={formData.customer_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        style={{ backgroundColor: '#ffffff' }}
                     placeholder={t('customerName')}
                   />
                 </div>
@@ -342,11 +348,12 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                           }
                           setFormData(prev => ({ ...prev, payment_method: method }));
                         }}
-                        className={`py-3 rounded-xl font-medium text-sm transition-all ${
+                        className={`py-3 rounded-xl font-medium text-sm transition-all button-tap ${
                           formData.payment_method === method
-                            ? 'bg-green-500/20 text-green-700 border-2 border-green-500/50 bg-white/90 backdrop-blur-md shadow-sm'
-                            : 'bg-white/90 backdrop-blur-md text-[var(--text-2)] border-2 border-transparent hover:bg-white/95 shadow-sm'
+                            ? 'bg-green-500/20 text-green-700 border-2 border-green-500/50 shadow-sm'
+                            : 'text-[var(--text-2)] border-2 border-transparent shadow-sm'
                         }`}
+                        style={{ backgroundColor: '#ffffff' }}
                       >
                         {t(`payment.${method}`, method === 'mobile_money' ? 'Mobile Money' : method.charAt(0).toUpperCase() + method.slice(1))}
                       </button>
