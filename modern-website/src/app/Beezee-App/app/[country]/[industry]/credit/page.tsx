@@ -55,6 +55,19 @@ export default function CreditPage() {
 
   // Calculate credit statistics from data
   const creditData = credit || [];
+  
+  // ✅ DEFINE isOverdue FIRST to fix temporal dead zone error
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const currentDateTime = new Date();
+    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Only consider overdue after 1 full day past due date
+    return daysPastDue >= 1;
+  };
+  
   const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
   const partialCredit = creditData.filter((c: any) => c.status === 'partial');
   const overdueCredit = creditData.filter((c: any) => isOverdue(c.due_date || '', c.status));
@@ -278,17 +291,6 @@ export default function CreditPage() {
       default:
         return 'text-gray-600 bg-gray-50 border-gray-200';
     }
-  };
-
-  const isOverdue = (dueDate: string, status: string) => {
-    if (status === 'paid' || !dueDate) return false;
-    
-    const dueDateTime = new Date(dueDate);
-    const currentDateTime = new Date();
-    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Only consider overdue after 1 full day past due date
-    return daysPastDue >= 1;
   };
 
   return (
