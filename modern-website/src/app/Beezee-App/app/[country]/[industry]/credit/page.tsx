@@ -385,32 +385,7 @@ export default function CreditPage() {
           </div>
         </div>
 
-        {/* Overdue Alerts */}
-        {overdueCredit.length > 0 && (
-          <div className="fade-in">
-            <h3 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
-              <AlertCircle size={20} />
-              {t('credit.overdue_payments')}
-            </h3>
-            <div className="space-y-2">
-              {overdueCredit.map((c: any) => {
-                const remainingAmount = c.status === 'partial' ? c.amount - c.paid_amount : c.amount;
-                return (
-                  <div key={c.id} className="flex justify-between items-center">
-                    <div>
-                      <span className="font-medium text-gray-900">{c.customer_name}</span>
-                      <span className="text-xs text-red-600 ml-2">
-                        {Math.max(0, Math.ceil((new Date().getTime() - new Date(c.due_date || '').getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')}
-                      </span>
-                    </div>
-                    <span className="font-bold text-red-600">{formatCurrency(remainingAmount, country)}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
+        
         {/* All Credit */}
         <div className="fade-in mt-6">
           <h3 className="font-semibold text-gray-900 mb-3">{t('credit.all_customers')}</h3>
