@@ -35,6 +35,10 @@ export default function ServicesPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
+  // Loading states for delete operations
+  const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
+  const [deletingInventoryId, setDeletingInventoryId] = useState<string | null>(null);
+  
   // Redirect retail users to stock page - retail doesn't use services
   useEffect(() => {
     if (industry === 'retail' && navigator.onLine) {
@@ -243,15 +247,20 @@ export default function ServicesPage() {
   };
 
   const handleDeleteService = async (serviceId: string) => {
-    if (!confirm('Are you sure you want to delete this service?')) {
+    if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
       return;
     }
     
+    setDeletingServiceId(serviceId);
     try {
       await deleteServiceFn(serviceId);
       setShowServiceDetail(null);
+      showSuccess('Service deleted successfully');
     } catch (error) {
       console.error('Failed to delete service:', error);
+      showError('Failed to delete service');
+    } finally {
+      setDeletingServiceId(null);
     }
   };
 
@@ -367,15 +376,19 @@ export default function ServicesPage() {
   };
 
   const handleDeleteInventoryItem = async (itemId: string) => {
-    if (!confirm('Are you sure you want to delete this inventory item?')) {
+    if (!confirm('Are you sure you want to delete this inventory item? This action cannot be undone.')) {
       return;
     }
     
+    setDeletingInventoryId(itemId);
     try {
       await deleteInventoryItem(itemId);
-      console.log('Inventory item deleted successfully');
+      showSuccess('Inventory item deleted successfully');
     } catch (error) {
       console.error('Failed to delete inventory item:', error);
+      showError('Failed to delete inventory item');
+    } finally {
+      setDeletingInventoryId(null);
     }
   };
 
@@ -684,11 +697,19 @@ export default function ServicesPage() {
                               </button>
                             )}
                             <button
-                              onClick={() => handleDeleteService(service.id)}
-                              className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteService(service.id);
+                              }}
+                              disabled={deletingServiceId === service.id}
+                              className="p-2 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
                               title="Delete service"
                             >
-                              <Trash2 size={16} className="text-red-600" />
+                              {deletingServiceId === service.id ? (
+                                <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <Trash2 size={16} className="text-red-600" />
+                              )}
                             </button>
                           </div>
                         </div>
@@ -850,11 +871,19 @@ export default function ServicesPage() {
                             <Edit size={16} className="text-gray-600" />
                           </button>
                           <button
-                            onClick={() => handleDeleteInventoryItem(item.id)}
-                            className="p-2 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteInventoryItem(item.id);
+                            }}
+                            disabled={deletingInventoryId === item.id}
+                            className="p-2 border border-red-300 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
                             title="Delete item"
                           >
-                            <Trash2 size={16} className="text-red-600" />
+                            {deletingInventoryId === item.id ? (
+                              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 size={16} className="text-red-600" />
+                            )}
                           </button>
                         </div>
                       </div>

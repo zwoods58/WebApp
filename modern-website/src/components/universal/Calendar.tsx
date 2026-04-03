@@ -282,7 +282,19 @@ export default function Calendar({ industry, country }: CalendarProps) {
   };
 
   const handleViewDetails = (appointment: any) => {
-    setSelectedAppointment(appointment);
+    // Ensure appointment has all required fields with fallbacks
+    const safeAppointment = {
+      id: appointment.id || `temp-${Date.now()}`,
+      customer_name: appointment.customer_name || 'Unknown Customer',
+      appointment_date: appointment.appointment_date || appointment.date || new Date().toISOString(),
+      status: appointment.status || 'pending',
+      notes: appointment.notes || '',
+      service_name: appointment.service_name || 'Service',
+      metadata: appointment.metadata || {},
+      appointment_time: appointment.appointment_time || 'All day'
+    };
+    
+    setSelectedAppointment(safeAppointment);
     setShowDetailsModal(true);
   };
 

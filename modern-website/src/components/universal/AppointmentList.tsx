@@ -29,18 +29,32 @@ export default function AppointmentList({
   const nextWeek = new Date(today);
   nextWeek.setDate(today.getDate() + 7);
 
-  // Today's appointments
-  const todayAppointments = appointments.filter(apt => {
+  // Filter appointments - ONLY show scheduled/pending, NOT completed
+  const activeAppointments = appointments.filter(apt => {
+    const aptDate = new Date(apt.appointment_date || apt.date);
+    aptDate.setHours(0, 0, 0, 0);
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    
+    // Only include if status is NOT 'completed'
+    const isNotCompleted = apt.status !== 'completed';
+    const isUpcoming = aptDate >= today && aptDate <= nextWeek;
+    
+    return isNotCompleted && isUpcoming;
+  });
+
+  // Today's appointments (only scheduled, not completed)
+  const todayAppointments = activeAppointments.filter(apt => {
     const aptDate = new Date(apt.appointment_date || apt.date);
     aptDate.setHours(0, 0, 0, 0);
     return aptDate.getTime() === today.getTime();
   });
 
-  // Upcoming appointments (next 7 days, excluding today)
-  const upcomingAppointments = appointments.filter(apt => {
+  // Upcoming appointments (only scheduled, not completed)
+  const upcomingAppointments = activeAppointments.filter(apt => {
     const aptDate = new Date(apt.appointment_date || apt.date);
     aptDate.setHours(0, 0, 0, 0);
-    return aptDate > today && aptDate <= nextWeek;
+    return aptDate.getTime() > today.getTime();
   }).sort((a, b) => {
     const dateA = new Date(a.appointment_date || a.date);
     const dateB = new Date(b.appointment_date || b.date);
