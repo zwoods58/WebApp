@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
@@ -40,6 +40,7 @@ const getDefaultDueDate = () => {
 export default function MoneyInButton({ industry, country, onSuccess, disabled = false }: MoneyInButtonProps) {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
+  const dueDateRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
@@ -127,6 +128,25 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
 
   // Close modal handler
   const closeModal = () => setShowModal(false);
+
+  // Auto-scroll to due date when credit is selected
+  useEffect(() => {
+    if (formData.payment_method === 'credit' && dueDateRef.current) {
+      // Small delay to ensure the DOM has updated
+      setTimeout(() => {
+        dueDateRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        
+        // Optional: Add a temporary highlight effect
+        dueDateRef.current?.classList.add('bg-yellow-50', 'transition-colors', 'duration-500');
+        setTimeout(() => {
+          dueDateRef.current?.classList.remove('bg-yellow-50', 'transition-colors', 'duration-500');
+        }, 1000);
+      }, 100);
+    }
+  }, [formData.payment_method]);
 
   return (
     <>
@@ -363,7 +383,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
 
                 {/* ✅ Due Date field - REQUIRED when credit selected */}
                 {formData.payment_method === 'credit' && (
-                  <div>
+                  <div ref={dueDateRef} className="scroll-mt-4">
                     <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
                       Due Date <span className="text-red-500">*</span>
                     </label>
@@ -372,7 +392,8 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       required
                       value={formData.due_date}
                       onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
-                      className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)]"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)]"
+                      style={{ backgroundColor: '#ffffff' }}
                     />
                     <p className="text-xs text-[var(--text-3)] mt-1">
                       Payment due date (default: 30 days from today)
