@@ -1,7 +1,7 @@
 {
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
-  "description": "Your Digital Black Book - Advanced financial management with smart credit tracking, offline-first PWA, real-time sync, and instant updates for informal businesses",
+  "description": "Your Digital Black Book - Ultra-fast PWA with optimized loading, smart credit tracking, offline-first design, real-time sync, and instant updates for informal businesses",
   "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "browser"],
@@ -10,6 +10,7 @@
   "orientation": "portrait-primary",
   "scope": "/Beezee-App/",
   "id": "/Beezee-App/",
+  "version": "83",
   "icons": [
     {
       "src": "/beezee-icon-72x72.png",
@@ -112,6 +113,45 @@
       "short_name": "Expenses",
       "description": "Add expenses and costs",
       "url": "/Beezee-App/app/ke/retail",
+      "icons": [
+        {
+          "src": "/beezee-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "short_name": "Stock",
+      "description": "Manage inventory and stock levels",
+      "url": "/Beezee-App/app/ke/retail/stock",
+      "icons": [
+        {
+          "src": "/beezee-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "description": "Manage services and appointments",
+      "url": "/Beezee-App/app/ke/retail/services",
+      "icons": [
+        {
+          "src": "/beezee-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "App settings and account management",
+      "url": "/Beezee-App/app/ke/retail/settings",
       "icons": [
         {
           "src": "/beezee-icon-192x192.png",
