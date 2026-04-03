@@ -311,8 +311,7 @@ export default function AddAppointmentModal({
         className="flex-1 overflow-y-auto px-6 py-4"
         style={{
           WebkitOverflowScrolling: 'touch',
-          scrollBehavior: 'smooth',
-          maxHeight: 'calc(90vh - 120px)'
+          scrollBehavior: 'smooth'
         }}
       >
         {/* All form fields go here */}
