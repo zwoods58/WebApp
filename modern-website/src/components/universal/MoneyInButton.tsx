@@ -153,12 +153,18 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
           {/* Backdrop - 100% SOLID WHITE */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 bg-white z-40 transform-gpu"
+            className="fixed inset-0 z-40 transform-gpu"
             style={{ 
-              backgroundColor: '#ffffff',
-              background: '#ffffff',
+              backgroundColor: '#ffffff !important',
+              background: '#ffffff !important',
+              backgroundImage: 'none !important',
               willChange: 'opacity',
-              WebkitTransform: 'translateZ(0)'
+              WebkitTransform: 'translateZ(0)',
+              position: 'fixed',
+              top: '0',
+              left: '0',
+              right: '0',
+              bottom: '0'
             }}
           />
           
