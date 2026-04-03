@@ -82,6 +82,23 @@ export default function StockPage() {
       }
     }
   }, [inventory, persistentInventory, addInventoryAsync]);
+
+  // Periodic database sync to ensure data persistence
+  useEffect(() => {
+    if (!business?.id) return;
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('🔄 [StockPage] Periodic sync completed');
+      } catch (error) {
+        console.warn('⚠️ [StockPage] Periodic sync failed:', error);
+      }
+    }, 30000); // Sync every 30 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [business?.id]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
@@ -118,10 +135,22 @@ export default function StockPage() {
         last_ordered: new Date().toISOString().split('T')[0]
       };
       
-      console.log('🔧 [StockPage] Adding item:', itemData);
+      console.log('🔧 [StockPage] Adding item to database:', itemData);
       
-      // Use addInventory (the synchronous version for optimistic update)
+      // Use the async version to ensure database save
+      await addInventoryAsync(itemData);
+      
+      // Also update optimistic cache
       addInventoryItem(itemData);
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [StockPage] Forced sync to database');
+      } catch (syncError) {
+        console.warn('⚠️ [StockPage] Sync failed, but item saved locally:', syncError);
+      }
       
       setShowAddModal(false);
       showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}" to inventory`));
@@ -194,8 +223,17 @@ export default function StockPage() {
       console.log('🔍 Calling deleteInventory with ID:', item.id);
       await deleteInventory(item.id);
       
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [StockPage] Forced sync to database after delete');
+      } catch (syncError) {
+        console.warn('⚠️ [StockPage] Sync failed after delete, but item removed locally:', syncError);
+      }
+      
       showSuccess(t('inventory.delete_success', `Successfully deleted "${item.item_name}"`));
-      console.log(`✅ Item deletion queued: ${item.item_name}`);
+      console.log(`✅ Item deletion queued and synced: ${item.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
@@ -239,6 +277,15 @@ export default function StockPage() {
         await updateInventoryAsync({ id: selectedItem.id, data: updates });
       } else {
         updateInventory({ id: selectedItem.id, data: updates });
+      }
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [StockPage] Forced sync to database after update');
+      } catch (syncError) {
+        console.warn('⚠️ [StockPage] Sync failed after update, but item saved locally:', syncError);
       }
 
       setShowEditModal(false);
