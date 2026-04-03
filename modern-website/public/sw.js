@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v68';
+const CACHE_VERSION = 'v61';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -111,6 +111,7 @@ console.log('[SW] Smart caching mode - will cache user routes after login');
 self.addEventListener('install', (event) => {
   console.log(`[SW] 🚀 Installing service worker ${CACHE_VERSION}...`);
   
+  // Clear old caches before installing new ones
   // Clear old caches before installing new ones
   // Clear old caches before installing new ones
   event.waitUntil(

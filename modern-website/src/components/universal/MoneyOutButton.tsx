@@ -217,8 +217,17 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   </div>
                 </div>
 
-                <div className="pt-4">
-                  {/* ✅ REPLACED: motion.button with CSS button-tap class */}
+                <div className="pt-4 space-y-3">
+                  {/* Cancel Button */}
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+
+                  {/* Existing Submit Button - Keep orange gradient */}
                   <button
                     type="submit"
                     className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap"
