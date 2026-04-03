@@ -457,10 +457,15 @@ export default function StockPage() {
                       </button>
                       <button
                         onClick={() => handleDeleteItem(item)}
-                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        disabled={isDeleting}
+                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Delete item"
                       >
-                        <Trash2 size={14} />
+                        {isDeleting ? (
+                          <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Trash2 size={14} />
+                        )}
                       </button>
                     </div>
                   </div>
