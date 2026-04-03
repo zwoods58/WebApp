@@ -13,7 +13,7 @@ export function UpdateNotification({ onUpdate }: UpdateNotificationProps) {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
-    if (!('serviceWorker' in navigator')) return;
+    if (!('serviceWorker' in navigator)) return;
 
     // Function to check for updates
     const checkForUpdates = async () => {
