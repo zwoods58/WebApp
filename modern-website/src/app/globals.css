@@ -3131,3 +3131,44 @@ html, body {
 body.modal-open {
   overflow: hidden;
 }
+
+/* Slide up animation for mobile modal */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Mobile PWA specific styles */
+@media (max-width: 640px) {
+  .add-appointment-modal {
+    max-height: 85vh !important;
+  }
+  
+  /* Prevent body scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Improve touch targets for mobile */
+button, 
+[role="button"],
+select,
+input[type="date"],
+input[type="time"] {
+  touch-action: manipulation;
+  min-height: 44px; /* Apple's minimum touch target size */
+}
+
+/* Better scrolling on mobile */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}

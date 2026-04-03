@@ -1,28 +1,14 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  User, 
-  Phone, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  FileText,
-  AlertCircle
-} from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useServices, useAppointments } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useToastContext } from '@/providers/ToastProvider';
-import { supabase } from '@/lib/supabase';
-
-type Service = {
-  id: string;
-  service_name: string;
-  price?: number;
-  category?: string;
-  duration?: number;
-};
+import { useToast } from '@/hooks/useToast';
+import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
+import { useAppointmentsTanStack, useServicesTanStack, useTransactionsTanStack } from '@/hooks';
+import { Appointment } from '@/hooks/useAppointmentsTanStack';
+import { Service } from '@/hooks/useServicesTanStack';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -30,61 +16,65 @@ interface AddAppointmentModalProps {
   onSuccess: () => void;
   industry: string;
   country: string;
+  initialDate?: string;
 }
 
 interface FormData {
   customerName: string;
-  customerContact: string;
-  serviceId: string;
-  serviceName: string;
-  servicePrice: number;
   date: string;
   startTime: string;
   endTime: string;
+  serviceId: string;
+  serviceName: string;
+  servicePrice: number;
   notes: string;
 }
 
 interface FormErrors {
   customerName?: string;
-  serviceId?: string;
   date?: string;
   startTime?: string;
   endTime?: string;
+  serviceId?: string;
 }
 
-export default function AddAppointmentModal({
-  isOpen,
-  onClose,
-  onSuccess,
-  industry,
-  country
+export default function AddAppointmentModal({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  industry, 
+  country,
+  initialDate 
 }: AddAppointmentModalProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
-  const { data: services } = useServices({ industry, businessId: business?.id });
-  const { addAppointment: addAppointment } = useAppointments({ industry, businessId: business?.id });
-  const { showSuccess, showError } = useToastContext();
+  const { business, loading: businessLoading } = useUnifiedAuth();
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  
+  const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
+  const { addAppointment } = useAppointmentsTanStack({ businessId: business?.id, industry });
+  const { addTransaction } = useTransactionsTanStack({ businessId: business?.id, industry });
 
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
-    customerContact: '',
+    date: initialDate || '',
+    startTime: '9:00 AM',
+    endTime: '10:00 AM',
     serviceId: '',
     serviceName: '',
     servicePrice: 0,
-    date: '',
-    startTime: '',
-    endTime: '',
     notes: ''
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Reset form when modal opens
+  // Mobile PWA body scroll prevention
   useEffect(() => {
     if (isOpen) {
-      // Prevent body scroll when modal is open
-      document.body.classList.add('modal-open');
+      // Prevent body scroll when modal is open (mobile PWA)
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       
       // Auto focus customer name input
       const timer = setTimeout(() => {
@@ -96,7 +86,9 @@ export default function AddAppointmentModal({
       
       return () => {
         clearTimeout(timer);
-        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
       };
     }
   }, [isOpen]);
@@ -109,119 +101,41 @@ export default function AddAppointmentModal({
         const hour12 = hour % 12 || 12;
         const ampm = hour < 12 ? 'AM' : 'PM';
         const minuteStr = minute.toString().padStart(2, '0');
-        const timeString = `${hour12}:${minuteStr} ${ampm}`;
-        times.push(timeString);
+        times.push(`${hour12}:${minuteStr} ${ampm}`);
       }
     }
     return times;
   };
 
-  const timeOptions = generate5MinTimeOptions();
-
-  // Time slot conflict detection
-  const checkTimeConflict = async (date: string, startTime: string, endTime: string, excludeId = null) => {
-    if (!business?.id) return false;
-    
-    try {
-      let query = supabase
-        .from('appointments')
-        .select('id, start_time, end_time')
-        .eq('business_id', business.id)
-        .eq('appointment_date', date)
-        .neq('status', 'cancelled');
-      
-      if (excludeId) {
-        query = query.neq('id', excludeId);
-      }
-      
-      const { data: existing } = await query;
-      
-      return existing?.some(apt => 
-        (startTime >= apt.start_time && startTime < apt.end_time) ||
-        (endTime > apt.start_time && endTime <= apt.end_time) ||
-        (startTime <= apt.start_time && endTime >= apt.end_time)
-      );
-    } catch (error) {
-      console.error('Error checking time conflict:', error);
-      return false;
-    }
-  };
-
-  // Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+    return new Date().toISOString().split('T')[0];
   };
 
-  const handleInputChange = (field: keyof FormData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error for this field
-    if (errors[field as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  const handleServiceChange = (serviceId: string) => {
-    const selectedService = services.find((s: Service) => s.id === serviceId);
-    setFormData(prev => ({
-      ...prev,
-      serviceId: serviceId,
-      serviceName: selectedService?.service_name || '',
-      servicePrice: selectedService?.price || 0
-    }));
-    if (errors.serviceId) {
-      setErrors(prev => ({ ...prev, serviceId: undefined }));
-    }
-  };
-
-  const validate = (): boolean => {
+  const timeOptions = generate5MinTimeOptions();
+  
+  const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
-    if (!formData.customerName.trim() || formData.customerName.trim().length < 2) {
-      newErrors.customerName = t('calendar.error.customer_name', 'Customer name is required (min 2 characters)');
+    
+    if (!formData.customerName.trim()) {
+      newErrors.customerName = t('calendar.error.customer_name', 'Customer name is required');
     }
-
-    if (!formData.serviceId) {
-      newErrors.serviceId = t('calendar.error.service', 'Please select a service');
-    }
-
+    
     if (!formData.date) {
-      newErrors.date = t('calendar.error.date', 'Please select a date');
-    } else {
-      const selectedDate = new Date(formData.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        newErrors.date = t('calendar.error.past_date', 'Date cannot be in the past');
-      }
+      newErrors.date = t('calendar.error.date_required', 'Date is required');
     }
-
+    
     if (!formData.startTime) {
-      newErrors.startTime = t('calendar.error.time', 'Please select a start time');
+      newErrors.startTime = t('calendar.error.start_time_required', 'Start time is required');
     }
-
+    
     if (!formData.endTime) {
-      newErrors.endTime = t('calendar.error.time', 'Please select an end time');
+      newErrors.endTime = t('calendar.error.end_time_required', 'End time is required');
     }
-
-    if (formData.startTime && formData.endTime) {
-      // Check if end time is after start time
-      const startHour = parseInt(formData.startTime.split(':')[0]);
-      const startMin = parseInt(formData.startTime.split(' ')[0].split(':')[1]);
-      const startPeriod = formData.startTime.split(' ')[1];
-      const endHour = parseInt(formData.endTime.split(':')[0]);
-      const endMin = parseInt(formData.endTime.split(' ')[0].split(':')[1]);
-      const endPeriod = formData.endTime.split(' ')[1];
-      
-      // Convert to 24-hour format for comparison
-      const start24 = startPeriod === 'PM' && startHour !== 12 ? startHour + 12 : (startPeriod === 'AM' && startHour === 12 ? 0 : startHour);
-      const end24 = endPeriod === 'PM' && endHour !== 12 ? endHour + 12 : (endPeriod === 'AM' && endHour === 12 ? 0 : endHour);
-      
-      if (start24 >= end24) {
-        newErrors.endTime = t('calendar.error.time_order', 'End time must be after start time');
-      }
+    
+    if (!formData.serviceId) {
+      newErrors.serviceId = t('calendar.error.service_required', 'Please select a service');
     }
-
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -229,57 +143,96 @@ export default function AddAppointmentModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validate()) return;
-    if (!business?.id) {
-      showError(t('calendar.error.no_business', 'Business profile not found'));
+    if (!validateForm()) {
       return;
     }
-
-    // Find the selected service to get its price
-    const selectedService = services.find((s: Service) => s.id === formData.serviceId);
-    const servicePrice = selectedService?.price || 0;
-
-    console.log('📅 Creating appointment:', {
-      serviceName: selectedService?.service_name,
-      servicePrice,
-      customerName: formData.customerName
-    });
-
-    setSubmitting(true);
+    
     try {
-      // Check for time conflict first
-      const hasConflict = await checkTimeConflict(formData.date, formData.startTime, formData.endTime);
-      if (hasConflict) {
-        showError('This time slot is already booked. Please select another time.');
-        setSubmitting(false);
+      if (!business?.id) {
+        showError(t('calendar.error.no_business', 'No business information available'));
         return;
       }
       
-      await addAppointment({
-        business_id: business.id,
-        industry,
-        customer_name: formData.customerName.trim(),
-        customer_contact: formData.customerContact.trim() || undefined,
-        service_id: formData.serviceId,
-        service_name: formData.serviceName,
-        appointment_date: formData.date,
-        appointment_time: `${formData.startTime} - ${formData.endTime}`,
-        start_time: formData.startTime,
-        end_time: formData.endTime,
-        notes: formData.notes.trim() || undefined,
-        status: 'pending',
-        metadata: {
-          price: formData.servicePrice,
-          service_name: formData.serviceName
-        }
+      // Find the selected service to get its price
+      const selectedService = services.find((s: Service) => s.id === formData.serviceId);
+      const servicePrice = selectedService?.price || 0;
+      
+      console.log('📅 Creating appointment with price:', {
+        serviceName: selectedService?.service_name,
+        servicePrice,
+        customerName: formData.customerName
       });
       
-      showSuccess(t('calendar.appointment_added', 'Appointment added successfully'));
+      // Prepare appointment data
+      const appointmentData = {
+        customer_name: formData.customerName,
+        appointment_date: formData.date,
+        appointment_time: formData.startTime,
+        end_time: formData.endTime,
+        service_id: formData.serviceId,
+        service_name: selectedService?.service_name || '',
+        service_price: servicePrice,
+        notes: formData.notes || '',
+        business_id: business.id,
+        industry,
+        country,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        id: crypto.randomUUID()
+      };
+      
+      // Add the appointment
+      await addAppointment(appointmentData);
+      
+      // Create a transaction for the appointment booking to show in recent activities
+      if (servicePrice && servicePrice > 0) {
+        const transactionData = {
+          business_id: business.id,
+          industry,
+          amount: servicePrice,
+          currency: getCurrency(country),
+          category: 'appointment_booking',
+          description: `Appointment booked: ${selectedService?.service_name || 'service'} - ${formData.customerName || 'Customer'}`,
+          customer_name: formData.customerName || 'Customer',
+          payment_method: 'pending',
+          transaction_date: new Date().toISOString().split('T')[0],
+          metadata: {
+            appointment_id: appointmentData.id,
+            service_name: selectedService?.service_name,
+            appointment_date: formData.date,
+            appointment_time: formData.startTime
+          }
+        };
+        
+        console.log('💰 Creating service payment transaction:', transactionData);
+        
+        // TanStack Query handles online/offline automatically
+        await addTransaction(transactionData);
+        
+        console.log('✅ Service payment transaction created successfully');
+      } else {
+        console.log('ℹ️ No price found for appointment, skipping transaction creation');
+      }
+      
+      showSuccess(t('calendar.complete_success', 'Appointment created successfully'));
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error('Failed to add appointment:', error);
-      showError(t('calendar.appointment_error', 'Failed to add appointment'));
+      
+      // Reset form
+      setFormData({
+        customerName: '',
+        date: initialDate || '',
+        startTime: '9:00 AM',
+        endTime: '10:00 AM',
+        serviceId: '',
+        serviceName: '',
+        servicePrice: 0,
+        notes: ''
+      });
+      
+    } catch (error: any) {
+      console.error('Error creating appointment:', error);
+      showError(t('calendar.create_error', 'Failed to create appointment. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -289,205 +242,242 @@ export default function AddAppointmentModal({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
-
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-xl"
-        style={{
-          height: '85vh',
-          maxHeight: '85vh',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
-      {/* Drag Handle */}
-      <div className="flex justify-center pt-3 pb-2 shrink-0">
-        <div className="w-12 h-1 bg-gray-300 rounded-full" />
-      </div>
-      
-      {/* Header */}
-      <div className="flex justify-between items-center px-6 pb-3 border-b shrink-0">
-        <div>
-          <h2 className="text-xl font-semibold">{t('calendar.add_appointment', 'Add Appointment')}</h2>
-          <p className="text-sm text-gray-500 mt-1">{t('calendar.fill_details', 'Fill in the appointment details')}</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-        >
-          ✕
-        </button>
-      </div>
-      
-      {/* SCROLLABLE CONTENT - Enhanced smooth scrolling */}
+      {/* Mobile-optimized overlay - full screen */}
       <div 
-        className="flex-1 overflow-y-auto px-6 py-4"
+        className="fixed inset-0 z-50 bg-black bg-opacity-50"
         style={{
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          scrollBehavior: 'smooth'
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'flex-end', // Bottom sheet style for mobile
+          justifyContent: 'center',
+          touchAction: 'none' // Prevent touch events on background
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      />
+
+      {/* MODAL CONTAINER - Mobile PWA Optimized */}
+      <div
+        className="bg-white rounded-t-2xl shadow-xl"
+        style={{
+          height: 'auto',
+          maxHeight: '85vh',           // 85% of viewport height
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          animation: 'slideUp 0.3s ease-out',
+          touchAction: 'pan-y'         // Allow vertical touch scrolling
         }}
       >
-        {/* All form fields go here */}
-        <div className="space-y-5 pb-4">
-          {/* Customer Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('calendar.customer_name', 'Customer Name')} *
-            </label>
-            <input
-              type="text"
-              value={formData.customerName}
-              onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-              placeholder={t('calendar.customer_name_placeholder', 'Enter customer name')}
-              autoFocus
-              required
-            />
-            {errors.customerName && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle size={14} />
-                {errors.customerName}
-              </p>
-            )}
-          </div>
-          
-          {/* Date Picker */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('calendar.select_date', 'Date')} *
-            </label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-              min={getTodayDate()}
-              required
-            />
-            {errors.date && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle size={14} />
-                {errors.date}
-              </p>
-            )}
-          </div>
-          
-          {/* Start & End Time - Side by side */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('calendar.start_time', 'Start Time')} *
-              </label>
-              <select
-                value={formData.startTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">{t('calendar.select_time', 'Select time')}</option>
-                {timeOptions.map(time => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
-              {errors.startTime && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {errors.startTime}
-                </p>
-              )}
-            </div>
+        
+        {/* Drag Handle - For mobile (shows you can drag down to close) */}
+        <div className="flex justify-center pt-2 pb-1 shrink-0">
+          <div 
+            className="w-10 h-1 bg-gray-300 rounded-full"
+            style={{ touchAction: 'none' }}
+          />
+        </div>
+
+        {/* Header - Compact for mobile */}
+        <div className="flex justify-between items-center px-4 py-3 border-b shrink-0">
+          <h2 className="text-base font-semibold text-gray-900">
+            {t('calendar.add_appointment', 'Add Appointment')}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100"
+            style={{ touchAction: 'manipulation' }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* SCROLLABLE CONTENT - Mobile optimized */}
+        <div 
+          className="flex-1 overflow-y-auto"
+          style={{
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',  // Smooth iOS scrolling
+            touchAction: 'pan-y',               // Touch scrolling
+            overscrollBehavior: 'contain'       // Prevent scroll chaining
+          }}
+        >
+          {/* Mobile form fields */}
+          <div className="p-4 space-y-4">
             
+            {/* Customer Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('calendar.end_time', 'End Time')} *
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('calendar.customer_name', 'Customer Name')} <span className="text-red-500">*</span>
               </label>
-              <select
-                value={formData.endTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              <input
+                type="text"
+                value={formData.customerName}
+                onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
+                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={t('calendar.customer_name_placeholder', 'Enter customer name')}
+                style={{ fontSize: '16px' }} // Prevents zoom on iOS
                 required
-              >
-                <option value="">{t('calendar.select_time', 'Select time')}</option>
-                {timeOptions.map(time => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
-              {errors.endTime && (
+              />
+              {errors.customerName && (
                 <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
                   <AlertCircle size={14} />
-                  {errors.endTime}
+                  {errors.customerName}
                 </p>
               )}
             </div>
-          </div>
-          
-          {/* Service Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('calendar.select_service', 'Service')} *
-            </label>
-            <select
-              value={formData.serviceId}
-              onChange={(e) => {
-                const selectedService = services.find(s => s.id === e.target.value);
-                setFormData(prev => ({
-                  ...prev,
-                  serviceId: e.target.value,
-                  serviceName: selectedService?.service_name || '',
-                  servicePrice: selectedService?.price || 0
-                }));
-              }}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">{t('calendar.select_service', 'Select a service')}</option>
-              {services.map(service => (
-                <option key={service.id} value={service.id}>
-                  {service.service_name} - ${service.price}
-                </option>
-              ))}
-            </select>
-            {errors.serviceId && (
-              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                <AlertCircle size={14} />
-                {errors.serviceId}
-              </p>
-            )}
-            {services.length === 0 && (
-              <p className="mt-1 text-sm text-gray-500">
-                No services available. Please add services first.
-              </p>
-            )}
-          </div>
-          
-          {/* Notes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t('calendar.notes', 'Notes')} ({t('common.optional', 'Optional')})
-            </label>
-            <textarea
-              value={formData.notes}
-              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              placeholder={t('calendar.notes_placeholder', 'Additional notes...')}
-            />
+
+            {/* Date */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('calendar.date', 'Date')} <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ fontSize: '16px' }}
+                min={getTodayDate()}
+                required
+              />
+              {errors.date && (
+                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle size={14} />
+                  {errors.date}
+                </p>
+              )}
+            </div>
+
+            {/* Time Row - Two columns */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  {t('calendar.start_time', 'Start Time')} <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.startTime}
+                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  style={{ fontSize: '16px' }}
+                  required
+                >
+                  <option value="">{t('calendar.select_time', 'Select time')}</option>
+                  {timeOptions.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+                {errors.startTime && (
+                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.startTime}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  {t('calendar.end_time', 'End Time')} <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.endTime}
+                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  style={{ fontSize: '16px' }}
+                  required
+                >
+                  <option value="">{t('calendar.select_time', 'Select time')}</option>
+                  {timeOptions.map(time => (
+                    <option key={time} value={time}>{time}</option>
+                  ))}
+                </select>
+                {errors.endTime && (
+                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.endTime}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Service */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('calendar.select_service', 'Service')} <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.serviceId}
+                onChange={(e) => {
+                  const selectedService = services.find(s => s.id === e.target.value);
+                  setFormData(prev => ({
+                    ...prev,
+                    serviceId: e.target.value,
+                    serviceName: selectedService?.service_name || '',
+                    servicePrice: selectedService?.price || 0
+                  }));
+                }}
+                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ fontSize: '16px' }}
+                required
+              >
+                <option value="">{t('calendar.select_service', 'Select a service')}</option>
+                {services.map(service => (
+                  <option key={service.id} value={service.id}>
+                    {service.service_name} - ${service.price}
+                  </option>
+                ))}
+              </select>
+              {errors.serviceId && (
+                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle size={14} />
+                  {errors.serviceId}
+                </p>
+              )}
+              {services.length === 0 && (
+                <p className="mt-1 text-sm text-gray-500">
+                  No services available. Please add services first.
+                </p>
+              )}
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                {t('calendar.notes', 'Notes')}
+              </label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ fontSize: '16px' }}
+                rows={3}
+                placeholder={t('calendar.notes_placeholder', 'Additional notes or special requests...')}
+              />
+            </div>
+
+            {/* Extra padding for better scrolling on mobile */}
+            <div className="h-2" />
           </div>
         </div>
-      </div>
-      
-      {/* BUTTONS - Fixed at bottom, always visible */}
-      <div className="p-6 border-t bg-white rounded-b-3xl shrink-0">
-        <button
+
+        {/* Footer with Button - ALWAYS VISIBLE on mobile */}
+        <div className="p-4 border-t bg-white rounded-b-2xl shrink-0">
+          <button
             onClick={handleSubmit}
             disabled={submitting || services.length === 0}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-base"
+            style={{ touchAction: 'manipulation' }}
           >
             {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
           </button>
+        </div>
       </div>
-    </div>
     </>
   );
 }
