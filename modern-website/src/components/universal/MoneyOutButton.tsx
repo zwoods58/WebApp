@@ -77,10 +77,16 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
       {showModal && (
         <>
-          {/* Backdrop - 100% WHITE (same as appointments) */}
-          <div 
-            className="absolute inset-0 bg-white animate-fade-in" 
+          {/* BACKDROP - SOLID WHITE */}
+          <div
             onClick={closeModal}
+            className="fixed inset-0 z-40"
+            style={{ 
+              backgroundColor: '#ffffff',
+              background: '#ffffff',
+              opacity: 1,
+              backgroundImage: 'none'
+            }}
           />
           
           {/* Modal - No animation for instant display */}
