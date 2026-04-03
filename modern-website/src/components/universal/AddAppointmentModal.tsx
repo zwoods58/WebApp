@@ -33,22 +33,23 @@ interface AddAppointmentModalProps {
 }
 
 interface FormData {
-  customer_name: string;
-  customer_contact: string;
-  service_id: string;
-  service_name: string;
-  appointment_date: string;
-  appointment_time: string;
-  time_block: string;
-  duration: number;
+  customerName: string;
+  customerContact: string;
+  serviceId: string;
+  serviceName: string;
+  servicePrice: number;
+  date: string;
+  startTime: string;
+  endTime: string;
   notes: string;
 }
 
 interface FormErrors {
-  customer_name?: string;
-  service_id?: string;
-  appointment_date?: string;
-  appointment_time?: string;
+  customerName?: string;
+  serviceId?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export default function AddAppointmentModal({
@@ -65,14 +66,14 @@ export default function AddAppointmentModal({
   const { showSuccess, showError } = useToastContext();
 
   const [formData, setFormData] = useState<FormData>({
-    customer_name: '',
-    customer_contact: '',
-    service_id: '',
-    service_name: '',
-    appointment_date: '',
-    appointment_time: '',
-    time_block: '',
-    duration: 1,
+    customerName: '',
+    customerContact: '',
+    serviceId: '',
+    serviceName: '',
+    servicePrice: 0,
+    date: '',
+    startTime: '',
+    endTime: '',
     notes: ''
   });
 
@@ -83,46 +84,53 @@ export default function AddAppointmentModal({
   useEffect(() => {
     if (isOpen) {
       setFormData({
-        customer_name: '',
-        customer_contact: '',
-        service_id: '',
-        service_name: '',
-        appointment_date: '',
-        appointment_time: '',
-        time_block: '',
-        duration: 1,
+        customerName: '',
+        customerContact: '',
+        serviceId: '',
+        serviceName: '',
+        servicePrice: 0,
+        date: '',
+        startTime: '',
+        endTime: '',
         notes: ''
       });
       setErrors({});
     }
   }, [isOpen]);
 
-  // Time block options (30-minute intervals)
-  const timeBlocks = [
-    '9:00 AM - 9:30 AM', '9:30 AM - 10:00 AM', '10:00 AM - 10:30 AM',
-    '10:30 AM - 11:00 AM', '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM',
-    '12:00 PM - 12:30 PM', '12:30 PM - 1:00 PM', '1:00 PM - 1:30 PM',
-    '1:30 PM - 2:00 PM', '2:00 PM - 2:30 PM', '2:30 PM - 3:00 PM',
-    '3:00 PM - 3:30 PM', '3:30 PM - 4:00 PM', '4:00 PM - 4:30 PM',
-    '4:30 PM - 5:00 PM', '5:00 PM - 5:30 PM', '5:30 PM - 6:00 PM'
+  // Time options (30-minute intervals from 8 AM to 8 PM)
+  const timeOptions = [
+    '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
+    '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
+    '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
+    '5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'
   ];
 
-  // Check for conflicting appointments
-  const checkConflict = async (date: string, timeBlock: string) => {
+  // Time slot conflict detection
+  const checkTimeConflict = async (date: string, startTime: string, endTime: string, excludeId = null) => {
     if (!business?.id) return false;
     
     try {
-      const { data: existing } = await supabase
+      let query = supabase
         .from('appointments')
-        .select('id')
+        .select('id, start_time, end_time')
         .eq('business_id', business.id)
         .eq('appointment_date', date)
-        .eq('time_block', timeBlock)
-        .maybeSingle();
+        .neq('status', 'cancelled');
       
-      return !!existing;
+      if (excludeId) {
+        query = query.neq('id', excludeId);
+      }
+      
+      const { data: existing } = await query;
+      
+      return existing?.some(apt => 
+        (startTime >= apt.start_time && startTime < apt.end_time) ||
+        (endTime > apt.start_time && endTime <= apt.end_time) ||
+        (startTime <= apt.start_time && endTime >= apt.end_time)
+      );
     } catch (error) {
-      console.error('Error checking conflict:', error);
+      console.error('Error checking time conflict:', error);
       return false;
     }
   };
@@ -145,39 +153,61 @@ export default function AddAppointmentModal({
     const selectedService = services.find((s: Service) => s.id === serviceId);
     setFormData(prev => ({
       ...prev,
-      service_id: serviceId,
-      service_name: selectedService?.service_name || '',
-      duration: selectedService?.duration || 1
+      serviceId: serviceId,
+      serviceName: selectedService?.service_name || '',
+      servicePrice: selectedService?.price || 0
     }));
-    if (errors.service_id) {
-      setErrors(prev => ({ ...prev, service_id: undefined }));
+    if (errors.serviceId) {
+      setErrors(prev => ({ ...prev, serviceId: undefined }));
     }
   };
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.customer_name.trim() || formData.customer_name.trim().length < 2) {
-      newErrors.customer_name = t('calendar.error.customer_name', 'Customer name is required (min 2 characters)');
+    if (!formData.customerName.trim() || formData.customerName.trim().length < 2) {
+      newErrors.customerName = t('calendar.error.customer_name', 'Customer name is required (min 2 characters)');
     }
 
-    if (!formData.service_id) {
-      newErrors.service_id = t('calendar.error.service', 'Please select a service');
+    if (!formData.serviceId) {
+      newErrors.serviceId = t('calendar.error.service', 'Please select a service');
     }
 
-    if (!formData.appointment_date) {
-      newErrors.appointment_date = t('calendar.error.date', 'Please select a date');
+    if (!formData.date) {
+      newErrors.date = t('calendar.error.date', 'Please select a date');
     } else {
-      const selectedDate = new Date(formData.appointment_date);
+      const selectedDate = new Date(formData.date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (selectedDate < today) {
-        newErrors.appointment_date = t('calendar.error.past_date', 'Date cannot be in the past');
+        newErrors.date = t('calendar.error.past_date', 'Date cannot be in the past');
       }
     }
 
-    if (!formData.appointment_time) {
-      newErrors.appointment_time = t('calendar.error.time', 'Please select a time');
+    if (!formData.startTime) {
+      newErrors.startTime = t('calendar.error.time', 'Please select a start time');
+    }
+
+    if (!formData.endTime) {
+      newErrors.endTime = t('calendar.error.time', 'Please select an end time');
+    }
+
+    if (formData.startTime && formData.endTime) {
+      // Check if end time is after start time
+      const startHour = parseInt(formData.startTime.split(':')[0]);
+      const startMin = parseInt(formData.startTime.split(' ')[0].split(':')[1]);
+      const startPeriod = formData.startTime.split(' ')[1];
+      const endHour = parseInt(formData.endTime.split(':')[0]);
+      const endMin = parseInt(formData.endTime.split(' ')[0].split(':')[1]);
+      const endPeriod = formData.endTime.split(' ')[1];
+      
+      // Convert to 24-hour format for comparison
+      const start24 = startPeriod === 'PM' && startHour !== 12 ? startHour + 12 : (startPeriod === 'AM' && startHour === 12 ? 0 : startHour);
+      const end24 = endPeriod === 'PM' && endHour !== 12 ? endHour + 12 : (endPeriod === 'AM' && endHour === 12 ? 0 : endHour);
+      
+      if (start24 >= end24) {
+        newErrors.endTime = t('calendar.error.time_order', 'End time must be after start time');
+      }
     }
 
     setErrors(newErrors);
@@ -194,19 +224,19 @@ export default function AddAppointmentModal({
     }
 
     // Find the selected service to get its price
-    const selectedService = services.find((s: Service) => s.id === formData.service_id);
+    const selectedService = services.find((s: Service) => s.id === formData.serviceId);
     const servicePrice = selectedService?.price || 0;
 
     console.log('📅 Creating appointment:', {
       serviceName: selectedService?.service_name,
       servicePrice,
-      customerName: formData.customer_name
+      customerName: formData.customerName
     });
 
     setSubmitting(true);
     try {
-      // Check for conflict first
-      const hasConflict = await checkConflict(formData.appointment_date, formData.appointment_time);
+      // Check for time conflict first
+      const hasConflict = await checkTimeConflict(formData.date, formData.startTime, formData.endTime);
       if (hasConflict) {
         showError('This time slot is already booked. Please select another time.');
         setSubmitting(false);
@@ -216,21 +246,19 @@ export default function AddAppointmentModal({
       await addAppointment({
         business_id: business.id,
         industry,
-        customer_name: formData.customer_name.trim(),
-        customer_contact: formData.customer_contact.trim() || undefined,
-        service_id: formData.service_id,
-        service_name: formData.service_name,
-        appointment_date: formData.appointment_date,
-        appointment_time: formData.appointment_time,
-        time_block: formData.appointment_time,
-        start_time: formData.appointment_time.split(' - ')[0],
-        end_time: formData.appointment_time.split(' - ')[1],
-        duration: formData.duration,
+        customer_name: formData.customerName.trim(),
+        customer_contact: formData.customerContact.trim() || undefined,
+        service_id: formData.serviceId,
+        service_name: formData.serviceName,
+        appointment_date: formData.date,
+        appointment_time: `${formData.startTime} - ${formData.endTime}`,
+        start_time: formData.startTime,
+        end_time: formData.endTime,
         notes: formData.notes.trim() || undefined,
         status: 'pending',
         metadata: {
-          price: servicePrice,
-          service_name: formData.service_name
+          price: formData.servicePrice,
+          service_name: formData.serviceName
         }
       });
       
@@ -248,230 +276,202 @@ export default function AddAppointmentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-4">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/50 animate-fade-in" 
-        onClick={onClose}
-      />
+    <>
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
-      {/* Modal - Mobile Bottom Sheet */}
       <div
-        className="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-xl overflow-hidden animate-slide-in"
-        style={{ 
-          maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))',
-          overflow: 'hidden'
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-xl"
+        style={{
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        {/* Drag indicator for mobile */}
-        <div className="p-4 flex justify-center sm:hidden">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-        </div>
-        
-        {/* Scrollable content */}
-        <div className="px-6 pb-8 overflow-y-auto" style={{ 
-          maxHeight: 'calc(100vh - 8rem - env(safe-area-inset-bottom))',
-          WebkitOverflowScrolling: 'touch'
-        }}>
-        {/* Apple-style Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="w-8 sm:w-16" />
-            <h2 className="text-lg sm:text-lg font-semibold text-black">
-              {t('calendar.add_appointment', 'Add Appointment')}
-            </h2>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-gray-200/50 hover:bg-gray-300/50 flex items-center justify-center transition-colors"
-            >
-              <X size={16} className="text-black" />
-            </button>
+      {/* Drag Handle */}
+      <div className="flex justify-center pt-3 pb-2">
+        <div className="w-12 h-1 bg-gray-300 rounded-full" />
+      </div>
+      
+      {/* Header */}
+      <div className="px-6 pb-3 border-b">
+        <h2 className="text-xl font-semibold">Add Appointment</h2>
+      </div>
+      
+      {/* Scrollable Content - THIS IS KEY */}
+      <div 
+        className="flex-1 overflow-y-auto px-6 py-4"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          maxHeight: 'calc(90vh - 120px)'
+        }}
+      >
+        {/* All form fields go here */}
+        <div className="space-y-4">
+          {/* Customer Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Customer Name *
+            </label>
+            <input
+              type="text"
+              value={formData.customerName}
+              onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter customer name"
+              required
+            />
+            {errors.customerName && (
+              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle size={14} />
+                {errors.customerName}
+              </p>
+            )}
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Customer Name */}
+          
+          {/* Date Picker */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date *
+            </label>
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              min={getTodayDate()}
+              required
+            />
+            {errors.date && (
+              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle size={14} />
+                {errors.date}
+              </p>
+            )}
+          </div>
+          
+          {/* Start & End Time - Side by side */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.customer_name', 'Customer Name')} *
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" size={20} />
-                <input
-                  type="text"
-                  value={formData.customer_name}
-                  onChange={(e) => handleInputChange('customer_name', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
-                    errors.customer_name ? 'border-red-500' : 'border-gray-300'
-                  } text-black placeholder-black/50 text-base sm:text-sm`}
-                  placeholder="John Doe"
-                />
-              </div>
-              {errors.customer_name && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {errors.customer_name}
-                </p>
-              )}
-            </div>
-
-            {/* Customer Contact */}
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.customer_contact', 'Contact')}
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" size={20} />
-                <input
-                  type="text"
-                  value={formData.customer_contact}
-                  onChange={(e) => handleInputChange('customer_contact', e.target.value)}
-                  className="w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50 text-base sm:text-sm"
-                  placeholder="+254 700 000 000"
-                />
-              </div>
-            </div>
-
-            {/* Service Selection */}
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.select_service', 'Select Service')} *
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Time *
               </label>
               <select
-                value={formData.service_id}
-                onChange={(e) => handleServiceChange(e.target.value)}
-                className={`w-full px-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
-                  errors.service_id ? 'border-red-500' : 'border-gray-300'
-                } text-black text-base sm:text-sm`}
+                value={formData.startTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                required
               >
-                <option value="">{t('calendar.select_service', 'Select Service')}</option>
-                {services.map((service: Service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.service_name} {service.price ? `- ${service.price}` : ''}
-                  </option>
+                <option value="">Select time</option>
+                {timeOptions.map(time => (
+                  <option key={time} value={time}>{time}</option>
                 ))}
               </select>
-              {errors.service_id && (
+              {errors.startTime && (
                 <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
                   <AlertCircle size={14} />
-                  {errors.service_id}
-                </p>
-              )}
-              {services.length === 0 && (
-                <p className="mt-1 text-sm text-black/50">
-                  {t('calendar.no_services', 'No services available. Please add services first.')}
+                  {errors.startTime}
                 </p>
               )}
             </div>
-
-            {/* Date Selection */}
+            
             <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.select_date', 'Select Date')} *
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Time *
               </label>
-              <div className="relative">
-                <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" size={20} />
-                <input
-                  type="date"
-                  value={formData.appointment_date}
-                  onChange={(e) => handleInputChange('appointment_date', e.target.value)}
-                  min={getTodayDate()}
-                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
-                    errors.appointment_date ? 'border-red-500' : 'border-gray-300'
-                  } text-black text-base sm:text-sm`}
-                />
-              </div>
-              {errors.appointment_date && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {errors.appointment_date}
-                </p>
-              )}
-            </div>
-
-            {/* Time Selection */}
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.select_time', 'Select Time')} *
-              </label>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" size={20} />
-                <select
-                  value={formData.appointment_time}
-                  onChange={(e) => handleInputChange('appointment_time', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border ${
-                    errors.appointment_time ? 'border-red-500' : 'border-gray-300'
-                  } text-black text-base sm:text-sm`}
-                >
-                  <option value="">{t('calendar.select_time', 'Select Time')}</option>
-                  {timeBlocks.map(timeBlock => (
-                    <option key={timeBlock} value={timeBlock}>{timeBlock}</option>
-                  ))}
-                </select>
-              </div>
-              {errors.appointment_time && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {errors.appointment_time}
-                </p>
-              )}
-            </div>
-
-            {/* Duration */}
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.duration_hours', 'Duration (hours)')}
-              </label>
-              <input
-                type="number"
-                value={formData.duration}
-                onChange={(e) => handleInputChange('duration', parseInt(e.target.value) || 1)}
-                min="1"
-                max="8"
-                step="1"
-                className="w-full px-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black text-base sm:text-sm"
-              />
-            </div>
-
-            {/* Notes */}
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                {t('calendar.notes', 'Notes')}
-              </label>
-              <div className="relative">
-                <FileText className="absolute left-3 top-3 text-black/50" size={20} />
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => handleInputChange('notes', e.target.value)}
-                  rows={3}
-                  className="w-full pl-10 pr-4 py-4 sm:py-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-300 text-black placeholder-black/50 resize-none text-base sm:text-sm"
-                  placeholder={t('calendar.notes_placeholder', 'Any special requests or notes...')}
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons - Mobile Responsive */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 px-6 py-4 sm:py-3 bg-gray-200/50 text-black font-medium rounded-xl hover:bg-gray-300/50 transition-colors text-base sm:text-sm"
+              <select
+                value={formData.endTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                required
               >
-                {t('common.cancel', 'Cancel')}
-              </button>
-              <button
-                type="submit"
-                disabled={submitting || services.length === 0}
-                className="flex-1 px-6 py-4 sm:py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-sm"
-              >
-                {submitting 
-                  ? t('common.saving', 'Saving...') 
-                  : t('calendar.book_appointment', 'Book Appointment')
-                }
-              </button>
+                <option value="">Select time</option>
+                {timeOptions.map(time => (
+                  <option key={time} value={time}>{time}</option>
+                ))}
+              </select>
+              {errors.endTime && (
+                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle size={14} />
+                  {errors.endTime}
+                </p>
+              )}
             </div>
-          </form>
+          </div>
+          
+          {/* Service Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Service *
+            </label>
+            <select
+              value={formData.serviceId}
+              onChange={(e) => {
+                const selectedService = services.find(s => s.id === e.target.value);
+                setFormData(prev => ({
+                  ...prev,
+                  serviceId: e.target.value,
+                  serviceName: selectedService?.service_name || '',
+                  servicePrice: selectedService?.price || 0
+                }));
+              }}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select a service</option>
+              {services.map(service => (
+                <option key={service.id} value={service.id}>
+                  {service.service_name} - ${service.price}
+                </option>
+              ))}
+            </select>
+            {errors.serviceId && (
+              <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle size={14} />
+                {errors.serviceId}
+              </p>
+            )}
+            {services.length === 0 && (
+              <p className="mt-1 text-sm text-gray-500">
+                No services available. Please add services first.
+              </p>
+            )}
+          </div>
+          
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes (Optional)
+            </label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              placeholder="Additional notes..."
+            />
+          </div>
+        </div>
+      </div>
+      
+      {/* BUTTONS - Fixed at bottom, always visible */}
+      <div className="p-6 border-t bg-white">
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || services.length === 0}
+            className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-medium disabled:opacity-50"
+          >
+            {submitting ? 'Saving...' : 'Save Appointment'}
+          </button>
         </div>
       </div>
     </div>
+    </>
   );
 }
