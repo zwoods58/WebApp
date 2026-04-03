@@ -22,11 +22,29 @@ export default function AppointmentList({
 }: AppointmentListProps) {
   const { t } = useLanguage();
   
-  // Filter appointments for today
+  // Filter and sort appointments
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const nextWeek = new Date(today);
+  nextWeek.setDate(today.getDate() + 7);
+
+  // Today's appointments
   const todayAppointments = appointments.filter(apt => {
-    const aptDate = new Date(apt.appointment_date);
-    const today = new Date();
-    return aptDate.toDateString() === today.toDateString();
+    const aptDate = new Date(apt.appointment_date || apt.date);
+    aptDate.setHours(0, 0, 0, 0);
+    return aptDate.getTime() === today.getTime();
+  });
+
+  // Upcoming appointments (next 7 days, excluding today)
+  const upcomingAppointments = appointments.filter(apt => {
+    const aptDate = new Date(apt.appointment_date || apt.date);
+    aptDate.setHours(0, 0, 0, 0);
+    return aptDate > today && aptDate <= nextWeek;
+  }).sort((a, b) => {
+    const dateA = new Date(a.appointment_date || a.date);
+    const dateB = new Date(b.appointment_date || b.date);
+    return dateA.getTime() - dateB.getTime();
   });
 
   return (
@@ -44,40 +62,72 @@ export default function AppointmentList({
 
       {/* Appointment Items */}
       {todayAppointments.length > 0 ? (
-        <div className="space-y-3 mb-4">
-          {todayAppointments.slice(0, 3).map((appointment, index) => (
-            <div key={appointment.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="text-purple-600" size={16} />
+        <div className="mb-4">
+          <div className="text-sm font-medium text-gray-700 mb-2">{t('appointments.today', 'Today')}</div>
+          <div className="space-y-3">
+            {todayAppointments.slice(0, 3).map((appointment, index) => (
+              <div key={appointment.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="text-purple-600" size={16} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">
+                      {appointment.customer_name || appointment.title || t('appointments.untitled', 'Appointment')}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {appointment.service_name || 'Service'} • {appointment.appointment_time || 'All day'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900 text-sm">
-                    {appointment.service_name} - {appointment.customer_name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {appointment.appointment_time} - {appointment.duration || 30} min
-                  </p>
+                <div className="text-right">
+                  <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                    {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                     (appointment.status as string) === 'completed' ? 'Completed' : 
+                     (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                  </span>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-900 text-sm">
-                  {formatCurrency(appointment.price || 0, country)}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {formatDate(appointment.appointment_date)}
-                </p>
+            ))}
+          </div>
+        </div>
+      ) : upcomingAppointments.length > 0 ? (
+        <div className="mb-4">
+          <div className="text-sm font-medium text-gray-700 mb-2">{t('appointments.upcoming', 'Upcoming')}</div>
+          <div className="space-y-3">
+            {upcomingAppointments.slice(0, 3).map((appointment, index) => (
+              <div key={appointment.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="text-purple-600" size={16} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">
+                      {appointment.customer_name || appointment.title || t('appointments.untitled', 'Appointment')}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(appointment.appointment_date || appointment.date).toLocaleDateString()} • {appointment.appointment_time || 'All day'}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                    {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                     (appointment.status as string) === 'completed' ? 'Completed' : 
+                     (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="text-center py-6 mb-4">
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
             <Calendar className="text-gray-400" size={24} />
           </div>
-          <p className="text-gray-500 text-sm">{t('calendar.no_appointments')}</p>
-          <p className="text-gray-400 text-xs">{t('calendar.schedule_first')}</p>
+          <p className="text-gray-500 text-sm">{t('appointments.no_appointments', 'No upcoming appointments')}</p>
+          <p className="text-gray-400 text-xs">{t('calendar.schedule_first', 'Schedule your first appointment')}</p>
         </div>
       )}
 

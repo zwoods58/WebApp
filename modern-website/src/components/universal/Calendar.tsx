@@ -603,7 +603,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
                           {(appointment.status as string) === 'pending' && (
                             <>
                               <button
-                                onClick={() => handleCompleteAppointment(appointment.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCompleteAppointment(appointment.id);
+                                }}
                                 disabled={loadingAppointmentId === appointment.id}
                                 className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Complete appointment"
@@ -615,7 +618,8 @@ export default function Calendar({ industry, country }: CalendarProps) {
                                 )}
                               </button>
                               <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setAppointmentToCancel(appointment.id);
                                   setShowCancelModal(true);
                                 }}
@@ -628,7 +632,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
                             </>
                           )}
                           <button
-                            onClick={() => handleDeleteAppointment(appointment.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAppointment(appointment.id);
+                            }}
                             disabled={loadingAppointmentId === appointment.id}
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Delete appointment"
