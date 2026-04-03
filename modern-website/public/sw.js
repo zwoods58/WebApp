@@ -3,8 +3,8 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v65';
-const CURRENT_VERSION = 'v65';
+const CACHE_VERSION = 'v66';
+const CURRENT_VERSION = 'v66';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -200,6 +200,12 @@ self.addEventListener('activate', (event) => {
         });
       });
       console.log(`[SW] 📢 Notified ${clientsList.length} clients of activation completion`);
+      
+      // Start periodic update checks (every minute)
+      setInterval(() => {
+        self.registration.update();
+        console.log('[SW] Periodic update check...');
+      }, 60000);
     })()
   );
 });
@@ -253,6 +259,9 @@ self.addEventListener('message', (event) => {
         const registration = await self.registration;
         await registration.update();
         console.log('[SW] ✅ Update check completed');
+        if (event.source) {
+          event.source.postMessage({ type: 'UPDATE_CHECKED' });
+        }
       })()
     );
     return;

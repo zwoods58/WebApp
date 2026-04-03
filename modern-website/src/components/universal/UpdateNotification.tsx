@@ -13,18 +13,37 @@ export function UpdateNotification({ onUpdate }: UpdateNotificationProps) {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
-    if (!('serviceWorker' in navigator)) return;
+    if (!('serviceWorker' in navigator')) return;
 
+    // Function to check for updates
     const checkForUpdates = async () => {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          await registration.update();
+          console.log('[Update] Checked for updates');
+        }
+      } catch (error) {
+        console.error('[Update] Failed to check:', error);
+      }
+    };
+
+    // Check for updates EVERY 1 MINUTE (60000ms)
+    const interval = setInterval(checkForUpdates, 60000);
+    
+    // Check immediately on mount
+    checkForUpdates();
+
+    // Check for existing waiting worker
+    const checkWaitingWorker = async () => {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration && registration.waiting) {
         setWaitingWorker(registration.waiting);
         setShow(true);
       }
     };
-
-    // Check for existing waiting worker
-    checkForUpdates();
+    
+    checkWaitingWorker();
 
     // Listen for new service workers
     navigator.serviceWorker.ready.then(registration => {
@@ -62,6 +81,7 @@ export function UpdateNotification({ onUpdate }: UpdateNotificationProps) {
     });
 
     return () => {
+      clearInterval(interval);
       navigator.serviceWorker.removeEventListener('message', handleMessage);
     };
   }, []);
