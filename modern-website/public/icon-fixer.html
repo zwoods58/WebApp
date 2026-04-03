@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeeZee Icon Fix - One Click Solution</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .icon-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .icon-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .icon-preview {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 10px;
+            background: #000000;
+            border-radius: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-preview img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+        }
+        
+        .size-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+        
+        .generate-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .generate-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .comparison {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .comparison h3 {
+            margin: 0 0 15px 0;
+            color: #fbbf24;
+        }
+        
+        .comparison-icon {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000000;
+        }
+        
+        .before-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .after-icon img {
+            width: 60%;
+            height: 60%;
+            object-fit: contain;
+            margin: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 BeeZee Icon Fix</h1>
+        <p>Optimize your PWA icons with better logo fitment and proper padding</p>
+        
+        <div class="before-after">
+            <div class="comparison">
+                <h3>❌ Before (Logo too big)</h3>
+                <div class="comparison-icon before-icon">
+                    <img src="beezee-icon-512x512.png" alt="Before">
+                </div>
+                <p style="font-size: 12px; opacity: 0.8;">Logo fills entire icon</p>
+            </div>
+            
+            <div class="comparison">
+                <h3>✅ After (Perfect fit)</h3>
+                <div class="comparison-icon after-icon">
+                    <img src="beezee-icon-512x512.png" alt="After">
+                </div>
+                <p style="font-size: 12px; opacity: 0.8;">60% logo + 20% padding</p>
+            </div>
+        </div>
+        
+        <button class="generate-btn" onclick="generateAllIcons()">
+            🎨 Generate Optimized Icons
+        </button>
+        
+        <div class="status" id="status">
+            Ready to generate optimized icons...
+        </div>
+        
+        <div class="icon-showcase" id="showcase" style="display: none;">
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">72x72</div>
+                <small>Phone</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">96x96</div>
+                <small>Tablet</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">128x128</div>
+                <small>Small</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">144x144</div>
+                <small>Medium</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">152x152</div>
+                <small>iPad</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">192x192</div>
+                <small>Android</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">384x384</div>
+                <small>Large</small>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview">
+                    <img src="beezee-icon-512x512.png" alt="Icon">
+                </div>
+                <div class="size-label">512x512</div>
+                <small>Desktop</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateAllIcons() {
+            const status = document.getElementById('status');
+            const showcase = document.getElementById('showcase');
+            
+            status.innerHTML = '🎨 Generating optimized icons...';
+            showcase.style.display = 'grid';
+            
+            const sizes = [
+                { size: 72, maskable: false, name: 'Phone' },
+                { size: 96, maskable: false, name: 'Tablet' },
+                { size: 128, maskable: false, name: 'Small' },
+                { size: 144, maskable: false, name: 'Medium' },
+                { size: 152, maskable: false, name: 'iPad' },
+                { size: 192, maskable: true, name: 'Android' },
+                { size: 384, maskable: false, name: 'Large' },
+                { size: 512, maskable: true, name: 'Desktop' }
+            ];
+            
+            let completed = 0;
+            
+            sizes.forEach(({ size, maskable, name }, index) => {
+                setTimeout(() => {
+                    generateOptimizedIcon(size, maskable, name);
+                    completed++;
+                    status.innerHTML = `✅ Generated ${completed}/${sizes.length} optimized icons...`;
+                    
+                    if (completed === sizes.length) {
+                        status.innerHTML = `🎉 All ${sizes.length} optimized icons generated! Check your downloads folder.`;
+                        
+                        setTimeout(() => {
+                            status.innerHTML = '✅ Icons ready! Replace the old icons in your /public folder and update manifest.json';
+                        }, 2000);
+                    }
+                }, index * 800);
+            });
+        }
+        
+        function generateOptimizedIcon(size, isMaskable, name) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Calculate optimal padding and logo size
+            const padding = isMaskable ? Math.floor(size * 0.15) : Math.floor(size * 0.2);
+            const logoSize = isMaskable ? Math.floor(size * 0.7) : Math.floor(size * 0.6);
+            const borderRadius = Math.floor(size * 0.2);
+            
+            // Draw black background with rounded corners
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.moveTo(borderRadius, 0);
+            ctx.lineTo(size - borderRadius, 0);
+            ctx.quadraticCurveTo(size, 0, size, borderRadius);
+            ctx.lineTo(size, size - borderRadius);
+            ctx.quadraticCurveTo(size, size, size - borderRadius, size);
+            ctx.lineTo(borderRadius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - borderRadius);
+            ctx.lineTo(0, borderRadius);
+            ctx.quadraticCurveTo(0, 0, borderRadius, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Load and draw the original logo with proper scaling
+            const img = new Image();
+            img.onload = function() {
+                // Draw centered logo with proper scaling
+                ctx.drawImage(img, padding, padding, logoSize, logoSize);
+                
+                // Download the optimized icon
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `beezee-icon-${size}x${size}-optimized.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    console.log(`✅ Generated ${name} icon: ${size}x${size} (${isMaskable ? 'maskable' : 'standard'})`);
+                }, 'image/png');
+            };
+            
+            img.src = 'beezee-icon-512x512.png';
+        }
+        
+        // Auto-load status
+        window.addEventListener('load', () => {
+            console.log('📱 BeeZee Icon Fix loaded! Click the button to generate optimized icons.');
+        });
+    </script>
+</body>
+</html>
