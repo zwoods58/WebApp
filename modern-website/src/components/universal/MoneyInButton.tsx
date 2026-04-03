@@ -41,6 +41,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const dueDateRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
@@ -131,12 +132,13 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
 
   // Auto-scroll to due date when credit is selected
   useEffect(() => {
-    if (formData.payment_method === 'credit' && dueDateRef.current) {
+    if (formData.payment_method === 'credit' && dueDateRef.current && scrollContainerRef.current) {
       // Small delay to ensure the DOM has updated
       setTimeout(() => {
         dueDateRef.current?.scrollIntoView({
           behavior: 'smooth',
-          block: 'center'
+          block: 'nearest',
+          inline: 'start'
         });
         
         // Optional: Add a temporary highlight effect
@@ -206,7 +208,14 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
               <div className="w-12 h-1.5 bg-[var(--text-3)] opacity-50 rounded-full" />
             </div>
             
-            <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
+            <div 
+              ref={scrollContainerRef}
+              className="px-6 pb-8 overflow-y-auto overscroll-contain" 
+              style={{ 
+                maxHeight: 'calc(100vh - 8rem - env(safe-area-inset-bottom))',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center border border-green-200">
                   <Icon className="text-green-600" size={24} />
