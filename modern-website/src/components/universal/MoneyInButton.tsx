@@ -106,6 +106,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
       customer_name: formData.customer_name,
       payment_method: formData.payment_method,
       transaction_date: new Date().toISOString().split('T')[0],
+      due_date: formData.payment_method === 'credit' ? formData.due_date : undefined,
     };
 
     console.log('[MoneyInButton] Transaction data:', transactionData);
@@ -190,7 +191,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                 <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center border border-green-200">
                   <Icon className="text-green-600" size={24} />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t(labels.buttonKey)}</h3>
+                <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t('common.transaction', 'Transaction')}</h3>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">

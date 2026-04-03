@@ -117,7 +117,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                 <div className="w-12 h-12 glass-regular rounded-xl flex items-center justify-center border border-orange-200/50">
                   <Icon className="text-orange-600" size={24} />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t(labels.buttonKey)}</h3>
+                <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t('common.transaction', 'Transaction')}</h3>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -232,7 +232,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     type="submit"
                     className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap"
                   >
-                    {t('common.save')} {t('nav.expenses')}
+                    {t('common.save')} {t('common.transaction', 'Transaction')}
                   </button>
                 </div>
               </form>
