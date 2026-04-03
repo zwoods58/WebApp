@@ -12,7 +12,8 @@ import {
   Phone,
   Building,
   Globe,
-  Share2
+  Share2,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -34,6 +35,40 @@ export default function MorePage() {
 
   const { business, loading, signOut } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'available' | 'none' | 'checking'>('idle');
+
+  const checkForUpdates = async () => {
+    setIsCheckingUpdate(true);
+    setUpdateStatus('checking');
+    
+    try {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          await registration.update();
+          
+          // Check if there's a waiting worker
+          if (registration.waiting) {
+            setUpdateStatus('available');
+            // Show update notification
+            if (confirm('A new version is available! Update now?')) {
+              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+              setTimeout(() => window.location.reload(), 500);
+            }
+          } else {
+            setUpdateStatus('none');
+            setTimeout(() => setUpdateStatus('idle'), 3000);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Update check failed:', error);
+      setUpdateStatus('idle');
+    } finally {
+      setIsCheckingUpdate(false);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -81,6 +116,18 @@ export default function MorePage() {
     {
       title: t('more.business_tools', 'Business Tools'),
       items: [
+        {
+          icon: RefreshCw,
+          label: isCheckingUpdate ? 'Checking for updates...' : 'Check for Updates',
+          description: updateStatus === 'available' ? 'Update available! Click to install.' : 
+                        updateStatus === 'none' ? 'App is up to date' : 
+                        'Check for app updates',
+          isButton: true,
+          onClick: checkForUpdates,
+          color: updateStatus === 'available' ? 'text-green-600 bg-green-50' : 
+                 updateStatus === 'none' ? 'text-gray-600 bg-gray-50' :
+                 'text-blue-600 bg-blue-50'
+        },
         {
           icon: FileText,
           label: t('more.reports', 'Reports'),

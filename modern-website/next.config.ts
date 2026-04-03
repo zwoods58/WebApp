@@ -112,6 +112,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
+    optimizeServerReact: true,
   },
   
   // Optimize for service worker caching
@@ -123,6 +125,12 @@ const nextConfig: NextConfig = {
   
   // Static optimization for better offline performance
   trailingSlash: false,
+  
+  // Configure image optimization
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200],
+  },
 };
 
 export default nextConfig;

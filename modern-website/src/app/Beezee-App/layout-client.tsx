@@ -6,17 +6,20 @@ import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthConte
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import BottomNav from '@/components/universal/BottomNav';
 import ScrollToTop from '@/components/universal/ScrollToTop';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { cleanupBadOperations } from '@/lib/cleanup-bad-operations';
 import { ConnectionToast } from '@/components/universal/ConnectionToast';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Add custom styles for animations (will be added in useEffect)
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const { business } = useUnifiedAuth();
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
@@ -156,6 +159,36 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     setUpdateAvailable(false);
     setNewVersion(null);
   };
+
+  // Prefetch data for likely next pages
+  useEffect(() => {
+    const prefetchData = async () => {
+      if (!business?.id) return;
+      
+      // Determine likely next pages based on current path
+      if (pathname?.includes('/cash')) {
+        // Prefetch credit data
+        queryClient.prefetchQuery({
+          queryKey: ['credit', business.id],
+          queryFn: () => fetch('/api/credit').then(res => res.json()),
+        });
+      } else if (pathname?.includes('/credit')) {
+        // Prefetch transactions data
+        queryClient.prefetchQuery({
+          queryKey: ['transactions', business.id],
+          queryFn: () => fetch('/api/transactions').then(res => res.json()),
+        });
+      } else if (pathname?.includes('/services')) {
+        // Prefetch inventory data
+        queryClient.prefetchQuery({
+          queryKey: ['inventory', business.id],
+          queryFn: () => fetch('/api/inventory').then(res => res.json()),
+        });
+      }
+    };
+    
+    prefetchData();
+  }, [pathname, queryClient, business?.id]);
 
   // Extract country and industry from pathname
   const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);

@@ -123,7 +123,7 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
               <Link
                 key={item.nameKey}
                 href={href}
-                prefetch={false}
+                prefetch={true}
                 onClick={(e) => {
                   // Handle navigation errors gracefully
                   try {
