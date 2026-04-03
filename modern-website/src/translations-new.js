@@ -2093,6 +2093,19 @@ const translations = {
       rw: "Ongeraho ibyiringize",
       lg: "Yongera omulimo"
     },
+    "calendar.fill_details": {
+      en: "Fill in the appointment details",
+      sw: "Jaza maelezo ya miadi",
+      ha: "Cika cikakken bayananin sadarwa",
+      yo: "Kun alaye àkójọ ná",
+      ig: "Jee mmepe ahịhịa nke ọrụ",
+      zu: "Jaza inkcazelo zebibyingize",
+      xh: "Gqiba iinkcazelo zeenkalo",
+      af: "Vul die afspraakbesonderhede in",
+      tw: "Hyɛ nsrahyɛ ho nsɛm",
+      rw: "Uzuza ibisobanuro by'ibyiringize",
+      lg: "Jjuza ebikwata ku mirimu"
+    },
     "calendar.error.service": {
       en: "Please select a service",
       sw: "Tafadhali chagua huduma",

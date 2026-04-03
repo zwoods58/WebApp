@@ -291,7 +291,8 @@ export default function AddAppointmentModal({
       <div
         className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-xl"
         style={{
-          maxHeight: '90vh',
+          height: '85vh',
+          maxHeight: '85vh',
           display: 'flex',
           flexDirection: 'column'
         }}
@@ -302,8 +303,17 @@ export default function AddAppointmentModal({
       </div>
       
       {/* Header */}
-      <div className="px-6 pb-3 border-b shrink-0">
-        <h2 className="text-xl font-semibold">{t('calendar.add_appointment', 'Add Appointment')}</h2>
+      <div className="flex justify-between items-center px-6 pb-3 border-b shrink-0">
+        <div>
+          <h2 className="text-xl font-semibold">{t('calendar.add_appointment', 'Add Appointment')}</h2>
+          <p className="text-sm text-gray-500 mt-1">{t('calendar.fill_details', 'Fill in the appointment details')}</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          ✕
+        </button>
       </div>
       
       {/* SCROLLABLE CONTENT - Enhanced smooth scrolling */}
@@ -465,22 +475,14 @@ export default function AddAppointmentModal({
       </div>
       
       {/* BUTTONS - Fixed at bottom, always visible */}
-      <div className="p-6 border-t bg-white shrink-0">
-        <div className="flex gap-3">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium"
-          >
-            {t('common.cancel', 'Cancel')}
-          </button>
-          <button
+      <div className="p-6 border-t bg-white rounded-b-3xl shrink-0">
+        <button
             onClick={handleSubmit}
             disabled={submitting || services.length === 0}
-            className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-medium disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400"
           >
-            {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Save Appointment')}
+            {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
           </button>
-        </div>
       </div>
     </div>
     </>

@@ -12,6 +12,7 @@ import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
+import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 
 export default function StockPage() {
   const params = useParams();
@@ -22,14 +23,20 @@ export default function StockPage() {
   
   const { business, loading: businessLoading } = useUnifiedAuth();
   
+  // Persistent storage backup for inventory
+  const [persistentInventory, setPersistentInventory] = usePersistentStorage<any[]>(
+    `inventory_${business?.id || 'default'}`, 
+    []
+  );
+  
+  const inventoryHook = useInventoryTanStack({ 
+    businessId: business?.id,
+    industry,
+    country
+  });
+  
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
-  
-  // 🔧 DEBUG: Get the full hook and log it
-  const inventoryHook = useInventoryTanStack({ 
-    industry,
-    businessId: business?.id 
-  });
   
   console.log('🔧 [StockPage] inventoryHook methods:', {
     hasUpdateInventory: typeof inventoryHook.updateInventory === 'function',
@@ -56,6 +63,25 @@ export default function StockPage() {
   });
   
   const { addTransaction, addTransactionAsync } = transactionsHook;
+  
+  // Sync localStorage with IndexedDB data
+  useEffect(() => {
+    if (inventory && inventory.length > 0) {
+      setPersistentInventory(inventory);
+    }
+  }, [inventory, setPersistentInventory]);
+  
+  // Fallback to localStorage if IndexedDB is empty
+  useEffect(() => {
+    if (!inventory || inventory.length === 0) {
+      if (persistentInventory && persistentInventory.length > 0) {
+        // Restore from localStorage to IndexedDB
+        persistentInventory.forEach(item => {
+          addInventoryAsync(item).catch(console.error);
+        });
+      }
+    }
+  }, [inventory, persistentInventory, addInventoryAsync]);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
