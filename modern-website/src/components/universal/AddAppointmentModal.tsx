@@ -98,13 +98,22 @@ export default function AddAppointmentModal({
     }
   }, [isOpen]);
 
-  // Time options (30-minute intervals from 8 AM to 8 PM)
-  const timeOptions = [
-    '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
-    '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM',
-    '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
-    '5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'
-  ];
+  // Generate time options in 5-minute increments
+  const generate5MinTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 5) {
+        const hour12 = hour % 12 || 12;
+        const ampm = hour < 12 ? 'AM' : 'PM';
+        const minuteStr = minute.toString().padStart(2, '0');
+        const timeString = `${hour12}:${minuteStr} ${ampm}`;
+        times.push(timeString);
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generate5MinTimeOptions();
 
   // Time slot conflict detection
   const checkTimeConflict = async (date: string, startTime: string, endTime: string, excludeId = null) => {
@@ -297,16 +306,17 @@ export default function AddAppointmentModal({
         <h2 className="text-xl font-semibold">Add Appointment</h2>
       </div>
       
-      {/* Scrollable Content - THIS IS KEY */}
+      {/* SCROLLABLE CONTENT - Enhanced smooth scrolling */}
       <div 
         className="flex-1 overflow-y-auto px-6 py-4"
         style={{
           WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth',
           maxHeight: 'calc(90vh - 120px)'
         }}
       >
         {/* All form fields go here */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Customer Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -318,6 +328,7 @@ export default function AddAppointmentModal({
               onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500"
               placeholder="Enter customer name"
+              autoFocus
               required
             />
             {errors.customerName && (
