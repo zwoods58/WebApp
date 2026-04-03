@@ -138,43 +138,32 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
           }
           setShowModal(true);
         }}
-        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold shadow-lg transition-all hover:shadow-xl active:shadow-md no-select button-tap ${
+        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-white shadow-lg transition-all bg-gradient-to-r from-[var(--color-success)] to-emerald-500 hover:shadow-xl active:shadow-md no-select button-tap ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-        style={{ backgroundColor: '#ffffff', color: '#000000' }}
+        }}`}
         disabled={disabled}
       >
-        <Plus size={22} strokeWidth={2.5} className="text-green-600" />
-        <span style={{ color: '#000000' }}>{t('common.money_in')}</span>
+        <Plus size={22} strokeWidth={2.5} />
+        {t('common.money_in')}
       </button>
 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
       {showModal && (
         <>
-          {/* Backdrop - 100% SOLID WHITE */}
+          {/* Backdrop - CSS fade animation */}
           <div
             onClick={closeModal}
-            className="fixed inset-0 z-40 transform-gpu"
+            className="fixed inset-0 bg-black/50 z-40 backdrop-fade transform-gpu"
             style={{ 
-              backgroundColor: '#ffffff !important',
-              background: '#ffffff !important',
-              backgroundImage: 'none !important',
               willChange: 'opacity',
-              WebkitTransform: 'translateZ(0)',
-              position: 'fixed',
-              top: '0',
-              left: '0',
-              right: '0',
-              bottom: '0'
+              WebkitTransform: 'translateZ(0)'
             }}
           />
           
-          {/* Modal - Solid white background with inline style for PWA */}
+          {/* Modal - Solid white background */}
           <div
-            className="fixed bottom-0 left-0 right-0 z-[70] border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[70] bg-white border-x-0 border-b-0 rounded-t-3xl rounded-b-none shadow-xl overflow-hidden"
             style={{ 
-              backgroundColor: '#ffffff',
-              background: '#ffffff',
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))'
             }}
@@ -185,10 +174,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
             
             <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-3 mb-6">
-                <div 
-              className="w-12 h-12 rounded-xl flex items-center justify-center border border-green-200"
-              style={{ backgroundColor: '#f0fdf4' }}
-            >
+                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center border border-green-200">
                   <Icon className="text-green-600" size={24} />
                 </div>
                 <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t(labels.buttonKey)}</h3>
@@ -208,8 +194,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       required
                       value={formData.amount}
                       onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                      className="w-full pl-14 pr-4 py-4 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
-                      style={{ backgroundColor: '#ffffff' }}
+                      className="w-full pl-14 pr-4 py-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
                       placeholder="0.00"
                       inputMode="decimal"
                     />
@@ -226,8 +211,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                       <select
                         value={formData.service_id}
                         onChange={(e) => setFormData(prev => ({ ...prev, service_id: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         required
                       >
                         <option value="">{t('transport.select_service', 'Select service')}</option>
@@ -247,8 +231,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         type="number"
                         value={formData.distance}
                         onChange={(e) => setFormData(prev => ({ ...prev, distance: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         placeholder="0.0"
                         step="0.1"
                         disabled={formData.use_base_amount}
@@ -276,8 +259,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                         type="number"
                         value={formData.tips}
                         onChange={(e) => setFormData(prev => ({ ...prev, tips: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         placeholder="0.00"
                         step="0.01"
                       />
@@ -311,8 +293,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
+                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                     placeholder={t('common.description_placeholder', 'What was this for?')}
                   />
                 </div>
@@ -325,8 +306,7 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                     type="text"
                     value={formData.customer_name}
                     onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
+                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                     placeholder={t('customerName')}
                   />
                 </div>
@@ -348,12 +328,11 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                           }
                           setFormData(prev => ({ ...prev, payment_method: method }));
                         }}
-                        className={`py-3 rounded-xl font-medium text-sm transition-all button-tap ${
+                        className={`py-3 rounded-xl font-medium text-sm transition-all ${
                           formData.payment_method === method
-                            ? 'bg-green-500/20 text-green-700 border-2 border-green-500/50 shadow-sm'
-                            : 'text-[var(--text-2)] border-2 border-transparent shadow-sm'
+                            ? 'bg-green-500/20 text-green-700 border-2 border-green-500/50 bg-white/90 backdrop-blur-md shadow-sm'
+                            : 'bg-white/90 backdrop-blur-md text-[var(--text-2)] border-2 border-transparent hover:bg-white/95 shadow-sm'
                         }`}
-                        style={{ backgroundColor: '#ffffff' }}
                       >
                         {t(`payment.${method}`, method === 'mobile_money' ? 'Mobile Money' : method.charAt(0).toUpperCase() + method.slice(1))}
                       </button>

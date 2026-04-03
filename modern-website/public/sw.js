@@ -4,7 +4,6 @@
  */
 
 const CACHE_VERSION = 'v68';
-const CURRENT_VERSION = 'v68';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -110,8 +109,9 @@ console.log('[SW] Smart caching mode - will cache user routes after login');
 // INSTALL - Cache static assets
 // ============================================================
 self.addEventListener('install', (event) => {
-  console.log(`[SW] 🚀 Installing service worker ${CURRENT_VERSION}...`);
+  console.log(`[SW] 🚀 Installing service worker ${CACHE_VERSION}...`);
   
+  // Clear old caches before installing new ones
   event.waitUntil(
     (async () => {
       // Clear all old versions
@@ -152,18 +152,8 @@ self.addEventListener('install', (event) => {
         console.warn('[SW] ⚠️ Cache operation error:', error);
       }
       
-      // Force activation without waiting
+      // Force the new service worker to become active
       self.skipWaiting();
-      
-      // Notify all clients that a new version is available
-      const clientsList = await self.clients.matchAll();
-      clientsList.forEach(client => {
-        client.postMessage({
-          type: 'SW_UPDATE_AVAILABLE',
-          version: CURRENT_VERSION
-        });
-      });
-      console.log(`[SW] 📢 Notified ${clientsList.length} clients of update availability`);
     })()
   );
 });
@@ -172,7 +162,7 @@ self.addEventListener('install', (event) => {
 // ACTIVATE: Clean old caches and claim clients
 // ============================================================
 self.addEventListener('activate', (event) => {
-  console.log(`[SW] 🔄 Activating ${CURRENT_VERSION}...`);
+  console.log(`[SW] 🔄 Activating ${CACHE_VERSION}...`);
   
   event.waitUntil(
     (async () => {
@@ -187,25 +177,18 @@ self.addEventListener('activate', (event) => {
         return caches.delete(name);
       }));
       
-      // Take control of all clients immediately
-      await self.clients.claim();
-      console.log(`[SW] ✅ Service worker ${CURRENT_VERSION} activated and claimed clients`);
+      // Claim all clients so the SW takes control immediately
+      await clients.claim();
+      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated and claimed clients`);
       
-      // Notify all clients that activation is complete
-      const clientsList = await self.clients.matchAll();
+      // Notify all clients that a new version is active
+      const clientsList = await clients.matchAll();
       clientsList.forEach(client => {
         client.postMessage({
-          type: 'SW_ACTIVATED',
-          version: CURRENT_VERSION
+          type: 'SW_UPDATE_ACTIVATED',
+          version: CACHE_VERSION
         });
       });
-      console.log(`[SW] 📢 Notified ${clientsList.length} clients of activation completion`);
-      
-      // Start periodic update checks (every minute)
-      setInterval(() => {
-        self.registration.update();
-        console.log('[SW] Periodic update check...');
-      }, 60000);
     })()
   );
 });
@@ -259,9 +242,6 @@ self.addEventListener('message', (event) => {
         const registration = await self.registration;
         await registration.update();
         console.log('[SW] ✅ Update check completed');
-        if (event.source) {
-          event.source.postMessage({ type: 'UPDATE_CHECKED' });
-        }
       })()
     );
     return;
@@ -272,20 +252,10 @@ self.addEventListener('message', (event) => {
     console.log('[SW] 🔄 SKIP_WAITING received - activating new version...');
     self.skipWaiting();
     
-    // Notify client that update is starting
-    if (event.source) {
-      event.source.postMessage({
-        type: 'SW_UPDATE_STARTED'
-      });
-    }
-    
     // Notify all clients that new SW is activated
     self.clients.matchAll().then(clients => {
       clients.forEach(client => {
-        client.postMessage({ 
-          type: 'SW_ACTIVATED',
-          version: CURRENT_VERSION
-        });
+        client.postMessage({ type: 'SW_ACTIVATED' });
       });
       console.log('[SW] ✅ Notified', clients.length, 'clients of activation');
     });

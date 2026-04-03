@@ -25,7 +25,6 @@ import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import AddAppointmentModal from './AddAppointmentModal';
-import { UpdateNotification } from './UpdateNotification';
 
 interface CalendarProps {
   industry: string;
@@ -393,20 +392,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <UpdateNotification />
       <Header industry={industry} country={country} />
-      
-      {/* Offline indicator */}
-      {isOffline && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-4 mt-4">
-          <div className="flex items-center">
-            <AlertCircle className="text-yellow-400 mr-2" size={20} />
-            <p className="text-sm text-yellow-700">
-              You're offline - showing cached appointments
-            </p>
-          </div>
-        </div>
-      )}
       
       <div className="container mx-auto px-4 py-6 pb-20">
         {/* Header - Mobile Responsive */}

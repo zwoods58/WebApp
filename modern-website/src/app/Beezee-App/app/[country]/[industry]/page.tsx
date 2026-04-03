@@ -37,7 +37,6 @@ import {
   PageLoading,
   OfflineFallback
 } from '@/components/universal';
-import { UpdateNotification } from '@/components/universal/UpdateNotification';
 
 // Dynamic imports for modal components to reduce initial bundle size
 const BuzzInsights = dynamic(() => import('@/components/universal/BuzzInsights'), { ssr: false });
@@ -186,17 +185,6 @@ export default function IndustryDashboard() {
       .filter((item): item is NonNullable<typeof item> => item !== null)
       .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 3);
-  };
-
-  const calculateAverageOverdueDays = (overdueCredits: any[]) => {
-    if (!overdueCredits || overdueCredits.length === 0) return 0;
-    
-    const totalDays = overdueCredits.reduce((sum: number, credit: any) => {
-      const daysOverdue = Math.floor((Date.now() - new Date(credit.created_at || credit.due_date).getTime()) / (1000 * 60 * 60 * 24));
-      return sum + daysOverdue;
-    }, 0);
-    
-    return Math.round(totalDays / overdueCredits.length);
   };
   
   // Debug: Log hook returns to identify issues
@@ -497,6 +485,17 @@ export default function IndustryDashboard() {
 
   // Helper functions for BuzzInsights data
 
+  const calculateAverageOverdueDays = (overdueCredits: any[]) => {
+    if (!overdueCredits || overdueCredits.length === 0) return 0;
+    
+    const totalDays = overdueCredits.reduce((sum: number, credit: any) => {
+      const daysOverdue = Math.floor((Date.now() - new Date(credit.created_at || credit.due_date).getTime()) / (1000 * 60 * 60 * 24));
+      return sum + daysOverdue;
+    }, 0);
+    
+    return Math.round(totalDays / overdueCredits.length);
+  };
+
   const handleMoneyOut = async (expenseData: any) => {
     try {
       console.log('Tenant data:', { business, businessId });
@@ -565,23 +564,8 @@ export default function IndustryDashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-        {/* Update Notification */}
-        <UpdateNotification />
-        
         {/* Header */}
         <Header industry={industry} country={country} />
-        
-        {/* Offline indicator */}
-        {isOffline && (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-4 mt-4">
-            <div className="flex items-center">
-              <AlertTriangle className="text-yellow-400 mr-2" size={20} />
-              <p className="text-sm text-yellow-700">
-                You're offline - showing cached data
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Main Content - Dynamic scrolling */}
         <main className="flex-1">
