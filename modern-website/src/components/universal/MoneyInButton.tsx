@@ -151,22 +151,10 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
       {showModal && (
         <>
-          {/* Backdrop - 100% SOLID WHITE */}
-          <div
+          {/* Backdrop - 100% WHITE (same as appointments) */}
+          <div 
+            className="absolute inset-0 bg-white animate-fade-in" 
             onClick={closeModal}
-            className="fixed inset-0 z-40 transform-gpu"
-            style={{ 
-              backgroundColor: '#ffffff !important',
-              background: '#ffffff !important',
-              backgroundImage: 'none !important',
-              willChange: 'opacity',
-              WebkitTransform: 'translateZ(0)',
-              position: 'fixed',
-              top: '0',
-              left: '0',
-              right: '0',
-              bottom: '0'
-            }}
           />
           
           {/* Modal - Solid white background */}

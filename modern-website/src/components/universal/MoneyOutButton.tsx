@@ -65,26 +65,23 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
           }
           setShowModal(true);
         }}
-        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-white shadow-lg transition-all bg-gradient-to-r from-[var(--color-danger)] to-rose-500 hover:shadow-xl active:shadow-md no-select button-tap ${
+        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold shadow-lg transition-all hover:shadow-xl active:shadow-md no-select button-tap ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
+        style={{ backgroundColor: '#ffffff', color: '#000000' }}
         disabled={disabled}
       >
-        <Minus size={22} strokeWidth={2.5} />
-        {t('common.money_out')}
+        <Minus size={22} strokeWidth={2.5} className="text-red-600" />
+        <span style={{ color: '#000000' }}>{t('common.money_out')}</span>
       </button>
 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
       {showModal && (
         <>
-          {/* Backdrop - CSS fade animation */}
-          <div
+          {/* Backdrop - 100% WHITE (same as appointments) */}
+          <div 
+            className="absolute inset-0 bg-white animate-fade-in" 
             onClick={closeModal}
-            className="fixed inset-0 bg-white z-40 backdrop-fade transform-gpu"
-            style={{ 
-              willChange: 'opacity',
-              WebkitTransform: 'translateZ(0)'
-            }}
           />
           
           {/* Modal - No animation for instant display */}
