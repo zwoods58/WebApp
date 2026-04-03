@@ -26,6 +26,7 @@ import { useServicesTanStack, useInventoryTanStack, useTransactionsTanStack } fr
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
+import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 
@@ -46,7 +47,17 @@ export default function ServicesPage() {
     }
   }, [industry, country]);
   
-  const { business } = useUnifiedAuth();
+  const { business, loading: businessLoading } = useUnifiedAuth();
+  
+  // Persistent storage backup for services and inventory
+  const [persistentServices, setPersistentServices] = usePersistentStorage<any[]>(
+    `services_${business?.id || 'default'}`, 
+    []
+  );
+  const [persistentInventory, setPersistentInventory] = usePersistentStorage<any[]>(
+    `inventory_${business?.id || 'default'}`, 
+    []
+  );
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -66,6 +77,65 @@ export default function ServicesPage() {
       timestamp: new Date().toISOString()
     });
   }, [safeInventory]);
+
+  // Sync services and inventory with localStorage
+  useEffect(() => {
+    if (services && services.length > 0) {
+      setPersistentServices(services);
+    }
+    if (inventory && inventory.length > 0) {
+      setPersistentInventory(inventory);
+    }
+  }, [services, inventory, setPersistentServices, setPersistentInventory]);
+
+  // Fallback from localStorage to IndexedDB
+  useEffect(() => {
+    if (!services || services.length === 0) {
+      if (persistentServices && persistentServices.length > 0) {
+        const restoreServices = async () => {
+          for (const item of persistentServices) {
+            try {
+              await addService(item);
+            } catch (error) {
+              console.error('Failed to restore service:', error);
+            }
+          }
+        };
+        restoreServices();
+      }
+    }
+    if (!inventory || inventory.length === 0) {
+      if (persistentInventory && persistentInventory.length > 0) {
+        const restoreInventory = async () => {
+          for (const item of persistentInventory) {
+            try {
+              await addInventoryItemFn(item);
+            } catch (error) {
+              console.error('Failed to restore inventory item:', error);
+            }
+          }
+        };
+        restoreInventory();
+      }
+    }
+  }, [services, inventory, persistentServices, persistentInventory, addService, addInventoryItemFn]);
+
+  // Periodic database sync to ensure data persistence
+  useEffect(() => {
+    if (!business?.id) return;
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('🔄 [ServicesPage] Periodic sync completed');
+      } catch (error) {
+        console.warn('⚠️ [ServicesPage] Periodic sync failed:', error);
+      }
+    }, 30000); // Sync every 30 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [business?.id]);
   
   const addInventoryItem = industry === 'transport' ? () => {} : addInventoryItemFn;
   const updateInventoryItem = industry === 'transport' ? () => {} : updateInventoryItemFn;
@@ -200,16 +270,32 @@ export default function ServicesPage() {
       // Get currency from business country
       const currency = getCurrency(business.country || country);
       
-      await addService({
+      const serviceData = {
         ...newService,
         business_id: business.id,
         industry,
         currency,
         is_active: true
-      });
+      };
+      
+      console.log('🔧 [ServicesPage] Adding service to database:', serviceData);
+      
+      await addService(serviceData);
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [ServicesPage] Forced sync to database after add');
+      } catch (syncError) {
+        console.warn('⚠️ [ServicesPage] Sync failed after add, but service saved locally:', syncError);
+      }
+      
       setShowAddModal(false);
+      showSuccess(t('services.add_success', `Successfully added "${newService.service_name}"`));
     } catch (error) {
       console.error('Failed to add service:', error);
+      showError(t('services.add_error', 'Failed to add service. Please try again.'));
     }
   };
 
@@ -223,26 +309,51 @@ export default function ServicesPage() {
       // Get currency from business country
       const currency = getCurrency(business.country || country);
       
-      await addInventoryItem({
+      const itemData = {
         ...newItem,
         business_id: business.id,
         industry,
         currency
-      });
+      };
+      
+      console.log('🔧 [ServicesPage] Adding inventory item to database:', itemData);
+      
+      await addInventoryItem(itemData);
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [ServicesPage] Forced sync to database after add inventory');
+      } catch (syncError) {
+        console.warn('⚠️ [ServicesPage] Sync failed after add inventory, but item saved locally:', syncError);
+      }
+      
       setShowAddInventoryModal(false);
+      showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}"`));
     } catch (error) {
       console.error('Failed to add inventory item:', error);
-      alert('Failed to add item. Please try again.');
+      showError(t('inventory.add_error', 'Failed to add item. Please try again.'));
     }
   };
 
   const handleUpdateService = async (serviceId: string, updates: any) => {
     try {
-      updateService({ id: serviceId, data: updates });
-      showSuccess('Service updated successfully');
+      await updateService({ id: serviceId, data: updates });
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [ServicesPage] Forced sync to database after update service');
+      } catch (syncError) {
+        console.warn('⚠️ [ServicesPage] Sync failed after update service, but service saved locally:', syncError);
+      }
+      
+      showSuccess(t('services.update_success', 'Service updated successfully'));
     } catch (error) {
       console.error('Failed to update service:', error);
-      showError('Failed to update service');
+      showError(t('services.update_error', 'Failed to update service'));
     }
   };
 
@@ -254,11 +365,21 @@ export default function ServicesPage() {
     setDeletingServiceId(serviceId);
     try {
       await deleteServiceFn(serviceId);
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [ServicesPage] Forced sync to database after delete service');
+      } catch (syncError) {
+        console.warn('⚠️ [ServicesPage] Sync failed after delete service, but service removed locally:', syncError);
+      }
+      
       setShowServiceDetail(null);
-      showSuccess('Service deleted successfully');
+      showSuccess(t('services.delete_success', 'Service deleted successfully'));
     } catch (error) {
       console.error('Failed to delete service:', error);
-      showError('Failed to delete service');
+      showError(t('services.delete_error', 'Failed to delete service'));
     } finally {
       setDeletingServiceId(null);
     }

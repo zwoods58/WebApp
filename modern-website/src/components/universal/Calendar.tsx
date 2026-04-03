@@ -24,6 +24,7 @@ import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
+import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import Header from './Header';
 import BottomNav from './BottomNav';
@@ -37,7 +38,14 @@ interface CalendarProps {
 export default function Calendar({ industry, country }: CalendarProps) {
   const { t } = useLanguage();
   const { business, loading: businessLoading } = useUnifiedAuth();
+  
   const queryClient = useQueryClient();
+  
+  // Persistent storage backup for appointments
+  const [persistentAppointments, setPersistentAppointments] = usePersistentStorage<any[]>(
+    `appointments_${business?.id || 'default'}`, 
+    []
+  );
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -137,6 +145,15 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Add the appointment
       await addAppointment(appointmentData);
       
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [Calendar] Forced sync to database after add appointment');
+      } catch (syncError) {
+        console.warn('⚠️ [Calendar] Sync failed after add appointment, but appointment saved locally:', syncError);
+      }
+      
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       await queryClient.invalidateQueries({ queryKey: ['appointments'] });
@@ -191,9 +208,19 @@ export default function Calendar({ industry, country }: CalendarProps) {
         id: appointmentId, 
         data: { 
           status: 'completed',
-          updated_at: new Date().toISOString()
+          completed_at: new Date().toISOString(),
+          completed_by: business?.id
         }
       });
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [Calendar] Forced sync to database after update appointment');
+      } catch (syncError) {
+        console.warn('⚠️ [Calendar] Sync failed after update appointment, but appointment saved locally:', syncError);
+      }
       
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -251,6 +278,15 @@ export default function Calendar({ industry, country }: CalendarProps) {
         }
       });
       
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [Calendar] Forced sync to database after cancel appointment');
+      } catch (syncError) {
+        console.warn('⚠️ [Calendar] Sync failed after cancel appointment, but appointment saved locally:', syncError);
+      }
+      
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       await queryClient.invalidateQueries({ queryKey: ['appointments'] });
@@ -270,6 +306,16 @@ export default function Calendar({ industry, country }: CalendarProps) {
     setLoadingAppointmentId(appointmentId);
     try {
       await deleteAppointment(appointmentId);
+      
+      // Force immediate sync to database
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('✅ [Calendar] Forced sync to database after delete appointment');
+      } catch (syncError) {
+        console.warn('⚠️ [Calendar] Sync failed after delete appointment, but appointment removed locally:', syncError);
+      }
+      
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       await queryClient.invalidateQueries({ queryKey: ['appointments'] });
@@ -298,6 +344,48 @@ export default function Calendar({ industry, country }: CalendarProps) {
     setSelectedAppointment(safeAppointment);
     setShowDetailsModal(true);
   };
+
+  // Sync appointments with localStorage
+  useEffect(() => {
+    if (appointments && appointments.length > 0) {
+      setPersistentAppointments(appointments);
+    }
+  }, [appointments, setPersistentAppointments]);
+
+  // Fallback from localStorage to IndexedDB
+  useEffect(() => {
+    if (!appointments || appointments.length === 0) {
+      if (persistentAppointments && persistentAppointments.length > 0) {
+        const restoreAppointments = async () => {
+          for (const appointment of persistentAppointments) {
+            try {
+              await addAppointment(appointment);
+            } catch (error) {
+              console.error('Failed to restore appointment:', error);
+            }
+          }
+        };
+        restoreAppointments();
+      }
+    }
+  }, [appointments, persistentAppointments, addAppointment]);
+
+  // Periodic database sync to ensure data persistence
+  useEffect(() => {
+    if (!business?.id) return;
+
+    const syncInterval = setInterval(async () => {
+      try {
+        const { syncProcessor } = await import('@/lib/sync-processor');
+        await syncProcessor.forceSync();
+        console.log('🔄 [Calendar] Periodic sync completed');
+      } catch (error) {
+        console.warn('⚠️ [Calendar] Periodic sync failed:', error);
+      }
+    }, 30000); // Sync every 30 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [business?.id]);
 
   // Get appointments for a specific date (exclude completed and cancelled from calendar view)
   const getAppointmentsForDate = (date: string) => {
