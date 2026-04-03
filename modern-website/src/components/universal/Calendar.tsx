@@ -12,6 +12,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  Info,
   Filter,
   Search
 } from 'lucide-react';
@@ -87,6 +88,8 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed' | 'cancelled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Navigation
   const navigateMonth = (direction: number) => {
@@ -276,6 +279,11 @@ export default function Calendar({ industry, country }: CalendarProps) {
     } finally {
       setLoadingAppointmentId(null);
     }
+  };
+
+  const handleViewDetails = (appointment: any) => {
+    setSelectedAppointment(appointment);
+    setShowDetailsModal(true);
   };
 
   // Get appointments for a specific date (exclude completed and cancelled from calendar view)
@@ -609,7 +617,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                                 }}
                                 disabled={loadingAppointmentId === appointment.id}
                                 className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Complete appointment"
+                                title={t('appointments.complete', 'Mark as Complete')}
                               >
                                 {loadingAppointmentId === appointment.id ? (
                                   <div className="animate-spin w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full"></div>
@@ -631,6 +639,16 @@ export default function Calendar({ industry, country }: CalendarProps) {
                               </button>
                             </>
                           )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(appointment);
+                            }}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title={t('appointments.view_details', 'View Details')}
+                          >
+                            <Info size={18} />
+                          </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -719,6 +737,80 @@ export default function Calendar({ industry, country }: CalendarProps) {
           </div>
         )}
       
+
+      {/* Appointment Details Modal */}
+      {showDetailsModal && selectedAppointment && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailsModal(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-4">{t('appointments.details', 'Appointment Details')}</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm text-gray-500">{t('appointments.customer', 'Customer')}</label>
+                <p className="font-medium">{selectedAppointment.customer_name || 'N/A'}</p>
+              </div>
+              
+              <div>
+                <label className="text-sm text-gray-500">{t('appointments.date_time', 'Date & Time')}</label>
+                <p className="font-medium">
+                  {new Date(selectedAppointment.appointment_date).toLocaleDateString()} at {selectedAppointment.appointment_time || 'All day'}
+                </p>
+              </div>
+              
+              <div>
+                <label className="text-sm text-gray-500">{t('appointments.status', 'Status')}</label>
+                <p className="font-medium capitalize">
+                  {(selectedAppointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                   (selectedAppointment.status as string) === 'completed' ? 'Completed' : 
+                   (selectedAppointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                </p>
+              </div>
+              
+              {selectedAppointment.service_name && (
+                <div>
+                  <label className="text-sm text-gray-500">{t('appointments.service', 'Service')}</label>
+                  <p className="font-medium">{selectedAppointment.service_name}</p>
+                </div>
+              )}
+              
+              {selectedAppointment.notes && (
+                <div>
+                  <label className="text-sm text-gray-500">{t('appointments.notes', 'Notes')}</label>
+                  <p className="text-gray-700">{selectedAppointment.notes}</p>
+                </div>
+              )}
+              
+              {selectedAppointment.metadata?.price && (
+                <div>
+                  <label className="text-sm text-gray-500">{t('appointments.price', 'Price')}</label>
+                  <p className="font-medium">{formatCurrency(selectedAppointment.metadata.price, country)}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium"
+              >
+                {t('appointments.close', 'Close')}
+              </button>
+              {(selectedAppointment.status as string) === 'pending' && (
+                <button
+                  onClick={() => {
+                    setShowDetailsModal(false);
+                    setAppointmentToCancel(selectedAppointment.id);
+                    setShowCancelModal(true);
+                  }}
+                  className="flex-1 py-2 bg-red-500 text-white rounded-lg font-medium"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav industry={industry} country={country} />
     </div>
