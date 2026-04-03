@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   reactCompiler: true,
+  
+  // Enable optimizations for faster loading
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Optimize for production
+  compress: true,
   typescript: {
     ignoreBuildErrors: true,
     tsconfigPath: './tsconfig.json',
@@ -112,12 +120,12 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
+    optimizePackageImports: ['lucide-react', '@tanstack/react-query', 'date-fns'],
     optimizeServerReact: true,
+    webpackBuildWorker: true,
   },
   
   // Optimize for service worker caching
-  compress: true,
   poweredByHeader: false,
   
   // Ensure proper handling of service worker scope
@@ -129,7 +137,8 @@ const nextConfig: NextConfig = {
   // Configure image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200],
+    deviceSizes: [640, 750, 828, 1080],
+    minimumCacheTTL: 60,
   },
 };
 

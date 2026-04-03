@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, DollarSign, Package, FileText, MoreHorizontal, Calendar, MapPin, WifiOff } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 
@@ -17,9 +17,24 @@ const CALENDAR_INDUSTRIES = ['salon', 'tailor', 'freelance', 'repairs'];
 export default function BottomNav({ industry, country }: BottomNavProps) {
   const { t } = useLanguage();
   const pathname = usePathname();
+  const router = useRouter();
   const basePath = `/Beezee-App/app/${country}/${industry}`;
   const [navigationError, setNavigationError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(false);
+
+  // Preload critical routes on mount
+  useEffect(() => {
+    const routes = [
+      `${basePath}`,
+      `${basePath}/cash`,
+      `${basePath}/credit`,
+      `${basePath}/services`,
+    ];
+    
+    routes.forEach(route => {
+      router.prefetch(route);
+    });
+  }, [router, basePath]);
 
   // Debug logging (development only)
   if (process.env.NODE_ENV === 'development') {

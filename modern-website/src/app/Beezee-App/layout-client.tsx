@@ -1,18 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { LanguageProvider } from '@/hooks/LanguageContext';
 import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname, useRouter } from 'next/navigation';
-import BottomNav from '@/components/universal/BottomNav';
-import ScrollToTop from '@/components/universal/ScrollToTop';
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
-import { cleanupBadOperations } from '@/lib/cleanup-bad-operations';
-import { ConnectionToast } from '@/components/universal/ConnectionToast';
 import { useQueryClient } from '@tanstack/react-query';
+
+// Lazy load non-critical components for faster initial load
+const BottomNav = lazy(() => import('@/components/universal/BottomNav'));
+const ScrollToTop = lazy(() => import('@/components/universal/ScrollToTop'));
+const PWAInstallPrompt = lazy(() => import('@/components/PWAInstallPrompt'));
+const ConnectionToast = lazy(() => import('@/components/universal/ConnectionToast').then(mod => ({ default: mod.ConnectionToast })));
 
 // Add custom styles for animations (will be added in useEffect)
 
@@ -67,9 +68,11 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
 
   // One-time cleanup of bad operations before sync starts
   useEffect(() => {
-    cleanupBadOperations().catch(err => 
-      console.error('[Layout] Cleanup failed:', err)
-    );
+    import('@/lib/cleanup-bad-operations').then(({ cleanupBadOperations }) => {
+      cleanupBadOperations().catch((err: any) => 
+        console.error('[Layout] Cleanup failed:', err)
+      );
+    });
   }, []);
 
   // Suppress RSC 503 errors when offline
@@ -198,7 +201,9 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Connection Toast Notification */}
-      <ConnectionToast duration={3000} />
+      <Suspense fallback={null}>
+        <ConnectionToast duration={3000} />
+      </Suspense>
       
       {/* ✅ NEW: Update Available Banner */}
       {updateAvailable && (
@@ -236,15 +241,21 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       </div>
       
       {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
+      <Suspense fallback={null}>
+        <PWAInstallPrompt />
+      </Suspense>
       
       {/* Bottom Navigation - always show for app pages */}
       {country && industry && (
-        <BottomNav industry={industry} country={country} />
+        <Suspense fallback={null}>
+          <BottomNav industry={industry} country={country} />
+        </Suspense>
       )}
       
       {/* Scroll to Top Button */}
-      <ScrollToTop />
+      <Suspense fallback={null}>
+        <ScrollToTop />
+      </Suspense>
     </div>
   );
 }
