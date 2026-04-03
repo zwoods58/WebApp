@@ -138,14 +138,13 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
           }
           setShowModal(true);
         }}
-        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold shadow-lg transition-all hover:shadow-xl active:shadow-md no-select button-tap ${
+        className={`w-full py-5 px-6 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-white shadow-lg transition-all bg-gradient-to-r from-[var(--color-success)] to-emerald-500 hover:shadow-xl active:shadow-md no-select button-tap ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         }`}
-        style={{ backgroundColor: '#ffffff', color: '#000000' }}
         disabled={disabled}
       >
-        <Plus size={22} strokeWidth={2.5} className="text-green-600" />
-        <span style={{ color: '#000000' }}>{t('common.money_in')}</span>
+        <Plus size={22} strokeWidth={2.5} />
+        {t('common.money_in')}
       </button>
 
       {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}

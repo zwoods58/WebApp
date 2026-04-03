@@ -54,6 +54,18 @@ export default function CreditPage() {
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
 
   // Calculate credit statistics from data
+  // Helper function to check if credit is overdue
+  const isOverdue = (dueDate: string, status: string) => {
+    if (status === 'paid' || !dueDate) return false;
+    
+    const dueDateTime = new Date(dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dueDateTime.setHours(0, 0, 0, 0);
+    
+    return dueDateTime < today;
+  };
+
   const creditData = credit || [];
   const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
   const partialCredit = creditData.filter((c: any) => c.status === 'partial');
@@ -280,17 +292,7 @@ export default function CreditPage() {
     }
   };
 
-  const isOverdue = (dueDate: string, status: string) => {
-    if (status === 'paid' || !dueDate) return false;
-    
-    const dueDateTime = new Date(dueDate);
-    const currentDateTime = new Date();
-    const daysPastDue = Math.ceil((currentDateTime.getTime() - dueDateTime.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Only consider overdue after 1 full day past due date
-    return daysPastDue >= 1;
-  };
-
+  
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
