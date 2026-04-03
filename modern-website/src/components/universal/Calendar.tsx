@@ -15,6 +15,7 @@ import {
   Filter,
   Search
 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useAppointmentsTanStack, useTransactionsTanStack, useServicesTanStack } from '@/hooks';
 import { Appointment } from '@/hooks/useAppointmentsTanStack';
@@ -34,6 +35,7 @@ interface CalendarProps {
 export default function Calendar({ industry, country }: CalendarProps) {
   const { t } = useLanguage();
   const { business, loading: businessLoading } = useUnifiedAuth();
+  const queryClient = useQueryClient();
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -84,6 +86,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed' | 'cancelled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
 
   // Navigation
   const navigateMonth = (direction: number) => {
@@ -130,6 +133,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Add the appointment
       await addAppointment(appointmentData);
       
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      
       // Create a transaction for the appointment booking to show in recent activities
       if (servicePrice && servicePrice > 0) {
         await addTransaction({
@@ -153,13 +160,15 @@ export default function Calendar({ industry, country }: CalendarProps) {
       
       setShowAddModal(false);
       setSelectedDate(null);
-      // TanStack Query handles refetching automatically
+      showSuccess('Appointment created successfully');
     } catch (error) {
       console.error('Error adding appointment:', error);
+      showError('Failed to create appointment');
     }
   };
 
   const handleCompleteAppointment = async (appointmentId: string) => {
+    setLoadingAppointmentId(appointmentId);
     try {
       if (!appointments) return;
       const appointment = appointments.find((apt: Appointment) => apt.id === appointmentId);
@@ -174,13 +183,17 @@ export default function Calendar({ industry, country }: CalendarProps) {
       });
 
       // Update appointment status to completed
-      updateAppointment({ 
+      await updateAppointment({ 
         id: appointmentId, 
         data: { 
           status: 'completed',
           updated_at: new Date().toISOString()
         }
       });
+      
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
       
       // Create transaction for payment if price exists
       if (appointment.metadata?.price && appointment.metadata.price > 0) {
@@ -216,13 +229,16 @@ export default function Calendar({ industry, country }: CalendarProps) {
     } catch (error) {
       console.error('Error completing appointment:', error);
       showError(t('calendar.complete_error', 'Failed to complete appointment. Please try again.'));
+    } finally {
+      setLoadingAppointmentId(null);
     }
   };
 
   const handleCancelAppointment = async (appointmentId: string, reason?: string) => {
+    setLoadingAppointmentId(appointmentId);
     try {
       // Update appointment status to cancelled
-      updateAppointment({ 
+      await updateAppointment({ 
         id: appointmentId, 
         data: { 
           status: 'cancelled',
@@ -230,21 +246,35 @@ export default function Calendar({ industry, country }: CalendarProps) {
           notes: reason ? `Cancelled: ${reason}` : undefined
         }
       });
+      
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      
       showSuccess('Appointment cancelled successfully');
       setShowCancelModal(false); // Close the modal after successful cancellation
       setAppointmentToCancel(null); // Clear the appointment to cancel
     } catch (error) {
       console.error('Error cancelling appointment:', error);
       showError('Failed to cancel appointment');
+    } finally {
+      setLoadingAppointmentId(null);
     }
   };
 
   const handleDeleteAppointment = async (appointmentId: string) => {
+    setLoadingAppointmentId(appointmentId);
     try {
       await deleteAppointment(appointmentId);
-      // TanStack Query handles refetching automatically
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      showSuccess('Appointment deleted successfully');
     } catch (error) {
       console.error('Error deleting appointment:', error);
+      showError('Failed to delete appointment');
+    } finally {
+      setLoadingAppointmentId(null);
     }
   };
 
@@ -483,7 +513,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Clock size={20} className="text-orange-500" />
-            Pending Appointments
+            Scheduled Appointments
             <span className="text-sm font-normal text-gray-500">
               ({filteredAppointments.filter(apt => apt.status === 'pending').length})
             </span>
@@ -544,10 +574,14 @@ export default function Calendar({ industry, country }: CalendarProps) {
                               {appointment.customer_name || 'No customer'}
                             </div>
                             <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                              appointment.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                              (appointment.status as string) === 'cancelled' ? 'bg-red-100 text-red-800' :
+                              (appointment.status as string) === 'completed' ? 'bg-green-100 text-green-800' :
+                              (appointment.status as string) === 'no-show' ? 'bg-gray-100 text-gray-800' :
                               'bg-blue-100 text-blue-800'
                             }`}>
-                              {appointment.status || 'pending'}
+                              {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                               (appointment.status as string) === 'completed' ? 'Completed' : 
+                               (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
                             </span>
                           </div>
                           <div className="space-y-1">
@@ -566,21 +600,27 @@ export default function Calendar({ industry, country }: CalendarProps) {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-1">
-                          {appointment.status === 'pending' && (
+                          {(appointment.status as string) === 'pending' && (
                             <>
                               <button
                                 onClick={() => handleCompleteAppointment(appointment.id)}
-                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                disabled={loadingAppointmentId === appointment.id}
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Complete appointment"
                               >
-                                <CheckCircle size={18} />
+                                {loadingAppointmentId === appointment.id ? (
+                                  <div className="animate-spin w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full"></div>
+                                ) : (
+                                  <CheckCircle size={18} />
+                                )}
                               </button>
                               <button
                                 onClick={() => {
                                   setAppointmentToCancel(appointment.id);
                                   setShowCancelModal(true);
                                 }}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                disabled={loadingAppointmentId === appointment.id}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="Cancel appointment"
                               >
                                 <XCircle size={18} />
@@ -589,10 +629,15 @@ export default function Calendar({ industry, country }: CalendarProps) {
                           )}
                           <button
                             onClick={() => handleDeleteAppointment(appointment.id)}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            disabled={loadingAppointmentId === appointment.id}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title="Delete appointment"
                           >
-                            <AlertCircle size={18} />
+                            {loadingAppointmentId === appointment.id ? (
+                              <div className="animate-spin w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full"></div>
+                            ) : (
+                              <AlertCircle size={18} />
+                            )}
                           </button>
                         </div>
                       </div>
