@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v83';
+const CACHE_VERSION = 'v84';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -112,8 +112,6 @@ self.addEventListener('install', (event) => {
   console.log(`[SW] 🚀 Installing service worker ${CACHE_VERSION}...`);
   
   // Clear old caches before installing new ones
-  // Clear old caches before installing new ones
-  // Clear old caches before installing new ones
   event.waitUntil(
     (async () => {
       // Clear all old versions
@@ -155,7 +153,18 @@ self.addEventListener('install', (event) => {
       }
       
       // Force the new service worker to become active
-      self.skipWaiting();
+      await self.skipWaiting();
+      
+      // Notify all clients that an update is available
+      const clients = await self.clients.matchAll();
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'SW_UPDATE_AVAILABLE',
+          version: CACHE_VERSION
+        });
+      });
+      
+      console.log(`[SW] 📢 Notified ${clients.length} clients of update availability`);
     })()
   );
 });

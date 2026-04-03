@@ -52,18 +52,17 @@ export default function MorePage() {
           if (registration.waiting) {
             setUpdateStatus('available');
             // Show update notification
-            if (confirm('A new version is available! Update now?')) {
-              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-              setTimeout(() => window.location.reload(), 500);
-            }
+            alert('Update available! Check the update notification at the bottom of the screen.');
           } else {
             setUpdateStatus('none');
+            alert('App is up to date!');
             setTimeout(() => setUpdateStatus('idle'), 3000);
           }
         }
       }
     } catch (error) {
       console.error('Update check failed:', error);
+      alert('Failed to check for updates');
       setUpdateStatus('idle');
     } finally {
       setIsCheckingUpdate(false);
