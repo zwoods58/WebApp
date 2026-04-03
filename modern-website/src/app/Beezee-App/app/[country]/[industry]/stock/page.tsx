@@ -13,6 +13,8 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import { usePersistentStorage } from '@/hooks/usePersistentStorage';
+import { useDataManager } from '@/hooks/useDataManager';
+import SyncStatusComponent from '@/components/universal/SyncStatus';
 
 export default function StockPage() {
   const params = useParams();
@@ -23,6 +25,13 @@ export default function StockPage() {
   
   const { business, loading: businessLoading } = useUnifiedAuth();
   
+  // Data manager for centralized data operations
+  const dataManager = useDataManager({
+    businessId: business?.id || '',
+    industry,
+    country
+  });
+
   // Persistent storage backup for inventory
   const [persistentInventory, setPersistentInventory] = usePersistentStorage<any[]>(
     `inventory_${business?.id || 'default'}`, 
@@ -135,22 +144,13 @@ export default function StockPage() {
         last_ordered: new Date().toISOString().split('T')[0]
       };
       
-      console.log('🔧 [StockPage] Adding item to database:', itemData);
+      console.log('🔧 [StockPage] Adding item with data manager:', itemData);
       
-      // Use the async version to ensure database save
-      await addInventoryAsync(itemData);
+      // Use data manager for centralized data operations
+      const itemId = await dataManager.create('inventory', itemData, 'high');
       
-      // Also update optimistic cache
-      addInventoryItem(itemData);
-      
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [StockPage] Forced sync to database');
-      } catch (syncError) {
-        console.warn('⚠️ [StockPage] Sync failed, but item saved locally:', syncError);
-      }
+      // Also update TanStack Query cache for immediate UI update
+      addInventoryItem({ ...itemData, id: itemId });
       
       setShowAddModal(false);
       showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}" to inventory`));
@@ -220,20 +220,19 @@ export default function StockPage() {
         return;
       }
       
-      console.log('🔍 Calling deleteInventory with ID:', item.id);
-      await deleteInventory(item.id);
+      console.log('🔍 Calling data manager delete with ID:', item.id);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [StockPage] Forced sync to database after delete');
-      } catch (syncError) {
-        console.warn('⚠️ [StockPage] Sync failed after delete, but item removed locally:', syncError);
-      }
+      // Use data manager for centralized data operations
+      await dataManager.delete('inventory', item.id, 'high');
+      
+      // Also update TanStack Query cache for immediate UI update
+      const queryKey = ['inventory', industry, country, business?.id];
+      const currentData = (queryClient.getQueryData(queryKey) as any[]) || [];
+      const updatedData = currentData.filter(i => i.id !== item.id);
+      queryClient.setQueryData(queryKey, updatedData);
       
       showSuccess(t('inventory.delete_success', `Successfully deleted "${item.item_name}"`));
-      console.log(`✅ Item deletion queued and synced: ${item.item_name}`);
+      console.log(`✅ Item deleted via data manager: ${item.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
@@ -376,6 +375,14 @@ export default function StockPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header industry={industry} country={country} />
+
+      <div className="p-4 max-w-md mx-auto">
+        <SyncStatusComponent 
+          syncStatus={dataManager.syncStatus} 
+          onForceSync={() => dataManager.forceSync().catch(console.error)}
+          compact={true}
+        />
+      </div>
 
       <div className="flex-1 p-4 max-w-md mx-auto">
         {isOffline && (
