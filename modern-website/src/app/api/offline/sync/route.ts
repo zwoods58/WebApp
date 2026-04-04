@@ -189,37 +189,6 @@ export async function POST(request: Request) {
             }
             break;
             
-          case 'appointments':
-            if (op.type === 'CREATE') {
-              const { data, error } = await supabase
-                .from('appointments')
-                .insert(op.data)
-                .select()
-                .single();
-              
-              if (error) throw error;
-              result = data;
-            } else if (op.type === 'UPDATE') {
-              const { data, error } = await supabase
-                .from('appointments')
-                .update(op.data)
-                .eq('id', op.entityId)
-                .select()
-                .single();
-              
-              if (error) throw error;
-              result = data;
-            } else if (op.type === 'DELETE') {
-              const { error } = await supabase
-                .from('appointments')
-                .delete()
-                .eq('id', op.entityId);
-              
-              if (error) throw error;
-              result = { deleted: true };
-            }
-            break;
-            
           case 'targets':
             if (op.type === 'CREATE') {
               const { data, error } = await supabase

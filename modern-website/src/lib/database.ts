@@ -70,16 +70,6 @@ export interface StoredTarget {
   syncStatus: 'synced' | 'pending' | 'conflict';
 }
 
-export interface StoredAppointment {
-  id: string;
-  business_id: string;
-  customer_name?: string;
-  appointment_date: string;
-  status?: string;
-  notes?: string;
-  syncStatus: 'synced' | 'pending' | 'conflict';
-}
-
 export interface StoredService {
   id: string;
   business_id: string;
@@ -89,11 +79,34 @@ export interface StoredService {
   syncStatus: 'synced' | 'pending' | 'conflict';
 }
 
+export interface StoredCalendar {
+  id: string;
+  business_id: string;
+  industry: string;
+  customer_name: string;
+  customer_contact?: string;
+  service_name?: string;
+  appointment_date: string;
+  appointment_time: string;
+  start_time?: string;
+  end_time?: string;
+  duration: number;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
+  notes?: string;
+  reminder_sent?: boolean;
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  _deleted?: boolean;
+  _deletedAt?: number;
+}
+
 // Offline operation queue
 export interface QueuedOperation {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
-  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'appointments';
+  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'calendar';
   entityId?: string;
   data: any;
   timestamp: number;
@@ -110,8 +123,8 @@ export class BeezeeDatabase extends Dexie {
   credit!: Table<StoredCredit, string>;
   expenses!: Table<StoredExpense, string>;
   targets!: Table<StoredTarget, string>;
-  appointments!: Table<StoredAppointment, string>;
   services!: Table<StoredService, string>;
+  calendar!: Table<StoredCalendar, string>;
   operations_queue!: Table<QueuedOperation, string>;
   sync_metadata!: Table<any, string>;
 
@@ -224,6 +237,19 @@ export class BeezeeDatabase extends Dexie {
           console.log(`✅ Migrated inventory ${item.id}: ${item.name || 'unknown'} -> ${updatedItem.item_name}`);
         }
       }
+    });
+
+    // ✅ Version 5: Add calendar table for appointments with exact frontend interface match
+    this.version(5).stores({
+      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      inventory: 'id, business_id, item_name, category, syncStatus',
+      credit: 'id, business_id, customer_name, status, syncStatus',
+      expenses: 'id, business_id, expense_date, category, syncStatus',
+      targets: 'id, business_id, target_type, syncStatus',
+      services: 'id, business_id, service_name, syncStatus',
+      calendar: 'id, business_id, appointment_date, status, syncStatus',
+      operations_queue: 'id, type, table, status, timestamp, businessId',
+      sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     });
   }
 

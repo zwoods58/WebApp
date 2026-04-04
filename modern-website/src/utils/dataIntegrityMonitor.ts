@@ -10,7 +10,6 @@ interface DataIntegrityReport {
     expenses: number;
     inventory: number;
     credit: number;
-    appointments: number;
   };
   timestamp: string;
 }
@@ -54,14 +53,12 @@ export class DataIntegrityMonitor {
         { data: transactionData },
         { data: expenseData },
         { data: inventoryData },
-        { data: creditData },
-        { data: appointmentData }
+        { data: creditData }
       ] = await Promise.all([
         supabase.from('transactions').select('id', { count: 'exact', head: true }),
         supabase.from('expenses').select('id', { count: 'exact', head: true }),
         supabase.from('inventory').select('id', { count: 'exact', head: true }),
-        supabase.from('credit').select('id', { count: 'exact', head: true }),
-        supabase.from('appointments').select('id', { count: 'exact', head: true })
+        supabase.from('credit').select('id', { count: 'exact', head: true })
       ]);
 
       return {
@@ -73,8 +70,7 @@ export class DataIntegrityMonitor {
           transactions: transactionData?.length || 0,
           expenses: expenseData?.length || 0,
           inventory: inventoryData?.length || 0,
-          credit: creditData?.length || 0,
-          appointments: appointmentData?.length || 0
+          credit: creditData?.length || 0
         },
         timestamp
       };

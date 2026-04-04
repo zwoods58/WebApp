@@ -1,31 +1,31 @@
 import { useIndustryDataNew } from './useIndustryDataNew'
 
-export interface Appointment {
+export interface CalendarAppointment {
   id: string;
   business_id: string;
   industry: string;
   customer_name: string;
-  customer_contact?: string; // Changed from customer_phone to match database
-  service_name?: string; // Changed from service_type to match database
+  customer_contact?: string;
+  service_name?: string;
   appointment_date: string;
-  appointment_time: string; // Database has time type, will be string in TS
+  appointment_time: string;
   duration: number; // in minutes
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show'; // Changed from 'scheduled' to 'pending' to match database default
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
   notes?: string;
-  reminder_sent?: boolean; // Note: does not exist in database
+  reminder_sent?: boolean;
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
 
-export interface UseAppointmentsOptions {
+export interface UseCalendarOptions {
   businessId?: string;
   industry?: string;
   country?: string;
-  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show'; // Changed from 'scheduled' to 'pending'
+  status?: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
   customerName?: string;
-  customerPhone?: string; // Note: field is customer_contact in database
-  serviceType?: string; // Note: field is service_name in database
+  customerContact?: string;
+  serviceName?: string;
   startDate?: string;
   endDate?: string;
   select?: string;
@@ -34,12 +34,12 @@ export interface UseAppointmentsOptions {
   limit?: number;
 }
 
-export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
+export function useCalendarTanStack(options: UseCalendarOptions = {}) {
   // Default to Kenya and retail if not specified
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook with updated API
+  // Use the new TanStack Query hook with calendar table
   const { 
     data, 
     isLoading, 
@@ -52,7 +52,7 @@ export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
   } = useIndustryDataNew({
     industry,
     country,
-    table: 'appointments',
+    table: 'calendar',
     select: options.select,
   })
 
@@ -69,12 +69,12 @@ export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
     )
   }
   
-  if (options.customerPhone) {
-    filteredData = filteredData.filter((a: any) => a.customer_contact === options.customerPhone)
+  if (options.customerContact) {
+    filteredData = filteredData.filter((a: any) => a.customer_contact === options.customerContact)
   }
   
-  if (options.serviceType) {
-    filteredData = filteredData.filter((a: any) => a.service_name === options.serviceType)
+  if (options.serviceName) {
+    filteredData = filteredData.filter((a: any) => a.service_name === options.serviceName)
   }
   
   if (options.startDate) {
@@ -90,14 +90,16 @@ export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
   }
 
   return {
-    data: filteredData as Appointment[],
+    data: filteredData as CalendarAppointment[],
     isLoading,
     isOffline: !isLoading && data.length === 0,
-    addAppointment: create,
-    deleteAppointment: deleteItem,
-    updateAppointment: update,
+    addCalendarAppointment: create,
+    deleteCalendarAppointment: deleteItem,
+    updateCalendarAppointment: update,
     isPending: isCreating,
     error,
     refetch,
   }
 }
+
+export default useCalendarTanStack;

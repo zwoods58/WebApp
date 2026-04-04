@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, ChevronRight, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useAppointments } from '@/hooks';
+import { useCalendarTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { formatDate } from '@/utils/currency';
 
@@ -32,7 +32,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
     data: appointments, 
     isLoading, 
     refetch
-  } = useAppointments({ businessId: business?.id, industry });
+  } = useCalendarTanStack({ businessId: business?.id, industry });
 
   // Helper functions to filter appointments by status
   const getUpcomingAppointments = () => {

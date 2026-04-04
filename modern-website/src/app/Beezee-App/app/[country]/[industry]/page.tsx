@@ -21,7 +21,7 @@ import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 // Supabase hooks
 import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
-import { useAppointments, useServices } from '@/hooks';
+import { useServices, useCalendarTanStack } from '@/hooks';
 
 // Universal Components - use dynamic imports for heavy components
 import { 
@@ -100,7 +100,7 @@ export default function IndustryDashboard() {
   const targetsHook = useTargetsTanStack({ industry, businessId });
   
   // Additional hooks for appointments and services
-  const appointmentsHook = useAppointments({ industry, businessId });
+  const appointmentsHook = useCalendarTanStack({ industry, businessId });
   const servicesHook = useServices({ industry, businessId });
   
   // Safely extract values with fallbacks - add extra defensive checks

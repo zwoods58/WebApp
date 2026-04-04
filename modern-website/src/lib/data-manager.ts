@@ -6,6 +6,7 @@
 import { supabase } from './supabase';
 import { db, QueuedOperation } from './database';
 import { syncProcessor } from './sync-processor';
+import { getCurrency } from '../utils/currency';
 
 export interface DataManagerConfig {
   businessId: string;
@@ -56,8 +57,11 @@ export class DataManager {
     const id = crypto.randomUUID();
     const timestamp = new Date();
     
-    // Prepare data with metadata
-    const enrichedData = {
+    // Get currency for this country
+    const currency = getCurrency(this.config.country);
+    
+    // Prepare data with metadata and required fields
+    const enrichedData: any = {
       ...data,
       id,
       business_id: this.config.businessId,
@@ -67,6 +71,12 @@ export class DataManager {
       updated_at: timestamp.toISOString(),
       sync_status: 'pending' as const
     };
+
+    // Add required currency field for inventory and services
+    if (table === 'inventory' || table === 'services') {
+      enrichedData.currency = currency;
+      console.log(`💰 [DataManager] Adding currency ${currency} to ${table} item`);
+    }
 
     // 1. Save to IndexedDB immediately (instant UI)
     await this.saveToIndexedDB(table, enrichedData);
@@ -87,7 +97,7 @@ export class DataManager {
       this.processSync().catch(console.error);
     }
 
-    console.log(`📝 [DataManager] Created ${table} item:`, { id, priority });
+    console.log(`📝 [DataManager] Created ${table} item:`, { id, priority, currency: table === 'inventory' || table === 'services' ? currency : 'N/A' });
     return id;
   }
 
@@ -268,7 +278,7 @@ export class DataManager {
    * Clear all local data (for logout/reset)
    */
   async clearLocalData(): Promise<void> {
-    const tables = ['inventory', 'services', 'appointments', 'transactions', 'credit', 'expenses'];
+    const tables = ['inventory', 'services', 'transactions', 'credit', 'expenses'];
     
     for (const table of tables) {
       const tableAccess = (db as any)[table];
@@ -425,6 +435,14 @@ export class DataManager {
   }
 
   private async executeCreate(table: string, data: any): Promise<void> {
+    console.log(`🔄 [DataManager] Executing CREATE for ${table}:`, { id: data.id, hasCurrency: !!data.currency });
+    
+    // Ensure currency field for inventory and services
+    if ((table === 'inventory' || table === 'services') && !data.currency) {
+      data.currency = getCurrency(this.config.country);
+      console.log(`💰 [DataManager] Added missing currency ${data.currency} to ${table}`);
+    }
+    
     const { error } = await supabase
       .from(table)
       .insert({
@@ -432,7 +450,12 @@ export class DataManager {
         sync_status: 'synced'
       });
     
-    if (error) throw error;
+    if (error) {
+      console.error(`❌ [DataManager] CREATE failed for ${table}:`, error);
+      throw error;
+    }
+    
+    console.log(`✅ [DataManager] CREATE successful for ${table}:`, data.id);
     
     // Update local status
     await this.updateInIndexedDB(table, data.id, { ...data, sync_status: 'synced' });
@@ -454,12 +477,19 @@ export class DataManager {
   }
 
   private async executeDelete(table: string, id: string): Promise<void> {
+    console.log(`🗑️ [DataManager] Executing DELETE for ${table}:`, id);
+    
     const { error } = await supabase
       .from(table)
       .delete()
       .eq('id', id);
     
-    if (error) throw error;
+    if (error) {
+      console.error(`❌ [DataManager] DELETE failed for ${table}:`, error);
+      throw error;
+    }
+    
+    console.log(`✅ [DataManager] DELETE successful for ${table}:`, id);
   }
 
   private handleNetworkChange(): void {

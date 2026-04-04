@@ -35,10 +35,6 @@ export async function POST(request: Request) {
     // Delete all data for this business
     console.log('🔄 Resetting account data for business:', businessId);
     
-    // Delete appointments
-    await supabase.from('appointments').delete().eq('business_id', businessId);
-    console.log('✅ Deleted appointments');
-    
     // Delete inventory
     await supabase.from('inventory').delete().eq('business_id', businessId);
     console.log('✅ Deleted inventory');

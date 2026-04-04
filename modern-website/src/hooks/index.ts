@@ -11,7 +11,7 @@ export { useExpensesTanStack } from './useExpensesTanStack';
 export { useCreditTanStack } from './useCreditTanStack';
 export { useInventoryTanStack } from './useInventoryTanStack';
 export { useServicesTanStack } from './useServicesTanStack';
-export { useAppointmentsTanStack } from './useAppointmentsTanStack';
+export { useCalendarTanStack } from './useCalendarTanStack';
 export { useTargetsTanStack } from './useTargetsTanStack';
 export { useBeehiveTanStack } from './useBeehiveTanStack';
 
@@ -21,7 +21,6 @@ export { useCreditTanStack as useCredit } from './useCreditTanStack';
 export { useInventoryTanStack as useInventory } from './useInventoryTanStack';
 export { useTransactionsTanStack as useTransactions } from './useTransactionsTanStack';
 export { useExpensesTanStack as useExpenses } from './useExpensesTanStack';
-export { useAppointmentsTanStack as useAppointments } from './useAppointmentsTanStack';
 
 // Missing hooks - create stub exports to prevent build errors
 // These hooks don't exist anymore but components are still importing them
@@ -48,6 +47,5 @@ export { useToast } from './useToast';
 export { useTourTrigger } from './useTourTrigger';
 export { usePullToRefresh } from './usePullToRefresh';
 export { useGlobalRefresh } from './useGlobalRefresh';
-export { useIndustryData } from './useIndustryData';
-export { useIndustryData as useIndustryDataNew } from './useIndustryDataNew'; // Alias for compatibility
+export { useIndustryDataNew } from './useIndustryDataNew';
 export { useNotifications, type Notification, type NotificationType } from './useNotifications';

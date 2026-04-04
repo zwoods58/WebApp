@@ -9,7 +9,7 @@ import { swManager } from '@/lib/serviceWorker';
 import { syncProcessor } from '@/lib/sync-processor';
 import { syncManager } from '@/lib/sync-manager';
 
-type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'appointments' | 'beehive' | 'targets';
+type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'beehive' | 'targets' | 'calendar';
 
 export const useIndustryDataNew = ({
   industry,
@@ -76,8 +76,8 @@ export const useIndustryDataNew = ({
           case 'services':
             cachedData = await db.services.where('business_id').equals(businessId).toArray();
             break;
-          case 'appointments':
-            cachedData = await db.appointments.where('business_id').equals(businessId).toArray();
+          case 'calendar':
+            cachedData = await db.calendar.where('business_id').equals(businessId).toArray();
             break;
           case 'targets':
             cachedData = await db.targets.where('business_id').equals(businessId).toArray();
@@ -173,12 +173,12 @@ export const useIndustryDataNew = ({
           error = iError;
           break;
         case 'credit':
-          const { data: cData, error: cError } = await supabase
+          const { data: crData, error: crError } = await supabase
             .from('credit')
             .select('*')
             .eq('business_id', businessId);
-          freshData = cData || [];
-          error = cError;
+          freshData = crData || [];
+          error = crError;
           break;
         case 'services':
           const { data: sData, error: sError } = await supabase
@@ -189,15 +189,15 @@ export const useIndustryDataNew = ({
           freshData = sData || [];
           error = sError;
           break;
-        case 'appointments':
-          const { data: aData, error: aError } = await supabase
-            .from('appointments')
+        case 'calendar':
+          const { data: cData, error: cError } = await supabase
+            .from('calendar')
             .select('*')
             .eq('business_id', businessId)
             .order('appointment_date', { ascending: true })
             .order('appointment_time', { ascending: true });
-          freshData = aData || [];
-          error = aError;
+          freshData = cData || [];
+          error = cError;
           break;
         case 'expenses':
           const { data: eData, error: eError } = await supabase
@@ -342,8 +342,8 @@ export const useIndustryDataNew = ({
           case 'services':
             existingRecord = await db.services.get(id);
             break;
-          case 'appointments':
-            existingRecord = await db.appointments.get(id);
+          case 'calendar':
+            existingRecord = await db.calendar.get(id);
             break;
           case 'targets':
             existingRecord = await db.targets.get(id);
@@ -498,8 +498,8 @@ export const useIndustryDataNew = ({
         case 'services':
           await db.services.put(data);
           break;
-        case 'appointments':
-          await db.appointments.put(data);
+        case 'calendar':
+          await db.calendar.put(data);
           break;
         case 'targets':
           await db.targets.put(data);
@@ -547,10 +547,10 @@ export const useIndustryDataNew = ({
             await db.services.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
           }
           break;
-        case 'appointments':
-          existing = await db.appointments.get(id);
+        case 'calendar':
+          existing = await db.calendar.get(id);
           if (existing) {
-            await db.appointments.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+            await db.calendar.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
           }
           break;
         case 'targets':
