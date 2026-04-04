@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
@@ -57,8 +57,8 @@ export default function AddAppointmentModal({
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
     date: initialDate || '',
-    startTime: '9:00 AM',
-    endTime: '10:00 AM',
+    startTime: '09:00',
+    endTime: '10:00',
     serviceId: '',
     serviceName: '',
     servicePrice: 0,
@@ -75,6 +75,7 @@ export default function AddAppointmentModal({
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
+      document.body.style.height = '100%';
       
       // Auto focus customer name input
       const timer = setTimeout(() => {
@@ -89,22 +90,31 @@ export default function AddAppointmentModal({
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
+        document.body.style.height = '';
       };
     }
   }, [isOpen]);
 
-  // Generate time options in 5-minute increments
+  // Generate time options in 5-minute increments (24-hour format for better sorting)
   const generate5MinTimeOptions = () => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 5) {
-        const hour12 = hour % 12 || 12;
-        const ampm = hour < 12 ? 'AM' : 'PM';
+        const hourStr = hour.toString().padStart(2, '0');
         const minuteStr = minute.toString().padStart(2, '0');
-        times.push(`${hour12}:${minuteStr} ${ampm}`);
+        times.push(`${hourStr}:${minuteStr}`);
       }
     }
     return times;
+  };
+
+  // Format time for display (convert 24h to 12h format)
+  const formatTimeForDisplay = (time24: string) => {
+    const [hour, minute] = time24.split(':');
+    const hourNum = parseInt(hour);
+    const hour12 = hourNum % 12 || 12;
+    const ampm = hourNum < 12 ? 'AM' : 'PM';
+    return `${hour12}:${minute} ${ampm}`;
   };
 
   const getTodayDate = () => {
@@ -147,6 +157,8 @@ export default function AddAppointmentModal({
       return;
     }
     
+    setSubmitting(true);
+    
     try {
       if (!business?.id) {
         showError(t('calendar.error.no_business', 'No business information available'));
@@ -163,12 +175,16 @@ export default function AddAppointmentModal({
         customerName: formData.customerName
       });
       
+      // Format times for display
+      const startTimeDisplay = formatTimeForDisplay(formData.startTime);
+      const endTimeDisplay = formatTimeForDisplay(formData.endTime);
+      
       // Prepare appointment data
       const appointmentData = {
         customer_name: formData.customerName,
         appointment_date: formData.date,
-        appointment_time: formData.startTime,
-        end_time: formData.endTime,
+        appointment_time: startTimeDisplay,
+        end_time: endTimeDisplay,
         service_id: formData.serviceId,
         service_name: selectedService?.service_name || '',
         service_price: servicePrice,
@@ -200,7 +216,7 @@ export default function AddAppointmentModal({
             appointment_id: appointmentData.id,
             service_name: selectedService?.service_name,
             appointment_date: formData.date,
-            appointment_time: formData.startTime
+            appointment_time: startTimeDisplay
           }
         };
         
@@ -222,8 +238,8 @@ export default function AddAppointmentModal({
       setFormData({
         customerName: '',
         date: initialDate || '',
-        startTime: '9:00 AM',
-        endTime: '10:00 AM',
+        startTime: '09:00',
+        endTime: '10:00',
         serviceId: '',
         serviceName: '',
         servicePrice: 0,
@@ -267,13 +283,15 @@ export default function AddAppointmentModal({
         className="bg-white rounded-t-2xl shadow-xl"
         style={{
           height: 'auto',
-          maxHeight: '85vh',           // 85% of viewport height
+          maxHeight: '90vh',           // 90% of viewport height
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
           animation: 'slideUp 0.3s ease-out',
-          touchAction: 'pan-y'         // Allow vertical touch scrolling
+          backgroundColor: 'white',
+          borderTopLeftRadius: '16px',
+          borderTopRightRadius: '16px'
         }}
       >
         
@@ -286,8 +304,8 @@ export default function AddAppointmentModal({
         </div>
 
         {/* Header - Compact for mobile */}
-        <div className="flex justify-between items-center px-4 py-3 border-b shrink-0">
-          <h2 className="text-base font-semibold text-gray-900">
+        <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 shrink-0">
+          <h2 className="text-lg font-semibold text-gray-900">
             {t('calendar.add_appointment', 'Add Appointment')}
           </h2>
           <button
@@ -295,7 +313,7 @@ export default function AddAppointmentModal({
             className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100"
             style={{ touchAction: 'manipulation' }}
           >
-            ✕
+            <X size={20} />
           </button>
         </div>
 
@@ -306,11 +324,12 @@ export default function AddAppointmentModal({
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch',  // Smooth iOS scrolling
             touchAction: 'pan-y',               // Touch scrolling
-            overscrollBehavior: 'contain'       // Prevent scroll chaining
+            overscrollBehavior: 'contain',      // Prevent scroll chaining
+            minHeight: 0                        // Important for flex children to scroll
           }}
         >
           {/* Mobile form fields */}
-          <div className="p-4 space-y-4">
+          <div className="p-4 pb-6 space-y-4">
             
             {/* Customer Name */}
             <div>
@@ -371,7 +390,7 @@ export default function AddAppointmentModal({
                 >
                   <option value="">{t('calendar.select_time', 'Select time')}</option>
                   {timeOptions.map(time => (
-                    <option key={time} value={time}>{time}</option>
+                    <option key={time} value={time}>{formatTimeForDisplay(time)}</option>
                   ))}
                 </select>
                 {errors.startTime && (
@@ -394,7 +413,7 @@ export default function AddAppointmentModal({
                 >
                   <option value="">{t('calendar.select_time', 'Select time')}</option>
                   {timeOptions.map(time => (
-                    <option key={time} value={time}>{time}</option>
+                    <option key={time} value={time}>{formatTimeForDisplay(time)}</option>
                   ))}
                 </select>
                 {errors.endTime && (
@@ -414,7 +433,7 @@ export default function AddAppointmentModal({
               <select
                 value={formData.serviceId}
                 onChange={(e) => {
-                  const selectedService = services.find(s => s.id === e.target.value);
+                  const selectedService = services?.find((s: Service) => s.id === e.target.value);
                   setFormData(prev => ({
                     ...prev,
                     serviceId: e.target.value,
@@ -427,9 +446,9 @@ export default function AddAppointmentModal({
                 required
               >
                 <option value="">{t('calendar.select_service', 'Select a service')}</option>
-                {services.map(service => (
+                {services?.map((service: Service) => (
                   <option key={service.id} value={service.id}>
-                    {service.service_name} - ${service.price}
+                    {service.service_name} - {getCurrency(country)}{service.price}
                   </option>
                 ))}
               </select>
@@ -439,9 +458,9 @@ export default function AddAppointmentModal({
                   {errors.serviceId}
                 </p>
               )}
-              {services.length === 0 && (
-                <p className="mt-1 text-sm text-gray-500">
-                  No services available. Please add services first.
+              {services?.length === 0 && (
+                <p className="mt-1 text-sm text-yellow-600">
+                  ⚠️ No services available. Please add services first.
                 </p>
               )}
             </div>
@@ -460,24 +479,46 @@ export default function AddAppointmentModal({
                 placeholder={t('calendar.notes_placeholder', 'Additional notes or special requests...')}
               />
             </div>
-
-            {/* Extra padding for better scrolling on mobile */}
-            <div className="h-2" />
           </div>
         </div>
 
-        {/* Footer with Button - ALWAYS VISIBLE on mobile */}
-        <div className="p-4 border-t bg-white rounded-b-2xl shrink-0">
-          <button
-            onClick={handleSubmit}
-            disabled={submitting || services.length === 0}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-base"
-            style={{ touchAction: 'manipulation' }}
-          >
-            {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
-          </button>
+        {/* Footer with Buttons - ALWAYS VISIBLE on mobile */}
+        <div className="p-4 pt-3 border-t border-gray-200 bg-white rounded-b-2xl shrink-0">
+          <div className="flex gap-3">
+            {/* Cancel Button */}
+            <button
+              onClick={onClose}
+              disabled={submitting}
+              className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300 transition-colors disabled:opacity-50 text-base"
+              style={{ touchAction: 'manipulation' }}
+            >
+              {t('common.cancel', 'Cancel')}
+            </button>
+            
+            {/* Add Appointment Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={submitting || !services || services.length === 0}
+              className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-base shadow-sm"
+              style={{ touchAction: 'manipulation' }}
+            >
+              {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Add animation keyframes */}
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 }
