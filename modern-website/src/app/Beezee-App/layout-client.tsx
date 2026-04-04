@@ -163,35 +163,36 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     setNewVersion(null);
   };
 
-  // Prefetch data for likely next pages
+  // Prefetch critical routes for faster navigation (NO API CALLS)
   useEffect(() => {
-    const prefetchData = async () => {
-      if (!business?.id) return;
-      
-      // Determine likely next pages based on current path
-      if (pathname?.includes('/cash')) {
-        // Prefetch credit data
-        queryClient.prefetchQuery({
-          queryKey: ['credit', business.id],
-          queryFn: () => fetch('/api/credit').then(res => res.json()),
-        });
-      } else if (pathname?.includes('/credit')) {
-        // Prefetch transactions data
-        queryClient.prefetchQuery({
-          queryKey: ['transactions', business.id],
-          queryFn: () => fetch('/api/transactions').then(res => res.json()),
-        });
-      } else if (pathname?.includes('/services')) {
-        // Prefetch inventory data
-        queryClient.prefetchQuery({
-          queryKey: ['inventory', business.id],
-          queryFn: () => fetch('/api/inventory').then(res => res.json()),
-        });
-      }
-    };
+    if (!business?.id) return;
     
-    prefetchData();
-  }, [pathname, queryClient, business?.id]);
+    // Extract country and industry from pathname for route prefetching
+    const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
+    const country = pathMatch?.[1] || '';
+    const industry = pathMatch?.[2] || '';
+    const basePath = `/Beezee-App/app/${country}/${industry}`;
+    
+    // Only prefetch routes, not API endpoints
+    const routesToPrefetch = [
+      `${basePath}`,
+      `${basePath}/cash`,
+      `${basePath}/credit`,
+      `${basePath}/services`,
+      `${basePath}/stock`,
+      `${basePath}/calendar`,
+      `${basePath}/more`,
+      `${basePath}/settings`,
+      `${basePath}/reports`,
+      `${basePath}/transactions`,
+    ];
+    
+    routesToPrefetch.forEach(route => {
+      router.prefetch(route);
+    });
+    
+    console.log('✅ Prefetched navigation routes for:', basePath);
+  }, [business?.id, router, pathname]);
 
   // Extract country and industry from pathname
   const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
