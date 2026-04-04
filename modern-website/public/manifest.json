@@ -76,7 +76,7 @@
       "url": "/Beezee-App/auth/signup",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -89,7 +89,7 @@
       "url": "/Beezee-App/app/ke/retail/credit",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -102,7 +102,7 @@
       "url": "/Beezee-App/app/ke/retail",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -115,7 +115,7 @@
       "url": "/Beezee-App/app/ke/retail",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -128,7 +128,7 @@
       "url": "/Beezee-App/app/ke/retail/stock",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -141,7 +141,7 @@
       "url": "/Beezee-App/app/ke/retail/services",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -154,7 +154,7 @@
       "url": "/Beezee-App/app/ke/retail/settings",
       "icons": [
         {
-          "src": "/beezee-icon-192x192.png",
+          "src": "/beezee-icon-192x192-optimized.png",
           "sizes": "192x192",
           "type": "image/png"
         }
