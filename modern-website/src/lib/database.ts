@@ -129,7 +129,7 @@ export class BeezeeDatabase extends Dexie {
   sync_metadata!: Table<any, string>;
 
   constructor() {
-    super('beezee_offline_db_v4');
+    super('beezee_offline_db_v5');
     
     // Version 1
     this.version(1).stores({
@@ -246,10 +246,64 @@ export class BeezeeDatabase extends Dexie {
       credit: 'id, business_id, customer_name, status, syncStatus',
       expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
+      appointments: 'id, business_id, appointment_date, status, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       calendar: 'id, business_id, appointment_date, status, syncStatus',
       operations_queue: 'id, type, table, status, timestamp, businessId',
       sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
+    });
+
+    // ✅ Version 6: Migrate appointments to calendar and remove appointments table
+    this.version(6).stores({
+      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      inventory: 'id, business_id, item_name, category, syncStatus',
+      credit: 'id, business_id, customer_name, status, syncStatus',
+      expenses: 'id, business_id, expense_date, category, syncStatus',
+      targets: 'id, business_id, target_type, syncStatus',
+      services: 'id, business_id, service_name, syncStatus',
+      calendar: 'id, business_id, appointment_date, status, syncStatus',
+      operations_queue: 'id, type, table, status, timestamp, businessId',
+      sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
+    }).upgrade(async (tx) => {
+      // Migrate any existing appointments to calendar table
+      const appointmentsStore = tx.table('appointments');
+      const calendarStore = tx.table('calendar');
+      
+      try {
+        const allAppointments = await appointmentsStore.toArray();
+        
+        for (const appointment of allAppointments) {
+          // Convert appointment to calendar format
+          const calendarItem = {
+            id: appointment.id,
+            business_id: appointment.business_id,
+            industry: appointment.industry || 'retail',
+            customer_name: appointment.customer_name || '',
+            customer_contact: appointment.customer_contact || '',
+            service_name: appointment.service_name || '',
+            appointment_date: appointment.appointment_date,
+            appointment_time: appointment.appointment_time || '09:00',
+            start_time: appointment.start_time || appointment.appointment_time || '09:00',
+            end_time: appointment.end_time || null,
+            duration: appointment.duration || 30,
+            status: appointment.status || 'pending',
+            notes: appointment.notes || '',
+            reminder_sent: appointment.reminder_sent || false,
+            metadata: appointment.metadata || {},
+            created_at: appointment.created_at || new Date().toISOString(),
+            updated_at: appointment.updated_at || new Date().toISOString(),
+            syncStatus: appointment.syncStatus || 'pending',
+            _deleted: appointment._deleted || false,
+            _deletedAt: appointment._deletedAt || null
+          };
+          
+          await calendarStore.put(calendarItem);
+        }
+        
+        console.log(`✅ Migrated ${allAppointments.length} appointments to calendar table`);
+      } catch (error) {
+        console.warn('⚠️ Failed to migrate appointments to calendar:', error);
+      }
     });
   }
 
