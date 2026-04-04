@@ -12,22 +12,10 @@ export function isOffline(): boolean {
 }
 
 /**
- * Test actual internet connectivity (for critical operations)
+ * Fast connectivity check for sync operations
+ * Uses browser's native online/offline detection
+ * Follows the architecture: NO Google favicon tests (slow, CORS issues)
  */
 export async function testInternetConnectivity(): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-    
-    const response = await fetch('https://www.google.com/favicon.ico', {
-      method: 'HEAD',
-      cache: 'no-cache',
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    return response.ok;
-  } catch {
-    return false;
-  }
+  return typeof window !== 'undefined' ? navigator.onLine : true;
 }
