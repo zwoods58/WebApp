@@ -57,7 +57,7 @@ export default function AddAppointmentModal({
 
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
-    date: '', // Will be set in useEffect
+    date: '',
     startTime: '09:00',
     endTime: '10:00',
     serviceId: '',
@@ -82,7 +82,7 @@ export default function AddAppointmentModal({
 
   // Mobile PWA body scroll prevention
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isMounted) {
       // Prevent body scroll when modal is open (mobile PWA)
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
@@ -105,7 +105,7 @@ export default function AddAppointmentModal({
         document.body.style.height = '';
       };
     }
-  }, [isOpen]);
+  }, [isOpen, isMounted]);
 
   // Generate time options in 5-minute increments (24-hour format for better sorting)
   const generate5MinTimeOptions = () => {
@@ -177,7 +177,6 @@ export default function AddAppointmentModal({
         return;
       }
       
-      // Find the selected service to get its price
       const selectedService = services.find((s: Service) => s.id === formData.serviceId);
       const servicePrice = selectedService?.price || 0;
       
@@ -187,11 +186,9 @@ export default function AddAppointmentModal({
         customerName: formData.customerName
       });
       
-      // Format times for display
       const startTimeDisplay = formatTimeForDisplay(formData.startTime);
       const endTimeDisplay = formatTimeForDisplay(formData.endTime);
       
-      // Prepare appointment data
       const appointmentData = {
         customer_name: formData.customerName,
         appointment_date: formData.date,
@@ -209,10 +206,8 @@ export default function AddAppointmentModal({
         id: isClient() ? crypto.randomUUID() : getStableId('appointment')
       };
       
-      // Add the appointment
       await addAppointment(appointmentData);
       
-      // Create a transaction for the appointment booking to show in recent activities
       if (servicePrice && servicePrice > 0) {
         const transactionData = {
           business_id: business.id,
@@ -232,21 +227,13 @@ export default function AddAppointmentModal({
           }
         };
         
-        console.log('💰 Creating service payment transaction:', transactionData);
-        
-        // TanStack Query handles online/offline automatically
         await addTransaction(transactionData);
-        
-        console.log('✅ Service payment transaction created successfully');
-      } else {
-        console.log('ℹ️ No price found for appointment, skipping transaction creation');
       }
       
       showSuccess(t('calendar.complete_success', 'Appointment created successfully'));
       onSuccess();
       onClose();
       
-      // Reset form
       setFormData({
         customerName: '',
         date: initialDate || '',
@@ -268,57 +255,47 @@ export default function AddAppointmentModal({
 
   // Prevent hydration errors by not rendering until mounted
   if (!isMounted) return null;
-
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Mobile-optimized overlay - full screen */}
-      <div 
-        className="fixed inset-0 z-50 bg-black bg-opacity-50"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'flex-end', // Bottom sheet style for mobile
-          justifyContent: 'center',
-          touchAction: 'none' // Prevent touch events on background
-        }}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
-        }}
-      />
-
-      {/* MODAL CONTAINER - Mobile PWA Optimized */}
+    <div 
+      className="fixed inset-0 z-50"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        zIndex: 9999
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      {/* MODAL CONTAINER - FIXED SCROLLING */}
       <div
-        className="bg-white rounded-t-2xl shadow-xl"
+        className="bg-white rounded-t-2xl shadow-xl w-full"
         style={{
-          height: 'auto',
-          maxHeight: '90vh',           // 90% of viewport height
-          width: '100%',
+          height: '85vh',
+          maxHeight: '85vh',
           display: 'flex',
           flexDirection: 'column',
-          position: 'relative',
-          animation: 'slideUp 0.3s ease-out',
           backgroundColor: 'white',
           borderTopLeftRadius: '16px',
-          borderTopRightRadius: '16px'
+          borderTopRightRadius: '16px',
+          overflow: 'hidden' // Prevents modal from scrolling, only inner content scrolls
         }}
       >
-        
-        {/* Drag Handle - For mobile (shows you can drag down to close) */}
+        {/* Drag Handle */}
         <div className="flex justify-center pt-2 pb-1 shrink-0">
-          <div 
-            className="w-10 h-1 bg-gray-300 rounded-full"
-            style={{ touchAction: 'none' }}
-          />
+          <div className="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
 
-        {/* Header - Compact for mobile */}
+        {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 shrink-0">
           <h2 className="text-lg font-semibold text-gray-900">
             {t('calendar.add_appointment', 'Add Appointment')}
@@ -326,26 +303,21 @@ export default function AddAppointmentModal({
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100"
-            style={{ touchAction: 'manipulation' }}
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* SCROLLABLE CONTENT - Mobile optimized */}
+        {/* SCROLLABLE CONTENT - THIS WILL NOW SCROLL CORRECTLY */}
         <div 
           className="flex-1 overflow-y-auto"
           style={{
             overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch',  // Smooth iOS scrolling
-            touchAction: 'pan-y',               // Touch scrolling
-            overscrollBehavior: 'contain',      // Prevent scroll chaining
-            minHeight: 0                        // Important for flex children to scroll
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain'
           }}
         >
-          {/* Mobile form fields */}
           <div className="p-4 pb-6 space-y-4">
-            
             {/* Customer Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -357,7 +329,7 @@ export default function AddAppointmentModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
                 className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={t('calendar.customer_name_placeholder', 'Enter customer name')}
-                style={{ fontSize: '16px' }} // Prevents zoom on iOS
+                style={{ fontSize: '16px' }}
                 required
               />
               {errors.customerName && (
@@ -390,7 +362,7 @@ export default function AddAppointmentModal({
               )}
             </div>
 
-            {/* Time Row - Two columns */}
+            {/* Time Row */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -497,43 +469,27 @@ export default function AddAppointmentModal({
           </div>
         </div>
 
-        {/* Footer with Buttons - ALWAYS VISIBLE on mobile */}
+        {/* Footer with Buttons - ALWAYS VISIBLE */}
         <div className="p-4 pt-3 border-t border-gray-200 bg-white rounded-b-2xl shrink-0">
           <div className="flex gap-3">
-            {/* Cancel Button */}
             <button
               onClick={onClose}
               disabled={submitting}
               className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300 transition-colors disabled:opacity-50 text-base"
-              style={{ touchAction: 'manipulation' }}
             >
               {t('common.cancel', 'Cancel')}
             </button>
             
-            {/* Add Appointment Button */}
             <button
               onClick={handleSubmit}
               disabled={submitting || !services || services.length === 0}
               className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-base shadow-sm"
-              style={{ touchAction: 'manipulation' }}
             >
               {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Add animation keyframes */}
-      <style jsx>{`
-        @keyframes slideUp {
-          from {
-            transform: translateY(100%);
-          }
-          to {
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
