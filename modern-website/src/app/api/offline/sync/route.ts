@@ -250,6 +250,37 @@ export async function POST(request: Request) {
               result = { deleted: true };
             }
             break;
+            
+          case 'calendar':
+            if (op.type === 'CREATE') {
+              const { data, error } = await supabase
+                .from('calendar')
+                .insert(op.data)
+                .select()
+                .single();
+              
+              if (error) throw error;
+              result = data;
+            } else if (op.type === 'UPDATE') {
+              const { data, error } = await supabase
+                .from('calendar')
+                .update(op.data)
+                .eq('id', op.entityId)
+                .select()
+                .single();
+              
+              if (error) throw error;
+              result = data;
+            } else if (op.type === 'DELETE') {
+              const { error } = await supabase
+                .from('calendar')
+                .delete()
+                .eq('id', op.entityId);
+              
+              if (error) throw error;
+              result = { deleted: true };
+            }
+            break;
         }
         
         results.push({
