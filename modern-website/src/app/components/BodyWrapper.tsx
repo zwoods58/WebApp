@@ -22,13 +22,14 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
   useEffect(() => {
     setIsClient(true);
     
-    // Register service worker globally on all pages
-    if ('serviceWorker' in navigator) {
+    // Register service worker only on BeeZee app pages
+    const isAppPath = pathname?.startsWith('/Beezee-App/');
+    if ('serviceWorker' in navigator && isAppPath) {
       swManager.register().catch(err => {
         console.warn('[App] Service worker registration warning:', err);
       });
     }
-  }, []);
+  }, [pathname]);
 
   const handleGlobalRefresh = async () => {
     await performGlobalRefresh({

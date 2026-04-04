@@ -29,7 +29,7 @@ export class ServiceWorkerManager {
     
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+        scope: '/Beezee-App/'
       });
       
       console.log('[SW] ✅ Registered with scope:', this.registration.scope);
