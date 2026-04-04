@@ -285,61 +285,72 @@ export default function AddAppointmentModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/* MODAL CONTAINER - FIXED SCROLLING WITH BUTTONS VISIBLE */}
+      {/* MODAL CONTAINER - 100% WHITE BACKGROUND */}
       <div
-        className="bg-white rounded-t-2xl shadow-xl w-full"
+        className="w-full bg-white"
         style={{
-          height: '75vh',              // Reduced from 80vh to 75vh
-          maxHeight: '75vh',           // Reduced from 80vh to 75vh
+          height: '75vh',
+          maxHeight: '75vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: 'white',
+          backgroundColor: '#FFFFFF',  // SOLID WHITE
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)'  // Optional shadow
         }}
       >
-        {/* Drag Handle - Reduced padding */}
-        <div className="flex justify-center pt-1 pb-0 shrink-0">  {/* Changed pt-2 pb-1 to pt-1 pb-0 */}
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
+        {/* Drag Handle */}
+        <div className="flex justify-center pt-2 pb-1 shrink-0">
+          <div 
+            className="w-12 h-1 rounded-full"
+            style={{ backgroundColor: '#D1D5DB' }}  // Gray-300
+          />
         </div>
 
-        {/* Header - Reduced padding */}
-        <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 shrink-0">  {/* Changed py-3 to py-2 */}
-          <h2 className="text-base font-semibold text-gray-900">  {/* Changed text-lg to text-base */}
+        {/* Header - White background */}
+        <div className="flex justify-between items-center px-4 py-3 border-b shrink-0" style={{ backgroundColor: '#FFFFFF', borderBottomColor: '#E5E7EB' }}>
+          <h2 className="text-lg font-semibold" style={{ color: '#111827' }}>
             {t('calendar.add_appointment', 'Add Appointment')}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 w-7 h-7 flex items-center justify-center rounded-full active:bg-gray-100"  // Changed w-8 h-8 to w-7 h-7
+            className="w-8 h-8 flex items-center justify-center rounded-full"
+            style={{ color: '#9CA3AF' }}
           >
-            <X size={18} />  {/* Changed size 20 to 18 */}
+            <X size={20} />
           </button>
         </div>
 
-        {/* SCROLLABLE CONTENT - THIS WILL NOW SCROLL CORRECTLY */}
+        {/* SCROLLABLE CONTENT - White background */}
         <div 
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto bg-white"
           style={{
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch',
             overscrollBehavior: 'contain',
-            minHeight: 0  // Important for flex children to scroll
+            minHeight: 0,
+            backgroundColor: '#FFFFFF'  // SOLID WHITE
           }}
         >
-          <div className="p-4 pb-4 space-y-3">  {/* Changed pb-8 to pb-4, space-y-4 to space-y-3 */}
+          <div className="p-4 pb-6 space-y-4">
             {/* Customer Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                 {t('calendar.customer_name', 'Customer Name')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.customerName}
                 onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
-                className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
+                className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ 
+                  fontSize: '16px',
+                  borderColor: '#D1D5DB',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111827'
+                }}
                 placeholder={t('calendar.customer_name_placeholder', 'Enter customer name')}
-                style={{ fontSize: '16px' }}
                 required
               />
               {errors.customerName && (
@@ -352,15 +363,20 @@ export default function AddAppointmentModal({
 
             {/* Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                 {t('calendar.date', 'Date')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
-                style={{ fontSize: '16px' }}
+                className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ 
+                  fontSize: '16px',
+                  borderColor: '#D1D5DB',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111827'
+                }}
                 min={getTodayDate()}
                 required
               />
@@ -375,14 +391,19 @@ export default function AddAppointmentModal({
             {/* Time Row */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                   {t('calendar.start_time', 'Start Time')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
-                  style={{ fontSize: '16px' }}
+                  className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  style={{ 
+                    fontSize: '16px',
+                    borderColor: '#D1D5DB',
+                    backgroundColor: '#FFFFFF',
+                    color: '#111827'
+                  }}
                   required
                 >
                   <option value="">{t('calendar.select_time', 'Select time')}</option>
@@ -398,14 +419,19 @@ export default function AddAppointmentModal({
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+                <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                   {t('calendar.end_time', 'End Time')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.endTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
-                  style={{ fontSize: '16px' }}
+                  className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  style={{ 
+                    fontSize: '16px',
+                    borderColor: '#D1D5DB',
+                    backgroundColor: '#FFFFFF',
+                    color: '#111827'
+                  }}
                   required
                 >
                   <option value="">{t('calendar.select_time', 'Select time')}</option>
@@ -424,7 +450,7 @@ export default function AddAppointmentModal({
 
             {/* Service */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                 {t('calendar.select_service', 'Service')} <span className="text-red-500">*</span>
               </label>
               <select
@@ -438,8 +464,13 @@ export default function AddAppointmentModal({
                     servicePrice: selectedService?.price || 0
                   }));
                 }}
-                className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
-                style={{ fontSize: '16px' }}
+                className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ 
+                  fontSize: '16px',
+                  borderColor: '#D1D5DB',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111827'
+                }}
                 required
               >
                 <option value="">{t('calendar.select_service', 'Select a service')}</option>
@@ -464,26 +495,32 @@ export default function AddAppointmentModal({
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">  {/* Changed mb-1.5 to mb-1 */}
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
                 {t('calendar.notes', 'Notes')}
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                className="w-full px-3 py-2 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"  // Changed py-2.5 to py-2
-                style={{ fontSize: '16px' }}
-                rows={2}  // Changed from 3 to 2
+                className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ 
+                  fontSize: '16px',
+                  borderColor: '#D1D5DB',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111827'
+                }}
+                rows={3}
                 placeholder={t('calendar.notes_placeholder', 'Additional notes or special requests...')}
               />
             </div>
           </div>
         </div>
 
-        {/* Footer with Buttons - ALWAYS VISIBLE */}
+        {/* Footer with Buttons - Solid White Background */}
         <div 
-          className="p-3 pt-2 border-t border-gray-200 bg-white shrink-0"  // Changed p-4 pt-3 to p-3 pt-2
-          style={{
-            flexShrink: 0,
+          className="p-4 pt-3 border-t shrink-0"
+          style={{ 
+            backgroundColor: '#FFFFFF',  // SOLID WHITE
+            borderTopColor: '#E5E7EB',
             borderBottomLeftRadius: '16px',
             borderBottomRightRadius: '16px'
           }}
@@ -492,7 +529,11 @@ export default function AddAppointmentModal({
             <button
               onClick={onClose}
               disabled={submitting}
-              className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200 active:bg-gray-300 transition-colors disabled:opacity-50 text-sm"  // Changed py-3 to py-2.5, text-base to text-sm
+              className="flex-1 py-3 rounded-lg font-medium text-base transition-colors"
+              style={{ 
+                backgroundColor: '#F3F4F6',
+                color: '#374151'
+              }}
             >
               {t('common.cancel', 'Cancel')}
             </button>
@@ -500,7 +541,11 @@ export default function AddAppointmentModal({
             <button
               onClick={handleSubmit}
               disabled={submitting || !services || services.length === 0}
-              className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-sm shadow-sm"  // Changed py-3 to py-2.5, text-base to text-sm
+              className="flex-1 py-3 rounded-lg font-medium text-base text-white transition-colors"
+              style={{ 
+                backgroundColor: '#2563EB',  // Blue-600
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+              }}
             >
               {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
             </button>
