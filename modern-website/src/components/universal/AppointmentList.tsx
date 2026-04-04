@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
-import { Calendar, Clock, DollarSign, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, Clock, DollarSign, Plus, Edit2, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
+import { useAppointmentsTanStack } from '@/hooks';
 
 interface AppointmentListProps {
   industry: string;
@@ -11,6 +12,7 @@ interface AppointmentListProps {
   appointments?: any[];
   onManageAppointments?: () => void;
   onScheduleAppointment?: () => void;
+  businessId?: string;
 }
 
 export default function AppointmentList({ 
@@ -18,9 +20,26 @@ export default function AppointmentList({
   country, 
   appointments = [], 
   onManageAppointments,
-  onScheduleAppointment 
+  onScheduleAppointment,
+  businessId
 }: AppointmentListProps) {
   const { t } = useLanguage();
+  const { deleteAppointment, updateAppointment } = useAppointmentsTanStack({ businessId, industry });
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    try {
+      await deleteAppointment(appointmentId);
+      setConfirmDelete(null);
+    } catch (error) {
+      console.error('Failed to delete appointment:', error);
+    }
+  };
+
+  const handleEditAppointment = (appointmentId: string) => {
+    // TODO: Implement edit modal - for now just log
+    console.log('Edit appointment:', appointmentId);
+  };
   
   // Filter and sort appointments
   const today = new Date();
@@ -94,12 +113,28 @@ export default function AppointmentList({
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center gap-2">
                   <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
                     {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
                      (appointment.status as string) === 'completed' ? 'Completed' : 
                      (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
                   </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleEditAppointment(appointment.id)}
+                      className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                      title="Edit appointment"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(appointment.id)}
+                      className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                      title="Delete appointment"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -124,12 +159,28 @@ export default function AppointmentList({
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center gap-2">
                   <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
                     {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
                      (appointment.status as string) === 'completed' ? 'Completed' : 
                      (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
                   </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleEditAppointment(appointment.id)}
+                      className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                      title="Edit appointment"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(appointment.id)}
+                      className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                      title="Delete appointment"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -161,6 +212,34 @@ export default function AppointmentList({
           {t('calendar.add_appointment')}
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {t('common.delete_appointment', 'Delete Appointment')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('common.delete_confirm', 'Are you sure you want to delete this appointment? This action cannot be undone.')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={() => handleDeleteAppointment(confirmDelete)}
+                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t('common.delete', 'Delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

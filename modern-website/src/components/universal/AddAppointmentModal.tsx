@@ -190,14 +190,22 @@ export default function AddAppointmentModal({
       const startTimeDisplay = formatTimeForDisplay(formData.startTime);
       const endTimeDisplay = formatTimeForDisplay(formData.endTime);
       
+      // Calculate duration in minutes from start and end times
+      const calculateDuration = (startTime: string, endTime: string): number => {
+        const [startHour, startMin] = startTime.split(':').map(Number);
+        const [endHour, endMin] = endTime.split(':').map(Number);
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+        return Math.max(0, endMinutes - startMinutes);
+      };
+
       const appointmentData = {
         customer_name: formData.customerName,
         appointment_date: formData.date,
-        appointment_time: startTimeDisplay,
-        end_time: endTimeDisplay,
+        appointment_time: startTimeDisplay, // Use correct field name: appointment_time
+        duration: calculateDuration(formData.startTime, formData.endTime), // Calculate duration in minutes
         service_id: formData.serviceId,
         service_name: selectedService?.service_name || '',
-        service_price: servicePrice,
         status: 'pending',  // ✅ CRITICAL: Add status field so appointments appear in bottom list
         notes: formData.notes || '',
         business_id: business.id,

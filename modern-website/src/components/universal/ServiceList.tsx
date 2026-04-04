@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
-import { Wrench, Car, Package, Plus, DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wrench, Car, Package, Plus, DollarSign, Edit2, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
+import { useServicesTanStack } from '@/hooks';
 
 interface ServiceListProps {
   industry: string;
@@ -11,6 +12,7 @@ interface ServiceListProps {
   services?: any[];
   onManageServices?: () => void;
   onAddService?: () => void;
+  businessId?: string;
 }
 
 export default function ServiceList({ 
@@ -18,9 +20,27 @@ export default function ServiceList({
   country, 
   services = [], 
   onManageServices,
-  onAddService 
+  onAddService,
+  businessId
 }: ServiceListProps) {
   const { t } = useLanguage();
+  const { deleteService, updateService } = useServicesTanStack({ businessId, industry });
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const handleDeleteService = async (serviceId: string) => {
+    try {
+      // Use soft delete by setting is_active = false
+      await updateService({ id: serviceId, data: { is_active: false } });
+      setConfirmDelete(null);
+    } catch (error) {
+      console.error('Failed to delete service:', error);
+    }
+  };
+
+  const handleEditService = (serviceId: string) => {
+    // TODO: Implement edit modal - for now just log
+    console.log('Edit service:', serviceId);
+  };
   
   // Filter active services
   const activeServices = services.filter(service => service.is_active !== false);
@@ -91,15 +111,33 @@ export default function ServiceList({
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-900 text-sm">
-                  {getServicePricing(service)}
-                </p>
-                {service.price && service.price !== service.selling_price && (
-                  <p className="text-xs text-gray-500">
-                    → {formatCurrency(service.selling_price || service.price, country)}
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {getServicePricing(service)}
                   </p>
-                )}
+                  {service.price && service.price !== service.selling_price && (
+                    <p className="text-xs text-gray-500">
+                      → {formatCurrency(service.selling_price || service.price, country)}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => handleEditService(service.id)}
+                    className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                    title="Edit service"
+                  >
+                    <Edit2 size={14} />
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(service.id)}
+                    className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                    title="Delete service"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -130,6 +168,34 @@ export default function ServiceList({
           {t('common.add')}
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {t('common.delete_service', 'Delete Service')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('common.delete_confirm', 'Are you sure you want to delete this service? This can be undone.')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={() => handleDeleteService(confirmDelete)}
+                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t('common.delete', 'Delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

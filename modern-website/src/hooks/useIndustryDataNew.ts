@@ -167,7 +167,8 @@ export const useIndustryDataNew = ({
           const { data: iData, error: iError } = await supabase
             .from('inventory')
             .select('*')
-            .eq('business_id', businessId);
+            .eq('business_id', businessId)
+            .order('item_name', { ascending: true });
           freshData = iData || [];
           error = iError;
           break;
@@ -178,6 +179,42 @@ export const useIndustryDataNew = ({
             .eq('business_id', businessId);
           freshData = cData || [];
           error = cError;
+          break;
+        case 'services':
+          const { data: sData, error: sError } = await supabase
+            .from('services')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('service_name', { ascending: true });
+          freshData = sData || [];
+          error = sError;
+          break;
+        case 'appointments':
+          const { data: aData, error: aError } = await supabase
+            .from('appointments')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('appointment_date', { ascending: true })
+            .order('appointment_time', { ascending: true });
+          freshData = aData || [];
+          error = aError;
+          break;
+        case 'expenses':
+          const { data: eData, error: eError } = await supabase
+            .from('expenses')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('expense_date', { ascending: false });
+          freshData = eData || [];
+          error = eError;
+          break;
+        case 'targets':
+          const { data: tgtData, error: tgtError } = await supabase
+            .from('targets')
+            .select('*')
+            .eq('business_id', businessId);
+          freshData = tgtData || [];
+          error = tgtError;
           break;
         default:
           const { data: gData, error: gError } = await supabase

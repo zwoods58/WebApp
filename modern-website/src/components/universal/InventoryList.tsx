@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
-import { Package, AlertTriangle, TrendingDown, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Package, AlertTriangle, TrendingDown, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useInventoryTanStack } from '@/hooks';
 
 interface InventoryListProps {
   industry: string;
@@ -17,6 +18,7 @@ interface InventoryListProps {
     cost_price?: number;
     selling_price?: number;
   }>;
+  businessId?: string;
 }
 
 // Consistent formatting functions
@@ -34,12 +36,28 @@ const industryLabels = {
   freelance: { titleKey: 'freelance.digital_assets', unitKey: 'inventory.files' }
 };
 
-export default function InventoryList({ industry, country, items }: InventoryListProps) {
+export default function InventoryList({ industry, country, items, businessId }: InventoryListProps) {
   const { t } = useLanguage();
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
+  const { deleteInventory, updateInventory } = useInventoryTanStack({ businessId, industry });
+  const [confirmDelete, setConfirmDelete] = useState<string | number | null>(null);
   
   const lowStockItems = items.filter(item => item.quantity <= item.threshold);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleDeleteInventory = async (itemId: string | number) => {
+    try {
+      await deleteInventory(itemId.toString());
+      setConfirmDelete(null);
+    } catch (error) {
+      console.error('Failed to delete inventory item:', error);
+    }
+  };
+
+  const handleEditInventory = (itemId: string | number) => {
+    // TODO: Implement edit modal - for now just log
+    console.log('Edit inventory item:', itemId);
+  };
 
   if (items.length === 0) {
     return (
@@ -107,14 +125,32 @@ export default function InventoryList({ industry, country, items }: InventoryLis
                   </div>
                 </div>
                 
-                <div className="text-right flex flex-col items-end">
-                  <div className={`font-bold text-base ${
-                    isLowStock ? 'text-[var(--color-warning)]' : 'text-[var(--text-1)]'
-                  }`}>
-                    {formatNumber(item.quantity)} <span className="text-xs font-medium text-[var(--text-3)]">{item.unit}</span>
+                <div className="flex items-center gap-2">
+                  <div className="text-right flex flex-col items-end">
+                    <div className={`font-bold text-base ${
+                      isLowStock ? 'text-[var(--color-warning)]' : 'text-[var(--text-1)]'
+                    }`}>
+                      {formatNumber(item.quantity)} <span className="text-xs font-medium text-[var(--text-3)]">{item.unit}</span>
+                    </div>
+                    <div className="text-[10px] font-semibold text-[var(--text-3)] mt-1">
+                      {t('inventory.min', 'Min:')} {formatNumber(item.threshold)}
+                    </div>
                   </div>
-                  <div className="text-[10px] font-semibold text-[var(--text-3)] mt-1">
-                    {t('inventory.min', 'Min:')} {formatNumber(item.threshold)}
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleEditInventory(item.id)}
+                      className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                      title="Edit item"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(item.id)}
+                      className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                      title="Delete item"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -154,6 +190,34 @@ export default function InventoryList({ industry, country, items }: InventoryLis
           <button className="text-sm text-[var(--powder-dark)] hover:text-[var(--powder-mid)] font-bold transition-colors no-select button-touch flex items-center gap-1.5">
             {t('inventory.quick_add', 'Quick Add +')}
           </button>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {t('common.delete_inventory', 'Delete Item')}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {t('common.delete_confirm', 'Are you sure you want to delete this item? This action cannot be undone.')}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                onClick={() => handleDeleteInventory(confirmDelete)}
+                className="flex-1 py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                {t('common.delete', 'Delete')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
