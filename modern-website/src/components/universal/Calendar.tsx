@@ -109,16 +109,6 @@ export default function Calendar({ industry, country }: CalendarProps) {
     setCurrentDate(new Date());
   }, []);
 
-  // Don't render until mounted
-  if (!isMounted) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading calendar...</p>
-      </div>
-    </div>;
-  }
-
   // Navigation
   const navigateMonth = (direction: number) => {
     setCurrentDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() + direction, 1) : new Date());
@@ -553,6 +543,20 @@ export default function Calendar({ industry, country }: CalendarProps) {
   };
 
   // Remove business loading check to allow offline rendering
+
+  // Show loading state while checking storage or before mount
+  const isComponentLoading = !isMounted || isLoading;
+  
+  if (isComponentLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading calendar...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
