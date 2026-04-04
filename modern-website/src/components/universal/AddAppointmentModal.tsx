@@ -280,8 +280,8 @@ export default function AddAppointmentModal({
       <div
         className="bg-white rounded-t-2xl shadow-xl w-full"
         style={{
-          height: '85vh',
-          maxHeight: '85vh',
+          height: '80vh',
+          maxHeight: '80vh',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: 'white',
@@ -314,10 +314,11 @@ export default function AddAppointmentModal({
           style={{
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch',
-            overscrollBehavior: 'contain'
+            overscrollBehavior: 'contain',
+            minHeight: 0  // Important for flex children to scroll
           }}
         >
-          <div className="p-4 pb-6 space-y-4">
+          <div className="p-4 pb-8 space-y-4">
             {/* Customer Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -470,7 +471,14 @@ export default function AddAppointmentModal({
         </div>
 
         {/* Footer with Buttons - ALWAYS VISIBLE */}
-        <div className="p-4 pt-3 border-t border-gray-200 bg-white rounded-b-2xl shrink-0">
+        <div 
+          className="p-4 pt-3 border-t border-gray-200 bg-white shrink-0"
+          style={{
+            flexShrink: 0,  // Ensures footer never shrinks
+            borderBottomLeftRadius: '16px',
+            borderBottomRightRadius: '16px'
+          }}
+        >
           <div className="flex gap-3">
             <button
               onClick={onClose}
