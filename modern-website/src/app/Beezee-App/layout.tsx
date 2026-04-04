@@ -11,7 +11,7 @@ export default function BeezeeLayout({
       <head>
         {/* Critical CSS is already included in globals.css */}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
       </body>
     </html>

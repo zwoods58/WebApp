@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Update Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .update-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #007bff;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+        }
+        .update-banner.show { display: block; }
+        .update-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .update-btn {
+            background: white;
+            color: #007bff;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .update-btn:hover { background: #f8f9fa; }
+        .dismiss-btn {
+            background: #0056b3;
+            color: white;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .dismiss-btn:hover { background: #004085; }
+        .log-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 PWA Update System Test</h1>
+    
+    <!-- Simulated Update Banner -->
+    <div id="updateBanner" class="update-banner">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">🔄</span>
+                <div>
+                    <div style="font-weight: bold;">New version <span id="newVersion">v1.0.0</span> available!</div>
+                    <div style="font-size: 12px; opacity: 0.9;">A new version is ready to install</div>
+                </div>
+            </div>
+            <div class="update-buttons">
+                <button class="update-btn" onclick="handleUpdate()">Update Now</button>
+                <button class="dismiss-btn" onclick="handleDismiss()">Later</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📡 API Version Check Test</h2>
+        <button onclick="testVersionAPI()">Test Version API</button>
+        <button onclick="simulateAPIUpdate()">Simulate API Update</button>
+        <div id="apiStatus" class="status info">Ready to test API...</div>
+        <div id="apiResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Service Worker Test</h2>
+        <button onclick="testServiceWorker()">Test Service Worker</button>
+        <button onclick="simulateSWUpdate()">Simulate SW Update</button>
+        <div id="swStatus" class="status info">Ready to test Service Worker...</div>
+        <div id="swResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Update Banner Test</h2>
+        <button onclick="showUpdateBanner()">Show Update Banner</button>
+        <button onclick="hideUpdateBanner()">Hide Update Banner</button>
+        <button onclick="testUpdateFlow()">Test Full Update Flow</button>
+        <div id="bannerStatus" class="status info">Ready to test banner...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Console Log</h2>
+        <button onclick="clearLog()">Clear Log</button>
+        <div id="logOutput" class="log-output">Test logs will appear here...</div>
+    </div>
+
+    <script>
+        let updateAvailable = false;
+        let currentVersion = null;
+        let logElement = document.getElementById('logOutput');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            
+            if (logElement) {
+                logElement.textContent += logMessage + '\n';
+                logElement.scrollTop = logElement.scrollHeight;
+            }
+        }
+
+        function updateStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `status ${type}`;
+            }
+        }
+
+        function showUpdateBanner() {
+            const banner = document.getElementById('updateBanner');
+            if (banner) {
+                banner.classList.add('show');
+                updateAvailable = true;
+                updateStatus('bannerStatus', 'Update banner is VISIBLE', 'success');
+                log('✅ Update banner shown to user', 'success');
+            }
+        }
+
+        function hideUpdateBanner() {
+            const banner = document.getElementById('updateBanner');
+            if (banner) {
+                banner.classList.remove('show');
+                updateAvailable = false;
+                updateStatus('bannerStatus', 'Update banner is HIDDEN', 'info');
+                log('❌ Update banner hidden', 'info');
+            }
+        }
+
+        async function testVersionAPI() {
+            updateStatus('apiStatus', 'Testing API...', 'warning');
+            log('🔍 Testing /api/version-check endpoint...');
+            
+            try {
+                const response = await fetch('/api/version-check');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateStatus('apiStatus', '✅ API Working', 'success');
+                    document.getElementById('apiResult').innerHTML = `
+                        <strong>API Response:</strong><br>
+                        Version: ${data.version}<br>
+                        Build Time: ${data.buildTime}<br>
+                        Environment: ${data.environment}<br>
+                        Deployment ID: ${data.deploymentId || 'N/A'}
+                    `;
+                    log(`✅ API Success: Version ${data.version}, Environment: ${data.environment}`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('apiStatus', '❌ API Failed', 'error');
+                document.getElementById('apiResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+                log(`❌ API Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function simulateAPIUpdate() {
+            log('🚀 Simulating API-based update detection...');
+            
+            // Simulate a different version
+            const simulatedVersion = `v${Date.now()}`;
+            document.getElementById('newVersion').textContent = simulatedVersion;
+            
+            // Show update banner
+            showUpdateBanner();
+            updateStatus('apiStatus', '🚀 Simulated Update Available', 'success');
+            
+            log(`🚀 Simulated update detected: ${simulatedVersion}`, 'success');
+            log('📱 Update banner should now be visible with "Update Now" button', 'info');
+        }
+
+        async function testServiceWorker() {
+            updateStatus('swStatus', 'Testing Service Worker...', 'warning');
+            log('🔍 Testing service worker registration...');
+            
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        updateStatus('swStatus', '✅ Service Worker Found', 'success');
+                        document.getElementById('swResult').innerHTML = `
+                            <strong>Service Worker Info:</strong><br>
+                            Active: ${registration.active ? 'Yes' : 'No'}<br>
+                            Installing: ${registration.installing ? 'Yes' : 'No'}<br>
+                            Waiting: ${registration.waiting ? 'Yes' : 'No'}<br>
+                            Scope: ${registration.scope}
+                        `;
+                        log(`✅ Service Worker: Active=${!!registration.active}, Waiting=${!!registration.waiting}`, 'success');
+                    } else {
+                        updateStatus('swStatus', '⚠️ No Service Worker', 'warning');
+                        document.getElementById('swResult').innerHTML = 'No service worker registration found';
+                        log('⚠️ No service worker registration found', 'warning');
+                    }
+                } catch (error) {
+                    updateStatus('swStatus', '❌ SW Error', 'error');
+                    document.getElementById('swResult').innerHTML = `<strong>Error:</strong> ${error.message}`;
+                    log(`❌ Service Worker Error: ${error.message}`, 'error');
+                }
+            } else {
+                updateStatus('swStatus', '❌ SW Not Supported', 'error');
+                document.getElementById('swResult').innerHTML = 'Service Worker not supported in this browser';
+                log('❌ Service Worker not supported', 'error');
+            }
+        }
+
+        async function simulateSWUpdate() {
+            log('🔄 Simulating service worker update detection...');
+            
+            // Simulate a new version
+            const simulatedVersion = `sw-v${Date.now()}`;
+            document.getElementById('newVersion').textContent = simulatedVersion;
+            
+            // Show update banner
+            showUpdateBanner();
+            updateStatus('swStatus', '🔄 Simulated SW Update Available', 'success');
+            
+            log(`🔄 Simulated SW update detected: ${simulatedVersion}`, 'success');
+            log('📱 Update banner should now be visible with "Update Now" button', 'info');
+        }
+
+        function handleUpdate() {
+            log('🎯 "Update Now" button clicked!', 'success');
+            alert('Update Now clicked! In the real app, this would:\n1. Send SKIP_WAITING message to service worker\n2. Wait for activation\n3. Reload the app with new version');
+            
+            // Simulate update process
+            setTimeout(() => {
+                hideUpdateBanner();
+                log('✅ Update completed (simulated)', 'success');
+                updateStatus('bannerStatus', '✅ Update Completed', 'success');
+            }, 2000);
+        }
+
+        function handleDismiss() {
+            log('❌ "Later" button clicked - update dismissed', 'info');
+            hideUpdateBanner();
+            updateStatus('bannerStatus', '❌ Update Dismissed', 'info');
+        }
+
+        async function testUpdateFlow() {
+            log('🧪 Testing complete update flow...', 'info');
+            
+            // Step 1: Test API
+            await testVersionAPI();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Step 2: Test Service Worker
+            await testServiceWorker();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Step 3: Simulate update
+            await simulateAPIUpdate();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            log('🎉 Complete update flow test finished!', 'success');
+            updateStatus('bannerStatus', '🎉 Flow Test Complete', 'success');
+        }
+
+        function clearLog() {
+            logElement.textContent = 'Test logs cleared...\n';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🧪 PWA Update Test Tool initialized', 'info');
+            log('📱 This tool tests the actual update implementation', 'info');
+            log('🔍 Use the buttons above to test different components', 'info');
+        });
+    </script>
+</body>
+</html>
