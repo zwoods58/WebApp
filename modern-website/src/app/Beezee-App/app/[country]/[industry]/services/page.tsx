@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Package, 
   Plus, 
@@ -39,6 +39,10 @@ export default function ServicesPage() {
   // Loading states for delete operations
   const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
   const [deletingInventoryId, setDeletingInventoryId] = useState<string | null>(null);
+  
+  // Add refs to track initial load
+  const hasInitializedServices = useRef(false);
+  const hasInitializedInventory = useRef(false);
   
   // Redirect retail users to stock page - retail doesn't use services
   useEffect(() => {
@@ -80,45 +84,49 @@ export default function ServicesPage() {
 
   // Sync services and inventory with localStorage
   useEffect(() => {
-    if (services && services.length > 0) {
+    if (services && services.length > 0 && !hasInitializedServices.current) {
       setPersistentServices(services);
+      hasInitializedServices.current = true;
     }
-    if (inventory && inventory.length > 0) {
+    if (inventory && inventory.length > 0 && !hasInitializedInventory.current) {
       setPersistentInventory(inventory);
+      hasInitializedInventory.current = true;
     }
-  }, [services, inventory, setPersistentServices, setPersistentInventory]);
+  }, [services, inventory]);
 
-  // Fallback from localStorage to IndexedDB
+  // Fallback from localStorage to IndexedDB - Services only
   useEffect(() => {
-    if (!services || services.length === 0) {
-      if (persistentServices && persistentServices.length > 0) {
-        const restoreServices = async () => {
-          for (const item of persistentServices) {
-            try {
-              await addService(item);
-            } catch (error) {
-              console.error('Failed to restore service:', error);
-            }
+    if ((!services || services.length === 0) && persistentServices && persistentServices.length > 0 && !hasInitializedServices.current) {
+      const restoreServices = async () => {
+        for (const item of persistentServices) {
+          try {
+            await addService(item);
+          } catch (error) {
+            console.error('Failed to restore service:', error);
           }
-        };
-        restoreServices();
-      }
+        }
+        hasInitializedServices.current = true;
+      };
+      restoreServices();
     }
-    if (!inventory || inventory.length === 0) {
-      if (persistentInventory && persistentInventory.length > 0) {
-        const restoreInventory = async () => {
-          for (const item of persistentInventory) {
-            try {
-              await addInventoryItemFn(item);
-            } catch (error) {
-              console.error('Failed to restore inventory item:', error);
-            }
+  }, [services, persistentServices]); // Removed addService from dependencies
+
+  // Fallback from localStorage to IndexedDB - Inventory only
+  useEffect(() => {
+    if ((!inventory || inventory.length === 0) && persistentInventory && persistentInventory.length > 0 && !hasInitializedInventory.current) {
+      const restoreInventory = async () => {
+        for (const item of persistentInventory) {
+          try {
+            await addInventoryItemFn(item);
+          } catch (error) {
+            console.error('Failed to restore inventory item:', error);
           }
-        };
-        restoreInventory();
-      }
+        }
+        hasInitializedInventory.current = true;
+      };
+      restoreInventory();
     }
-  }, [services, inventory, persistentServices, persistentInventory, addService, addInventoryItemFn]);
+  }, [inventory, persistentInventory]); // Removed addInventoryItemFn from dependencies
 
   // Periodic database sync to ensure data persistence
   useEffect(() => {

@@ -198,6 +198,7 @@ export default function AddAppointmentModal({
         service_id: formData.serviceId,
         service_name: selectedService?.service_name || '',
         service_price: servicePrice,
+        status: 'pending',  // ✅ CRITICAL: Add status field so appointments appear in bottom list
         notes: formData.notes || '',
         business_id: business.id,
         industry,
@@ -206,6 +207,8 @@ export default function AddAppointmentModal({
         updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
         id: isClient() ? crypto.randomUUID() : getStableId('appointment')
       };
+      
+      console.log('📤 Sending appointment data with status:', appointmentData);
       
       await addAppointment(appointmentData);
       
