@@ -46,9 +46,15 @@ export default function ServicesPage() {
   
   // Redirect retail users to stock page - retail doesn't use services
   useEffect(() => {
-    if (industry === 'retail' && navigator.onLine) {
+    let isMounted = true;
+    
+    if (isMounted && industry === 'retail' && navigator.onLine) {
       window.location.href = `/Beezee-App/app/${country}/${industry}/stock`;
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [industry, country]);
   
   const { business, loading: businessLoading } = useUnifiedAuth();
@@ -75,57 +81,93 @@ export default function ServicesPage() {
   
   // Debug inventory changes
   useEffect(() => {
-    console.log('📦 Services page inventory updated:', {
-      inventoryLength: safeInventory.length,
-      inventoryItems: safeInventory.slice(0, 3), // First 3 items for debugging
-      timestamp: new Date().toISOString()
-    });
+    let isMounted = true;
+    
+    if (isMounted) {
+      console.log('📦 Services page inventory updated:', {
+        inventoryLength: safeInventory.length,
+        inventoryItems: safeInventory.slice(0, 3), // First 3 items for debugging
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [safeInventory]);
 
   // Sync services and inventory with localStorage
   useEffect(() => {
-    if (services && services.length > 0 && !hasInitializedServices.current) {
+    let isMounted = true;
+    
+    if (isMounted && services && services.length > 0 && !hasInitializedServices.current) {
       setPersistentServices(services);
       hasInitializedServices.current = true;
     }
-    if (inventory && inventory.length > 0 && !hasInitializedInventory.current) {
+    if (isMounted && inventory && inventory.length > 0 && !hasInitializedInventory.current) {
       setPersistentInventory(inventory);
       hasInitializedInventory.current = true;
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [services, inventory]);
 
   // Fallback from localStorage to IndexedDB - Services only
   useEffect(() => {
-    if ((!services || services.length === 0) && persistentServices && persistentServices.length > 0 && !hasInitializedServices.current) {
+    let isMounted = true;
+    let abortController = new AbortController();
+    
+    if (isMounted && (!services || services.length === 0) && persistentServices && persistentServices.length > 0 && !hasInitializedServices.current) {
       const restoreServices = async () => {
         for (const item of persistentServices) {
+          if (!isMounted || abortController.signal.aborted) break;
           try {
             await addService(item);
           } catch (error) {
             console.error('Failed to restore service:', error);
           }
         }
-        hasInitializedServices.current = true;
+        if (isMounted) {
+          hasInitializedServices.current = true;
+        }
       };
       restoreServices();
     }
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, [services, persistentServices]); // Removed addService from dependencies
 
   // Fallback from localStorage to IndexedDB - Inventory only
   useEffect(() => {
-    if ((!inventory || inventory.length === 0) && persistentInventory && persistentInventory.length > 0 && !hasInitializedInventory.current) {
+    let isMounted = true;
+    let abortController = new AbortController();
+    
+    if (isMounted && (!inventory || inventory.length === 0) && persistentInventory && persistentInventory.length > 0 && !hasInitializedInventory.current) {
       const restoreInventory = async () => {
         for (const item of persistentInventory) {
+          if (!isMounted || abortController.signal.aborted) break;
           try {
             await addInventoryItemFn(item);
           } catch (error) {
             console.error('Failed to restore inventory item:', error);
           }
         }
-        hasInitializedInventory.current = true;
+        if (isMounted) {
+          hasInitializedInventory.current = true;
+        }
       };
       restoreInventory();
     }
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, [inventory, persistentInventory]); // Removed addInventoryItemFn from dependencies
 
   // Periodic database sync to ensure data persistence
@@ -161,9 +203,15 @@ export default function ServicesPage() {
   
   // Force inventory tab for food and retail industries
   useEffect(() => {
-    if (!shouldShowServicesTab) {
+    let isMounted = true;
+    
+    if (isMounted && !shouldShowServicesTab) {
       setActiveTab('inventory');
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [shouldShowServicesTab]);
   
   const [searchTerm, setSearchTerm] = useState('');
