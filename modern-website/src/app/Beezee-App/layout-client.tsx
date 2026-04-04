@@ -236,7 +236,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       )}
       
       {/* Main content area */}
-      <div className="pb-20">
+      <div key={pathname} className="pb-20">
         {children}
       </div>
       

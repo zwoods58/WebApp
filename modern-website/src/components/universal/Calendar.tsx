@@ -102,11 +102,30 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  
+  // Component mounted ref to prevent state updates after unmount
+  const isComponentMounted = React.useRef(true);
+
+  // Track component lifecycle
+  useEffect(() => {
+    isComponentMounted.current = true;
+    return () => {
+      isComponentMounted.current = false;
+    };
+  }, []);
 
   // Initialize date AFTER mount to prevent hydration mismatch
   useEffect(() => {
-    setIsMounted(true);
-    setCurrentDate(new Date());
+    let isMounted = true;
+    
+    if (isMounted && isComponentMounted.current) {
+      setIsMounted(true);
+      setCurrentDate(new Date());
+    }
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Navigation
@@ -198,6 +217,8 @@ export default function Calendar({ industry, country }: CalendarProps) {
   };
 
   const handleCompleteAppointment = async (appointmentId: string) => {
+    if (loadingAppointmentId === appointmentId) return;
+    
     setLoadingAppointmentId(appointmentId);
     try {
       if (!appointments) return;
@@ -221,6 +242,9 @@ export default function Calendar({ industry, country }: CalendarProps) {
           completed_by: business?.id
         }
       });
+      
+      // Only proceed if component is still mounted
+      if (!isComponentMounted.current) return;
       
       // Force immediate sync to database
       try {
@@ -265,16 +289,27 @@ export default function Calendar({ industry, country }: CalendarProps) {
         console.log('ℹ️ No price found for appointment, skipping transaction creation');
       }
       
-      showSuccess(t('calendar.complete_success', 'Appointment completed successfully'));
+      // Only show success if component is still mounted
+      if (isComponentMounted.current) {
+        showSuccess(t('calendar.complete_success', 'Appointment completed successfully'));
+      }
     } catch (error) {
       console.error('Error completing appointment:', error);
-      showError(t('calendar.complete_error', 'Failed to complete appointment. Please try again.'));
+      // Only show error if component is still mounted
+      if (isComponentMounted.current) {
+        showError(t('calendar.complete_error', 'Failed to complete appointment. Please try again.'));
+      }
     } finally {
-      setLoadingAppointmentId(null);
+      // Only clear loading state if component is still mounted
+      if (isComponentMounted.current) {
+        setLoadingAppointmentId(null);
+      }
     }
   };
 
   const handleCancelAppointment = async (appointmentId: string, reason?: string) => {
+    if (loadingAppointmentId === appointmentId) return;
+    
     setLoadingAppointmentId(appointmentId);
     try {
       // Update appointment status to cancelled
@@ -286,6 +321,9 @@ export default function Calendar({ industry, country }: CalendarProps) {
           notes: reason ? `Cancelled: ${reason}` : undefined
         }
       });
+      
+      // Only proceed if component is still mounted
+      if (!isComponentMounted.current) return;
       
       // Force immediate sync to database
       try {
@@ -300,14 +338,23 @@ export default function Calendar({ industry, country }: CalendarProps) {
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       await queryClient.invalidateQueries({ queryKey: ['appointments'] });
       
-      showSuccess('Appointment cancelled successfully');
-      setShowCancelModal(false); // Close the modal after successful cancellation
-      setAppointmentToCancel(null); // Clear the appointment to cancel
+      // Only show success and close modal if component is still mounted
+      if (isComponentMounted.current) {
+        showSuccess('Appointment cancelled successfully');
+        setShowCancelModal(false); // Close the modal after successful cancellation
+        setAppointmentToCancel(null); // Clear the appointment to cancel
+      }
     } catch (error) {
       console.error('Error cancelling appointment:', error);
-      showError('Failed to cancel appointment');
+      // Only show error if component is still mounted
+      if (isComponentMounted.current) {
+        showError('Failed to cancel appointment');
+      }
     } finally {
-      setLoadingAppointmentId(null);
+      // Only clear loading state if component is still mounted
+      if (isComponentMounted.current) {
+        setLoadingAppointmentId(null);
+      }
     }
   };
 
@@ -356,17 +403,28 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
   // Sync appointments with localStorage
   useEffect(() => {
-    if (appointments && appointments.length > 0) {
+    let isMounted = true;
+    
+    if (isMounted && isComponentMounted.current && appointments && appointments.length > 0) {
       setPersistentAppointments(appointments);
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [appointments, setPersistentAppointments]);
 
   // Fallback from localStorage to IndexedDB
   useEffect(() => {
+    let isMounted = true;
+    let isRestoring = false;
+    
     if (!appointments || appointments.length === 0) {
-      if (persistentAppointments && persistentAppointments.length > 0) {
+      if (persistentAppointments && persistentAppointments.length > 0 && !isRestoring && isComponentMounted.current) {
+        isRestoring = true;
         const restoreAppointments = async () => {
           for (const appointment of persistentAppointments) {
+            if (!isMounted || !isComponentMounted.current) break;
             try {
               await addAppointment(appointment);
             } catch (error) {
@@ -377,6 +435,10 @@ export default function Calendar({ industry, country }: CalendarProps) {
         restoreAppointments();
       }
     }
+    
+    return () => {
+      isMounted = false;
+    };
   }, [appointments, persistentAppointments, addAppointment]);
 
   // Periodic database sync to ensure data persistence
@@ -649,61 +711,37 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
         {/* Appointments List - Mobile Responsive */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Clock size={20} className="text-orange-500" />
-            Scheduled Appointments
-            <span className="text-sm font-normal text-gray-500">
-              ({filteredAppointments.filter(apt => apt.status === 'pending').length})
-            </span>
-          </h2>
-          <div className="space-y-3">
-            {filteredAppointments.filter(apt => apt.status === 'pending').length === 0 ? (
-              <div className="text-center py-8">
-                <div className="text-gray-400 mb-4">
-                  <CalendarIcon size={48} className="mx-auto" />
+          
+          {/* ===== UPCOMING APPOINTMENTS (PENDING) ===== */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Clock size={20} className="text-orange-500" />
+              Upcoming Appointments
+              <span className="text-sm font-normal text-gray-500">
+                ({filteredAppointments.filter(apt => apt.status === 'pending').length})
+              </span>
+            </h2>
+            <div className="space-y-3">
+              {filteredAppointments.filter(apt => apt.status === 'pending').length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-lg">
+                  <CalendarIcon size={32} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">No upcoming appointments</p>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    + Add Appointment
+                  </button>
                 </div>
-                <p className="text-gray-500 text-center">No appointments found</p>
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-                >
-                  Add First Appointment
-                </button>
-              </div>
-            ) : (
-              filteredAppointments
-                .sort((a, b) => {
-                  const dateA = new Date(`${a.appointment_date} ${a.appointment_time || '00:00'}`);
-                  const dateB = new Date(`${b.appointment_date} ${b.appointment_time || '00:00'}`);
-                  return dateA.getTime() - dateB.getTime();
-                })
-                .map((appointment: Appointment) => {
-                  // Show completed appointments in mini format
-                  if (appointment.status === 'completed') {
-                    return (
-                      <div key={appointment.id} className="border border-green-200 bg-green-50 rounded-lg p-2 opacity-75">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle size={14} className="text-green-600" />
-                              <span className="text-sm font-medium text-green-800 truncate">
-                                {appointment.customer_name || 'No customer'}
-                              </span>
-                              <span className="px-1 py-0.5 text-xs bg-green-100 text-green-700 rounded">
-                                Completed
-                              </span>
-                            </div>
-                            <div className="text-xs text-green-600 truncate">
-                              {appointment.service_name || 'Service'} • {formatDate(appointment.appointment_date)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                  
-                  // Regular display for pending/cancelled appointments
-                  return (
+              ) : (
+                filteredAppointments
+                  .filter(apt => apt.status === 'pending')
+                  .sort((a, b) => {
+                    const dateA = new Date(`${a.appointment_date} ${a.appointment_time || '00:00'}`);
+                    const dateB = new Date(`${b.appointment_date} ${b.appointment_time || '00:00'}`);
+                    return dateA.getTime() - dateB.getTime();
+                  })
+                  .map((appointment: Appointment) => (
                     <div key={appointment.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -711,71 +749,60 @@ export default function Calendar({ industry, country }: CalendarProps) {
                             <div className="font-medium text-gray-900 truncate">
                               {appointment.customer_name || 'No customer'}
                             </div>
-                            <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                              (appointment.status as string) === 'cancelled' ? 'bg-red-100 text-red-800' :
-                              (appointment.status as string) === 'completed' ? 'bg-green-100 text-green-800' :
-                              (appointment.status as string) === 'no-show' ? 'bg-gray-100 text-gray-800' :
-                              'bg-blue-100 text-blue-800'
-                            }`}>
-                              {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
-                               (appointment.status as string) === 'completed' ? 'Completed' : 
-                               (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                            <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                              Scheduled
                             </span>
                           </div>
                           <div className="space-y-1">
-                            <div className="text-sm text-gray-600 flex items-center gap-2">
-                              <span className="truncate">{appointment.service_name || t('calendar.service', 'Service')}</span>
+                            <div className="text-sm text-gray-600">
+                              {appointment.service_name || 'Service'}
                             </div>
                             <div className="text-sm text-gray-500 flex items-center gap-2">
                               <Clock size={14} />
                               {formatDate(appointment.appointment_date)} at {appointment.appointment_time || 'All day'}
                             </div>
                             {appointment.notes && (
-                              <div className="text-sm text-gray-500 bg-gray-50 p-2 rounded">
+                              <div className="text-sm text-gray-500 bg-gray-50 p-2 rounded mt-2">
                                 {appointment.notes}
                               </div>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-1">
-                          {(appointment.status as string) === 'pending' && (
-                            <>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCompleteAppointment(appointment.id);
-                                }}
-                                disabled={loadingAppointmentId === appointment.id}
-                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title={t('appointments.complete', 'Mark as Complete')}
-                              >
-                                {loadingAppointmentId === appointment.id ? (
-                                  <div className="animate-spin w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full"></div>
-                                ) : (
-                                  <CheckCircle size={18} />
-                                )}
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setAppointmentToCancel(appointment.id);
-                                  setShowCancelModal(true);
-                                }}
-                                disabled={loadingAppointmentId === appointment.id}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title={t('calendar.cancel_appointment', 'Cancel appointment')}
-                              >
-                                <XCircle size={18} />
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCompleteAppointment(appointment.id);
+                            }}
+                            disabled={loadingAppointmentId === appointment.id}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                            title="Mark as Complete"
+                          >
+                            {loadingAppointmentId === appointment.id ? (
+                              <div className="animate-spin w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full" />
+                            ) : (
+                              <CheckCircle size={18} />
+                            )}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAppointmentToCancel(appointment.id);
+                              setShowCancelModal(true);
+                            }}
+                            disabled={loadingAppointmentId === appointment.id}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                            title="Cancel appointment"
+                          >
+                            <XCircle size={18} />
+                          </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleViewDetails(appointment);
                             }}
                             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                            title={t('appointments.view_details', 'View Details')}
+                            title="View Details"
                           >
                             <Info size={18} />
                           </button>
@@ -785,11 +812,11 @@ export default function Calendar({ industry, country }: CalendarProps) {
                               handleDeleteAppointment(appointment.id);
                             }}
                             disabled={loadingAppointmentId === appointment.id}
-                            className="p-2 rounded-lg hover:bg-gray-800 text-gray-800 disabled:opacity-50 transition-colors"
-                            title={t('calendar.delete_appointment', 'Delete Appointment')}
+                            className="p-2 rounded-lg hover:bg-red-50 text-red-600 transition-colors disabled:opacity-50"
+                            title="Delete Appointment"
                           >
                             {loadingAppointmentId === appointment.id ? (
-                              <div className="w-4 h-4 border-2 border-gray-800 border-t-transparent rounded-full animate-spin" />
+                              <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
                             ) : (
                               <Trash2 className="w-4 h-4" />
                             )}
@@ -797,9 +824,169 @@ export default function Calendar({ industry, country }: CalendarProps) {
                         </div>
                       </div>
                     </div>
-                  );
-                })
-            )}
+                  ))
+              )}
+            </div>
+          </div>
+
+          {/* ===== COMPLETED APPOINTMENTS ===== */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <CheckCircle size={20} className="text-green-500" />
+              Completed Appointments
+              <span className="text-sm font-normal text-gray-500">
+                ({filteredAppointments.filter(apt => apt.status === 'completed').length})
+              </span>
+            </h2>
+            <div className="space-y-3">
+              {filteredAppointments.filter(apt => apt.status === 'completed').length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-lg">
+                  <CheckCircle size={32} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">No completed appointments</p>
+                </div>
+              ) : (
+                filteredAppointments
+                  .filter(apt => apt.status === 'completed')
+                  .sort((a, b) => {
+                    const dateA = new Date(`${a.appointment_date} ${a.appointment_time || '00:00'}`);
+                    const dateB = new Date(`${b.appointment_date} ${b.appointment_time || '00:00'}`);
+                    return dateB.getTime() - dateA.getTime(); // Most recent first
+                  })
+                  .map((appointment: Appointment) => (
+                    <div key={appointment.id} className="border border-green-200 bg-green-50 rounded-lg p-4 opacity-85">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <CheckCircle size={16} className="text-green-600" />
+                            <div className="font-medium text-gray-900 truncate">
+                              {appointment.customer_name || 'No customer'}
+                            </div>
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
+                              Completed
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-sm text-gray-600">
+                              {appointment.service_name || 'Service'}
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center gap-2">
+                              <Clock size={14} />
+                              {formatDate(appointment.appointment_date)} at {appointment.appointment_time || 'All day'}
+                            </div>
+                            {appointment.notes && (
+                              <div className="text-sm text-gray-500 bg-white/50 p-2 rounded mt-2">
+                                {appointment.notes}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(appointment);
+                            }}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Info size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAppointment(appointment.id);
+                            }}
+                            className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors"
+                            title="Delete Appointment"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
+          </div>
+
+          {/* ===== CANCELLED/NO-SHOW APPOINTMENTS ===== */}
+          <div>
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <XCircle size={20} className="text-red-500" />
+              Cancelled Appointments
+              <span className="text-sm font-normal text-gray-500">
+                ({filteredAppointments.filter(apt => apt.status === 'cancelled' || apt.status === 'no-show').length})
+              </span>
+            </h2>
+            <div className="space-y-3">
+              {filteredAppointments.filter(apt => apt.status === 'cancelled' || apt.status === 'no-show').length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-lg">
+                  <XCircle size={32} className="text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">No cancelled appointments</p>
+                </div>
+              ) : (
+                filteredAppointments
+                  .filter(apt => apt.status === 'cancelled' || apt.status === 'no-show')
+                  .sort((a, b) => {
+                    const dateA = new Date(`${a.appointment_date} ${a.appointment_time || '00:00'}`);
+                    const dateB = new Date(`${b.appointment_date} ${b.appointment_time || '00:00'}`);
+                    return dateB.getTime() - dateA.getTime();
+                  })
+                  .map((appointment: Appointment) => (
+                    <div key={appointment.id} className="border border-red-200 bg-red-50 rounded-lg p-4 opacity-85">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <XCircle size={16} className="text-red-600" />
+                            <div className="font-medium text-gray-900 truncate line-through">
+                              {appointment.customer_name || 'No customer'}
+                            </div>
+                            <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
+                              Cancelled
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="text-sm text-gray-600 line-through">
+                              {appointment.service_name || 'Service'}
+                            </div>
+                            <div className="text-sm text-gray-500 flex items-center gap-2">
+                              <Clock size={14} />
+                              {formatDate(appointment.appointment_date)} at {appointment.appointment_time || 'All day'}
+                            </div>
+                            {appointment.notes && (
+                              <div className="text-sm text-gray-500 bg-white/50 p-2 rounded mt-2">
+                                {appointment.notes}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetails(appointment);
+                            }}
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                            title="View Details"
+                          >
+                            <Info size={18} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteAppointment(appointment.id);
+                            }}
+                            className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition-colors"
+                            title="Delete Appointment"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
           </div>
         </div>
       </div>
