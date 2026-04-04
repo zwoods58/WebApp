@@ -126,6 +126,8 @@ export default function RootLayout({
       </head>
       <BodyWrapper className={bodyClassName}>
         {children}
+        {/* Modal portal root - renders above everything */}
+        <div id="modal-root" />
       </BodyWrapper>
     </html>
   );

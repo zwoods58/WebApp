@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';  // ADD THIS IMPORT
 import { AlertCircle, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -257,9 +258,17 @@ export default function AddAppointmentModal({
   if (!isMounted) return null;
   if (!isOpen) return null;
 
-  return (
+  // Get portal root - ensures modal renders above everything
+  const portalRoot = typeof document !== 'undefined' 
+    ? document.getElementById('modal-root') || document.body 
+    : null;
+
+  if (!portalRoot) return null;
+
+  // Use createPortal to render modal at the root level
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50"
+      className="fixed inset-0"
       style={{
         position: 'fixed',
         top: 0,
@@ -270,7 +279,7 @@ export default function AddAppointmentModal({
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        zIndex: 9999
+        zIndex: 99999  // Higher than BottomNav
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -498,6 +507,7 @@ export default function AddAppointmentModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    portalRoot
   );
 }
