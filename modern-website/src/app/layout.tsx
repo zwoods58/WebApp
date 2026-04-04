@@ -94,6 +94,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  manifest: '/atarwebb-manifest.json',
 };
 
 export default function RootLayout({

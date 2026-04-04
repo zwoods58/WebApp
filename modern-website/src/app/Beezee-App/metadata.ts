@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   authors: [{ name: "BeeZee" }],
   creator: "BeeZee",
   publisher: "BeeZee",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://beezee.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://atarwebb.com'),
   alternates: {
     canonical: '/Beezee-App/',
     languages: {
