@@ -9,6 +9,7 @@ import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import { useAppointmentsTanStack, useServicesTanStack, useTransactionsTanStack } from '@/hooks';
 import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
+import { getStableDateString, getStableTimeString, isClient, getStableId } from '@/utils/stableDates';
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -56,7 +57,7 @@ export default function AddAppointmentModal({
 
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
-    date: initialDate || '',
+    date: '', // Will be set in useEffect
     startTime: '09:00',
     endTime: '10:00',
     serviceId: '',
@@ -67,6 +68,17 @@ export default function AddAppointmentModal({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Set initial date and mount state AFTER client-side render
+  useEffect(() => {
+    setIsMounted(true);
+    if (initialDate) {
+      setFormData(prev => ({ ...prev, date: initialDate }));
+    } else {
+      setFormData(prev => ({ ...prev, date: getStableDateString() }));
+    }
+  }, [initialDate]);
 
   // Mobile PWA body scroll prevention
   useEffect(() => {
@@ -118,7 +130,7 @@ export default function AddAppointmentModal({
   };
 
   const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
+    return getStableDateString();
   };
 
   const timeOptions = generate5MinTimeOptions();
@@ -192,9 +204,9 @@ export default function AddAppointmentModal({
         business_id: business.id,
         industry,
         country,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        id: crypto.randomUUID()
+        created_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        id: isClient() ? crypto.randomUUID() : getStableId('appointment')
       };
       
       // Add the appointment
@@ -211,7 +223,7 @@ export default function AddAppointmentModal({
           description: `Appointment booked: ${selectedService?.service_name || 'service'} - ${formData.customerName || 'Customer'}`,
           customer_name: formData.customerName || 'Customer',
           payment_method: 'pending',
-          transaction_date: new Date().toISOString().split('T')[0],
+          transaction_date: getStableDateString(),
           metadata: {
             appointment_id: appointmentData.id,
             service_name: selectedService?.service_name,
@@ -253,6 +265,9 @@ export default function AddAppointmentModal({
       setSubmitting(false);
     }
   };
+
+  // Prevent hydration errors by not rendering until mounted
+  if (!isMounted) return null;
 
   if (!isOpen) return null;
 

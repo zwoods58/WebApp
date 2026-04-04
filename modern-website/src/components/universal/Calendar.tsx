@@ -26,9 +26,11 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
+import { getStableDateString, getStableDisplayDate, isClient, getStableId } from '@/utils/stableDates';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import AddAppointmentModal from './AddAppointmentModal';
+import { HydrationErrorBoundary } from '@/components/ErrorBoundary';
 
 interface CalendarProps {
   industry: string;
@@ -68,13 +70,13 @@ export default function Calendar({ industry, country }: CalendarProps) {
   // Helper functions with safe defaults for offline mode
   const getTodayAppointments = () => {
     if (!appointments || !Array.isArray(appointments)) return [];
-    const today = new Date().toISOString().split('T')[0];
+    const today = getStableDateString();
     return appointments.filter((apt: Appointment) => apt.appointment_date === today);
   };
 
   const getUpcomingAppointments = () => {
     if (!appointments || !Array.isArray(appointments)) return [];
-    const today = new Date().toISOString().split('T')[0];
+    const today = getStableDateString();
     return appointments.filter((apt: Appointment) => apt.appointment_date > today && apt.status === 'pending');
   };
 
@@ -89,7 +91,8 @@ export default function Calendar({ industry, country }: CalendarProps) {
   };
 
   // State
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -100,9 +103,25 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+  // Initialize date AFTER mount to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+    setCurrentDate(new Date());
+  }, []);
+
+  // Don't render until mounted
+  if (!isMounted) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading calendar...</p>
+      </div>
+    </div>;
+  }
+
   // Navigation
   const navigateMonth = (direction: number) => {
-    setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + direction, 1));
+    setCurrentDate(prev => prev ? new Date(prev.getFullYear(), prev.getMonth() + direction, 1) : new Date());
   };
 
   const navigateToToday = () => {
@@ -169,7 +188,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
           description: `Appointment booked: ${appointmentData.service_name || 'service'} - ${appointmentData.customer_name || 'Customer'}`,
           customer_name: appointmentData.customer_name || 'Customer',
           payment_method: 'pending',
-          transaction_date: appointmentData.appointment_date || new Date().toISOString().split('T')[0],
+          transaction_date: appointmentData.appointment_date || getStableDateString(),
           metadata: {
             appointment_id: 'pending', // Will be updated with real ID after appointment is created
             service_name: appointmentData.service_name,
@@ -208,7 +227,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
         id: appointmentId, 
         data: { 
           status: 'completed',
-          completed_at: new Date().toISOString(),
+          completed_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
           completed_by: business?.id
         }
       });
@@ -237,7 +256,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
           description: `Payment for ${appointment.service_name || 'service'} - ${appointment.customer_name || 'Customer'}`,
           customer_name: appointment.customer_name || 'Customer',
           payment_method: 'cash',
-          transaction_date: new Date().toISOString().split('T')[0],
+          transaction_date: getStableDateString(),
           metadata: {
             appointment_id: appointmentId,
             service_name: appointment.service_name,
@@ -273,7 +292,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
         id: appointmentId, 
         data: { 
           status: 'cancelled',
-          updated_at: new Date().toISOString(),
+          updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
           notes: reason ? `Cancelled: ${reason}` : undefined
         }
       });
@@ -331,9 +350,9 @@ export default function Calendar({ industry, country }: CalendarProps) {
   const handleViewDetails = (appointment: any) => {
     // Ensure appointment has all required fields with fallbacks
     const safeAppointment = {
-      id: appointment.id || `temp-${Date.now()}`,
+      id: appointment.id || getStableId('temp'),
       customer_name: appointment.customer_name || 'Unknown Customer',
-      appointment_date: appointment.appointment_date || appointment.date || new Date().toISOString(),
+      appointment_date: appointment.appointment_date || appointment.date || getStableDateString(),
       status: appointment.status || 'pending',
       notes: appointment.notes || '',
       service_name: appointment.service_name || 'Service',
@@ -398,6 +417,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
   // Render calendar grid - Desktop view
   const renderCalendarGrid = () => {
+    if (!currentDate) return null;
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
@@ -411,7 +431,9 @@ export default function Calendar({ industry, country }: CalendarProps) {
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const dayAppointments = getAppointmentsForDate(dateStr);
-      const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+      // Use stable date comparison to prevent hydration issues
+      const today = new Date();
+      const isToday = isClient() && today.toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
 
       days.push(
         <div
@@ -439,15 +461,18 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
   // Render mobile list view - for small screens
   const renderMobileCalendarList = () => {
+    if (!currentDate) return null;
     const daysInMonth = getDaysInMonth(currentDate);
     const days = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const dayAppointments = getAppointmentsForDate(dateStr);
-      const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+      // Use stable date comparison to prevent hydration issues
+      const today = new Date();
+      const isToday = isClient() && today.toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
       const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayName = isClient() ? dayDate.toLocaleDateString('en-US', { weekday: 'short' }) : dayDate.toUTCString().slice(0, 3);
 
       days.push(
         <div
@@ -467,7 +492,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                {dayDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                {isClient() ? dayDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : `${dayDate.getMonth() + 1}/${dayDate.getFullYear()}`}
               </div>
             </div>
             <div className="text-right">
@@ -555,7 +580,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
                 <ChevronLeft size={20} />
               </button>
               <span className="font-medium text-center sm:text-left">
-                {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                {currentDate ? (isClient() ? currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : `${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`) : 'Loading...'}
               </span>
               <button
                 onClick={() => navigateMonth(1)}
@@ -778,20 +803,22 @@ export default function Calendar({ industry, country }: CalendarProps) {
       {/* Add Appointment Modal */}
       
         {showAddModal && (
-          <AddAppointmentModal
-            isOpen={showAddModal}
-            onClose={() => {
-              setShowAddModal(false);
-              setSelectedDate(null);
-            }}
-            onSuccess={() => {
-              setShowAddModal(false);
-              setSelectedDate(null);
-              // TanStack Query handles refetching automatically
-            }}
-            industry={industry}
-            country={country}
-          />
+          <HydrationErrorBoundary>
+            <AddAppointmentModal
+              isOpen={showAddModal}
+              onClose={() => {
+                setShowAddModal(false);
+                setSelectedDate(null);
+              }}
+              onSuccess={() => {
+                setShowAddModal(false);
+                setSelectedDate(null);
+                // TanStack Query handles refetching automatically
+              }}
+              industry={industry}
+              country={country}
+            />
+          </HydrationErrorBoundary>
         )}
       
 
@@ -854,7 +881,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
               <div>
                 <label className="text-sm text-gray-500">{t('appointments.date_time', 'Date & Time')}</label>
                 <p className="font-medium">
-                  {new Date(selectedAppointment.appointment_date).toLocaleDateString()} at {selectedAppointment.appointment_time || 'All day'}
+                  {isClient() ? new Date(selectedAppointment.appointment_date).toLocaleDateString() : selectedAppointment.appointment_date} at {selectedAppointment.appointment_time || 'All day'}
                 </p>
               </div>
               
