@@ -93,7 +93,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     };
   }, [])
 
-  // ✅ Service Worker Update Detection (with loop prevention)
+  // ✅ Enhanced Update Detection (Service Worker + Vercel API)
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       let hasShownUpdate = false;
@@ -127,19 +127,91 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         });
       });
       
-      // Check for updates periodically (every 2 hours, not every hour)
-      const updateInterval = setInterval(() => {
-        navigator.serviceWorker.getRegistration().then(reg => {
-          if (reg && !hasShownUpdate) {
-            console.log('[Layout] 🔍 Periodic update check...');
-            reg.update();
+      // Enhanced: Check for updates frequently (30 seconds instead of 2 hours)
+      const updateInterval = setInterval(async () => {
+        if (!hasShownUpdate) {
+          // 1. Service worker update check
+          navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg) {
+              console.log('[Layout] 🔍 Periodic service worker update check...');
+              reg.update();
+            }
+          });
+          
+          // 2. Vercel API version check for immediate detection
+          try {
+            console.log('[Layout] 🔍 Checking Vercel API for updates...');
+            const response = await fetch('/api/version-check');
+            const data = await response.json();
+            
+            const currentVersion = localStorage.getItem('app-version');
+            const apiVersion = data.version;
+            
+            if (apiVersion !== currentVersion) {
+              console.log('[Layout] � New version detected via Vercel API:', apiVersion);
+              hasShownUpdate = true;
+              setUpdateAvailable(true);
+              setNewVersion(apiVersion);
+              setUpdateShownForVersion(apiVersion);
+              localStorage.setItem('app-version', apiVersion);
+            } else {
+              console.log('[Layout] ✅ Version up to date:', apiVersion);
+            }
+          } catch (error) {
+            console.log('[Layout] ⚠️ API check failed, using service worker only:', error);
           }
-        });
-      }, 2 * 60 * 60 * 1000); // 2 hours
+        }
+      }, 30000); // 30 seconds instead of 2 hours
       
       return () => clearInterval(updateInterval);
     }
   }, []);
+
+  // ✅ NEW: Handle manual update triggers from More page
+  useEffect(() => {
+    const handleManualUpdateCheck = (event: CustomEvent) => {
+      console.log('[Layout] Manual update check triggered:', event.detail);
+      
+      // Force immediate update check
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.update();
+          
+          // Check for waiting worker after update
+          setTimeout(() => {
+            if (registration.waiting && !updateShownForVersion) {
+              console.log('[Layout] Update found after manual check');
+              setUpdateAvailable(true);
+              setNewVersion(`manual-${Date.now()}`);
+              setUpdateShownForVersion(`manual-${Date.now()}`);
+            } else if (!registration.waiting) {
+              // Check Vercel API as fallback
+              fetch('/api/version-check')
+                .then(response => response.json())
+                .then(data => {
+                  const currentVersion = localStorage.getItem('app-version');
+                  if (data.version !== currentVersion) {
+                    setUpdateAvailable(true);
+                    setNewVersion(data.version);
+                    setUpdateShownForVersion(data.version);
+                    localStorage.setItem('app-version', data.version);
+                  }
+                })
+                .catch(error => {
+                  console.log('[Layout] Manual API check failed:', error);
+                });
+            }
+          }, 1000);
+        });
+      }
+    };
+    
+    window.addEventListener('TRIGGER_UPDATE_CHECK', handleManualUpdateCheck as EventListener);
+    
+    return () => {
+      window.removeEventListener('TRIGGER_UPDATE_CHECK', handleManualUpdateCheck as EventListener);
+    };
+  }, [updateShownForVersion]);
   
   // ✅ NEW: Handle update reload
   const handleUpdate = () => {

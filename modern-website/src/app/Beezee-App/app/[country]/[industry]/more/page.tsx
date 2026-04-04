@@ -71,18 +71,37 @@ export default function MorePage() {
           // Check if there's a waiting worker
           if (registration.waiting) {
             setUpdateStatus('available');
-            // Show update notification
-            alert('Update available! Check the update notification at the bottom of the screen.');
+            // Trigger the enhanced update system
+            window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK', {
+              detail: { source: 'more-page' }
+            }));
           } else {
-            setUpdateStatus('none');
-            alert('App is up to date!');
-            setTimeout(() => setUpdateStatus('idle'), 3000);
+            // Also check Vercel API for immediate detection
+            try {
+              const response = await fetch('/api/version-check');
+              const data = await response.json();
+              
+              const currentVersion = localStorage.getItem('app-version');
+              if (data.version !== currentVersion) {
+                setUpdateStatus('available');
+                // Trigger update notification
+                window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK', {
+                  detail: { source: 'more-page-api', version: data.version }
+                }));
+              } else {
+                setUpdateStatus('none');
+                setTimeout(() => setUpdateStatus('idle'), 3000);
+              }
+            } catch (apiError) {
+              console.log('API check failed, using service worker result');
+              setUpdateStatus('none');
+              setTimeout(() => setUpdateStatus('idle'), 3000);
+            }
           }
         }
       }
     } catch (error) {
       console.error('Update check failed:', error);
-      alert('Failed to check for updates');
       setUpdateStatus('idle');
     } finally {
       setIsCheckingUpdate(false);
