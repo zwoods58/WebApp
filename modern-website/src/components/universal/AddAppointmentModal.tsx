@@ -275,49 +275,38 @@ export default function AddAppointmentModal({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: '#FFFFFF',  // 100% WHITE background
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'center',
-        zIndex: 99999  // Higher than BottomNav
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        zIndex: 99999
       }}
     >
-      {/* MODAL CONTAINER - 100% WHITE BACKGROUND */}
+      {/* MODAL CONTAINER */}
       <div
-        className="w-full bg-white"
+        className="w-full"
         style={{
-          height: '75vh',
-          maxHeight: '75vh',
+          height: '85vh',
+          maxHeight: '85vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#FFFFFF',  // SOLID WHITE
+          backgroundColor: '#FFFFFF',
           borderTopLeftRadius: '16px',
           borderTopRightRadius: '16px',
-          overflow: 'hidden',
-          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)'  // Optional shadow
+          overflow: 'hidden'
         }}
       >
         {/* Drag Handle */}
-        <div className="flex justify-center pt-2 pb-1 shrink-0">
-          <div 
-            className="w-12 h-1 rounded-full"
-            style={{ backgroundColor: '#D1D5DB' }}  // Gray-300
-          />
+        <div className="flex justify-center pt-2 pb-1 shrink-0" style={{ backgroundColor: '#FFFFFF' }}>
+          <div className="w-12 h-1 rounded-full" style={{ backgroundColor: '#D1D5DB' }} />
         </div>
 
-        {/* Header - White background */}
+        {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b shrink-0" style={{ backgroundColor: '#FFFFFF', borderBottomColor: '#E5E7EB' }}>
           <h2 className="text-lg font-semibold" style={{ color: '#111827' }}>
             {t('calendar.add_appointment', 'Add Appointment')}
           </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full"
-            style={{ color: '#9CA3AF' }}
-          >
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full" style={{ color: '#9CA3AF' }}>
             <X size={20} />
           </button>
         </div>
@@ -333,7 +322,7 @@ export default function AddAppointmentModal({
             backgroundColor: '#FFFFFF'  // SOLID WHITE
           }}
         >
-          <div className="p-4 pb-6 space-y-4">
+          <div className="p-4 pb-6 space-y-4" style={{ backgroundColor: '#FFFFFF' }}>
             {/* Customer Name */}
             <div>
               <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
@@ -515,11 +504,11 @@ export default function AddAppointmentModal({
           </div>
         </div>
 
-        {/* Footer with Buttons - Solid White Background */}
+        {/* Footer with Cancel Button */}
         <div 
           className="p-4 pt-3 border-t shrink-0"
           style={{ 
-            backgroundColor: '#FFFFFF',  // SOLID WHITE
+            backgroundColor: '#FFFFFF',
             borderTopColor: '#E5E7EB',
             borderBottomLeftRadius: '16px',
             borderBottomRightRadius: '16px'
@@ -529,11 +518,8 @@ export default function AddAppointmentModal({
             <button
               onClick={onClose}
               disabled={submitting}
-              className="flex-1 py-3 rounded-lg font-medium text-base transition-colors"
-              style={{ 
-                backgroundColor: '#F3F4F6',
-                color: '#374151'
-              }}
+              className="flex-1 py-3 rounded-lg font-medium text-base"
+              style={{ backgroundColor: '#F3F4F6', color: '#374151' }}
             >
               {t('common.cancel', 'Cancel')}
             </button>
@@ -541,11 +527,8 @@ export default function AddAppointmentModal({
             <button
               onClick={handleSubmit}
               disabled={submitting || !services || services.length === 0}
-              className="flex-1 py-3 rounded-lg font-medium text-base text-white transition-colors"
-              style={{ 
-                backgroundColor: '#2563EB',  // Blue-600
-                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-              }}
+              className="flex-1 py-3 rounded-lg font-medium text-base text-white"
+              style={{ backgroundColor: '#2563EB' }}
             >
               {submitting ? t('common.saving', 'Saving...') : t('calendar.book_appointment', 'Add Appointment')}
             </button>
