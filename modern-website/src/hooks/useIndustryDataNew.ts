@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { getNetworkStatus } from '@/lib/network-status';
 import { swManager } from '@/lib/serviceWorker';
 import { syncProcessor } from '@/lib/sync-processor';
+import { syncManager } from '@/lib/sync-manager';
 
 type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'appointments' | 'beehive' | 'targets';
 
@@ -257,8 +258,8 @@ export const useIndustryDataNew = ({
       );
 
       if (isOnline) {
-        // Trigger sync processor to immediately process the queued operation
-        syncProcessor.forceSync().catch(err => 
+        // Trigger sync manager to immediately process the queued operation
+        syncManager.requestSync('create-' + table).catch(err => 
           console.error('[useIndustryDataNew] Sync failed:', err)
         );
         await swManager.triggerSync();
@@ -361,7 +362,7 @@ export const useIndustryDataNew = ({
       
       if (isOnline) {
         // Trigger sync processor to immediately process the queued operation
-        syncProcessor.forceSync().catch(err => 
+        syncManager.requestSync('update-' + table).catch(err => 
           console.error('[useIndustryDataNew] Sync failed:', err)
         );
         await swManager.triggerSync();
@@ -418,8 +419,8 @@ export const useIndustryDataNew = ({
       );
       
       if (isOnline) {
-        // Trigger sync processor to immediately process the queued operation
-        syncProcessor.forceSync().catch(err => 
+        // Trigger sync manager to immediately process the queued operation
+        syncManager.requestSync('delete-' + table).catch(err => 
           console.error('[useIndustryDataNew] Sync failed:', err)
         );
         await swManager.triggerSync();

@@ -176,8 +176,8 @@ export default function ServicesPage() {
 
     const syncInterval = setInterval(async () => {
       try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
+        const { syncManager } = await import('@/lib/sync-manager');
+        await syncManager.requestSync('services-periodic');
         console.log('🔄 [ServicesPage] Periodic sync completed');
       } catch (error) {
         console.warn('⚠️ [ServicesPage] Periodic sync failed:', error);
@@ -338,14 +338,7 @@ export default function ServicesPage() {
       
       await addService(serviceData);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [ServicesPage] Forced sync to database after add');
-      } catch (syncError) {
-        console.warn('⚠️ [ServicesPage] Sync failed after add, but service saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       setShowAddModal(false);
       showSuccess(t('services.add_success', `Successfully added "${newService.service_name}"`));
@@ -376,14 +369,7 @@ export default function ServicesPage() {
       
       await addInventoryItem(itemData);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [ServicesPage] Forced sync to database after add inventory');
-      } catch (syncError) {
-        console.warn('⚠️ [ServicesPage] Sync failed after add inventory, but item saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       setShowAddInventoryModal(false);
       showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}"`));
@@ -397,14 +383,7 @@ export default function ServicesPage() {
     try {
       await updateService({ id: serviceId, data: updates });
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [ServicesPage] Forced sync to database after update service');
-      } catch (syncError) {
-        console.warn('⚠️ [ServicesPage] Sync failed after update service, but service saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       showSuccess(t('services.update_success', 'Service updated successfully'));
     } catch (error) {
@@ -422,14 +401,7 @@ export default function ServicesPage() {
     try {
       await deleteServiceFn(serviceId);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [ServicesPage] Forced sync to database after delete service');
-      } catch (syncError) {
-        console.warn('⚠️ [ServicesPage] Sync failed after delete service, but service removed locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       setShowServiceDetail(null);
       showSuccess(t('services.delete_success', 'Service deleted successfully'));

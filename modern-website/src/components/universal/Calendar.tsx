@@ -173,14 +173,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Add the appointment
       await addAppointment(appointmentData);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [Calendar] Forced sync to database after add appointment');
-      } catch (syncError) {
-        console.warn('⚠️ [Calendar] Sync failed after add appointment, but appointment saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -246,14 +239,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Only proceed if component is still mounted
       if (!isComponentMounted.current) return;
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [Calendar] Forced sync to database after update appointment');
-      } catch (syncError) {
-        console.warn('⚠️ [Calendar] Sync failed after update appointment, but appointment saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -325,14 +311,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
       // Only proceed if component is still mounted
       if (!isComponentMounted.current) return;
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [Calendar] Forced sync to database after cancel appointment');
-      } catch (syncError) {
-        console.warn('⚠️ [Calendar] Sync failed after cancel appointment, but appointment saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -363,14 +342,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
     try {
       await deleteAppointment(appointmentId);
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [Calendar] Forced sync to database after delete appointment');
-      } catch (syncError) {
-        console.warn('⚠️ [Calendar] Sync failed after delete appointment, but appointment removed locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
       
       // Invalidate appointments query to refresh the list
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -439,7 +411,7 @@ export default function Calendar({ industry, country }: CalendarProps) {
     return () => {
       isMounted = false;
     };
-  }, [appointments, persistentAppointments, addAppointment]);
+  }, [appointments, persistentAppointments]); // Removed addAppointment to prevent infinite loop
 
   // Periodic database sync to ensure data persistence
   useEffect(() => {
@@ -447,8 +419,8 @@ export default function Calendar({ industry, country }: CalendarProps) {
 
     const syncInterval = setInterval(async () => {
       try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
+        const { syncManager } = await import('@/lib/sync-manager');
+        await syncManager.requestSync('calendar-periodic');
         console.log('🔄 [Calendar] Periodic sync completed');
       } catch (error) {
         console.warn('⚠️ [Calendar] Periodic sync failed:', error);

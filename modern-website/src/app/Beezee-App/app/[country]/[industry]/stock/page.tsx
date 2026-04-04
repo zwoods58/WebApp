@@ -98,8 +98,8 @@ export default function StockPage() {
 
     const syncInterval = setInterval(async () => {
       try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
+        const { syncManager } = await import('@/lib/sync-manager');
+        await syncManager.requestSync('stock-periodic');
         console.log('🔄 [StockPage] Periodic sync completed');
       } catch (error) {
         console.warn('⚠️ [StockPage] Periodic sync failed:', error);
@@ -278,14 +278,7 @@ export default function StockPage() {
         updateInventory({ id: selectedItem.id, data: updates });
       }
       
-      // Force immediate sync to database
-      try {
-        const { syncProcessor } = await import('@/lib/sync-processor');
-        await syncProcessor.forceSync();
-        console.log('✅ [StockPage] Forced sync to database after update');
-      } catch (syncError) {
-        console.warn('⚠️ [StockPage] Sync failed after update, but item saved locally:', syncError);
-      }
+      // Automatic sync will be handled by useIndustryDataNew hook
 
       setShowEditModal(false);
       setSelectedItem(null);
