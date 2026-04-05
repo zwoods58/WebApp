@@ -317,9 +317,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
           // Fallback reload with minimal delay (100ms instead of 500ms)
           setTimeout(() => {
             console.log('[Layout] ⚡ Fallback reload after 100ms...');
-            if (!window.location.reload()) {
-              window.location.href = window.location.href;
-            }
+            window.location.reload();
           }, 100); // 5x faster!
         } else {
           console.log('[Layout] ⚡ No waiting worker, reloading immediately...');
