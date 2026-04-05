@@ -103,18 +103,18 @@ const nextConfig: NextConfig = {
   
   async rewrites() {
     return [
-      // Serve PWA static files from public directory
+      // Redirect ALL legacy static builds to unified PWA (eliminates separate desktop/tablet version)
       {
         source: '/kenya/app/:path*',
-        destination: '/kenya/app/:path*',
-      },
-      {
-        source: '/south-africa/app/:path*',
-        destination: '/south-africa/app/:path*',
+        destination: '/Beezee-App/app/ke/:path*'
       },
       {
         source: '/nigeria/app/:path*',
-        destination: '/nigeria/app/:path*',
+        destination: '/Beezee-App/app/ng/:path*'
+      },
+      {
+        source: '/south-africa/app/:path*',
+        destination: '/Beezee-App/app/za/:path*'
       },
       // Ensure service worker is accessible from all paths
       {

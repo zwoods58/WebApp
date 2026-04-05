@@ -7,15 +7,15 @@
   "rewrites": [
     {
       "source": "/kenya/app/:path*",
-      "destination": "/kenya/app/:path*"
+      "destination": "/Beezee-App/app/ke/:path*"
     },
     {
-      "source": "/south-africa/app/:path*", 
-      "destination": "/south-africa/app/:path*"
+      "source": "/nigeria/app/:path*", 
+      "destination": "/Beezee-App/app/ng/:path*"
     },
     {
-      "source": "/nigeria/app/:path*",
-      "destination": "/nigeria/app/:path*"
+      "source": "/south-africa/app/:path*",
+      "destination": "/Beezee-App/app/za/:path*"
     }
   ],
   "headers": [
