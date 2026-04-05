@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  basePath: '/Beezee-App',
-  assetPrefix: '/Beezee-App',
+  // basePath: '/Beezee-App',
+  // assetPrefix: '/Beezee-App',
   turbopack: {
     root: __dirname,
   },

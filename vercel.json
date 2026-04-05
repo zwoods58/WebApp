@@ -7,6 +7,10 @@
   "framework": "nextjs",
   "rewrites": [
     {
+      "source": "/Beezee-App/:path*",
+      "destination": "/:path*"
+    },
+    {
       "source": "/kenya/app/:path*",
       "destination": "/Beezee-App/app/ke/:path*"
     },
