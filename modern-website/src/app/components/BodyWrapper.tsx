@@ -22,12 +22,22 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
   useEffect(() => {
     setIsClient(true);
     
-    // Register service worker only on BeeZee app pages
+    // Only register service worker on BeeZee app pages
     const isAppPath = pathname?.startsWith('/Beezee-App/');
+    
     if ('serviceWorker' in navigator && isAppPath) {
-      swManager.register().catch(err => {
-        console.warn('[App] Service worker registration warning:', err);
+      console.log('[App] Registering service worker for BeeZee app');
+      swManager.register().then(success => {
+        if (success) {
+          console.log('[App] ✅ Service worker registered successfully');
+        } else {
+          console.warn('[App] ⚠️ Service worker registration failed');
+        }
+      }).catch(err => {
+        console.error('[App] ❌ Service worker registration error:', err);
       });
+    } else if (!isAppPath) {
+      console.log('[App] Skipping SW registration - not on BeeZee app path');
     }
   }, [pathname]);
 

@@ -29,7 +29,8 @@ export class ServiceWorkerManager {
     
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/Beezee-App/'
+        scope: '/',
+        updateViaCache: 'none'
       });
       
       console.log('[SW] ✅ Registered with scope:', this.registration.scope);
@@ -49,17 +50,28 @@ export class ServiceWorkerManager {
         });
       }
       
-      // Handle updates
+      // Enhanced update detection
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration!.installing;
+        console.log('[SW] Update found! New worker installing...');
+        
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
+            console.log('[SW] New worker state:', newWorker.state);
+            
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[SW] ✅ New version ready to activate');
               this.notifyUpdateAvailable();
             }
           });
         }
       });
+      
+      // Also check immediately if update is already waiting
+      if (this.registration.waiting && navigator.serviceWorker.controller) {
+        console.log('[SW] Update already waiting on registration');
+        this.notifyUpdateAvailable();
+      }
       
       return true;
     } catch (error: unknown) {
@@ -92,8 +104,13 @@ export class ServiceWorkerManager {
   }
   
   private notifyUpdateAvailable(): void {
-    // Dispatch event for UI
-    window.dispatchEvent(new CustomEvent('sw-update-available'));
+    console.log('[SW] Dispatching update available event');
+    window.dispatchEvent(new CustomEvent('sw-update-available', {
+      detail: { 
+        timestamp: Date.now(),
+        version: 'v105'
+      }
+    }));
   }
   
   getState(): string | null {

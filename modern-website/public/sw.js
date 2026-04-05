@@ -3,7 +3,7 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v104';
+const CACHE_VERSION = 'v105';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -74,11 +74,24 @@ self.addEventListener('offline', () => {
   console.log('[SW] 📴 Gone offline - switching to cache-only mode');
 });
 
-// Listen for messages from main thread (connection manager)
+// Listen for messages from main thread
 self.addEventListener('message', (event) => {
+  console.log('[SW] Received message:', event.data);
+  
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] SKIP_WAITING requested - activating new version');
+    self.skipWaiting();
+  }
+  
   if (event.data && event.data.type === 'OFFLINE_STATUS') {
     isOffline = event.data.isOffline;
     console.log('[SW] 📊 Offline status updated from main thread:', isOffline ? 'OFFLINE' : 'ONLINE');
+  }
+  
+  if (event.data && event.data.type === 'CACHE_USER_ROUTES') {
+    userCountry = event.data.country;
+    userIndustry = event.data.industry;
+    console.log('[SW] User routes updated:', { userCountry, userIndustry });
   }
 });
 

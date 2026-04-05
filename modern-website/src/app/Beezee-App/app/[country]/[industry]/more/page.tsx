@@ -63,45 +63,31 @@ export default function MorePage() {
     setUpdateStatus('checking');
     
     try {
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-          await registration.update();
-          
-          // Check if there's a waiting worker
-          if (registration.waiting) {
-            setUpdateStatus('available');
-            // Trigger the enhanced update system
-            window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK', {
-              detail: { source: 'more-page' }
-            }));
-          } else {
-            // Also check Vercel API for immediate detection
-            try {
-              const response = await fetch('/api/version-check');
-              const data = await response.json();
-              
-              const currentVersion = localStorage.getItem('app-version');
-              if (data.version !== currentVersion) {
-                setUpdateStatus('available');
-                // Trigger update notification
-                window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK', {
-                  detail: { source: 'more-page-api', version: data.version }
-                }));
-              } else {
-                setUpdateStatus('none');
-                setTimeout(() => setUpdateStatus('idle'), 3000);
-              }
-            } catch (apiError) {
-              console.log('API check failed, using service worker result');
-              setUpdateStatus('none');
-              setTimeout(() => setUpdateStatus('idle'), 3000);
-            }
-          }
-        }
+      // Dispatch event to trigger layout-client.tsx update check
+      window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK'));
+      
+      // Wait a moment for the check to complete
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check if update was found
+      const registration = await navigator.serviceWorker.getRegistration();
+      const hasWaitingWorker = registration?.waiting != null;
+      
+      // Also check API
+      const response = await fetch('/api/version-check');
+      const data = await response.json();
+      const currentVersion = localStorage.getItem('app-version') || 'v104';
+      const hasApiUpdate = data.version !== currentVersion;
+      
+      if (hasWaitingWorker || hasApiUpdate) {
+        setUpdateStatus('available');
+        console.log('[More] ✅ Update available!');
+      } else {
+        setUpdateStatus('none');
+        console.log('[More] ✅ App is up to date');
       }
     } catch (error) {
-      console.error('Update check failed:', error);
+      console.error('[More] Update check failed:', error);
       setUpdateStatus('idle');
     } finally {
       setIsCheckingUpdate(false);

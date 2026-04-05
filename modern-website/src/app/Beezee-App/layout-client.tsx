@@ -97,238 +97,140 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     };
   }, [])
 
-  // ✅ Enhanced Update Detection (Service Worker + Vercel API)
+  // ✅ UNIFIED Update Detection System (Service Worker + API)
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      
-      // Detect when a new service worker is waiting
-      navigator.serviceWorker.ready.then((registration) => {
-        // Check if there's already a waiting worker on mount
-        if (registration.waiting && navigator.serviceWorker.controller && !hasShownUpdate) {
-          console.log('[Layout] Update already waiting on mount');
-          setHasShownUpdate(true);
-          setUpdateAvailable(true);
-          setNewVersion('v32');
-          setUpdateShownForVersion('v32');
-        }
-        
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller && !hasShownUpdate) {
-                // New version is waiting - only show once
-                console.log('[Layout] New version waiting to activate');
-                setHasShownUpdate(true);
-                const versionId = `v32-${Date.now()}`;
-                setUpdateAvailable(true);
-                setNewVersion('v32');
-                setUpdateShownForVersion(versionId);
-              }
-            });
-          }
-        });
-      });
-      
-      // Enhanced: Check for updates frequently (30 seconds instead of 2 hours)
-      const updateInterval = setInterval(async () => {
-        if (!hasShownUpdate) {
-          // 1. Service worker update check
-          navigator.serviceWorker.getRegistration().then(reg => {
-            if (reg) {
-              console.log('[Layout] 🔍 Periodic service worker update check...');
-              reg.update();
-            }
-          });
-          
-          // 2. Vercel API version check for immediate detection
-          try {
-            console.log('[Layout] 🔍 Checking Vercel API for updates...');
-            const response = await fetch('/api/version-check');
-            const data = await response.json();
-            
-            const currentVersion = localStorage.getItem('app-version');
-            const apiVersion = data.version;
-            
-            if (apiVersion && apiVersion !== currentVersion) {
-              console.log('[Layout] � New version detected via Vercel API:', apiVersion);
-              setHasShownUpdate(true);
-              setUpdateAvailable(true);
-              setNewVersion(apiVersion);
-              setUpdateShownForVersion(apiVersion);
-              localStorage.setItem('app-version', apiVersion);
-            } else {
-              console.log('[Layout] ✅ Version up to date:', apiVersion);
-            }
-          } catch (error) {
-            console.log('[Layout] ⚠️ API check failed, using service worker only:', error);
-          }
-        }
-      }, 30000); // 30 seconds instead of 2 hours
-      
-      return () => clearInterval(updateInterval);
-    }
-  }, []);
-
-  // ✅ NEW: Handle manual update triggers from More page
-  useEffect(() => {
-    const handleManualUpdateCheck = (event: CustomEvent) => {
-      console.log('[Layout] Manual update check triggered:', event.detail);
-      
-      // Force immediate update check
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.update();
-          
-          // Check for waiting worker after update
-          setTimeout(() => {
-            if (registration.waiting && !updateShownForVersion) {
-              console.log('[Layout] Update found after manual check');
-              setUpdateAvailable(true);
-              setNewVersion(`manual-${Date.now()}`);
-              setUpdateShownForVersion(`manual-${Date.now()}`);
-            } else if (!registration.waiting) {
-              // Check Vercel API as fallback
-              fetch('/api/version-check')
-                .then(response => response.json())
-                .then(data => {
-                  const currentVersion = localStorage.getItem('app-version');
-                  if (data.version !== currentVersion) {
-                    setUpdateAvailable(true);
-                    setNewVersion(data.version);
-                    setUpdateShownForVersion(data.version);
-                    localStorage.setItem('app-version', data.version);
-                  }
-                })
-                .catch(error => {
-                  console.log('[Layout] Manual API check failed:', error);
-                });
-            }
-          }, 1000);
-        });
-      }
-    };
+    if (!('serviceWorker' in navigator)) return;
     
-    window.addEventListener('TRIGGER_UPDATE_CHECK', handleManualUpdateCheck as EventListener);
+    let updateCheckInterval: NodeJS.Timeout;
     
-    return () => {
-      window.removeEventListener('TRIGGER_UPDATE_CHECK', handleManualUpdateCheck as EventListener);
-    };
-  }, [updateShownForVersion]);
-
-  // ✅ NEW: Smart Update Triggers (3x faster detection)
-  useEffect(() => {
-    const checkForUpdates = async () => {
-      if (!hasShownUpdate) {
-        console.log('[Layout] 🚀 Smart trigger: checking for updates...');
-        
-        // 1. Service worker update check
-        navigator.serviceWorker.getRegistration().then(reg => {
-          if (reg) {
-            reg.update();
-          }
-        });
-        
-        // 2. Vercel API check for immediate detection
-        try {
-          const response = await fetch('/api/version-check');
-          const data = await response.json();
+    const checkForUpdate = async () => {
+      if (hasShownUpdate) return;
+      
+      try {
+        // 1. Check service worker for waiting update
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          await registration.update();
           
-          const currentVersion = localStorage.getItem('app-version');
-          const apiVersion = data.version;
-          
-          if (apiVersion && apiVersion !== currentVersion) {
-            console.log('[Layout] 🚀 Smart trigger: New version detected:', apiVersion);
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            console.log('[Layout] 🎉 Service worker update available');
             setUpdateAvailable(true);
-            setNewVersion(apiVersion);
-            setUpdateShownForVersion(apiVersion);
-            localStorage.setItem('app-version', apiVersion);
+            setNewVersion('v105');
+            setHasShownUpdate(true);
+            return;
           }
-        } catch (error) {
-          console.log('[Layout] Smart trigger: API check failed');
         }
+        
+        // 2. Fallback: Check API for version
+        const response = await fetch('/api/version-check');
+        const data = await response.json();
+        
+        const currentVersion = localStorage.getItem('app-version') || 'v104';
+        
+        if (data.version && data.version !== currentVersion) {
+          console.log('[Layout] 🎉 New version detected via API:', data.version);
+          setUpdateAvailable(true);
+          setNewVersion(data.version);
+          setHasShownUpdate(true);
+          localStorage.setItem('app-version', data.version);
+        }
+      } catch (error) {
+        console.error('[Layout] Update check failed:', error);
       }
     };
-
-    // 1. Check when app becomes visible (Page Visibility API)
+    
+    // Initial check
+    checkForUpdate();
+    
+    // Periodic check every 30 seconds
+    updateCheckInterval = setInterval(checkForUpdate, 30000);
+    
+    // Smart triggers
     const handleVisibilityChange = () => {
-      if (!document.hidden && !hasShownUpdate) {
-        console.log('[Layout] 👁️ App became visible, checking for updates...');
-        checkForUpdates();
-      }
+      if (!document.hidden) checkForUpdate();
     };
-
-    // 2. Check when network status changes
+    
     const handleOnline = () => {
-      console.log('[Layout] 🌐 App came online, checking for updates...');
-      checkForUpdates();
+      checkForUpdate();
     };
-
-    // 3. Debounced check on user interaction
-    let interactionTimeout: NodeJS.Timeout;
-    const handleUserInteraction = () => {
-      if (!hasShownUpdate) {
-        clearTimeout(interactionTimeout);
-        interactionTimeout = setTimeout(checkForUpdates, 2000); // 2 seconds after interaction
-      }
-    };
-
-    // Add event listeners
+    
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('online', handleOnline);
     
-    // User interaction events (debounced)
-    ['click', 'scroll', 'keydown'].forEach(event => {
-      window.addEventListener(event, handleUserInteraction, { passive: true });
-    });
-
     return () => {
+      clearInterval(updateCheckInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('online', handleOnline);
-      ['click', 'scroll', 'keydown'].forEach(event => {
-        window.removeEventListener(event, handleUserInteraction);
-      });
-      clearTimeout(interactionTimeout);
     };
-  }, [hasShownUpdate, updateShownForVersion]);
-  
-  // ✅ OPTIMIZED: Handle update reload (5x faster)
-  const handleUpdate = () => {
-    console.log('[Layout] 🚀 Update button clicked - starting fast update...');
-    
-    // Immediate visual feedback
-    setUpdating(true);
-    setUpdateStatus('activating');
-    
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        if (registration.waiting) {
-          console.log('[Layout] 📡 Sending SKIP_WAITING message...');
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+  }, [hasShownUpdate]);
+
+  // ✅ Handle manual update triggers from More page
+  useEffect(() => {
+    const handleManualCheck = async () => {
+      console.log('[Layout] Manual update check triggered');
+      setHasShownUpdate(false); // Allow banner to show again
+      
+      // Trigger immediate check
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          await registration.update();
           
-          // Listen for activation to reload immediately
-          const handleControllerChange = () => {
-            console.log('[Layout] ✅ Service worker activated, reloading immediately...');
-            window.location.reload();
-          };
-          
-          navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange, { once: true });
-          
-          // Fallback reload with minimal delay (100ms instead of 500ms)
-          setTimeout(() => {
-            console.log('[Layout] ⚡ Fallback reload after 100ms...');
-            window.location.reload();
-          }, 100); // 5x faster!
-        } else {
-          console.log('[Layout] ⚡ No waiting worker, reloading immediately...');
-          window.location.reload();
+          if (registration.waiting && navigator.serviceWorker.controller) {
+            setUpdateAvailable(true);
+            setNewVersion('v105');
+            setHasShownUpdate(true);
+            return;
+          }
         }
-      }).catch(error => {
-        console.error('[Layout] ❌ Service worker error:', error);
+        
+        // Fallback to API check
+        const response = await fetch('/api/version-check');
+        const data = await response.json();
+        const currentVersion = localStorage.getItem('app-version') || 'v104';
+        
+        if (data.version !== currentVersion) {
+          setUpdateAvailable(true);
+          setNewVersion(data.version);
+          setHasShownUpdate(true);
+          localStorage.setItem('app-version', data.version);
+        }
+      } catch (error) {
+        console.error('[Layout] Manual check failed:', error);
+      }
+    };
+    
+    window.addEventListener('TRIGGER_UPDATE_CHECK', handleManualCheck);
+    
+    return () => {
+      window.removeEventListener('TRIGGER_UPDATE_CHECK', handleManualCheck);
+    };
+  }, []);
+
+  // ✅ Handle update reload
+  const handleUpdate = async () => {
+    console.log('[Layout] User clicked Update Now');
+    
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      
+      if (registration?.waiting) {
+        // Tell waiting SW to skip waiting and activate
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        
+        // Listen for controller change
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('[Layout] New service worker activated, reloading...');
+          window.location.reload();
+        });
+      } else {
+        // No waiting worker, just reload to get new version
+        console.log('[Layout] No waiting worker, forcing reload...');
         window.location.reload();
-      });
-    } else {
-      console.log('[Layout] ⚡ No service worker, reloading immediately...');
+      }
+    } catch (error) {
+      console.error('[Layout] Update failed:', error);
+      // Force reload anyway
       window.location.reload();
     }
   };

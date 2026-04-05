@@ -2,21 +2,33 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Mobile PWA version 104 - triggers update cycle
-    const buildVersion = 'v104';
+    // Use Vercel deployment info for version tracking
+    const deploymentId = process.env.VERCEL_DEPLOYMENT_ID || 'local-dev';
+    const gitCommitSha = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown';
+    const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
     
-    // Check if we should force an update (can be set in Vercel environment variables)
-    const forceUpdate = process.env.FORCE_UPDATE === 'true';
+    // Create version string from deployment info
+    // Format: v{manifest-version}-{short-commit-sha}
+    const manifestVersion = '105';  // Increment this with each release
+    const shortCommitSha = gitCommitSha.substring(0, 7);
+    const version = `v${manifestVersion}-${shortCommitSha}`;
+    
+    console.log('[Version Check] Returning version:', {
+      version,
+      deploymentId,
+      environment,
+      timestamp: new Date().toISOString()
+    });
     
     return NextResponse.json({
-      version: buildVersion,
+      version,
+      manifestVersion,
+      deploymentId,
+      gitCommitSha,
+      environment,
       buildTime: new Date().toISOString(),
-      forceUpdate: true, // Force update for mobile PWA
-      deploymentId: process.env.VERCEL_DEPLOYMENT_ID || 'local',
-      environment: process.env.NODE_ENV || 'development',
-      mobileOnly: true // Indicate mobile-only strategy
+      forceUpdate: false,  // Can be set to true for critical updates
     }, {
-      // Prevent caching to ensure immediate version detection
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -26,7 +38,10 @@ export async function GET() {
   } catch (error) {
     console.error('[Version Check] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to get version info' },
+      { 
+        error: 'Failed to get version info',
+        version: 'v105-error'  // Fallback version
+      },
       { status: 500 }
     );
   }
