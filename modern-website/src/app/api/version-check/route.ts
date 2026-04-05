@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Generate a unique version ID based on build time
-    const buildVersion = process.env.BUILD_VERSION || `v${Date.now()}`;
+    // Mobile PWA version 104 - triggers update cycle
+    const buildVersion = 'v104';
     
     // Check if we should force an update (can be set in Vercel environment variables)
     const forceUpdate = process.env.FORCE_UPDATE === 'true';
@@ -11,9 +11,10 @@ export async function GET() {
     return NextResponse.json({
       version: buildVersion,
       buildTime: new Date().toISOString(),
-      forceUpdate,
+      forceUpdate: true, // Force update for mobile PWA
       deploymentId: process.env.VERCEL_DEPLOYMENT_ID || 'local',
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      mobileOnly: true // Indicate mobile-only strategy
     }, {
       // Prevent caching to ensure immediate version detection
       headers: {

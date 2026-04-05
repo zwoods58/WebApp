@@ -4,13 +4,13 @@
   "description": "Your Digital Black Book - Ultra-fast PWA with optimized loading, smart credit tracking, offline-first design, real-time sync, and instant updates for informal businesses",
   "start_url": "/Beezee-App/auth/signup",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "display_override": ["standalone"],
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
   "scope": "/Beezee-App/",
   "id": "/Beezee-App/",
-  "version": "103",
+  "version": "104",
   "icons": [
     {
       "src": "/beezee-icon-72x72.png",

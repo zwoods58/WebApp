@@ -1,98 +1,225 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Basic Meta Tags -->
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <!-- SEO Meta Tags -->
-    <title>BeeZee Finance Kenya - Financial Management for Informal Businesses</title>
-    <meta name="description" content="BeeZee Finance - Empowering Kenyan informal businesses with simple, powerful financial management tools. Track expenses, manage inventory, and grow your business." />
-    <meta name="keywords" content="Kenya finance, informal business, financial management, expense tracking, inventory management, small business Kenya, BeeZee, mobile finance, business tools Kenya" />
-    <meta name="author" content="BeeZee Finance" />
-    <meta name="publisher" content="AtarWebb" />
-    <meta name="copyright" content="© 2026 BeeZee Finance" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://atarwebb.com/kenya/app" />
-    
-    <!-- Mobile & PWA Meta Tags -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="BeeZee Kenya" />
-    <meta name="application-name" content="BeeZee Finance Kenya" />
-    <meta name="theme-color" content="#006600" />
-    <meta name="format-detection" content="telephone=no" />
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="BeeZee Finance" />
-    <meta property="og:title" content="BeeZee Finance Kenya - Financial Management for Informal Businesses" />
-    <meta property="og:description" content="Empowering Kenyan informal businesses with simple, powerful financial management tools. Track expenses, manage inventory, and grow your business." />
-    <meta property="og:url" content="https://atarwebb.com/kenya/app" />
-    <meta property="og:image" content="https://atarwebb.com/bezze.png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="BeeZee Finance Logo" />
-    <meta property="og:locale" content="en_KE" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BeeZee Finance Kenya - Financial Management for Informal Businesses" />
-    <meta name="twitter:description" content="Empowering Kenyan informal businesses with simple, powerful financial management tools." />
-    <meta name="twitter:image" content="https://atarwebb.com/bezze.png" />
-    <meta name="twitter:image:alt" content="BeeZee Finance Logo" />
-    
-    <!-- Favicons & Icons -->
-    <link rel="icon" type="image/png" href="/bezze.png" />
-    <link rel="shortcut icon" type="image/png" href="/bezze.png" />
-    <link rel="apple-touch-icon" href="/bezze.png" />
-    <link rel="apple-touch-icon-precomposed" href="/bezze.png" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/kenya/app/manifest.webmanifest" />
-    
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "BeeZee Finance Kenya",
-      "description": "Financial management for Kenyan informal businesses",
-      "url": "https://atarwebb.com/kenya/app",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "KES"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "AtarWebb",
-        "url": "https://atarwebb.com"
-      },
-      "inLanguage": "en-KE",
-      "countryOfOrigin": {
-        "@type": "Country",
-        "name": "Kenya"
+<head>
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  
+  <!-- SEO Meta Tags -->
+  <title>BeeZee Finance Kenya - Mobile App</title>
+  <meta name="description" content="BeeZee Finance Kenya - Mobile PWA for Kenyan informal businesses. Install our mobile app for expense tracking, inventory management, and business growth." />
+  <meta name="keywords" content="Kenya finance, mobile app, informal business, financial management, expense tracking, inventory management, small business Kenya, BeeZee, mobile finance" />
+  <meta name="author" content="BeeZee Finance" />
+  <meta name="publisher" content="AtarWebb" />
+  <meta name="copyright" content=" 2026 BeeZee Finance" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://atarwebb.com/kenya/app" />
+  
+  <!-- Mobile & PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="BeeZee Finance Kenya">
+  <meta name="theme-color" content="#006600">
+  
+  <!-- Mobile PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Mobile-specific styling -->
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8f9fa;
+      line-height: 1.6;
+    }
+    .mobile-container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .logo {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .title {
+      color: #006600;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    .install-button {
+      background: #006600;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 20px;
+      transition: background 0.3s ease;
+    }
+    .install-button:hover {
+      background: #005200;
+    }
+    .install-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .features {
+      text-align: left;
+      margin-top: 30px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .feature-icon {
+      margin-right: 15px;
+      font-size: 20px;
+    }
+    .desktop-message {
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #ffeaa7;
+      display: none;
+    }
+    .desktop-message h3 {
+      color: #856404;
+      margin-top: 0;
+    }
+    .web-link {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .web-link a {
+      color: #006600;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .web-link a:hover {
+      text-decoration: underline;
+    }
+    @media (min-width: 768px) {
+      .mobile-container {
+        margin: 50px auto;
+      }
+      .desktop-message {
+        display: block;
       }
     }
-    </script>
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <div class="desktop-message">
+      <h3> Mobile App Only</h3>
+      <p>This app is designed specifically for mobile devices. Please use your phone to install and use the BeeZee Finance Kenya mobile app for the best experience.</p>
+    </div>
     
-    <!-- Build Assets -->
-    <script type="module" crossorigin src="/kenya/app/assets/index-tTyA2sUF.js"></script>
-    <link rel="stylesheet" crossorigin href="/kenya/app/assets/index-BD8QUZU-.css">
-    <script id="vite-plugin-pwa:register-sw" src="/kenya/app/registerSW.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <div class="logo"></div>
+    <h1 class="title">BeeZee Finance Kenya</h1>
+    <p class="subtitle">Financial management for Kenyan informal businesses</p>
+    
+    <button class="install-button" onclick="installMobileApp()" id="installBtn">
+      Install Mobile App
+    </button>
+    
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon"></span>
+        <span>Track expenses & income</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"></span>
+        <span>Manage inventory</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"></span>
+        <span>Calendar integration</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"></span>
+        <span>Business reports</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon"></span>
+        <span>Auto-updates</span>
+      </div>
+    </div>
+    
+    <div class="web-link">
+      <p>Using tablet or desktop?</p>
+      <a href="/Beezee-App/auth/signup">Try our web version</a>
+    </div>
+  </div>
+
+  <script>
+    // Mobile PWA installation
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('Mobile PWA install prompt ready');
+    });
+
+    function installMobileApp() {
+      const installBtn = document.getElementById('installBtn');
+      installBtn.disabled = true;
+      installBtn.textContent = 'Installing...';
+      
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Mobile PWA installed successfully');
+            installBtn.textContent = 'Installed!';
+            installBtn.style.background = '#28a745';
+          } else {
+            console.log('Mobile PWA installation dismissed');
+            installBtn.textContent = 'Install Mobile App';
+            installBtn.disabled = false;
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // Fallback: redirect to mobile PWA
+        console.log('No install prompt, redirecting to mobile app');
+        window.location.href = '/Beezee-App/auth/signup';
+      }
+    }
+
+    // Register mobile service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('Mobile SW registered:', registration);
+      }).catch(error => {
+        console.log('Mobile SW registration failed:', error);
+      });
+    }
+
+    // Check if on mobile device
+    if (window.innerWidth >= 768) {
+      console.log('Desktop/tablet detected - showing web-only message');
+    }
+  </script>
+</body>
 </html>
-
-

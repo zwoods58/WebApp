@@ -29,9 +29,9 @@ export function UpdateNotification() {
       }
     };
 
-    // Check immediately and every 30 seconds
+    // More frequent mobile polling: every 10 seconds
     checkForUpdates();
-    const interval = setInterval(checkForUpdates, 30000);
+    const interval = setInterval(checkForUpdates, 10000); // 10 seconds for mobile
 
     // Listen for new service workers
     navigator.serviceWorker.ready.then(registration => {

@@ -15,24 +15,24 @@
       "dest": "/modern-website/Beezee-App/$1"
     },
     {
-      "src": "/kenya/app/(.*)",
-      "dest": "/modern-website/Beezee-App/app/ke/$1"
-    },
-    {
-      "src": "/nigeria/app/(.*)",
-      "dest": "/modern-website/Beezee-App/app/ng/$1"
-    },
-    {
-      "src": "/south-africa/app/(.*)",
-      "dest": "/modern-website/Beezee-App/app/za/$1"
-    },
-    {
       "src": "/sw.js",
       "dest": "/modern-website/sw.js"
     },
     {
       "src": "/manifest.json",
       "dest": "/modern-website/manifest.json"
+    },
+    {
+      "src": "/kenya/app/(.*)",
+      "dest": "/modern-website/kenya/app/$1"
+    },
+    {
+      "src": "/nigeria/app/(.*)",
+      "dest": "/modern-website/nigeria/app/$1"
+    },
+    {
+      "src": "/south-africa/app/(.*)",
+      "dest": "/modern-website/south-africa/app/$1"
     }
   ],
   "headers": [
