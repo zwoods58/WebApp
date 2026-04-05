@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
     tsconfigPath: './tsconfig.json',
   },
   
+  // Add trailing slash for consistency
+  trailingSlash: true,
+  
   // Enhanced service worker and PWA support
   async headers() {
     return [
@@ -139,9 +142,6 @@ const nextConfig: NextConfig = {
   
   // Ensure proper handling of service worker scope
   generateEtags: false,
-  
-  // Static optimization for better offline performance
-  trailingSlash: false,
   
   // Configure image optimization
   images: {

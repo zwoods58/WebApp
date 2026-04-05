@@ -12,11 +12,10 @@ import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
-import { usePersistentStorage } from '@/hooks/usePersistentStorage';
-import { useDataManager } from '@/hooks/useDataManager';
-import SyncStatusComponent from '@/components/universal/SyncStatus';
+import BottomNav from '@/components/universal/BottomNav';
 
 export default function StockPage() {
+  // ✅ STEP 1: Basic hooks (always called) - LIKE OTHER PAGES
   const params = useParams();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
@@ -24,91 +23,34 @@ export default function StockPage() {
   const queryClient = useQueryClient();
   
   const { business, loading: businessLoading } = useUnifiedAuth();
-  
-  // Data manager for centralized data operations
-  const dataManager = useDataManager({
-    businessId: business?.id || '',
-    industry,
-    country
-  });
+  const businessId = business?.id;
 
-  // Persistent storage backup for inventory
-  const [persistentInventory, setPersistentInventory] = usePersistentStorage<any[]>(
-    `inventory_${business?.id || 'default'}`, 
-    []
-  );
-  
+  // ✅ STEP 2: Toast hook (always called) - LIKE OTHER PAGES
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
+
+  // ✅ STEP 3: Simple data hook (always called) - LIKE OTHER PAGES
   const inventoryHook = useInventoryTanStack({ 
-    businessId: business?.id,
+    businessId,
     industry,
     country
   });
   
-  // TanStack Query handles online/offline automatically
-  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  // ✅ STEP 4: Safe data extraction with fallbacks - LIKE OTHER PAGES
+  const inventory = inventoryHook?.data || [];
+  const isLoading = inventoryHook?.isLoading || false;
+  const isOffline = inventoryHook?.isOffline || false;
+  const addInventory = inventoryHook?.addInventory || (() => Promise.resolve());
+  const updateInventory = inventoryHook?.updateInventory || (() => Promise.resolve());
+  const deleteInventory = inventoryHook?.deleteInventory || (() => Promise.resolve());
   
-  console.log('🔧 [StockPage] inventoryHook methods:', {
-    hasUpdateInventory: typeof inventoryHook.updateInventory === 'function',
-    hasUpdateInventoryAsync: typeof inventoryHook.updateInventoryAsync === 'function',
-    hasAddInventory: typeof inventoryHook.addInventory === 'function',
-    hasAddInventoryAsync: typeof inventoryHook.addInventoryAsync === 'function',
-    allKeys: Object.keys(inventoryHook)
-  });
-  
-  const { 
-    data: inventory, 
-    isLoading, 
-    addInventory: addInventoryItem, 
-    addInventoryAsync,
-    updateInventory, 
-    updateInventoryAsync, 
-    deleteInventory, 
-    isOffline 
-  } = inventoryHook;
-  
+  // ✅ STEP 5: Transactions hook (always called) - LIKE OTHER PAGES
   const transactionsHook = useTransactionsTanStack({ 
     industry,
-    businessId: business?.id 
+    businessId 
   });
-  
-  const { addTransaction, addTransactionAsync } = transactionsHook;
-  
-  // Sync localStorage with IndexedDB data
-  useEffect(() => {
-    if (inventory && inventory.length > 0) {
-      setPersistentInventory(inventory);
-    }
-  }, [inventory, setPersistentInventory]);
-  
-  // Fallback to localStorage if IndexedDB is empty
-  useEffect(() => {
-    if (!inventory || inventory.length === 0) {
-      if (persistentInventory && persistentInventory.length > 0) {
-        // Restore from localStorage to IndexedDB
-        persistentInventory.forEach(item => {
-          addInventoryAsync(item).catch(console.error);
-        });
-      }
-    }
-  }, [inventory, persistentInventory, addInventoryAsync]);
+  const addTransaction = transactionsHook?.addTransaction || (() => Promise.resolve());
 
-  // Periodic database sync to ensure data persistence
-  useEffect(() => {
-    if (!business?.id) return;
-
-    const syncInterval = setInterval(async () => {
-      try {
-        const { syncManager } = await import('@/lib/sync-manager');
-        await syncManager.requestSync('stock-periodic');
-        console.log('🔄 [StockPage] Periodic sync completed');
-      } catch (error) {
-        console.warn('⚠️ [StockPage] Periodic sync failed:', error);
-      }
-    }, 30000); // Sync every 30 seconds
-
-    return () => clearInterval(syncInterval);
-  }, [business?.id]);
-  
+  // ✅ STEP 6: Simple state management - LIKE OTHER PAGES
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -130,27 +72,26 @@ export default function StockPage() {
     return matchesSearch && matchesCategory;
   });
 
+  // ✅ STEP 7: Simple operations with error handling - LIKE OTHER PAGES
   const handleAddItem = async (newItem: any) => {
     try {
-      if (!business?.id) {
+      if (!businessId) {
         console.error('No business ID found');
+        showError('Please set up your business profile first');
         return;
       }
       
       const itemData = {
         ...newItem,
-        business_id: business.id,
+        business_id: businessId,
         industry,
         last_ordered: new Date().toISOString().split('T')[0]
       };
       
-      console.log('🔧 [StockPage] Adding item with data manager:', itemData);
+      console.log('🔧 [StockPage] Adding item:', itemData);
       
-      // Use data manager for centralized data operations
-      const itemId = await dataManager.create('inventory', itemData, 'high');
-      
-      // Also update TanStack Query cache for immediate UI update
-      addInventoryItem({ ...itemData, id: itemId });
+      // ✅ SIMPLE: Use basic hook like other pages
+      await addInventory(itemData);
       
       setShowAddModal(false);
       showSuccess(t('inventory.add_success', `Successfully added "${newItem.item_name}" to inventory`));
@@ -161,7 +102,7 @@ export default function StockPage() {
   };
 
   const handleSellItem = (item: any) => {
-    if (!business?.id) {
+    if (!businessId) {
       showWarning(t('business.setup_required', 'Please set up your business profile first before selling items.'));
       return;
     }
@@ -183,7 +124,7 @@ export default function StockPage() {
     
     try {
       console.log('🔍 Deleting item with ID:', item.id, 'Type:', typeof item.id);
-      console.log('🔍 Business ID:', business?.id, 'Industry:', industry, 'Country:', country);
+      console.log('🔍 Business ID:', businessId, 'Industry:', industry, 'Country:', country);
       
       const isValidUUID = (id: string) => {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -194,45 +135,29 @@ export default function StockPage() {
         showWarning(t('inventory.delete_offline_item', 'This item was created offline and will be removed from your local view.'));
         console.log(`🗑️ Removing offline item: ${item.item_name}`);
         
-        // Fix: Also remove from IndexedDB for offline items
-        try {
-          // Import and use the database to delete offline item
-          const { db } = await import('@/lib/database');
-          await db.inventory.delete(item.id);
-          console.log(`✅ Offline item removed from IndexedDB: ${item.id}`);
-        } catch (error) {
-          console.error('❌ Failed to remove offline item from IndexedDB:', error);
-        }
-        
-        // Fix: Use correct query key format to match useIndustryDataNew hook
-        const queryKey = ['inventory', industry, country, business?.id];
-        console.log('🔍 Query key for offline removal:', queryKey);
-        
+        // ✅ SIMPLE: Remove from cache for offline items - LIKE OTHER PAGES
+        const queryKey = ['inventory', industry, country, businessId];
         const currentData = (queryClient.getQueryData(queryKey) as any[]) || [];
-        console.log('🔍 Current data length:', currentData.length);
-        
-        const updatedData = (currentData as any[]).filter(i => i.id !== item.id);
-        console.log('🔍 Updated data length:', updatedData.length);
-        
+        const updatedData = currentData.filter(i => i.id !== item.id);
         queryClient.setQueryData(queryKey, updatedData);
         
         setIsDeleting(false);
         return;
       }
       
-      console.log('🔍 Calling data manager delete with ID:', item.id);
+      console.log('🔍 Calling delete with ID:', item.id);
       
-      // Use data manager for centralized data operations
-      await dataManager.delete('inventory', item.id, 'high');
+      // ✅ SIMPLE: Use basic hook like other pages
+      await deleteInventory(item.id);
       
-      // Also update TanStack Query cache for immediate UI update
-      const queryKey = ['inventory', industry, country, business?.id];
+      // ✅ SIMPLE: Update cache immediately - LIKE OTHER PAGES
+      const queryKey = ['inventory', industry, country, businessId];
       const currentData = (queryClient.getQueryData(queryKey) as any[]) || [];
       const updatedData = currentData.filter(i => i.id !== item.id);
       queryClient.setQueryData(queryKey, updatedData);
       
       showSuccess(t('inventory.delete_success', `Successfully deleted "${item.item_name}"`));
-      console.log(`✅ Item deleted via data manager: ${item.item_name}`);
+      console.log(`✅ Item deleted: ${item.item_name}`);
       
     } catch (error: any) {
       console.error('Failed to delete item:', error);
@@ -240,7 +165,7 @@ export default function StockPage() {
         message: error.message,
         stack: error.stack,
         itemId: item.id,
-        businessId: business?.id
+        businessId
       });
       showError(t('inventory.delete_error', 'Failed to delete item. Please try again.'));
     } finally {
@@ -248,9 +173,8 @@ export default function StockPage() {
     }
   };
 
-  
   const handleEditSubmit = async (editData: any) => {
-    if (!selectedItem || !business?.id) return;
+    if (!selectedItem || !businessId) return;
     
     try {
       const updates: any = {
@@ -271,15 +195,9 @@ export default function StockPage() {
 
       console.log('🔧 [StockPage] Updating item:', { id: selectedItem.id, updates });
       
-      // Use updateInventoryAsync for better async handling
-      if (updateInventoryAsync) {
-        await updateInventoryAsync({ id: selectedItem.id, data: updates });
-      } else {
-        updateInventory({ id: selectedItem.id, data: updates });
-      }
+      // ✅ SIMPLE: Use basic hook like other pages
+      await updateInventory({ id: selectedItem.id, data: updates });
       
-      // Automatic sync will be handled by useIndustryDataNew hook
-
       setShowEditModal(false);
       setSelectedItem(null);
       showSuccess(t('inventory.edit_success', `Successfully updated "${selectedItem.item_name}"`));
@@ -290,7 +208,7 @@ export default function StockPage() {
   };
 
   const handleSellSubmit = async (sellData: any) => {
-    if (!selectedItem || !business?.id) return;
+    if (!selectedItem || !businessId) return;
     
     try {
       const quantity = parseInt(sellData.quantity);
@@ -303,11 +221,10 @@ export default function StockPage() {
       console.log('  - Current Quantity:', selectedItem.quantity);
       console.log('  - Quantity to Sell:', quantity);
       console.log('  - New Quantity:', newQuantity);
-      console.log('  - updateInventoryAsync exists?', typeof updateInventoryAsync);
       
       // Create transaction data
       const transactionData = {
-        business_id: business.id,
+        business_id: businessId,
         industry,
         amount: totalPrice,
         currency: getCurrency(country),
@@ -325,25 +242,14 @@ export default function StockPage() {
 
       console.log('🔧 [StockPage] Adding transaction:', transactionData);
       
-      // Add transaction first
-      if (addTransactionAsync) {
-        await addTransactionAsync(transactionData);
-      } else {
-        await addTransaction(transactionData);
-      }
+      // ✅ SIMPLE: Add transaction using basic hook - LIKE OTHER PAGES
+      await addTransaction(transactionData);
       console.log('✅ [StockPage] Transaction recorded');
       
-      // Then update inventory quantity
+      // ✅ SIMPLE: Update inventory quantity using basic hook - LIKE OTHER PAGES
       console.log('🔧 [StockPage] Updating inventory quantity to:', newQuantity);
-      
-      if (updateInventoryAsync) {
-        const result = await updateInventoryAsync({ id: selectedItem.id, data: { quantity: newQuantity } });
-        console.log('✅ [StockPage] Inventory updated via updateInventoryAsync:', result);
-      } else {
-        console.warn('⚠️ [StockPage] updateInventoryAsync is undefined, using updateInventory');
-        updateInventory({ id: selectedItem.id, data: { quantity: newQuantity } });
-        console.log('✅ [StockPage] Inventory updated via updateInventory');
-      }
+      await updateInventory({ id: selectedItem.id, data: { quantity: newQuantity } });
+      console.log('✅ [StockPage] Inventory updated');
 
       setShowSellModal(false);
       setSelectedItem(null);
@@ -369,14 +275,6 @@ export default function StockPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header industry={industry} country={country} />
 
-      <div className="p-4 max-w-md mx-auto">
-        <SyncStatusComponent 
-          syncStatus={dataManager.syncStatus} 
-          onForceSync={() => dataManager.forceSync().catch(console.error)}
-          compact={true}
-        />
-      </div>
-
       <div className="flex-1 p-4 max-w-md mx-auto">
         {isOffline && (
           <div className="bg-red-500 text-white px-4 py-2 text-center text-sm mb-4 rounded">
@@ -384,196 +282,223 @@ export default function StockPage() {
           </div>
         )}
 
-    {/* Summary Cards */}
-    <div className="grid grid-cols-3 gap-3 mb-6 mt-8">
-      <div className="bg-white p-3 rounded-xl border border-gray-200">
-        <div className="text-sm text-gray-500 mb-1">{t('inventory.total_items', 'Total Items')}</div>
-        <div className="text-xl font-bold text-gray-900">{inventory.length}</div>
-      </div>
-      
-      <div className="bg-white p-3 rounded-xl border border-gray-200">
-        <div className="text-sm text-gray-500 mb-1">{t('inventory.total_qty', 'Total Qty')}</div>
-        <div className="text-xl font-bold text-gray-900">{totalItems}</div>
-      </div>
-      
-      <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
-        <div className="text-sm text-orange-700 mb-1">{t('inventory.low_stock', 'Low Stock')}</div>
-        <div className="text-xl font-bold text-orange-600">{lowStockItems.length}</div>
-      </div>
-    </div>
-
-    {/* Total Value */}
-    <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-6 mt-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-sm text-blue-700 mb-1">{t('inventory.total_stock_value', 'Total Stock Value')}</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {formatCurrency(totalValue, country)}
+        {!businessId ? (
+          <div className="text-center py-8">
+            <Package className="mx-auto mb-4 text-gray-400" size={48} />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Business Setup Required
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Please complete your business profile before accessing inventory.
+            </p>
+            <Link 
+              href="/Beezee-App/app/ke/retail/more"
+              className="inline-block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Go to Settings
+            </Link>
           </div>
-        </div>
-        <Package className="text-blue-500" size={32} />
-      </div>
-    </div>
-
-    {/* Add Item Button */}
-    <div className="mb-4 mt-6">
-      <button
-        onClick={() => setShowAddModal(true)}
-        className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
-      >
-        <Plus size={20} />
-        {t('inventory.add_new_item', 'Add New Item')}
-      </button>
-    </div>
-
-    {/* Search and Filter */}
-    <div className="mb-4 space-y-3 mt-4">
-      <div className="relative">
-        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder={t('inventory.search_items', 'Search items...')}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-      </div>
-
-      <div className="flex gap-2 overflow-x-auto">
-        {categories.map((category: string) => (
-          <button
-            key={category}
-            onClick={() => setFilterCategory(category)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              filterCategory === category
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-700 border border-gray-200'
-            }`}
-          >
-            {category === 'all' ? t('common.all', 'All') : category}
-          </button>
-        ))}
-      </div>
-    </div>
-
-    {/* Low Stock Alerts */}
-    {lowStockItems.length > 0 && (
-      <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-4">
-        <h3 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
-          <AlertTriangle size={20} />
-          {t('inventory.running_low', 'Running Low')}
-        </h3>
-        <div className="space-y-2">
-          {lowStockItems.map((item: any) => (
-            <div key={item.id} className="flex justify-between items-center">
-              <div>
-                <span className="font-medium text-gray-900">{item.item_name}</span>
-                <span className="text-sm text-gray-500 ml-2">({item.unit})</span>
+        ) : isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span className="ml-2 text-gray-600">Loading inventory...</span>
+          </div>
+        ) : (
+          <>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-3 gap-3 mb-6 mt-8">
+              <div className="bg-white p-3 rounded-xl border border-gray-200">
+                <div className="text-sm text-gray-500 mb-1">{t('inventory.total_items', 'Total Items')}</div>
+                <div className="text-xl font-bold text-gray-900">{inventory.length}</div>
               </div>
-              <span className="font-bold text-red-600">{item.quantity} {t('inventory.left', 'left')}</span>
+              
+              <div className="bg-white p-3 rounded-xl border border-gray-200">
+                <div className="text-sm text-gray-500 mb-1">{t('inventory.total_qty', 'Total Qty')}</div>
+                <div className="text-xl font-bold text-gray-900">{totalItems}</div>
+              </div>
+              
+              <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
+                <div className="text-sm text-orange-700 mb-1">{t('inventory.low_stock', 'Low Stock')}</div>
+                <div className="text-xl font-bold text-orange-600">{lowStockItems.length}</div>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    )}
 
-    {/* All Inventory */}
-    <div className="bg-white rounded-xl p-4 border border-gray-200">
-      <h3 className="font-semibold text-gray-900 mb-3">{t('common.all', 'All')} {t('inventory.items', 'Items')}</h3>
-      
-      {filteredInventory.length === 0 ? (
-        <div className="text-center py-8">
-          <div className="text-gray-400 mb-2">
-            <Package size={48} className="mx-auto" />
-          </div>
-          <p className="text-gray-600">{t('services.no_inventory_found', 'No items found')}</p>
-          <p className="text-sm text-gray-500 mt-1">{t('repairs.try_adjusting', 'Try adjusting your search or filters')}</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredInventory.map((item: any, index: number) => {
-            const stockStatus = getStockStatus(item);
-            const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
-            
-            return (
-              <div
-                key={item.id}
-                className={`p-3 rounded-lg border ${
-                  item.threshold !== undefined && item.quantity <= item.threshold 
-                    ? 'bg-orange-50 border-orange-200' 
-                    : 'bg-gray-50 border-gray-100'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{item.item_name}</div>
-                    <div className="text-sm text-gray-500">
-                      {item.category || 'uncategorized'} • {item.unit} • {formatCurrency(item.cost_price || 0, country)} → {formatCurrency(item.selling_price || 0, country)}
-                    </div>
-                  </div>
-                  
-                  <div className="text-right">
-                    <div className={`font-bold ${
-                      item.threshold !== undefined && item.quantity <= item.threshold ? 'text-red-600' : 'text-gray-900'
-                    }`}>
-                      {item.quantity} {item.unit}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {t('inventory.min', 'Min:')} {item.threshold ?? 0}
-                    </div>
-                    
-                    <div className="flex gap-1 mt-1">
-                      <button
-                        onClick={() => handleEditItem(item)}
-                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                        title="Edit item"
-                      >
-                        <Edit size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleSellItem(item)}
-                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        disabled={item.quantity === 0 || !business?.id}
-                        title={!business?.id ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
-                      >
-                        <DollarSign size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteItem(item)}
-                        disabled={isDeleting}
-                        className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Delete item"
-                      >
-                        {isDeleting ? (
-                          <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Trash2 size={14} />
-                        )}
-                      </button>
-                    </div>
+            {/* Total Value */}
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-6 mt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-blue-700 mb-1">{t('inventory.total_stock_value', 'Total Stock Value')}</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {formatCurrency(totalValue, country)}
                   </div>
                 </div>
-
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-300 ${stockStatus.barColor}`}
-                    style={{ width: `${Math.min(stockPercentage, 100)}%` }}
-                  />
-                </div>
-
-                {item.threshold !== undefined && item.quantity <= item.threshold && (
-                  <div className="mt-2 text-xs text-orange-600 font-medium flex items-center gap-1">
-                    <TrendingDown size={12} />
-                    {t('services.running_low', 'Stock running low - reorder soon')}
-                  </div>
-                )}
+                <Package className="text-blue-500" size={32} />
               </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  </div>
+            </div>
+
+            {/* Add Item Button */}
+            <div className="mb-4 mt-6">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus size={20} />
+                {t('inventory.add_new_item', 'Add New Item')}
+              </button>
+            </div>
+
+            {/* Search and Filter */}
+            <div className="mb-4 space-y-3 mt-4">
+              <div className="relative">
+                <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder={t('inventory.search_items', 'Search items...')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex gap-2 overflow-x-auto">
+                {categories.map((category: string) => (
+                  <button
+                    key={category}
+                    onClick={() => setFilterCategory(category)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                      filterCategory === category
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700 border border-gray-200'
+                    }`}
+                  >
+                    {category === 'all' ? t('common.all', 'All') : category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Low Stock Alerts */}
+            {lowStockItems.length > 0 && (
+              <div className="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-4">
+                <h3 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                  <AlertTriangle size={20} />
+                  {t('inventory.running_low', 'Running Low')}
+                </h3>
+                <div className="space-y-2">
+                  {lowStockItems.map((item: any) => (
+                    <div key={item.id} className="flex justify-between items-center">
+                      <div>
+                        <span className="font-medium text-gray-900">{item.item_name}</span>
+                        <span className="text-sm text-gray-500 ml-2">({item.unit})</span>
+                      </div>
+                      <span className="font-bold text-red-600">{item.quantity} {t('inventory.left', 'left')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* All Inventory */}
+            <div className="bg-white rounded-xl p-4 border border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-3">{t('common.all', 'All')} {t('inventory.items', 'Items')}</h3>
+              
+              {filteredInventory.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">
+                    <Package size={48} className="mx-auto" />
+                  </div>
+                  <p className="text-gray-600">{t('services.no_inventory_found', 'No items found')}</p>
+                  <p className="text-sm text-gray-500 mt-1">{t('repairs.try_adjusting', 'Try adjusting your search or filters')}</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredInventory.map((item: any, index: number) => {
+                    const stockStatus = getStockStatus(item);
+                    const stockPercentage = item.threshold ? (item.quantity / (item.threshold * 2)) * 100 : 100;
+                    
+                    return (
+                      <div
+                        key={item.id}
+                        className={`p-3 rounded-lg border ${
+                          item.threshold !== undefined && item.quantity <= item.threshold 
+                            ? 'bg-orange-50 border-orange-200' 
+                            : 'bg-gray-50 border-gray-100'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900">{item.item_name}</div>
+                            <div className="text-sm text-gray-500">
+                              {item.category || 'uncategorized'} • {item.unit} • {formatCurrency(item.cost_price || 0, country)} → {formatCurrency(item.selling_price || 0, country)}
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <div className={`font-bold ${
+                              item.threshold !== undefined && item.quantity <= item.threshold ? 'text-red-600' : 'text-gray-900'
+                            }`}>
+                              {item.quantity} {item.unit}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {t('inventory.min', 'Min:')} {item.threshold ?? 0}
+                            </div>
+                            
+                            <div className="flex gap-1 mt-1">
+                              <button
+                                onClick={() => handleEditItem(item)}
+                                className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                                title="Edit item"
+                              >
+                                <Edit size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleSellItem(item)}
+                                className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                disabled={item.quantity === 0 || !businessId}
+                                title={!businessId ? 'Please set up your business profile first' : item.quantity === 0 ? 'Out of stock' : 'Sell item'}
+                              >
+                                <DollarSign size={14} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteItem(item)}
+                                disabled={isDeleting}
+                                className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Delete item"
+                              >
+                                {isDeleting ? (
+                                  <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <Trash2 size={14} />
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-300 ${stockStatus.barColor}`}
+                            style={{ width: `${Math.min(stockPercentage, 100)}%` }}
+                          />
+                        </div>
+
+                        {item.threshold !== undefined && item.quantity <= item.threshold && (
+                          <div className="mt-2 text-xs text-orange-600 font-medium flex items-center gap-1">
+                            <TrendingDown size={12} />
+                            {t('services.running_low', 'Stock running low - reorder soon')}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      <BottomNav industry={industry} country={country} />
 
       {/* Add Item Modal */}
       {showAddModal && (
@@ -622,8 +547,7 @@ export default function StockPage() {
           </div>
         </div>
       )}
-      
-          </div>
+    </div>
   );
 }
 

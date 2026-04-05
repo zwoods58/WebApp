@@ -1,26 +1,38 @@
 {
-  "rootDirectory": "modern-website",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/Beezee-App/:path*",
-      "destination": "/:path*"
+      "src": "modern-website/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
     },
     {
-      "source": "/kenya/app/:path*",
-      "destination": "/Beezee-App/app/ke/:path*"
+      "src": "/Beezee-App/(.*)",
+      "dest": "/modern-website/Beezee-App/$1"
     },
     {
-      "source": "/nigeria/app/:path*", 
-      "destination": "/Beezee-App/app/ng/:path*"
+      "src": "/kenya/app/(.*)",
+      "dest": "/modern-website/Beezee-App/app/ke/$1"
     },
     {
-      "source": "/south-africa/app/:path*",
-      "destination": "/Beezee-App/app/za/:path*"
+      "src": "/nigeria/app/(.*)",
+      "dest": "/modern-website/Beezee-App/app/ng/$1"
+    },
+    {
+      "src": "/south-africa/app/(.*)",
+      "dest": "/modern-website/Beezee-App/app/za/$1"
+    },
+    {
+      "src": "/sw.js",
+      "dest": "/modern-website/sw.js"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/modern-website/manifest.json"
     }
   ],
   "headers": [
