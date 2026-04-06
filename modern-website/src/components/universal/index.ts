@@ -6,7 +6,6 @@ export { default as InventoryList } from './InventoryList';
 export { default as BottomNav } from './BottomNav';
 export { default as Header } from './Header';
 export { default as HomepageCalendar } from './HomepageCalendar';
-export { default as AddAppointmentModal } from './AddAppointmentModal';
 export { default as UniversalLanguageSelector } from './UniversalLanguageSelector';
 export { PullToRefresh } from './PullToRefresh';
 export { SwipeableItem } from './SwipeableItem';

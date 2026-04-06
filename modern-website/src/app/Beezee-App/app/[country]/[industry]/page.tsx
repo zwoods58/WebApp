@@ -40,7 +40,6 @@ import {
 
 // Dynamic imports for modal components to reduce initial bundle size
 const BuzzInsights = dynamic(() => import('@/components/universal/BuzzInsights'), { ssr: false });
-const AddAppointmentModal = dynamic(() => import('@/components/universal/AddAppointmentModal'), { ssr: false });
 const EditServiceModal = dynamic(() => import('@/components/universal/EditServiceModal'), { ssr: false });
 const AddCustomerModal = dynamic(() => import('@/components/universal/AddCustomerModal'), { ssr: false });
 const AddInventoryForm = dynamic(() => import('@/components/universal/AddInventoryForm'), { ssr: false });
@@ -212,7 +211,6 @@ export default function IndustryDashboard() {
   
   // State management - must be before any early returns
   const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
-  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   
@@ -534,7 +532,8 @@ export default function IndustryDashboard() {
 
   // Modal handlers for homepage quick actions
   const handleAddAppointment = () => {
-    setShowAppointmentModal(true);
+    // Navigate to appointments page instead of showing modal
+    router.push(`/Beezee-App/app/${country}/${industry}/appointments`);
   };
 
   const handleAddService = () => {
@@ -551,13 +550,6 @@ export default function IndustryDashboard() {
     // This would integrate with the services system
     console.log('Updating service:', serviceId, updates);
     showSuccess('Service updated successfully!');
-  };
-
-  const handleAppointmentSuccess = () => {
-    setShowAppointmentModal(false);
-    // Invalidate appointments query to update both homepage and calendar
-    queryClient.invalidateQueries({ queryKey: ['appointments', industry, country, businessId] });
-    showSuccess('Appointment scheduled successfully!');
   };
 
   const todayProfit = (todayStats?.sales || 0) - (todayStats?.expenses || 0);
@@ -741,15 +733,6 @@ export default function IndustryDashboard() {
           />
         )}
 
-        {showAppointmentModal && (
-          <AddAppointmentModal
-            isOpen={showAppointmentModal}
-            onClose={() => setShowAppointmentModal(false)}
-            onSuccess={handleAppointmentSuccess}
-            industry={industry}
-            country={country}
-          />
-        )}
 
         {showServiceModal && (
           <EditServiceModal
