@@ -21,7 +21,7 @@ import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 // Supabase hooks
 import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
-import { useServices, useCalendarTanStack } from '@/hooks';
+import { useServices, useAppointmentsTanStack } from '@/hooks';
 
 // Universal Components - use dynamic imports for heavy components
 import { 
@@ -100,7 +100,7 @@ export default function IndustryDashboard() {
   const targetsHook = useTargetsTanStack({ industry, businessId });
   
   // Additional hooks for appointments and services
-  const appointmentsHook = useCalendarTanStack({ industry, businessId });
+  const appointmentsHook = useAppointmentsTanStack({ businessId: business?.id, industry });
   const servicesHook = useServices({ industry, businessId });
   
   // Safely extract values with fallbacks - add extra defensive checks
@@ -689,7 +689,7 @@ export default function IndustryDashboard() {
               industry={industry}
               country={country}
               appointments={appointments}
-              onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/calendar`}
+              onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
               onScheduleAppointment={handleAddAppointment}
             />
           )}

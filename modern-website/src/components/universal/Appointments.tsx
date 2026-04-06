@@ -175,9 +175,9 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
       
       // Automatic sync will be handled by useIndustryDataNew hook
       
-      // Invalidate calendar query to refresh the list
-      await queryClient.invalidateQueries({ queryKey: ['calendar', business?.id] });
-      await queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
       
       // Create a transaction for the appointment booking to show in recent activities
       if (servicePrice && servicePrice > 0) {
@@ -241,9 +241,9 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
       
       // Automatic sync will be handled by useIndustryDataNew hook
       
-      // Invalidate calendar query to refresh the list
-      await queryClient.invalidateQueries({ queryKey: ['calendar', business?.id] });
-      await queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      // Invalidate appointments query to refresh the list
+      await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
+      await queryClient.invalidateQueries({ queryKey: ['appointments'] });
       
       // Create transaction for payment if price exists
       if (appointment.metadata?.price && appointment.metadata.price > 0) {
@@ -277,13 +277,13 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
       
       // Only show success if component is still mounted
       if (isComponentMounted.current) {
-        showSuccess(t('calendar.complete_success', 'Appointment completed successfully'));
+        showSuccess(t('appointments.complete_success', 'Appointment completed successfully'));
       }
     } catch (error) {
       console.error('Error completing appointment:', error);
       // Only show error if component is still mounted
       if (isComponentMounted.current) {
-        showError(t('calendar.complete_error', 'Failed to complete appointment. Please try again.'));
+        showError(t('appointments.complete_error', 'Failed to complete appointment. Please try again.'));
       }
     } finally {
       // Only clear loading state if component is still mounted
@@ -304,6 +304,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
         data: { 
           status: 'cancelled',
           updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+          updated_by: business?.id,
           notes: reason ? `Cancelled: ${reason}` : undefined
         }
       });
@@ -340,7 +341,15 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
   const handleDeleteAppointment = async (appointmentId: string) => {
     setLoadingCalendarAppointmentId(appointmentId);
     try {
-      await deleteAppointment(appointmentId);
+      // Use soft delete with audit fields
+      await updateAppointment({ 
+        id: appointmentId, 
+        data: { 
+          deleted_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+          deleted_by: business?.id,
+          updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z'
+        }
+      });
       
       // Automatic sync will be handled by useIndustryDataNew hook
       
@@ -421,9 +430,9 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
       try {
         const { syncManager } = await import('@/lib/sync-manager');
         await syncManager.requestSync('appointments-periodic');
-        console.log('🔄 [Calendar] Periodic sync completed');
+        console.log('🔄 [Appointments] Periodic sync completed');
       } catch (error) {
-        console.warn('⚠️ [Calendar] Periodic sync failed:', error);
+        console.warn('⚠️ [Appointments] Periodic sync failed:', error);
       }
     }, 30000); // Sync every 30 seconds
 
@@ -565,7 +574,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
                 }}
                 className="mt-2 text-xs text-blue-600 hover:text-blue-800"
               >
-                + {t('calendar.add_appointment_short', 'Add appointment')}
+                + {t('appointments.add_appointment_short', 'Add appointment')}
               </button>
             </div>
           )}
@@ -586,7 +595,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading calendar...</p>
+          <p className="text-gray-600">Loading appointments...</p>
         </div>
       </div>
     );
@@ -600,7 +609,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
         {/* Header - Mobile Responsive */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('calendar.title', 'Calendar')}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('appointments.title', 'Appointments')}</h1>
             <button
               onClick={navigateToToday}
               className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto"
@@ -632,7 +641,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Plus size={16} />
-              {t('calendar.add_appointment', 'Add Appointment')}
+              {t('appointments.add_appointment', 'Add Appointment')}
             </button>
           </div>
         </div>
@@ -648,9 +657,9 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
                 className="px-3 py-2 border border-gray-300 rounded-lg w-full sm:w-auto"
               >
                 <option value="all">{t('common.all', 'All')}</option>
-                <option value="scheduled">{t('calendar.scheduled', 'Scheduled')}</option>
-                <option value="completed">{t('calendar.completed', 'Completed')}</option>
-                <option value="cancelled">{t('calendar.cancelled', 'Cancelled')}</option>
+                <option value="scheduled">{t('appointments.scheduled', 'Scheduled')}</option>
+                <option value="completed">{t('appointments.completed', 'Completed')}</option>
+                <option value="cancelled">{t('appointments.cancelled', 'Cancelled')}</option>
               </select>
             </div>
           </div>
@@ -659,7 +668,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
             <Search size={16} />
             <input
               type="text"
-              placeholder={t('calendar.search_placeholder', 'Search appointments...')}
+              placeholder={t('appointments.search_placeholder', 'Search appointments...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg w-full sm:w-auto"

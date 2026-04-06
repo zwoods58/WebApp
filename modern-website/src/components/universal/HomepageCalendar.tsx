@@ -13,8 +13,25 @@ type Appointment = {
   customer_name?: string;
   service_name?: string;
   appointment_time: string;
+  start_time?: string;
+  end_time?: string;
   appointment_date: string;
   status?: string;
+};
+
+// Format time range for display (HH:MM:SS -> HH:MM AM/PM)
+const formatTimeRange = (appointment: Appointment): string => {
+  if (appointment.start_time && appointment.end_time) {
+    const formatTime = (time: string) => {
+      const [hour, minute] = time.split(':');
+      const hourNum = parseInt(hour);
+      const hour12 = hourNum % 12 || 12;
+      const ampm = hourNum < 12 ? 'AM' : 'PM';
+      return `${hour12}:${minute} ${ampm}`;
+    };
+    return `${formatTime(appointment.start_time)} - ${formatTime(appointment.end_time)}`;
+  }
+  return appointment.appointment_time;
 };
 
 interface HomepageCalendarProps {
@@ -91,13 +108,13 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
             <CalendarIcon className="text-[var(--powder-dark)]" size={20} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="font-bold text-[var(--text-1)]">{t('calendar.upcoming_appointments', 'Upcoming Appointments')}</h3>
-            <p className="text-sm text-[var(--text-3)]">{t('calendar.manage_schedule', 'Manage your schedule')}</p>
+            <h3 className="font-bold text-[var(--text-1)]">{t('appointments.upcoming_appointments', 'Upcoming Appointments')}</h3>
+            <p className="text-sm text-[var(--text-3)]">{t('appointments.manage_schedule', 'Manage your schedule')}</p>
           </div>
         </div>
         
         <Link 
-          href={`/Beezee-App/app/${country}/${industry}/calendar`}
+          href={`/Beezee-App/app/${country}/${industry}/appointments`}
           className="flex items-center gap-1 text-[var(--powder-dark)] font-medium text-sm hover:bg-[var(--powder)]/10 px-3 py-1.5 rounded-lg transition-colors"
         >
           {t('common.view_all', 'View All')}
@@ -124,7 +141,7 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-medium text-[var(--powder-dark)] bg-[var(--powder)]/15 px-2 py-1 rounded-lg">
-                      {appointment.appointment_time}
+                      {formatTimeRange(appointment)}
                     </span>
                     <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-500/20 text-blue-500">
                       Scheduled
@@ -208,21 +225,21 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
             <CalendarIcon className="text-[var(--text-3)]" size={24} />
           </div>
           <div className="text-[var(--text-1)] font-medium mb-1">
-            {t('calendar.no_appointments', 'No appointments yet')}
+            {t('appointments.no_appointments', 'No appointments yet')}
           </div>
           <div className="text-sm text-[var(--text-3)]">
-            {t('calendar.book_first', 'Book your first appointment to get started')}
+            {t('appointments.book_first', 'Book your first appointment to get started')}
           </div>
         </div>
       )}
 
       {/* Quick Action */}
       <Link 
-        href={`/Beezee-App/app/${country}/${industry}/calendar`}
+        href={`/Beezee-App/app/${country}/${industry}/appointments`}
         className="w-full mt-4 py-3 bg-[var(--powder-dark)] text-white rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[var(--powder)] transition-colors"
       >
         <CalendarIcon size={18} />
-        {t('calendar.manage_appointments', 'Manage Appointments')}
+        {t('appointments.manage_appointments', 'Manage Appointments')}
       </Link>
     </div>
   );

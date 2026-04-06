@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import Calendar from '@/components/universal/Calendar';
+import Appointments from '@/components/universal/Appointments';
 
 export default function CalendarPage() {
   const params = useParams();
@@ -10,5 +10,5 @@ export default function CalendarPage() {
   const industry = (params.industry as string) || 'retail';
 
   // Remove industry restrictions to allow offline access for all industries
-  return <Calendar industry={industry} country={country} />;
+  return <Appointments industry={industry} country={country} />;
 }

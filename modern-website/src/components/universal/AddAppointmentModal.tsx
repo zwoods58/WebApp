@@ -23,6 +23,7 @@ interface AddAppointmentModalProps {
 
 interface FormData {
   customerName: string;
+  customerContact: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -58,6 +59,7 @@ export default function AddAppointmentModal({
 
   const [formData, setFormData] = useState<FormData>({
     customerName: '',
+    customerContact: '',
     date: '',
     startTime: '09:00',
     endTime: '10:00',
@@ -140,11 +142,11 @@ export default function AddAppointmentModal({
     const newErrors: FormErrors = {};
     
     if (!formData.customerName.trim()) {
-      newErrors.customerName = t('calendar.error.customer_name', 'Customer name is required');
+      newErrors.customerName = t('appointments.error.customer_name', 'Customer name is required');
     }
     
     if (!formData.date) {
-      newErrors.date = t('calendar.error.date_required', 'Date is required');
+      newErrors.date = t('appointments.error.date_required', 'Date is required');
     }
     
     if (!formData.startTime) {
@@ -201,18 +203,24 @@ export default function AddAppointmentModal({
 
       const appointmentData = {
         customer_name: formData.customerName,
+        customer_contact: formData.customerContact || undefined,
         appointment_date: formData.date,
-        appointment_time: startTimeDisplay, // Use correct field name: appointment_time
-        duration: calculateDuration(formData.startTime, formData.endTime), // Calculate duration in minutes
+        appointment_time: startTimeDisplay, // Legacy field for backward compatibility
+        start_time: `${formData.startTime}:00`, // HH:MM:SS format
+        end_time: `${formData.endTime}:00`, // HH:MM:SS format
+        duration: calculateDuration(formData.startTime, formData.endTime),
         service_id: formData.serviceId,
         service_name: selectedService?.service_name || '',
-        status: 'pending',  // ✅ CRITICAL: Add status field so appointments appear in bottom list
+        status: 'pending' as const,
         notes: formData.notes || '',
         business_id: business.id,
         industry,
         country,
         created_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
         updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        created_by: business.id,
+        updated_by: business.id,
+        metadata: { price: servicePrice },
         id: isClient() ? crypto.randomUUID() : getStableId('appointment')
       };
       
@@ -248,6 +256,7 @@ export default function AddAppointmentModal({
       
       setFormData({
         customerName: '',
+        customerContact: '',
         date: initialDate || '',
         startTime: '09:00',
         endTime: '10:00',
@@ -359,6 +368,26 @@ export default function AddAppointmentModal({
                   {errors.customerName}
                 </p>
               )}
+            </div>
+
+            {/* Customer Contact */}
+            <div>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: '#374151' }}>
+                {t('calendar.customer_contact', 'Customer Contact')}
+              </label>
+              <input
+                type="tel"
+                value={formData.customerContact}
+                onChange={(e) => setFormData(prev => ({ ...prev, customerContact: e.target.value }))}
+                className="w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+                style={{ 
+                  fontSize: '16px',
+                  borderColor: '#D1D5DB',
+                  backgroundColor: '#FFFFFF',
+                  color: '#111827'
+                }}
+                placeholder={t('calendar.customer_contact_placeholder', 'Phone number (optional)')}
+              />
             </div>
 
             {/* Date */}

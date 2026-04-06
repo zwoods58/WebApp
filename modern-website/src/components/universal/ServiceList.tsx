@@ -147,7 +147,7 @@ export default function ServiceList({
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
             <Icon className="text-gray-400" size={24} />
           </div>
-          <p className="text-gray-500 text-sm">{t('calendar.no_services')}</p>
+          <p className="text-gray-500 text-sm">{t('services.no_services')}</p>
           <p className="text-gray-400 text-xs">{t('services.add_first')}</p>
         </div>
       )}

@@ -4,8 +4,8 @@
  */
 
 // Dynamic version that will be fetched from API
-let CACHE_VERSION = 'v108';
-let CURRENT_VERSION = 'v108';
+let CACHE_VERSION = 'v109';
+let CURRENT_VERSION = 'v109';
 
 // Helper function to get current version from API
 async function getCurrentVersion() {
@@ -15,7 +15,7 @@ async function getCurrentVersion() {
     return data.version || 'v108';
   } catch (error) {
     console.warn('[SW] Failed to fetch current version, using fallback:', error);
-    return 'v108';
+    return 'v109';
   }
 }
 
@@ -579,7 +579,7 @@ async function cacheUserRoutes(country, industry) {
     `/Beezee-App/app/${country}/${industry}/services`,  // Services
     `/Beezee-App/app/${country}/${industry}/stock`,     // Stock/inventory
     `/Beezee-App/app/${country}/${industry}/beehive`,   // Beehive
-    `/Beezee-App/app/${country}/${industry}/calendar`,  // Calendar
+    `/Beezee-App/app/${country}/${industry}/appointments`,  // Appointments
     `/Beezee-App/app/${country}/${industry}/reports`,   // Reports
     `/Beezee-App/app/${country}/${industry}/more`,      // More page
     `/Beezee-App/app/${country}/${industry}/settings`,  // Settings
@@ -740,7 +740,7 @@ async function cacheAllDiscoveredChunks() {
     
     // Also try to cache any chunks that might be dynamically loaded
     const dynamicChunks = [
-      '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_calendar_page_tsx_*.js',
+      '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_appointments_page_tsx_*.js',
       '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_services_page_tsx_*.js',
       '/_next/static/chunks/src_app_Beezee-App_app_[country]_[industry]_credit_page_tsx_*.js',
       '/_next/static/chunks/src_893ea067._.js',
@@ -833,7 +833,7 @@ function isUserRoute(pathname) {
           pathname.includes('/services') ||
           pathname.includes('/stock') ||
           pathname.includes('/beehive') ||
-          pathname.includes('/calendar') ||
+          pathname.includes('/appointments') ||
           pathname.includes('/reports') ||
           pathname.includes('/more') ||
           pathname.includes('/settings') ||

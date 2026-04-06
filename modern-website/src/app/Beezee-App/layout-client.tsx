@@ -108,7 +108,6 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       `${basePath}/credit`,
       `${basePath}/services`,
       `${basePath}/stock`,
-      `${basePath}/calendar`,
       `${basePath}/more`,
       `${basePath}/settings`,
       `${basePath}/reports`,

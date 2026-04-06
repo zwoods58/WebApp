@@ -5,7 +5,6 @@ export { default as CreditList } from './CreditList';
 export { default as InventoryList } from './InventoryList';
 export { default as BottomNav } from './BottomNav';
 export { default as Header } from './Header';
-export { default as Calendar } from './Calendar';
 export { default as HomepageCalendar } from './HomepageCalendar';
 export { default as AddAppointmentModal } from './AddAppointmentModal';
 export { default as UniversalLanguageSelector } from './UniversalLanguageSelector';

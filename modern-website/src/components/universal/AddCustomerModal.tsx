@@ -77,7 +77,7 @@ export default function AddCustomerModal({ isOpen, onClose, onAddCustomer, count
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('calendar.customer_name')} *
+                  {t('appointments.customer_name')} *
                 </label>
                 <input
                   type="text"
@@ -85,20 +85,20 @@ export default function AddCustomerModal({ isOpen, onClose, onAddCustomer, count
                   value={formData.customer_name}
                   onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('calendar.customer_name')}
+                  placeholder={t('appointments.customer_name')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('calendar.customer_contact')}
+                  {t('appointments.customer_contact')}
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t('calendar.customer_contact')}
+                  placeholder={t('appointments.customer_contact')}
                 />
               </div>
 

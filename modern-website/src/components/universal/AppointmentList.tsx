@@ -6,6 +6,21 @@ import { useLanguage } from '@/hooks/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useAppointmentsTanStack } from '@/hooks';
 
+// Format time range for display (HH:MM:SS -> HH:MM AM/PM)
+const formatTimeRange = (appointment: any): string => {
+  if (appointment.start_time && appointment.end_time) {
+    const formatTime = (time: string) => {
+      const [hour, minute] = time.split(':');
+      const hourNum = parseInt(hour);
+      const hour12 = hourNum % 12 || 12;
+      const ampm = hourNum < 12 ? 'AM' : 'PM';
+      return `${hour12}:${minute} ${ampm}`;
+    };
+    return `${formatTime(appointment.start_time)} - ${formatTime(appointment.end_time)}`;
+  }
+  return appointment.appointment_time || 'All day';
+};
+
 interface AppointmentListProps {
   industry: string;
   country: string;
@@ -85,7 +100,7 @@ export default function AppointmentList({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('calendar.appointments')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('appointments.appointments')}</h3>
           <p className="text-sm text-gray-500">{t('appointments.today_count', `${todayAppointments.length} today`)}</p>
         </div>
         <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -109,7 +124,7 @@ export default function AppointmentList({
                       {appointment.customer_name || appointment.title || t('appointments.untitled', 'Appointment')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {appointment.service_name || 'Service'} • {appointment.appointment_time || 'All day'}
+                      {appointment.service_name || 'Service'} • {formatTimeRange(appointment)}
                     </p>
                   </div>
                 </div>
@@ -155,7 +170,7 @@ export default function AppointmentList({
                       {appointment.customer_name || appointment.title || t('appointments.untitled', 'Appointment')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {new Date(appointment.appointment_date || appointment.date).toLocaleDateString()} • {appointment.appointment_time || 'All day'}
+                      {new Date(appointment.appointment_date || appointment.date).toLocaleDateString()} • {formatTimeRange(appointment)}
                     </p>
                   </div>
                 </div>
@@ -192,7 +207,7 @@ export default function AppointmentList({
             <Calendar className="text-gray-400" size={24} />
           </div>
           <p className="text-gray-500 text-sm">{t('appointments.no_appointments', 'No upcoming appointments')}</p>
-          <p className="text-gray-400 text-xs">{t('calendar.schedule_first', 'Schedule your first appointment')}</p>
+          <p className="text-gray-400 text-xs">{t('appointments.schedule_first', 'Schedule your first appointment')}</p>
         </div>
       )}
 
@@ -202,14 +217,14 @@ export default function AppointmentList({
           onClick={onManageAppointments}
           className="flex-1 py-2 px-3 text-blue-600 font-medium text-sm hover:bg-blue-50 rounded-lg transition-colors"
         >
-          {t('calendar.manage_appointments')}
+          {t('appointments.manage_appointments')}
         </button>
         <button
           onClick={onScheduleAppointment}
           className="flex-1 py-2 px-3 bg-purple-500 text-white font-medium text-sm hover:bg-purple-600 rounded-lg transition-colors flex items-center justify-center gap-1"
         >
           <Plus size={16} />
-          {t('calendar.add_appointment')}
+          {t('appointments.add_appointment')}
         </button>
       </div>
 

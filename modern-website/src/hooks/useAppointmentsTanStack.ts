@@ -1,21 +1,39 @@
 import { useIndustryDataNew } from './useIndustryDataNew'
 
 export interface Appointment {
+  // Primary fields
   id: string;
   business_id: string;
   industry: string;
+  
+  // Customer info
   customer_name: string;
   customer_contact?: string;
+  
+  // Service reference
+  service_id?: string;
   service_name?: string;
+  
+  // Timing
   appointment_date: string;
-  appointment_time: string;
-  duration: number; // in minutes
+  appointment_time: string; // Legacy, keep for compatibility
+  start_time?: string;
+  end_time?: string;
+  duration: number;
+  
+  // Status & tracking
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
   notes?: string;
   reminder_sent?: boolean;
   metadata?: Record<string, any>;
+  
+  // Audit trail
   created_at: string;
   updated_at: string;
+  deleted_at?: string;
+  created_by?: string;
+  updated_by?: string;
+  deleted_by?: string;
 }
 
 export interface UseAppointmentsOptions {
@@ -58,6 +76,9 @@ export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
 
   // Filter data based on options (basic implementation)
   let filteredData = data || []
+  
+  // Filter out soft-deleted appointments
+  filteredData = filteredData.filter((a: any) => !a.deleted_at)
   
   if (options.status) {
     filteredData = filteredData.filter((a: any) => a.status === options.status)

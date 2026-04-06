@@ -80,23 +80,41 @@ export interface StoredService {
 }
 
 export interface StoredAppointment {
+  // Primary fields
   id: string;
   business_id: string;
   industry: string;
+  
+  // Customer info
   customer_name: string;
   customer_contact?: string;
+  
+  // Service reference
+  service_id?: string;
   service_name?: string;
+  
+  // Timing
   appointment_date: string;
   appointment_time: string;
   start_time?: string;
   end_time?: string;
   duration: number;
+  
+  // Status & tracking
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
   notes?: string;
   reminder_sent?: boolean;
   metadata?: Record<string, any>;
+  
+  // Audit trail
   created_at: string;
   updated_at: string;
+  deleted_at?: string;
+  created_by?: string;
+  updated_by?: string;
+  deleted_by?: string;
+  
+  // Sync metadata
   syncStatus: 'synced' | 'pending' | 'conflict';
   _deleted?: boolean;
   _deletedAt?: number;
@@ -129,7 +147,7 @@ export class BeezeeDatabase extends Dexie {
   sync_metadata!: Table<any, string>;
 
   constructor() {
-    super('beezee_offline_db_v5');
+    super('beezee_offline_db_v6');
     
     // Version 1
     this.version(1).stores({
@@ -239,7 +257,7 @@ export class BeezeeDatabase extends Dexie {
       }
     });
 
-    // ✅ Version 5: Add calendar table for appointments with exact frontend interface match
+    // ✅ Version 5: Add appointments table with exact frontend interface match
     this.version(5).stores({
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
@@ -286,6 +304,32 @@ export class BeezeeDatabase extends Dexie {
       } catch (error) {
         console.warn('⚠️ Failed to migrate calendar to appointments:', error);
       }
+    });
+
+    // ✅ Version 8: Clean schema - calendar fully removed
+    this.version(8).stores({
+      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      inventory: 'id, business_id, item_name, category, syncStatus',
+      credit: 'id, business_id, customer_name, status, syncStatus',
+      expenses: 'id, business_id, expense_date, category, syncStatus',
+      targets: 'id, business_id, target_type, syncStatus',
+      services: 'id, business_id, service_name, syncStatus',
+      appointments: 'id, business_id, appointment_date, status, syncStatus',
+      operations_queue: 'id, type, table, status, timestamp, businessId',
+      sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
+    });
+
+    // ✅ Version 9: Complete appointment schema alignment with Supabase
+    this.version(9).stores({
+      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      inventory: 'id, business_id, item_name, category, syncStatus',
+      credit: 'id, business_id, customer_name, status, syncStatus',
+      expenses: 'id, business_id, expense_date, category, syncStatus',
+      targets: 'id, business_id, target_type, syncStatus',
+      services: 'id, business_id, service_name, syncStatus',
+      appointments: 'id, business_id, appointment_date, start_time, end_time, status, service_id, syncStatus',
+      operations_queue: 'id, type, table, status, timestamp, businessId',
+      sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     });
   }
 
