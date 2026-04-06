@@ -122,7 +122,7 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     }
   }, []);
 
-  // ✅ UNIFIED Update Detection System (Service Worker + API) - ONLY in authenticated app
+  // ✅ ENHANCED Update Detection System (Service Worker + API) - ONLY in authenticated app
   useEffect(() => {
     // Only run update detection if user is authenticated
     if (!business?.id) return;
@@ -135,38 +135,43 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
       if (!shouldShowUpdateModal()) return;
       
       try {
-        // 1. Check service worker for waiting update
+        // 1. Get current version from API (always dynamic)
+        const response = await fetch('/api/version-check');
+        const apiData = await response.json();
+        const currentApiVersion = apiData.version; // Dynamic: v108-abc123f-1648834567
+        const cleanApiVersion = apiData.cleanVersion; // Clean: v108
+        
+        // Get stored version from localStorage
+        const storedVersion = localStorage.getItem('app-version') || 'v108';
+        
+        console.log('[UpdateManager] Version comparison:', {
+          stored: storedVersion,
+          currentApi: currentApiVersion,
+          cleanApi: cleanApiVersion
+        });
+        
+        // 2. Check if API version is different (detects ANY deployment change)
+        if (currentApiVersion !== storedVersion) {
+          console.log('[UpdateManager] 🎉 New deployment detected via API:', currentApiVersion);
+          setNewVersion(cleanApiVersion); // Show clean version to user
+          setShowUpdateModal(true);
+          return;
+        }
+        
+        // 3. Check service worker for waiting update (backup detection)
         const registration = await navigator.serviceWorker.getRegistration();
         if (registration) {
           await registration.update();
           
           if (registration.waiting && navigator.serviceWorker.controller) {
             console.log('[UpdateManager] 🎉 Service worker update available (user-controlled activation)');
-            setNewVersion('v108'); // Updated to match new service worker version
+            setNewVersion(cleanApiVersion);
             setShowUpdateModal(true);
             return;
           }
         }
         
-        // 2. Fallback: Check API for version (but use same format to prevent duplicates)
-        try {
-          const response = await fetch('/api/version-check');
-          const data = await response.json();
-          
-          const currentStoredVersion = localStorage.getItem('app-version') || 'v108';
-          
-          // Extract just the version number (v108) from API response to prevent duplicates
-          const apiCleanVersion = data.version?.split('-')[0]; // Extract "v108" from "v108-abc123f"
-          
-          if (apiCleanVersion && apiCleanVersion !== currentStoredVersion) {
-            console.log('[UpdateManager] 🎉 New version detected via API:', apiCleanVersion);
-            setNewVersion(apiCleanVersion); // Use clean format
-            setShowUpdateModal(true);
-          }
-        } catch (apiError) {
-          // API might not exist, that's okay
-          console.log('[UpdateManager] API version check not available');
-        }
+        console.log('[UpdateManager] ✅ No updates detected');
       } catch (error) {
         console.error('[UpdateManager] Update check failed:', error);
       }

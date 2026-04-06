@@ -1,5 +1,22 @@
 import { NextResponse } from 'next/server';
 
+// Try to import build version if available
+interface BuildVersion {
+  version: string;
+  cleanVersion: string;
+  manifestVersion: string;
+  gitCommitSha: string;
+  buildTime: string;
+  timestamp: string;
+}
+
+let buildVersion: BuildVersion | null = null;
+try {
+  buildVersion = require('@/lib/build-version.json') as BuildVersion;
+} catch (error) {
+  // Build version file not available, use runtime generation
+}
+
 export async function GET() {
   try {
     // Use Vercel deployment info for version tracking
@@ -7,24 +24,39 @@ export async function GET() {
     const gitCommitSha = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown';
     const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
     
-    // Create version string from deployment info
-    // Format: v{manifest-version} (clean format to prevent double updates)
-    const manifestVersion = '108';  // Increment this with each release
-    const shortCommitSha = gitCommitSha.substring(0, 7);
-    const version = `v${manifestVersion}`; // Clean format: v108
-    const fullVersion = `v${manifestVersion}-${shortCommitSha}`; // Full format with commit
+    let manifestVersion = '108';
+    let shortCommitSha;
+    let timestamp;
     
-    console.log('[Version Check] Returning version:', {
+    // Use build-generated version if available, otherwise generate at runtime
+    if (buildVersion) {
+      manifestVersion = buildVersion.manifestVersion;
+      shortCommitSha = buildVersion.gitCommitSha;
+      timestamp = buildVersion.timestamp;
+      console.log('[Version Check] Using build-generated version:', buildVersion);
+    } else {
+      // Fallback to runtime generation
+      manifestVersion = '108';
+      shortCommitSha = gitCommitSha.substring(0, 7);
+      timestamp = Date.now().toString();
+      console.log('[Version Check] Using runtime-generated version');
+    }
+    
+    // Create unique version per deployment
+    const version = `v${manifestVersion}-${shortCommitSha}-${timestamp}`;
+    const cleanVersion = `v${manifestVersion}`; // For comparison
+    
+    console.log('[Version Check] Returning dynamic version:', {
       version,
-      fullVersion,
+      cleanVersion,
       deploymentId,
       environment,
       timestamp: new Date().toISOString()
     });
     
     return NextResponse.json({
-      version, // Clean format: v107 (prevents double updates)
-      fullVersion, // Full format: v107-abc123f (for reference)
+      version, // Dynamic version: v108-abc123f-1648834567
+      cleanVersion, // Clean version: v108
       manifestVersion,
       deploymentId,
       gitCommitSha,

@@ -445,7 +445,7 @@ export default function BuzzInsights({
 
         {/* Dots indicator */}
         {insights.length > 1 && (
-          <div className="flex justify-center gap-1.5 mt-3">
+          <div className="flex justify-center gap-2 mt-3">
             {insights.map((_, idx) => (
               <button
                 key={idx}
@@ -453,9 +453,9 @@ export default function BuzzInsights({
                   setAutoRotate(false);
                   setCurrentIndex(idx);
                 }}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                className={`w-2 h-2 rounded-full transition-all ${
                   idx === currentIndex
-                    ? 'bg-[var(--powder-dark)] w-4'
+                    ? 'bg-[var(--powder-dark)] scale-125'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={`Go to insight ${idx + 1}`}

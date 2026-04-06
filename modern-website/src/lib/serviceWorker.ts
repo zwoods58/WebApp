@@ -105,12 +105,35 @@ export class ServiceWorkerManager {
   
   private notifyUpdateAvailable(): void {
     console.log('[SW] Dispatching update available event');
-    window.dispatchEvent(new CustomEvent('sw-update-available', {
-      detail: { 
-        timestamp: Date.now(),
-        version: 'v105'
-      }
-    }));
+    
+    // Get current version from API for accurate version reporting
+    this.getCurrentVersion().then(currentVersion => {
+      window.dispatchEvent(new CustomEvent('sw-update-available', {
+        detail: { 
+          timestamp: Date.now(),
+          version: currentVersion
+        }
+      }));
+    }).catch(() => {
+      // Fallback to static version if API fails
+      window.dispatchEvent(new CustomEvent('sw-update-available', {
+        detail: { 
+          timestamp: Date.now(),
+          version: 'v108'
+        }
+      }));
+    });
+  }
+  
+  private async getCurrentVersion(): Promise<string> {
+    try {
+      const response = await fetch('/api/version-check');
+      const data = await response.json();
+      return data.cleanVersion || 'v108';
+    } catch (error) {
+      console.warn('[SW] Failed to get current version:', error);
+      return 'v108';
+    }
   }
   
   getState(): string | null {

@@ -3,11 +3,38 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v108';
-const CURRENT_VERSION = 'v108';
-const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
-const API_CACHE = `beezee-api-${CACHE_VERSION}`;
-const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
+// Dynamic version that will be fetched from API
+let CACHE_VERSION = 'v108';
+let CURRENT_VERSION = 'v108';
+
+// Helper function to get current version from API
+async function getCurrentVersion() {
+  try {
+    const response = await fetch('/api/version-check');
+    const data = await response.json();
+    return data.version || 'v108';
+  } catch (error) {
+    console.warn('[SW] Failed to fetch current version, using fallback:', error);
+    return 'v108';
+  }
+}
+
+// Update cache names dynamically
+function updateCacheNames(version) {
+  CACHE_VERSION = version;
+  CURRENT_VERSION = version;
+  return {
+    STATIC_CACHE: `beezee-static-${version}`,
+    API_CACHE: `beezee-api-${version}`,
+    PAGE_CACHE: `beezee-pages-${version}`
+  };
+}
+
+// Initialize cache names
+let cacheNames = updateCacheNames(CACHE_VERSION);
+let STATIC_CACHE = cacheNames.STATIC_CACHE;
+let API_CACHE = cacheNames.API_CACHE;
+let PAGE_CACHE = cacheNames.PAGE_CACHE;
 const BASE_PATH = '/Beezee-App';
 
 // RSC Request Throttling
@@ -120,28 +147,40 @@ if (IS_DEV) {
 console.log('[SW] Smart caching mode - will cache user routes after login');
 
 // ============================================================
-// INSTALL - Cache static assets
+// INSTALL - Cache static assets and sync version
 // ============================================================
 self.addEventListener('install', (event) => {
-  console.log(`[SW] 🚀 Installing service worker ${CACHE_VERSION}...`);
+  console.log(`[SW] 🚀 Installing service worker...`);
   
-  // Clear old caches before installing new ones
+  // Fetch current version from API and update cache names
   event.waitUntil(
     (async () => {
-      // Clear all old versions
-      const cacheNames = await caches.keys();
-      const oldCaches = cacheNames.filter(name => 
-        name.includes('beezee-') && !name.includes(CACHE_VERSION)
-      );
-      
-      console.log('[SW] 🧹 Clearing old caches:', oldCaches);
-      await Promise.all(oldCaches.map(name => caches.delete(name)));
-      
-      // Install new caches
-      const staticCache = await caches.open(STATIC_CACHE);
-      console.log('[SW] 📦 Caching static assets...');
-      
       try {
+        // Get dynamic version from API
+        const currentVersion = await getCurrentVersion();
+        console.log(`[SW] 📡 Fetched current version: ${currentVersion}`);
+        
+        // Update cache names with current version
+        cacheNames = updateCacheNames(currentVersion);
+        STATIC_CACHE = cacheNames.STATIC_CACHE;
+        API_CACHE = cacheNames.API_CACHE;
+        PAGE_CACHE = cacheNames.PAGE_CACHE;
+        
+        console.log(`[SW] 🔄 Updated cache names to version: ${currentVersion}`);
+        
+        // Clear old caches before installing new ones
+        const cacheNamesList = await caches.keys();
+        const oldCaches = cacheNamesList.filter(name => 
+          name.includes('beezee-') && !name.includes(currentVersion)
+        );
+        
+        console.log('[SW] 🧹 Clearing old caches:', oldCaches);
+        await Promise.all(oldCaches.map(name => caches.delete(name)));
+        
+        // Install new caches
+        const staticCache = await caches.open(STATIC_CACHE);
+        console.log('[SW] 📦 Caching static assets...');
+        
         let cachedCount = 0;
         let failedCount = 0;
         
@@ -162,23 +201,23 @@ self.addEventListener('install', (event) => {
         }
         
         console.log(`[SW] ✅ Cached ${cachedCount}/${PUBLIC_ROUTES.length} assets (${failedCount} failed)`);
-      } catch (error) {
-        console.warn('[SW] ⚠️ Cache operation error:', error);
-      }
-      
-      // ✅ USER CONTROL: Don't force activation - wait for user consent
-      // await self.skipWaiting(); // REMOVED: Let user control activation
-      
-      // Notify all clients that an update is available (but don't force activation)
-      const clients = await self.clients.matchAll();
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'SW_UPDATE_AVAILABLE',
-          version: CACHE_VERSION
+        
+        // ✅ USER CONTROL: Don't force activation - wait for user consent
+        // await self.skipWaiting(); // REMOVED: Let user control activation
+        
+        // Notify all clients that an update is available (but don't force activation)
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATE_AVAILABLE',
+            version: currentVersion
+          });
         });
-      });
-      
-      console.log(`[SW] 📢 Notified ${clients.length} clients of update availability (waiting for user consent)`);
+        
+        console.log(`[SW] 📢 Notified ${clients.length} clients of update availability (version: ${currentVersion})`);
+      } catch (error) {
+        console.warn('[SW] ⚠️ Install phase error:', error);
+      }
     })()
   );
 });
@@ -293,15 +332,15 @@ self.addEventListener('message', (event) => {
     self.clients.claim().then(() => {
       console.log('[SW] ✅ User-triggered activation - claimed clients');
       
-      // Notify all clients that new SW is activated
+      // Notify all clients that new SW is activated with current version
       self.clients.matchAll().then(clients => {
         clients.forEach(client => {
           client.postMessage({ 
             type: 'SW_ACTIVATED',
-            version: CACHE_VERSION 
+            version: CURRENT_VERSION 
           });
         });
-        console.log('[SW] ✅ User-controlled activation complete - notified', clients.length, 'clients of version', CACHE_VERSION);
+        console.log('[SW] ✅ User-controlled activation complete - notified', clients.length, 'clients of version', CURRENT_VERSION);
       });
     }).catch(error => {
       console.error('[SW] ❌ Error claiming clients after user activation:', error);

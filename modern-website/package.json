@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate-version && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "generate:logos": "node scripts/generate-logo-sizes.js"
+    "generate:logos": "node scripts/generate-logo-sizes.js",
+    "generate-version": "node scripts/generate-version.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
