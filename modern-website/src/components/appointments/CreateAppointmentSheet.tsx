@@ -213,10 +213,12 @@ export default function CreateAppointmentSheet({
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[9999] bg-white"
+      className="fixed inset-0 z-[9999] bg-white opacity-100"
+      style={{ backgroundColor: '#ffffff' }}
     >
       <div
         className="w-full h-full bg-white overflow-hidden flex flex-col"
+        style={{ backgroundColor: '#ffffff' }}
       >
         {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
