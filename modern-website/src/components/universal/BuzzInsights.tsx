@@ -442,27 +442,6 @@ export default function BuzzInsights({
             </div>
           </div>
         
-
-        {/* Dots indicator */}
-        {insights.length > 1 && (
-          <div className="flex justify-center gap-2 mt-3">
-            {insights.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setAutoRotate(false);
-                  setCurrentIndex(idx);
-                }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  idx === currentIndex
-                    ? 'bg-[var(--powder-dark)] scale-125'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Go to insight ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
