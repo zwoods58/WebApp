@@ -215,7 +215,7 @@ export default function AddAppointmentModal({
         notes: formData.notes || '',
         business_id: business.id,
         industry,
-        country,
+        // country removed - not in appointments table schema
         created_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
         updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
         created_by: business.id,
