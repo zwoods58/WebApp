@@ -86,20 +86,11 @@ export default function AppointmentDetailsSheet({
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[9999] flex items-end justify-center"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      onClick={onClose}
+      className="fixed inset-0 z-[9999] bg-white"
     >
       <div
-        className="w-full bg-white rounded-t-2xl overflow-hidden"
-        style={{ height: '85vh', maxHeight: '85vh' }}
-        onClick={(e) => e.stopPropagation()}
+        className="w-full h-full bg-white overflow-hidden flex flex-col"
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-2 pb-1">
-          <div className="w-12 h-1 rounded-full bg-gray-300" />
-        </div>
-
         {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Appointment Details</h2>
