@@ -12,8 +12,7 @@ import {
   Phone,
   Building,
   Globe,
-  Share2,
-  RefreshCw
+  Share2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -34,17 +33,12 @@ interface BaseMenuItem {
   color: string;
 }
 
-interface ButtonMenuItem extends BaseMenuItem {
-  isButton: true;
-  onClick: () => void;
-}
-
 interface LinkMenuItem extends BaseMenuItem {
   href: string;
   isButton?: false;
 }
 
-type MenuItem = ButtonMenuItem | LinkMenuItem;
+type MenuItem = LinkMenuItem;
 
 export default function MorePage() {
   const { t } = useLanguage();
@@ -55,44 +49,6 @@ export default function MorePage() {
 
   const { business, loading, signOut } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
-  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
-  const [updateStatus, setUpdateStatus] = useState<'idle' | 'available' | 'none' | 'checking'>('idle');
-
-  const checkForUpdates = async () => {
-    setIsCheckingUpdate(true);
-    setUpdateStatus('checking');
-    
-    try {
-      // Dispatch event to trigger layout-client.tsx update check
-      window.dispatchEvent(new CustomEvent('TRIGGER_UPDATE_CHECK'));
-      
-      // Wait a moment for the check to complete
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Check if update was found
-      const registration = await navigator.serviceWorker.getRegistration();
-      const hasWaitingWorker = registration?.waiting != null;
-      
-      // Also check API
-      const response = await fetch('/api/version-check');
-      const data = await response.json();
-      const currentVersion = localStorage.getItem('app-version') || 'v104';
-      const hasApiUpdate = data.version !== currentVersion;
-      
-      if (hasWaitingWorker || hasApiUpdate) {
-        setUpdateStatus('available');
-        console.log('[More] ✅ Update available!');
-      } else {
-        setUpdateStatus('none');
-        console.log('[More] ✅ App is up to date');
-      }
-    } catch (error) {
-      console.error('[More] Update check failed:', error);
-      setUpdateStatus('idle');
-    } finally {
-      setIsCheckingUpdate(false);
-    }
-  };
 
   const handleSignOut = async () => {
     try {
@@ -141,18 +97,6 @@ export default function MorePage() {
       title: t('more.business_tools', 'Business Tools'),
       items: [
         {
-          icon: RefreshCw,
-          label: isCheckingUpdate ? 'Checking for updates...' : 'Check for Updates',
-          description: updateStatus === 'available' ? 'Update available! Click to install.' : 
-                        updateStatus === 'none' ? 'App is up to date' : 
-                        'Check for app updates',
-          isButton: true,
-          onClick: checkForUpdates,
-          color: updateStatus === 'available' ? 'text-green-600 bg-green-50' : 
-                 updateStatus === 'none' ? 'text-gray-600 bg-gray-50' :
-                 'text-blue-600 bg-blue-50'
-        } as ButtonMenuItem,
-        {
           icon: FileText,
           label: t('more.reports', 'Reports'),
           description: t('more.reports_description', 'View business reports and analytics'),
@@ -181,15 +125,6 @@ export default function MorePage() {
       ]
     }
   ];
-
-  // Type guard functions
-  const isButtonMenuItem = (item: MenuItem): item is ButtonMenuItem => {
-    return item.isButton === true;
-  };
-
-  const isLinkMenuItem = (item: MenuItem): item is LinkMenuItem => {
-    return 'href' in item && typeof item.href === 'string';
-  };
 
   // Debug logging
   useEffect(() => {
@@ -277,34 +212,16 @@ export default function MorePage() {
                   </>
                 );
 
-                // Render button for ButtonMenuItem
-                if (isButtonMenuItem(item)) {
-                  return (
-                    <button
-                      key={item.label}
-                      onClick={item.onClick}
-                      className="w-full flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors text-left"
-                    >
-                      {content}
-                    </button>
-                  );
-                }
-                
-                // Render link for LinkMenuItem
-                if (isLinkMenuItem(item)) {
-                  return (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className="flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors"
-                    >
-                      {content}
-                    </Link>
-                  );
-                }
-                
-                // Fallback (should never happen with proper typing)
-                return null;
+                // Render link for LinkMenuItem (all items are now links)
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors"
+                  >
+                    {content}
+                  </Link>
+                );
               })}
             </div>
           </div>

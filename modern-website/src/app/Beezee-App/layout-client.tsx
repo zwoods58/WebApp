@@ -15,6 +15,7 @@ const BottomNav = lazy(() => import('@/components/universal/BottomNav'));
 const ScrollToTop = lazy(() => import('@/components/universal/ScrollToTop'));
 const PWAInstallPrompt = lazy(() => import('@/components/PWAInstallPrompt'));
 const ConnectionToast = lazy(() => import('@/components/universal/ConnectionToast').then(mod => ({ default: mod.ConnectionToast })));
+const UpdateModal = lazy(() => import('@/components/ui/UpdateModal'));
 
 // Add custom styles for animations (will be added in useEffect)
 
@@ -23,12 +24,11 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { business } = useUnifiedAuth();
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
-  const [updateShownForVersion, setUpdateShownForVersion] = useState<string | null>(null);
-  const [isUpdating, setUpdating] = useState(false);
-  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'activating' | 'complete'>('idle');
-  const [hasShownUpdate, setHasShownUpdate] = useState(false);
+  const [currentVersion, setCurrentVersion] = useState<string>('v105');
+  const [laterPressedTime, setLaterPressedTime] = useState<number | null>(null);
   
   // Add custom styles for animations (client-side only)
   useEffect(() => {
@@ -97,6 +97,106 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     };
   }, [])
 
+  // Check if 24 hours have passed since "Later" was pressed
+  const shouldShowUpdateModal = () => {
+    const laterPressedTime = localStorage.getItem('update-later-timestamp');
+    if (!laterPressedTime) return true;
+    
+    const hoursPassed = (Date.now() - parseInt(laterPressedTime)) / (1000 * 60 * 60);
+    return hoursPassed >= 24;
+  };
+
+  // Handle "Later" button press
+  const handleLater = () => {
+    localStorage.setItem('update-later-timestamp', Date.now().toString());
+    setShowUpdateModal(false);
+  };
+
+  // Clear old caches and reload app
+  const clearOldCachesAndReload = async () => {
+    try {
+      // Clear all existing caches
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(cacheName => caches.delete(cacheName))
+      );
+      
+      // Clear localStorage update timer
+      localStorage.removeItem('update-later-timestamp');
+      
+      // Update app version in localStorage
+      if (newVersion) {
+        localStorage.setItem('app-version', newVersion);
+      }
+      
+      // Reload app with fresh cache
+      window.location.reload();
+    } catch (error) {
+      console.error('Cache clear failed:', error);
+      // Force reload anyway
+      window.location.reload();
+    }
+  };
+
+  // Handle "Update Now" button press
+  const handleUpdateNow = async () => {
+    console.log('[Layout] User clicked Update Now');
+    setIsUpdating(true);
+    
+    try {
+      // 1. Get service worker registration
+      const registration = await navigator.serviceWorker.getRegistration();
+      
+      if (registration?.waiting) {
+        // 2. Tell waiting service worker to activate
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        
+        // 3. Listen for controller change (new SW activated)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          // 4. Clear old caches and reload with new version
+          clearOldCachesAndReload();
+        });
+      } else {
+        // 5. Force service worker update check
+        if (registration) {
+          await registration.update();
+          
+          // 6. Check if new version found
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              clearOldCachesAndReload();
+            });
+          } else {
+            // 7. No waiting worker, just reload to get latest from Vercel
+            clearOldCachesAndReload();
+          }
+        } else {
+          // No registration, just reload
+          clearOldCachesAndReload();
+        }
+      }
+    } catch (error) {
+      console.error('Update failed:', error);
+      // Fallback: just reload
+      clearOldCachesAndReload();
+    }
+  };
+
+  // Initialize current version from localStorage
+  useEffect(() => {
+    const storedVersion = localStorage.getItem('app-version');
+    if (storedVersion) {
+      setCurrentVersion(storedVersion);
+    }
+    
+    // Load later timestamp from localStorage
+    const laterTime = localStorage.getItem('update-later-timestamp');
+    if (laterTime) {
+      setLaterPressedTime(parseInt(laterTime));
+    }
+  }, []);
+
   // ✅ UNIFIED Update Detection System (Service Worker + API)
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
@@ -104,7 +204,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     let updateCheckInterval: NodeJS.Timeout;
     
     const checkForUpdate = async () => {
-      if (hasShownUpdate) return;
+      // Check if we should show modal (24-hour cooldown)
+      if (!shouldShowUpdateModal()) return;
       
       try {
         // 1. Check service worker for waiting update
@@ -114,25 +215,27 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
           
           if (registration.waiting && navigator.serviceWorker.controller) {
             console.log('[Layout] 🎉 Service worker update available');
-            setUpdateAvailable(true);
-            setNewVersion('v105');
-            setHasShownUpdate(true);
+            setNewVersion('v106'); // This should come from the service worker
+            setShowUpdateModal(true);
             return;
           }
         }
         
         // 2. Fallback: Check API for version
-        const response = await fetch('/api/version-check');
-        const data = await response.json();
-        
-        const currentVersion = localStorage.getItem('app-version') || 'v104';
-        
-        if (data.version && data.version !== currentVersion) {
-          console.log('[Layout] 🎉 New version detected via API:', data.version);
-          setUpdateAvailable(true);
-          setNewVersion(data.version);
-          setHasShownUpdate(true);
-          localStorage.setItem('app-version', data.version);
+        try {
+          const response = await fetch('/api/version-check');
+          const data = await response.json();
+          
+          const currentStoredVersion = localStorage.getItem('app-version') || 'v105';
+          
+          if (data.version && data.version !== currentStoredVersion) {
+            console.log('[Layout] 🎉 New version detected via API:', data.version);
+            setNewVersion(data.version);
+            setShowUpdateModal(true);
+          }
+        } catch (apiError) {
+          // API might not exist, that's okay
+          console.log('[Layout] API version check not available');
         }
       } catch (error) {
         console.error('[Layout] Update check failed:', error);
@@ -147,11 +250,11 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     
     // Smart triggers
     const handleVisibilityChange = () => {
-      if (!document.hidden) checkForUpdate();
+      if (!document.hidden && shouldShowUpdateModal()) checkForUpdate();
     };
     
     const handleOnline = () => {
-      checkForUpdate();
+      if (shouldShowUpdateModal()) checkForUpdate();
     };
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -162,84 +265,9 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('online', handleOnline);
     };
-  }, [hasShownUpdate]);
+  }, [currentVersion]);
 
-  // ✅ Handle manual update triggers from More page
-  useEffect(() => {
-    const handleManualCheck = async () => {
-      console.log('[Layout] Manual update check triggered');
-      setHasShownUpdate(false); // Allow banner to show again
-      
-      // Trigger immediate check
-      try {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-          await registration.update();
-          
-          if (registration.waiting && navigator.serviceWorker.controller) {
-            setUpdateAvailable(true);
-            setNewVersion('v105');
-            setHasShownUpdate(true);
-            return;
-          }
-        }
-        
-        // Fallback to API check
-        const response = await fetch('/api/version-check');
-        const data = await response.json();
-        const currentVersion = localStorage.getItem('app-version') || 'v104';
-        
-        if (data.version !== currentVersion) {
-          setUpdateAvailable(true);
-          setNewVersion(data.version);
-          setHasShownUpdate(true);
-          localStorage.setItem('app-version', data.version);
-        }
-      } catch (error) {
-        console.error('[Layout] Manual check failed:', error);
-      }
-    };
-    
-    window.addEventListener('TRIGGER_UPDATE_CHECK', handleManualCheck);
-    
-    return () => {
-      window.removeEventListener('TRIGGER_UPDATE_CHECK', handleManualCheck);
-    };
-  }, []);
-
-  // ✅ Handle update reload
-  const handleUpdate = async () => {
-    console.log('[Layout] User clicked Update Now');
-    
-    try {
-      const registration = await navigator.serviceWorker.getRegistration();
-      
-      if (registration?.waiting) {
-        // Tell waiting SW to skip waiting and activate
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        
-        // Listen for controller change
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          console.log('[Layout] New service worker activated, reloading...');
-          window.location.reload();
-        });
-      } else {
-        // No waiting worker, just reload to get new version
-        console.log('[Layout] No waiting worker, forcing reload...');
-        window.location.reload();
-      }
-    } catch (error) {
-      console.error('[Layout] Update failed:', error);
-      // Force reload anyway
-      window.location.reload();
-    }
-  };
-  
-  // ✅ NEW: Dismiss update notification
-  const handleDismissUpdate = () => {
-    setUpdateAvailable(false);
-    setNewVersion(null);
-  };
+  // Remove manual update triggers since we're removing the More page check
 
   // Prefetch critical routes for faster navigation (NO API CALLS)
   useEffect(() => {
@@ -284,56 +312,18 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         <ConnectionToast duration={3000} />
       </Suspense>
       
-      {/* ✅ ENHANCED: Update Available Banner with Loading States */}
-      {updateAvailable && (
-        <div className="fixed top-12 left-0 right-0 z-50 mx-4">
-          <div className="bg-blue-600 text-white rounded-lg shadow-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {isUpdating ? (
-                <RefreshCw size={20} className="animate-spin" />
-              ) : (
-                <svg className="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              )}
-              <div>
-                <h3 className="font-semibold text-sm">
-                  {isUpdating ? 'Updating...' : 'Update Available'}
-                </h3>
-                <p className="text-xs opacity-90">
-                  {isUpdating 
-                    ? 'Installing new version...' 
-                    : `New version ${newVersion} available!`
-                  }
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              {!isUpdating ? (
-                <button
-                  onClick={handleUpdate}
-                  className="bg-white text-blue-600 px-3 py-1 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors"
-                >
-                  Update Now
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="bg-white/20 text-white px-3 py-1 rounded-md text-sm cursor-not-allowed"
-                >
-                  Updating...
-                </button>
-              )}
-              <button
-                onClick={handleDismissUpdate}
-                className="bg-blue-700 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-800 transition-colors"
-              >
-                Later
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ✅ NEW: Update Modal */}
+      <Suspense fallback={null}>
+        <UpdateModal
+          isOpen={showUpdateModal}
+          onClose={() => setShowUpdateModal(false)}
+          onUpdate={handleUpdateNow}
+          onLater={handleLater}
+          isUpdating={isUpdating}
+          currentVersion={currentVersion}
+          newVersion={newVersion || 'v106'}
+        />
+      </Suspense>
       
       {/* Main content area */}
       <div key={pathname} className="pb-20">

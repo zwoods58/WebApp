@@ -3,7 +3,8 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v105';
+const CACHE_VERSION = 'v106';
+const CURRENT_VERSION = 'v106';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
