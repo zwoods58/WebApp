@@ -27,7 +27,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [newVersion, setNewVersion] = useState<string | null>(null);
-  const [currentVersion, setCurrentVersion] = useState<string>('v105');
+  const [currentVersion, setCurrentVersion] = useState<string>('v107');
   const [laterPressedTime, setLaterPressedTime] = useState<number | null>(null);
   
   // Add custom styles for animations (client-side only)
@@ -214,8 +214,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
           await registration.update();
           
           if (registration.waiting && navigator.serviceWorker.controller) {
-            console.log('[Layout] 🎉 Service worker update available');
-            setNewVersion('v106'); // This should come from the service worker
+            console.log('[Layout] 🎉 Service worker update available (user-controlled activation)');
+            setNewVersion('v107'); // Updated to match new service worker version
             setShowUpdateModal(true);
             return;
           }
@@ -226,7 +226,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
           const response = await fetch('/api/version-check');
           const data = await response.json();
           
-          const currentStoredVersion = localStorage.getItem('app-version') || 'v105';
+          const currentStoredVersion = localStorage.getItem('app-version') || 'v107';
           
           if (data.version && data.version !== currentStoredVersion) {
             console.log('[Layout] 🎉 New version detected via API:', data.version);
@@ -321,7 +321,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
           onLater={handleLater}
           isUpdating={isUpdating}
           currentVersion={currentVersion}
-          newVersion={newVersion || 'v106'}
+          newVersion={newVersion || 'v107'}
         />
       </Suspense>
       

@@ -9,7 +9,7 @@ export async function GET() {
     
     // Create version string from deployment info
     // Format: v{manifest-version}-{short-commit-sha}
-    const manifestVersion = '106';  // Increment this with each release
+    const manifestVersion = '107';  // Increment this with each release
     const shortCommitSha = gitCommitSha.substring(0, 7);
     const version = `v${manifestVersion}-${shortCommitSha}`;
     
@@ -40,7 +40,7 @@ export async function GET() {
     return NextResponse.json(
       { 
         error: 'Failed to get version info',
-        version: 'v106-error'  // Fallback version
+        version: 'v107-error'  // Fallback version
       },
       { status: 500 }
     );

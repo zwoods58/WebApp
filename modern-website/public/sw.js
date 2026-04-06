@@ -3,8 +3,8 @@
  * Pre-caches public pages, then caches user routes after login
  */
 
-const CACHE_VERSION = 'v106';
-const CURRENT_VERSION = 'v106';
+const CACHE_VERSION = 'v107';
+const CURRENT_VERSION = 'v107';
 const STATIC_CACHE = `beezee-static-${CACHE_VERSION}`;
 const API_CACHE = `beezee-api-${CACHE_VERSION}`;
 const PAGE_CACHE = `beezee-pages-${CACHE_VERSION}`;
@@ -166,10 +166,10 @@ self.addEventListener('install', (event) => {
         console.warn('[SW] ⚠️ Cache operation error:', error);
       }
       
-      // Force the new service worker to become active
-      await self.skipWaiting();
+      // ✅ USER CONTROL: Don't force activation - wait for user consent
+      // await self.skipWaiting(); // REMOVED: Let user control activation
       
-      // Notify all clients that an update is available
+      // Notify all clients that an update is available (but don't force activation)
       const clients = await self.clients.matchAll();
       clients.forEach(client => {
         client.postMessage({
@@ -178,7 +178,7 @@ self.addEventListener('install', (event) => {
         });
       });
       
-      console.log(`[SW] 📢 Notified ${clients.length} clients of update availability`);
+      console.log(`[SW] 📢 Notified ${clients.length} clients of update availability (waiting for user consent)`);
     })()
   );
 });
@@ -202,18 +202,23 @@ self.addEventListener('activate', (event) => {
         return caches.delete(name);
       }));
       
-      // Claim all clients so the SW takes control immediately
-      await clients.claim();
-      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated and claimed clients`);
+      // ✅ USER CONTROL: Don't force client control - wait for user consent
+      // await clients.claim(); // REMOVED: Let user control activation
       
-      // Notify all clients that a new version is active
-      const clientsList = await clients.matchAll();
-      clientsList.forEach(client => {
-        client.postMessage({
-          type: 'SW_UPDATE_ACTIVATED',
-          version: CACHE_VERSION
+      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated (waiting for user consent to claim clients)`);
+      
+      // Only notify clients if this was user-triggered activation
+      if (event.userTriggered) {
+        // Notify all clients that a new version is active
+        const clientsList = await self.clients.matchAll();
+        clientsList.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATE_ACTIVATED',
+            version: CACHE_VERSION
+          });
         });
-      });
+        console.log(`[SW] 📢 User-triggered activation complete - notified ${clientsList.length} clients`);
+      }
     })()
   );
 });
@@ -272,24 +277,34 @@ self.addEventListener('message', (event) => {
     return;
   }
   
-  // Handle manual update trigger from "Update Now" button
+  // Handle manual update trigger from "Update Now" button - USER CONTROLLED ACTIVATION
   if (type === 'SKIP_WAITING') {
-    console.log('[SW] 🔄 SKIP_WAITING received, activating new version...');
+    console.log('[SW] 🔄 USER REQUESTED UPDATE - activating new version with user consent...');
     
     // Notify client that update is starting
     if (event.source) {
       event.source.postMessage({ type: 'SW_UPDATE_STARTED' });
     }
     
-    // Activate the new service worker
+    // ✅ USER CONTROL: Only activate when user explicitly requests
     self.skipWaiting();
     
-    // Notify all clients that new SW is activated
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({ type: 'SW_ACTIVATED' });
+    // Claim clients after user-triggered activation
+    self.clients.claim().then(() => {
+      console.log('[SW] ✅ User-triggered activation - claimed clients');
+      
+      // Notify all clients that new SW is activated
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ 
+            type: 'SW_ACTIVATED',
+            version: CACHE_VERSION 
+          });
+        });
+        console.log('[SW] ✅ User-controlled activation complete - notified', clients.length, 'clients of version', CACHE_VERSION);
       });
-      console.log('[SW] ✅ Notified', clients.length, 'clients of activation');
+    }).catch(error => {
+      console.error('[SW] ❌ Error claiming clients after user activation:', error);
     });
   }
   

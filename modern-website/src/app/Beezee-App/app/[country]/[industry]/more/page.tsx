@@ -24,6 +24,7 @@ import { useLanguage } from '@/hooks/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useServiceWorkerVersion } from '@/hooks/useServiceWorkerVersion';
 
 // Type definitions for menu items
 interface BaseMenuItem {
@@ -49,6 +50,7 @@ export default function MorePage() {
 
   const { business, loading, signOut } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
+  const { version, isLoading: versionLoading } = useServiceWorkerVersion();
 
   const handleSignOut = async () => {
     try {
@@ -232,7 +234,9 @@ export default function MorePage() {
         <div className="fade-in mt-8">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-[var(--text-1)]">{t('app.name', 'BeeZee App')}</h3>
-            <span className="text-xs bg-[var(--color-success-light)] text-[var(--color-success)] font-bold px-2.5 py-1 rounded-lg">v2.1.0</span>
+            <span className="text-xs bg-[var(--color-success-light)] text-[var(--color-success)] font-bold px-2.5 py-1 rounded-lg">
+              {versionLoading ? 'Loading...' : version}
+            </span>
           </div>
           <div className="space-y-2 text-sm text-[var(--text-2)]">
             <div className="flex items-center gap-2">
