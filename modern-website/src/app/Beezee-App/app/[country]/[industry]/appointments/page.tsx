@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import Appointments from '@/components/universal/Appointments';
+import AppointmentsNew from '@/components/appointments/AppointmentsNew';
 
 export default function AppointmentsPage() {
   const params = useParams();
@@ -10,5 +10,5 @@ export default function AppointmentsPage() {
   const industry = (params.industry as string) || 'retail';
 
   // Remove industry restrictions to allow offline access for all industries
-  return <Appointments industry={industry} country={country} />;
+  return <AppointmentsNew industry={industry} country={country} />;
 }

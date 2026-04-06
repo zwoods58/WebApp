@@ -50,40 +50,41 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
 
   // Memoize navigation items to prevent recreation on every render
   const navItems = useMemo(() => {
-    // Retail and food use stock page instead of services
+    // Determine inventory/services path based on industry
     const inventoryPath = (industry === 'retail' || industry === 'food') ? '/stock' : '/services';
+    const inventoryLabel = (industry === 'retail' || industry === 'food') ? 'nav.inventory' : 'nav.services';
     
-    // Base navigation items for all industries
-    const baseNavItems = [
+    // Transport industry has special navigation
+    if (industry === 'transport') {
+      return [
+        { nameKey: 'nav.home', icon: Home, path: '' },
+        { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
+        { nameKey: 'nav.services', icon: Package, path: '/services' },
+        { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
+        { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+      ];
+    }
+    
+    // Industries with appointments feature
+    if (APPOINTMENTS_INDUSTRIES.includes(industry)) {
+      return [
+        { nameKey: 'nav.home', icon: Home, path: '' },
+        { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
+        { nameKey: 'nav.appointments', icon: Calendar, path: '/appointments' },
+        { nameKey: inventoryLabel, icon: Package, path: inventoryPath },
+        { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
+        { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+      ];
+    }
+    
+    // Default navigation for industries without appointments
+    return [
       { nameKey: 'nav.home', icon: Home, path: '' },
       { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-      { nameKey: 'nav.inventory', icon: Package, path: inventoryPath },
+      { nameKey: inventoryLabel, icon: Package, path: inventoryPath },
       { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
-    ];
-
-    // Add location and update inventory label for transport
-    const transportNavItems = [
-      { nameKey: 'nav.home', icon: Home, path: '' },
-      { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-      { nameKey: 'nav.services', icon: Package, path: '/services' }, // Services instead of inventory
-      { nameKey: 'nav.customers', icon: FileText, path: '/credit' }, // Credit instead of location
       { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
     ];
-
-    // Add appointments for specific industries, or use transport nav for transport
-    return industry === 'transport'
-      ? transportNavItems
-      : APPOINTMENTS_INDUSTRIES.includes(industry)
-        ? [
-            ...baseNavItems.slice(0, 2), // home, cash
-            { nameKey: 'nav.appointments', icon: Calendar, path: '/appointments' }, // appointments
-            ...baseNavItems.slice(2), // inventory, customers
-            { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-          ]
-        : [
-            ...baseNavItems,
-            { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-          ];
   }, [industry]);
 
   // Memoize isActive function to prevent recreation on every render
