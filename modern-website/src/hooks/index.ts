@@ -11,7 +11,7 @@ export { useExpensesTanStack } from './useExpensesTanStack';
 export { useCreditTanStack } from './useCreditTanStack';
 export { useInventoryTanStack } from './useInventoryTanStack';
 export { useServicesTanStack } from './useServicesTanStack';
-export { useCalendarTanStack } from './useCalendarTanStack';
+export { useAppointmentsTanStack } from './useAppointmentsTanStack';
 export { useTargetsTanStack } from './useTargetsTanStack';
 export { useBeehiveTanStack } from './useBeehiveTanStack';
 

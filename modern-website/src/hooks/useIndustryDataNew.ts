@@ -9,7 +9,7 @@ import { swManager } from '@/lib/serviceWorker';
 import { syncProcessor } from '@/lib/sync-processor';
 import { syncManager } from '@/lib/sync-manager';
 
-type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'beehive' | 'targets' | 'calendar';
+type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'beehive' | 'targets' | 'appointments';
 
 export const useIndustryDataNew = ({
   industry,
@@ -76,8 +76,8 @@ export const useIndustryDataNew = ({
           case 'services':
             cachedData = await db.services.where('business_id').equals(businessId).toArray();
             break;
-          case 'calendar':
-            cachedData = await db.calendar.where('business_id').equals(businessId).toArray();
+          case 'appointments':
+            cachedData = await db.appointments.where('business_id').equals(businessId).toArray();
             break;
           case 'targets':
             cachedData = await db.targets.where('business_id').equals(businessId).toArray();
@@ -189,15 +189,15 @@ export const useIndustryDataNew = ({
           freshData = sData || [];
           error = sError;
           break;
-        case 'calendar':
-          const { data: cData, error: cError } = await supabase
-            .from('calendar')
+        case 'appointments':
+          const { data: aData, error: aError } = await supabase
+            .from('appointments')
             .select('*')
             .eq('business_id', businessId)
             .order('appointment_date', { ascending: true })
             .order('appointment_time', { ascending: true });
-          freshData = cData || [];
-          error = cError;
+          freshData = aData || [];
+          error = aError;
           break;
         case 'expenses':
           const { data: eData, error: eError } = await supabase
@@ -342,8 +342,8 @@ export const useIndustryDataNew = ({
           case 'services':
             existingRecord = await db.services.get(id);
             break;
-          case 'calendar':
-            existingRecord = await db.calendar.get(id);
+          case 'appointments':
+            existingRecord = await db.appointments.get(id);
             break;
           case 'targets':
             existingRecord = await db.targets.get(id);
@@ -498,8 +498,8 @@ export const useIndustryDataNew = ({
         case 'services':
           await db.services.put(data);
           break;
-        case 'calendar':
-          await db.calendar.put(data);
+        case 'appointments':
+          await db.appointments.put(data);
           break;
         case 'targets':
           await db.targets.put(data);
@@ -547,10 +547,10 @@ export const useIndustryDataNew = ({
             await db.services.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
           }
           break;
-        case 'calendar':
-          existing = await db.calendar.get(id);
+        case 'appointments':
+          existing = await db.appointments.get(id);
           if (existing) {
-            await db.calendar.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
+            await db.appointments.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
           }
           break;
         case 'targets':

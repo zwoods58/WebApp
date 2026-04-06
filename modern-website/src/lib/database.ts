@@ -79,7 +79,7 @@ export interface StoredService {
   syncStatus: 'synced' | 'pending' | 'conflict';
 }
 
-export interface StoredCalendar {
+export interface StoredAppointment {
   id: string;
   business_id: string;
   industry: string;
@@ -106,7 +106,7 @@ export interface StoredCalendar {
 export interface QueuedOperation {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
-  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'calendar';
+  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'appointments';
   entityId?: string;
   data: any;
   timestamp: number;
@@ -124,7 +124,7 @@ export class BeezeeDatabase extends Dexie {
   expenses!: Table<StoredExpense, string>;
   targets!: Table<StoredTarget, string>;
   services!: Table<StoredService, string>;
-  calendar!: Table<StoredCalendar, string>;
+  appointments!: Table<StoredAppointment, string>;
   operations_queue!: Table<QueuedOperation, string>;
   sync_metadata!: Table<any, string>;
 
@@ -253,56 +253,38 @@ export class BeezeeDatabase extends Dexie {
       sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     });
 
-    // ✅ Version 6: Migrate appointments to calendar and remove appointments table
-    this.version(6).stores({
+    // ✅ Version 7: Rename calendar to appointments for consistency
+    this.version(7).stores({
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
-      calendar: 'id, business_id, appointment_date, status, syncStatus',
+      appointments: 'id, business_id, appointment_date, status, syncStatus',
       operations_queue: 'id, type, table, status, timestamp, businessId',
       sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     }).upgrade(async (tx) => {
-      // Migrate any existing appointments to calendar table
-      const appointmentsStore = tx.table('appointments');
+      // Migrate existing calendar data to appointments table
       const calendarStore = tx.table('calendar');
+      const appointmentsStore = tx.table('appointments');
       
       try {
-        const allAppointments = await appointmentsStore.toArray();
+        const allCalendarItems = await calendarStore.toArray();
         
-        for (const appointment of allAppointments) {
-          // Convert appointment to calendar format
-          const calendarItem = {
-            id: appointment.id,
-            business_id: appointment.business_id,
-            industry: appointment.industry || 'retail',
-            customer_name: appointment.customer_name || '',
-            customer_contact: appointment.customer_contact || '',
-            service_name: appointment.service_name || '',
-            appointment_date: appointment.appointment_date,
-            appointment_time: appointment.appointment_time || '09:00',
-            start_time: appointment.start_time || appointment.appointment_time || '09:00',
-            end_time: appointment.end_time || null,
-            duration: appointment.duration || 30,
-            status: appointment.status || 'pending',
-            notes: appointment.notes || '',
-            reminder_sent: appointment.reminder_sent || false,
-            metadata: appointment.metadata || {},
-            created_at: appointment.created_at || new Date().toISOString(),
-            updated_at: appointment.updated_at || new Date().toISOString(),
-            syncStatus: appointment.syncStatus || 'pending',
-            _deleted: appointment._deleted || false,
-            _deletedAt: appointment._deletedAt || null
+        for (const calendarItem of allCalendarItems) {
+          // Convert calendar to appointment format (same structure)
+          const appointmentItem = {
+            ...calendarItem,
+            // No field changes needed - structure is identical
           };
           
-          await calendarStore.put(calendarItem);
+          await appointmentsStore.put(appointmentItem);
         }
         
-        console.log(`✅ Migrated ${allAppointments.length} appointments to calendar table`);
+        console.log(`✅ Migrated ${allCalendarItems.length} calendar items to appointments table`);
       } catch (error) {
-        console.warn('⚠️ Failed to migrate appointments to calendar:', error);
+        console.warn('⚠️ Failed to migrate calendar to appointments:', error);
       }
     });
   }

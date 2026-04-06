@@ -11,8 +11,8 @@ interface BottomNavProps {
   country: string;
 }
 
-// Industries that have calendar functionality
-const CALENDAR_INDUSTRIES = ['salon', 'tailor', 'freelance', 'repairs'];
+// Industries that have appointments functionality
+const APPOINTMENTS_INDUSTRIES = ['salon', 'tailor', 'freelance', 'repairs'];
 
 export default function BottomNav({ industry, country }: BottomNavProps) {
   const { t } = useLanguage();
@@ -70,13 +70,13 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
       { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
     ];
 
-    // Add calendar for specific industries, or use transport nav for transport
+    // Add appointments for specific industries, or use transport nav for transport
     return industry === 'transport'
       ? transportNavItems
-      : CALENDAR_INDUSTRIES.includes(industry)
+      : APPOINTMENTS_INDUSTRIES.includes(industry)
         ? [
             ...baseNavItems.slice(0, 2), // home, cash
-            { nameKey: 'nav.calendar', icon: Calendar, path: '/calendar' }, // calendar
+            { nameKey: 'nav.appointments', icon: Calendar, path: '/appointments' }, // appointments
             ...baseNavItems.slice(2), // inventory, customers
             { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
           ]

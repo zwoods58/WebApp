@@ -1,6 +1,6 @@
 import { useIndustryDataNew } from './useIndustryDataNew'
 
-export interface CalendarAppointment {
+export interface Appointment {
   id: string;
   business_id: string;
   industry: string;
@@ -18,7 +18,7 @@ export interface CalendarAppointment {
   updated_at: string;
 }
 
-export interface UseCalendarOptions {
+export interface UseAppointmentsOptions {
   businessId?: string;
   industry?: string;
   country?: string;
@@ -34,12 +34,12 @@ export interface UseCalendarOptions {
   limit?: number;
 }
 
-export function useCalendarTanStack(options: UseCalendarOptions = {}) {
+export function useAppointmentsTanStack(options: UseAppointmentsOptions = {}) {
   // Default to Kenya and retail if not specified
   const industry = options.industry || 'retail'
   const country = options.country || 'ke'
   
-  // Use the new TanStack Query hook with calendar table
+  // Use the new TanStack Query hook with appointments table
   const { 
     data, 
     isLoading, 
@@ -52,7 +52,7 @@ export function useCalendarTanStack(options: UseCalendarOptions = {}) {
   } = useIndustryDataNew({
     industry,
     country,
-    table: 'calendar',
+    table: 'appointments',
     select: options.select,
   })
 
@@ -90,16 +90,16 @@ export function useCalendarTanStack(options: UseCalendarOptions = {}) {
   }
 
   return {
-    data: filteredData as CalendarAppointment[],
+    data: filteredData as Appointment[],
     isLoading,
     isOffline: !isLoading && data.length === 0,
-    addCalendarAppointment: create,
-    deleteCalendarAppointment: deleteItem,
-    updateCalendarAppointment: update,
+    addAppointment: create,
+    deleteAppointment: deleteItem,
+    updateAppointment: update,
     isPending: isCreating,
     error,
     refetch,
   }
 }
 
-export default useCalendarTanStack;
+export default useAppointmentsTanStack;

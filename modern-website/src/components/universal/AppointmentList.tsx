@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Calendar, Clock, DollarSign, Plus, Edit2, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
-import { useCalendarTanStack } from '@/hooks';
+import { useAppointmentsTanStack } from '@/hooks';
 
 interface AppointmentListProps {
   industry: string;
@@ -24,12 +24,12 @@ export default function AppointmentList({
   businessId
 }: AppointmentListProps) {
   const { t } = useLanguage();
-  const { deleteCalendarAppointment, updateCalendarAppointment } = useCalendarTanStack({ businessId, industry });
+  const { deleteAppointment, updateAppointment } = useAppointmentsTanStack({ businessId, industry });
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const handleDeleteAppointment = async (appointmentId: string) => {
     try {
-      await deleteCalendarAppointment(appointmentId);
+      await deleteAppointment(appointmentId);
       setConfirmDelete(null);
     } catch (error) {
       console.error('Failed to delete appointment:', error);

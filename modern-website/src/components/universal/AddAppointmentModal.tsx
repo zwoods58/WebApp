@@ -7,8 +7,8 @@ import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
-import { useCalendarTanStack, useServicesTanStack, useTransactionsTanStack } from '@/hooks';
-import { CalendarAppointment } from '@/hooks/useCalendarTanStack';
+import { useAppointmentsTanStack, useServicesTanStack, useTransactionsTanStack } from '@/hooks';
+import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
 import { getStableDateString, getStableTimeString, isClient, getStableId } from '@/utils/stableDates';
 
@@ -53,7 +53,7 @@ export default function AddAppointmentModal({
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
   const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
-  const { addCalendarAppointment } = useCalendarTanStack({ businessId: business?.id, industry });
+  const { addAppointment } = useAppointmentsTanStack({ businessId: business?.id, industry });
   const { addTransaction } = useTransactionsTanStack({ businessId: business?.id, industry });
 
   const [formData, setFormData] = useState<FormData>({
@@ -218,7 +218,7 @@ export default function AddAppointmentModal({
       
       console.log('📤 Sending appointment data with status:', appointmentData);
       
-      await addCalendarAppointment(appointmentData);
+      await addAppointment(appointmentData);
       
       if (servicePrice && servicePrice > 0) {
         const transactionData = {

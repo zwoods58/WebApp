@@ -620,18 +620,18 @@ const translations = {
       rw: "Ibiribwa", 
       lg: "Ebyokulya" 
     },
-    "nav.calendar": { 
-      en: "Calendar",
-      sw: "Kalenda", 
-      ha: "Kalandar", 
-      yo: "Kálẹndà", 
-      ig: "Kalenda", 
-      zu: "Ikhalenda",
-      xh: "Ikhalenda", 
-      af: "Kalender", 
-      tw: "Dapɛn", 
-      rw: "Kalenda", 
-      lg: "Kkalenda" 
+    "nav.appointments": { 
+      en: "Appointments",
+      sw: "Miadi", 
+      ha: "Sadarwa", 
+      yo: "Àpòpọ", 
+      ig: "Nkwekọrịta", 
+      zu: "Izinketho", 
+      xh: "Iinkqubo", 
+      af: "Afsprake", 
+      tw: "Nhyehyɛe", 
+      rw: "Abyiringize", 
+      lg: "Emirimu" 
     },
     "nav.clients": { 
       en: "Clients",
@@ -1533,8 +1533,8 @@ const translations = {
       lg: "Okungula eby'okulonda" 
     },
 
-    // === CALENDAR TRANSLATIONS ===
-    "calendar.today": {
+    // === APPOINTMENTS TRANSLATIONS ===
+    "appointments.today": {
       en: "Today",
       sw: "Leo",
       ha: "Yau",
@@ -1547,7 +1547,7 @@ const translations = {
       rw: "Uyu munsi",
       lg: "Leero"
     },
-    "calendar.appointments": {
+    "appointments.appointments": {
       en: "Appointments",
       sw: "Miadi",
       ha: "Sadarwa",
@@ -1560,7 +1560,7 @@ const translations = {
       rw: "Abyiringize",
       lg: "Emirimu"
     },
-    "calendar.pending": {
+    "appointments.pending": {
       en: "Pending",
       sw: "Inasubiri",
       ha: "Ana jira",
@@ -1573,7 +1573,7 @@ const translations = {
       rw: "Bitegereje",
       lg: "Ekirindirira"
     },
-    "calendar.awaiting": {
+    "appointments.awaiting": {
       en: "Awaiting Confirmation",
       sw: "Inasubiri Uthibitisho",
       ha: "Ana jiran tabbatarwa",
@@ -1586,7 +1586,7 @@ const translations = {
       rw: "Bitegereje kwemeza",
       lg: "Ekirindirira okukakasa"
     },
-    "calendar.search_placeholder": {
+    "appointments.search_placeholder": {
       en: "Search appointments...",
       sw: "Tafuta miadi...",
       ha: "Nemo sadarwa...",
@@ -1599,7 +1599,7 @@ const translations = {
       rw: "Shakisha abyiringize...",
       lg: "Noonya emirimu..."
     },
-    "calendar.all_statuses": {
+    "appointments.all_statuses": {
       en: "All Statuses",
       sw: "Hali Zote",
       ha: "Duk Matsayi",
@@ -1612,7 +1612,7 @@ const translations = {
       rw: "Imiterere Yose",
       lg: "Embeera Zonna"
     },
-    "calendar.confirmed": {
+    "appointments.confirmed": {
       en: "Confirmed",
       sw: "Imethibitishwa",
       ha: "An tabbatar",
@@ -1625,7 +1625,7 @@ const translations = {
       rw: "Byemejwe",
       lg: "Kyakakasiddwa"
     },
-    "calendar.completed": {
+    "appointments.completed": {
       en: "Completed",
       sw: "Imekamilika",
       ha: "An gama",
@@ -1638,7 +1638,7 @@ const translations = {
       rw: "Byarangiye",
       lg: "Kyamaliddwa"
     },
-    "calendar.cancelled": {
+    "appointments.cancelled": {
       en: "Cancelled",
       sw: "Imeghairiwa",
       ha: "An soke",
@@ -1651,7 +1651,7 @@ const translations = {
       rw: "Byahagaritswe",
       lg: "Kyasaziddwawo"
     },
-    "calendar.upcoming": {
+    "appointments.upcoming": {
       en: "Upcoming Appointments",
       sw: "Miadi Inayokuja",
       ha: "Sadarwa Masu Zuwa",
@@ -1677,7 +1677,7 @@ const translations = {
       rw: "Nta byiringize",
       lg: "Tewali mirimu"
     },
-    "calendar.status.pending": {
+    "appointments.status.pending": {
       en: "Pending",
       sw: "Inasubiri",
       ha: "Ana jira",
@@ -1690,7 +1690,7 @@ const translations = {
       rw: "Bitegereje",
       lg: "Ekirindirira"
     },
-    "calendar.status.confirmed": {
+    "appointments.status.confirmed": {
       en: "Confirmed",
       sw: "Imethibitishwa",
       ha: "An tabbatar",
@@ -1703,7 +1703,7 @@ const translations = {
       rw: "Byemejwe",
       lg: "Kyakakasiddwa"
     },
-    "calendar.status.completed": {
+    "appointments.status.completed": {
       en: "Completed",
       sw: "Imekamilika",
       ha: "An gama",
@@ -1716,7 +1716,7 @@ const translations = {
       rw: "Byarangiye",
       lg: "Kyamaliddwa"
     },
-    "calendar.status.cancelled": {
+    "appointments.status.cancelled": {
       en: "Cancelled",
       sw: "Imeghairiwa",
       ha: "An soke",
@@ -1729,7 +1729,7 @@ const translations = {
       rw: "Byahagaritswe",
       lg: "Kyasaziddwawo"
     },
-    "calendar.days.sun": {
+    "appointments.days.sun": {
       en: "Sun",
       sw: "Jum",
       ha: "Lah",
@@ -1742,7 +1742,7 @@ const translations = {
       rw: "Cyu",
       lg: "Sab"
     },
-    "calendar.days.mon": {
+    "appointments.days.mon": {
       en: "Mon",
       sw: "Jtt",
       ha: "Lit",
@@ -1755,7 +1755,7 @@ const translations = {
       rw: "Mbe",
       lg: "Bal"
     },
-    "calendar.days.tue": {
+    "appointments.days.tue": {
       en: "Tue",
       sw: "Jnn",
       ha: "Tal",
@@ -1768,7 +1768,7 @@ const translations = {
       rw: "Kab",
       lg: "Lwo"
     },
-    "calendar.days.wed": {
+    "appointments.days.wed": {
       en: "Wed",
       sw: "Jne",
       ha: "Lar",
@@ -1781,7 +1781,7 @@ const translations = {
       rw: "Gtu",
       lg: "Lws"
     },
-    "calendar.days.thu": {
+    "appointments.days.thu": {
       en: "Thu",
       sw: "Alh",
       ha: "Alh",
@@ -1794,7 +1794,7 @@ const translations = {
       rw: "Kan",
       lg: "Lwa"
     },
-    "calendar.days.fri": {
+    "appointments.days.fri": {
       en: "Fri",
       sw: "Iju",
       ha: "Jum",
@@ -1807,7 +1807,7 @@ const translations = {
       rw: "Gat",
       lg: "Lkt"
     },
-    "calendar.days.sat": {
+    "appointments.days.sat": {
       en: "Sat",
       sw: "Jmo",
       ha: "Asa",
@@ -1820,7 +1820,7 @@ const translations = {
       rw: "Gnd",
       lg: "Lmu"
     },
-    "calendar.setup_required": {
+    "appointments.setup_required": {
       en: "Business Setup Required",
       sw: "Usanidi wa Biashara Unahitajika",
       ha: "Saitin Kasuwanci Ana Bukata",
@@ -1833,7 +1833,7 @@ const translations = {
       rw: "Gushiraho umwuga bikorwa",
       lg: "Okuteekateeka eby'okulonda kikwata"
     },
-    "calendar.setup_message": {
+    "appointments.setup_message": {
       en: "Please set up your business profile first to use the calendar.",
       sw: "Tafadhali weka wasifu wako wa biashara kwanza ili utumie kalenda.",
       ha: "Don saita bayanan kasuwancin ka kafin amfani da kalandar.",
@@ -1846,7 +1846,7 @@ const translations = {
       rw: "Wushyire iprofayili yawo y'ubucuruzi mbere yo gukoresha kalenda.",
       lg: "Weteke pulofaayo yo eby'okulonda mbawo okukozesa kkalenda."
     },
-    "calendar.add_appointment": {
+    "appointments.add_appointment": {
       en: "Add Appointment",
       sw: "Ongeza Miadi",
       ha: "Ƙara Sadarwa",
@@ -1859,7 +1859,7 @@ const translations = {
       rw: "Ongeraho Ibyiringize",
       lg: "Yongera Omulimo"
     },
-    "calendar.customer_name": {
+    "appointments.customer_name": {
       en: "Customer Name",
       sw: "Jina la Mteja",
       ha: "Sunan Abokin Ciniki",
@@ -1872,7 +1872,7 @@ const translations = {
       rw: "Izina ry'umukiriya",
       lg: "Erinnya ly'omuguzi"
     },
-    "calendar.customer_contact": {
+    "appointments.customer_contact": {
       en: "Contact",
       sw: "Mawasiliano",
       ha: "Tuntuɓar",
@@ -1885,7 +1885,7 @@ const translations = {
       rw: "Itumanaho",
       lg: "Okukwatagana"
     },
-    "calendar.select_service": {
+    "appointments.select_service": {
       en: "Select Service",
       sw: "Chagua Huduma",
       ha: "Zaɓi Sabis",
@@ -1898,7 +1898,7 @@ const translations = {
       rw: "Hitamo Serivisi",
       lg: "Londa Omulimo"
     },
-    "calendar.select_date": {
+    "appointments.select_date": {
       en: "Select Date",
       sw: "Chagua Tarehe",
       ha: "Zaɓi Kwanan Wata",
@@ -1924,7 +1924,7 @@ const translations = {
       rw: "Hitamo Igihe",
       lg: "Londa Obudde"
     },
-    "calendar.duration_minutes": {
+    "appointments.duration_minutes": {
       en: "Duration (minutes)",
       sw: "Muda (dakika)",
       ha: "Tsawon Lokaci (mintuna)",
@@ -1937,7 +1937,7 @@ const translations = {
       rw: "Igihe (iminota)",
       lg: "Obudde (eddakiika)"
     },
-    "calendar.notes": {
+    "appointments.notes": {
       en: "Notes",
       sw: "Maelezo",
       ha: "Bayanai",
@@ -1950,7 +1950,7 @@ const translations = {
       rw: "Inyandiko",
       lg: "Ebiwandiiko"
     },
-    "calendar.book_appointment": {
+    "appointments.book_appointment": {
       en: "Book Appointment",
       sw: "Weka Miadi",
       ha: "Yi Sadarwa",
@@ -1963,7 +1963,7 @@ const translations = {
       rw: "Shyiraho Ibyiringize",
       lg: "Teeka Omulimo"
     },
-    "calendar.appointment_added": {
+    "appointments.appointment_added": {
       en: "Appointment added successfully",
       sw: "Miadi imeongezwa",
       ha: "An ƙara sadarwa",
@@ -1976,7 +1976,7 @@ const translations = {
       rw: "Ibyiringize byongeweho",
       lg: "Omulimo gwongedwa"
     },
-    "calendar.appointment_error": {
+    "appointments.appointment_error": {
       en: "Failed to add appointment",
       sw: "Imeshindwa kuongeza miadi",
       ha: "Ba a iya ƙara sadarwa",
@@ -1989,7 +1989,7 @@ const translations = {
       rw: "Ntibyashobotse kongeraho ibyiringize",
       lg: "Tekyasobodde kwongera omulimo"
     },
-    "calendar.error.customer_name": {
+    "appointments.error.customer_name": {
       en: "Customer name is required (min 2 characters)",
       sw: "Jina la mteja linahitajika (angalau herufi 2)",
       ha: "Ana buƙatar sunan abokin ciniki (aƙalla haruffa 2)",
@@ -2002,7 +2002,7 @@ const translations = {
       rw: "Izina ry'umukiriya rirakenewe (byibuze inyuguti 2)",
       lg: "Erinnya ly'omuguzi lyetaagisa (obunaku ennukuta 2)"
     },
-    "calendar.customer_name_placeholder": {
+    "appointments.customer_name_placeholder": {
       en: "Enter customer name",
       sw: "Weka jina la mteja",
       ha: "Shigar sunan abokin ciniki",
