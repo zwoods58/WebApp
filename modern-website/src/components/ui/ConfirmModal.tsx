@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X } from 'lucide-react';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -52,11 +53,12 @@ export default function ConfirmModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   type = 'danger',
   loading = false
 }: ConfirmModalProps) {
+  const { t } = useLanguage();
   const config = modalConfig[type];
   const Icon = config.icon;
 
@@ -120,7 +122,7 @@ export default function ConfirmModal({
                     disabled={loading}
                     className="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {cancelText}
+                    {cancelText || t('modal.cancel')}
                   </button>
                   <button
                     onClick={onConfirm}
@@ -132,10 +134,10 @@ export default function ConfirmModal({
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Processing...
+                        {t('modal.processing')}
                       </div>
                     ) : (
-                      confirmText
+                      confirmText || t('modal.confirm')
                     )}
                   </button>
                 </div>

@@ -99,7 +99,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
           <div className="flex items-center justify-between mb-6">
             <div className="w-16" />
             <h3 className="text-lg font-semibold text-black">
-              {t('credit.record_payment', 'Record Payment')}
+              {t('payment.record_payment')}
             </h3>
             <button
               onClick={onClose}
@@ -116,28 +116,28 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                 <CheckCircle size={48} className="text-green-600" />
               </div>
               <h3 className="text-xl font-bold text-black mb-2">
-                {t('credit.payment_recorded', 'Payment Recorded!')}
+                {t('payment.payment_recorded')}
               </h3>
               <p className="text-black/70">
-                {t('credit.payment_success_message', 'Payment has been successfully recorded')}
+                {t('payment.payment_success_message')}
               </p>
             </div>
           ) : (
             <>
               <p className="text-sm text-black/70 mb-6">
-                {t('credit.for_customer', 'For')}: <span className="font-semibold text-black">{customer.customer_name}</span>
+                {t('payment.for_customer')}: <span className="font-semibold text-black">{customer.customer_name}</span>
               </p>
 
               {/* Balance Info */}
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/30">
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm text-black/70">{t('credit.original_amount', 'Original Amount')}</span>
+                  <span className="text-sm text-black/70">{t('payment.original_amount')}</span>
                   <span className="font-bold text-black">{formatCurrency(customer.amount, country)}</span>
                 </div>
                 
                 {customer.status === 'partial' && (
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm text-black/70">{t('credit.paid_so_far', 'Paid So Far')}</span>
+                    <span className="text-sm text-black/70">{t('payment.paid_so_far')}</span>
                     <span className="font-bold text-green-600">{formatCurrency(customer.paid_amount, country)}</span>
                   </div>
                 )}
@@ -147,7 +147,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                   <div className={`flex justify-between items-center mb-3 ${overdue ? 'text-red-600' : 'text-black/70'}`}>
                     <span className="text-sm flex items-center gap-1">
                       <Calendar size={14} />
-                      {t('credit.due_date', 'Due Date')}
+                      {t('payment.due_date')}
                     </span>
                     <span className={`font-semibold ${overdue ? 'text-red-600' : 'text-black'}`}>
                       {new Date(customer.due_date).toLocaleDateString()}
@@ -161,14 +161,14 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     <div className="flex items-center gap-2 text-red-600">
                       <AlertCircle size={16} />
                       <span className="text-sm font-medium">
-                        {t('credit.overdue_by', 'Overdue by')}: {daysOverdue} {t('credit.days', 'days')}
+                        {t('payment.overdue_by')}: {daysOverdue} {t('payment.days')}
                       </span>
                     </div>
                   </div>
                 )}
 
                 <div className="flex justify-between items-center pt-3 border-t border-white/30">
-                  <span className="text-sm font-semibold text-black">{t('credit.remaining_balance', 'Remaining Balance')}</span>
+                  <span className="text-sm font-semibold text-black">{t('payment.remaining_balance')}</span>
                   <span className={`text-xl font-bold ${overdue ? 'text-red-600' : 'text-orange-600'}`}>
                     {formatCurrency(remainingBalance, country)}
                   </span>
@@ -179,7 +179,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    {t('credit.payment_amount', 'Payment Amount')}
+                    {t('payment.payment_amount')}
                   </label>
                   <div className="relative">
                     <DollarSign size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" />
@@ -195,7 +195,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     />
                   </div>
                   <p className="text-xs text-black/50 mt-1">
-                    {t('credit.max_payment', 'Maximum')}: {formatCurrency(remainingBalance, country)}
+                    {t('payment.max_payment')}: {formatCurrency(remainingBalance, country)}
                   </p>
                 </div>
 
@@ -207,7 +207,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     <Clock size={20} />
-                    {loading ? t('common.processing', 'Processing...') : t('credit.record_partial_payment', 'Record Partial Payment')}
+                    {loading ? t('modal.processing') : t('payment.record_partial_payment')}
                   </button>
 
                   <button
@@ -217,7 +217,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     <CheckCircle size={20} />
-                    {loading ? t('common.processing', 'Processing...') : t('credit.mark_as_paid', 'Mark as Fully Paid')}
+                    {loading ? t('modal.processing') : t('payment.mark_as_paid')}
                   </button>
 
                   <button
@@ -226,7 +226,7 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     disabled={loading}
                     className="w-full py-3 bg-gray-200/50 text-black font-semibold rounded-xl hover:bg-gray-300/50 transition-colors"
                   >
-                    {t('common.cancel', 'Cancel')}
+                    {t('modal.cancel')}
                   </button>
                 </div>
               </form>

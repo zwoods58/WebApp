@@ -27,35 +27,21 @@ export default function smartTranslate(
     // FIRST: Try universal section for ANY key (most efficient and future-proof)
     if (translations.universal && translations.universal[key]) {
       translation = translations.universal[key];
-      
-      // Apply language selection
-      if (translation && typeof translation === 'object' && !Array.isArray(translation)) {
-        if (language in translation) {
-          let translatedText = translation[language];
-          
-          // Handle variable interpolation
-          if (vars && typeof translatedText === 'string') {
-            for (const [varKey, varValue] of Object.entries(vars)) {
-              translatedText = translatedText.replace(new RegExp(`{{${varKey}}}`, 'g'), String(varValue));
-            }
-          }
-          
-          return translatedText;
-        }
-        
-        // Fallback to English if target language not available
-        if ('en' in translation) {
-          let translatedText = translation.en;
-          
-          // Handle variable interpolation
-          if (vars && typeof translatedText === 'string') {
-            for (const [varKey, varValue] of Object.entries(vars)) {
-              translatedText = translatedText.replace(new RegExp(`{{${varKey}}}`, 'g'), String(varValue));
-            }
-          }
-          
-          return translatedText;
-        }
+    }
+    
+    // Handle nested modal keys (e.g., "modal.update_available")
+    if (!translation && keyParts.length >= 2 && keyParts[0] === 'modal' && translations.universal && translations.universal.modal) {
+      const modalKey = keyParts[1]; // e.g., "update_available"
+      if (translations.universal.modal[modalKey]) {
+        translation = translations.universal.modal[modalKey];
+      }
+    }
+    
+    // Handle nested payment keys (e.g., "payment.for_customer")
+    if (!translation && keyParts.length >= 2 && keyParts[0] === 'payment' && translations.universal && translations.universal.payment) {
+      const paymentKey = keyParts[1]; // e.g., "for_customer"
+      if (translations.universal.payment[paymentKey]) {
+        translation = translations.universal.payment[paymentKey];
       }
     }
     

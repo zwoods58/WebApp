@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, X, Download } from 'lucide-react';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface UpdateModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export default function UpdateModal({
   currentVersion,
   newVersion
 }: UpdateModalProps) {
+  const { t } = useLanguage();
+  
   const handleUpdate = () => {
     if (!isUpdating) {
       onUpdate();
@@ -67,7 +70,7 @@ export default function UpdateModal({
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-[var(--text-1)]">
-                      Update Available
+                      {t('modal.update_available')}
                     </h3>
                   </div>
                   <button
@@ -83,17 +86,17 @@ export default function UpdateModal({
               {/* Body */}
               <div className="px-6 py-4">
                 <p className="text-[var(--text-2)] leading-relaxed mb-4">
-                  A new version is ready to install with the latest features and improvements.
+                  {t('modal.update_description')}
                 </p>
                 
                 {/* Version Info */}
                 <div className="bg-[var(--bg2)] rounded-lg p-3 mb-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[var(--text-3)]">Current:</span>
+                    <span className="text-[var(--text-3)]">{t('modal.current_version')}</span>
                     <span className="font-medium text-[var(--text-2)]">{currentVersion}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm mt-2">
-                    <span className="text-[var(--text-3)]">New:</span>
+                    <span className="text-[var(--text-3)]">{t('modal.new_version')}</span>
                     <span className="font-medium text-[var(--powder-dark)]">{newVersion}</span>
                   </div>
                 </div>
@@ -101,7 +104,7 @@ export default function UpdateModal({
                 {/* 24-hour notice for Later button */}
                 {!isUpdating && (
                   <p className="text-xs text-[var(--text-3)] text-center">
-                    We'll remind you again in 24 hours if you choose "Later"
+                    {t('modal.reminder_24h')}
                   </p>
                 )}
               </div>
@@ -114,7 +117,7 @@ export default function UpdateModal({
                     disabled={isUpdating}
                     className="flex-1 px-4 py-2.5 bg-white border border-[var(--border)] text-[var(--text-1)] rounded-lg font-medium hover:bg-[var(--bg2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Later
+                    {t('modal.later')}
                   </button>
                   <button
                     onClick={handleUpdate}
@@ -124,12 +127,12 @@ export default function UpdateModal({
                     {isUpdating ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Updating...
+                        {t('modal.updating')}
                       </>
                     ) : (
                       <>
                         <RefreshCw size={16} />
-                        Update Now
+                        {t('modal.update_now')}
                       </>
                     )}
                   </button>
