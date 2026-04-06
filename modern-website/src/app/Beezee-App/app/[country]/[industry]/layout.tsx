@@ -1,6 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import UpdateManager from '@/components/UpdateManager';
 import React from 'react';
 
 export default function CountryIndustryLayout({
@@ -17,7 +18,9 @@ export default function CountryIndustryLayout({
             requiredCountry={country} 
             requiredIndustry={industry}
         >
-            {children}
+            <UpdateManager>
+                {children}
+            </UpdateManager>
         </ProtectedRoute>
     );
 }

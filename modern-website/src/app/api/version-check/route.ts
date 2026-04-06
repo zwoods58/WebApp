@@ -8,20 +8,23 @@ export async function GET() {
     const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
     
     // Create version string from deployment info
-    // Format: v{manifest-version}-{short-commit-sha}
-    const manifestVersion = '107';  // Increment this with each release
+    // Format: v{manifest-version} (clean format to prevent double updates)
+    const manifestVersion = '108';  // Increment this with each release
     const shortCommitSha = gitCommitSha.substring(0, 7);
-    const version = `v${manifestVersion}-${shortCommitSha}`;
+    const version = `v${manifestVersion}`; // Clean format: v108
+    const fullVersion = `v${manifestVersion}-${shortCommitSha}`; // Full format with commit
     
     console.log('[Version Check] Returning version:', {
       version,
+      fullVersion,
       deploymentId,
       environment,
       timestamp: new Date().toISOString()
     });
     
     return NextResponse.json({
-      version,
+      version, // Clean format: v107 (prevents double updates)
+      fullVersion, // Full format: v107-abc123f (for reference)
       manifestVersion,
       deploymentId,
       gitCommitSha,
@@ -40,7 +43,7 @@ export async function GET() {
     return NextResponse.json(
       { 
         error: 'Failed to get version info',
-        version: 'v107-error'  // Fallback version
+        version: 'v108-error'  // Fallback version
       },
       { status: 500 }
     );
