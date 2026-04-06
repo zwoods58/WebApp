@@ -426,17 +426,17 @@ const translations = {
       lg: "Tuula" 
     },
     "nav.transactions": { 
-      en: "Transactions",
-      sw: "Muamala", 
-      ha: "Harkokin", 
-      yo: "Awọn iṣe", 
-      ig: "Nzụkọ", 
-      zu: "Amatransactions",
-      xh: "Iqoqo", 
-      af: "Transaksies", 
-      tw: "Nkontabu", 
-      rw: "Amasanzu", 
-      lg: "Emirimu" 
+      en: "Cash",
+      sw: "Pesa", 
+      ha: "Kuɗi", 
+      yo: "Owo", 
+      ig: "Ego", 
+      zu: "Imali",
+      xh: "Imali", 
+      af: "Kontant", 
+      tw: "Sika", 
+      rw: "Amafaranga", 
+      lg: "Ssente" 
     },
     "nav.services": { 
       en: "Services",
@@ -543,17 +543,17 @@ const translations = {
       lg: "Ebiwandiiko" 
     },
     "nav.customers": { 
-      en: "Customers",
-      sw: "Wateja", 
-      ha: "Abokan ciniki", 
-      yo: "Aṣẹwọri", 
-      ig: "Ọnụ ahịa", 
-      zu: "Abakithi",
-      xh: "Abakithi", 
-      af: "Kliënte", 
-      tw: "Akwadufo", 
-      rw: "Abakiriya", 
-      lg: "Abakyaala" 
+      en: "Credit",
+      sw: "Mkopo", 
+      ha: "Bashi", 
+      yo: "Gbese", 
+      ig: "Ụgwọ", 
+      zu: "Isikweletu",
+      xh: "Ityala", 
+      af: "Krediet", 
+      tw: "Ka", 
+      rw: "Umwenda", 
+      lg: "Bbanja" 
     },
     "nav.inventory": { 
       en: "Inventory",

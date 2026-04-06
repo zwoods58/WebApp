@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import UpdateModal from '@/components/ui/UpdateModal';
+import UpdateToast from '@/components/ui/UpdateToast';
 
 interface UpdateManagerProps {
   children: React.ReactNode;
@@ -16,120 +16,97 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
   const queryClient = useQueryClient();
   const { business } = useUnifiedAuth();
   
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [newVersion, setNewVersion] = useState<string | null>(null);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
+  const [toastVersion, setToastVersion] = useState<string>('v108');
   const [currentVersion, setCurrentVersion] = useState<string>('v108');
-  const [laterPressedTime, setLaterPressedTime] = useState<number | null>(null);
 
-  // Check if 24 hours have passed since "Later" was pressed
-  const shouldShowUpdateModal = () => {
-    const laterPressedTime = localStorage.getItem('update-later-timestamp');
-    if (!laterPressedTime) return true;
-    
-    const hoursPassed = (Date.now() - parseInt(laterPressedTime)) / (1000 * 60 * 60);
-    return hoursPassed >= 24;
-  };
-
-  // Handle "Later" button press
-  const handleLater = () => {
-    localStorage.setItem('update-later-timestamp', Date.now().toString());
-    setShowUpdateModal(false);
-  };
-
-  // Clear old caches and reload app
-  const clearOldCachesAndReload = async () => {
+  // Auto-update: Clear caches, store version, and reload
+  const autoUpdateAndReload = async (newVersion: string) => {
     try {
+      console.log('[UpdateManager] 🔄 Auto-updating to:', newVersion);
+      
       // Clear all existing caches
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames.map(cacheName => caches.delete(cacheName))
       );
       
-      // Clear localStorage update timer
-      localStorage.removeItem('update-later-timestamp');
+      // Store flag to show toast after reload
+      localStorage.setItem('show-update-toast', 'true');
+      localStorage.setItem('update-toast-version', newVersion);
       
-      // Get current API version to store the full dynamic version
-      try {
-        const response = await fetch('/api/version-check');
-        const apiData = await response.json();
-        const currentApiVersion = apiData.version; // Full dynamic version: v108-abc123f-1234567890
-        
-        console.log('[UpdateManager] 🔄 Storing full version after update:', currentApiVersion);
-        localStorage.setItem('app-version', currentApiVersion);
-      } catch (error) {
-        console.warn('[UpdateManager] Failed to fetch current version for storage, using fallback:', error);
-        // Fallback to newVersion if API fails
-        if (newVersion) {
-          localStorage.setItem('app-version', newVersion);
-        }
-      }
+      // Store the new version
+      localStorage.setItem('app-version', newVersion);
       
       // Reload app with fresh cache
       window.location.reload();
     } catch (error) {
-      console.error('Cache clear failed:', error);
+      console.error('[UpdateManager] Auto-update failed:', error);
       // Force reload anyway
       window.location.reload();
     }
   };
 
-  // Handle "Update Now" button press
-  const handleUpdateNow = async () => {
-    console.log('[UpdateManager] User clicked Update Now');
-    setIsUpdating(true);
+  // Trigger automatic update
+  const triggerAutoUpdate = async (newVersion: string) => {
+    console.log('[UpdateManager] 🚀 Triggering automatic update');
     
     try {
-      // 1. Get service worker registration
+      // Get service worker registration
       const registration = await navigator.serviceWorker.getRegistration();
       
       if (registration?.waiting) {
-        // 2. Tell waiting service worker to activate
+        // Tell waiting service worker to activate immediately
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         
-        // 3. Listen for controller change (new SW activated)
+        // Listen for controller change (new SW activated)
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-          // 4. Clear old caches and reload with new version
-          clearOldCachesAndReload();
+          autoUpdateAndReload(newVersion);
         });
       } else {
-        // 5. Force service worker update check
+        // Force service worker update check
         if (registration) {
           await registration.update();
           
-          // 6. Check if new version found
           if (registration.waiting) {
             registration.waiting.postMessage({ type: 'SKIP_WAITING' });
             navigator.serviceWorker.addEventListener('controllerchange', () => {
-              clearOldCachesAndReload();
+              autoUpdateAndReload(newVersion);
             });
           } else {
-            // 7. No waiting worker, just reload to get latest from Vercel
-            clearOldCachesAndReload();
+            // No waiting worker, just reload to get latest from Vercel
+            autoUpdateAndReload(newVersion);
           }
         } else {
           // No registration, just reload
-          clearOldCachesAndReload();
+          autoUpdateAndReload(newVersion);
         }
       }
     } catch (error) {
-      console.error('Update failed:', error);
+      console.error('[UpdateManager] Auto-update trigger failed:', error);
       // Fallback: just reload
-      clearOldCachesAndReload();
+      autoUpdateAndReload(newVersion);
     }
   };
 
-  // Initialize current version from localStorage
+  // Initialize and check for toast to show after reload
   useEffect(() => {
     const storedVersion = localStorage.getItem('app-version');
     if (storedVersion) {
       setCurrentVersion(storedVersion);
     }
     
-    // Load later timestamp from localStorage
-    const laterTime = localStorage.getItem('update-later-timestamp');
-    if (laterTime) {
-      setLaterPressedTime(parseInt(laterTime));
+    // Check if we should show toast after update
+    const shouldShowToast = localStorage.getItem('show-update-toast');
+    const toastVer = localStorage.getItem('update-toast-version');
+    
+    if (shouldShowToast === 'true' && toastVer) {
+      setToastVersion(toastVer);
+      setShowUpdateToast(true);
+      
+      // Clear flags
+      localStorage.removeItem('show-update-toast');
+      localStorage.removeItem('update-toast-version');
     }
   }, []);
 
@@ -142,9 +119,6 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     let updateCheckInterval: NodeJS.Timeout;
     
     const checkForUpdate = async () => {
-      // Check if we should show modal (24-hour cooldown)
-      if (!shouldShowUpdateModal()) return;
-      
       try {
         // 1. Get current version from API (always dynamic)
         const response = await fetch('/api/version-check');
@@ -164,8 +138,8 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
         // 2. Check if API version is different (detects ANY deployment change)
         if (currentApiVersion !== storedVersion) {
           console.log('[UpdateManager] 🎉 New deployment detected via API:', currentApiVersion);
-          setNewVersion(cleanApiVersion); // Show clean version to user
-          setShowUpdateModal(true);
+          // Automatically trigger update
+          triggerAutoUpdate(currentApiVersion);
           return;
         }
         
@@ -175,9 +149,9 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
           await registration.update();
           
           if (registration.waiting && navigator.serviceWorker.controller) {
-            console.log('[UpdateManager] 🎉 Service worker update available (user-controlled activation)');
-            setNewVersion(cleanApiVersion);
-            setShowUpdateModal(true);
+            console.log('[UpdateManager] 🎉 Service worker update available');
+            // Automatically trigger update
+            triggerAutoUpdate(currentApiVersion);
             return;
           }
         }
@@ -196,11 +170,11 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     
     // Smart triggers
     const handleVisibilityChange = () => {
-      if (!document.hidden && shouldShowUpdateModal() && business?.id) checkForUpdate();
+      if (!document.hidden && business?.id) checkForUpdate();
     };
     
     const handleOnline = () => {
-      if (shouldShowUpdateModal() && business?.id) checkForUpdate();
+      if (business?.id) checkForUpdate();
     };
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -217,18 +191,12 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     <>
       {children}
       
-      {/* Update Modal - ONLY in authenticated app */}
-      <Suspense fallback={null}>
-        <UpdateModal
-          isOpen={showUpdateModal}
-          onClose={() => setShowUpdateModal(false)}
-          onUpdate={handleUpdateNow}
-          onLater={handleLater}
-          isUpdating={isUpdating}
-          currentVersion={currentVersion}
-          newVersion={newVersion || 'v108'}
-        />
-      </Suspense>
+      {/* Update Toast - Shows after automatic update completes */}
+      <UpdateToast
+        isVisible={showUpdateToast}
+        version={toastVersion}
+        onDismiss={() => setShowUpdateToast(false)}
+      />
     </>
   );
 }
