@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate-version && next build",
+    "build": "npm run generate-version && echo '=== VERSION GENERATED ===' && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",

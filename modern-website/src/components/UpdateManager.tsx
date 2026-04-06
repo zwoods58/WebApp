@@ -49,9 +49,20 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
       // Clear localStorage update timer
       localStorage.removeItem('update-later-timestamp');
       
-      // Update app version in localStorage
-      if (newVersion) {
-        localStorage.setItem('app-version', newVersion);
+      // Get current API version to store the full dynamic version
+      try {
+        const response = await fetch('/api/version-check');
+        const apiData = await response.json();
+        const currentApiVersion = apiData.version; // Full dynamic version: v108-abc123f-1234567890
+        
+        console.log('[UpdateManager] 🔄 Storing full version after update:', currentApiVersion);
+        localStorage.setItem('app-version', currentApiVersion);
+      } catch (error) {
+        console.warn('[UpdateManager] Failed to fetch current version for storage, using fallback:', error);
+        // Fallback to newVersion if API fails
+        if (newVersion) {
+          localStorage.setItem('app-version', newVersion);
+        }
       }
       
       // Reload app with fresh cache

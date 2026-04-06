@@ -158,7 +158,7 @@ self.addEventListener('install', (event) => {
       try {
         // Get dynamic version from API
         const currentVersion = await getCurrentVersion();
-        console.log(`[SW] 📡 Fetched current version: ${currentVersion}`);
+        console.log(`[SW] � Installing service worker version: ${currentVersion}`);
         
         // Update cache names with current version
         cacheNames = updateCacheNames(currentVersion);
@@ -244,7 +244,7 @@ self.addEventListener('activate', (event) => {
       // ✅ USER CONTROL: Don't force client control - wait for user consent
       // await clients.claim(); // REMOVED: Let user control activation
       
-      console.log(`[SW] ✅ Service worker ${CACHE_VERSION} activated (waiting for user consent to claim clients)`);
+      console.log(`[SW] ✅ Service worker ${CURRENT_VERSION} activated (waiting for user consent to claim clients)`);
       
       // Only notify clients if this was user-triggered activation
       if (event.userTriggered) {
@@ -253,7 +253,7 @@ self.addEventListener('activate', (event) => {
         clientsList.forEach(client => {
           client.postMessage({
             type: 'SW_UPDATE_ACTIVATED',
-            version: CACHE_VERSION
+            version: CURRENT_VERSION
           });
         });
         console.log(`[SW] 📢 User-triggered activation complete - notified ${clientsList.length} clients`);
