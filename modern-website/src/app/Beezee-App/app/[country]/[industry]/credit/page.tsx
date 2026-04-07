@@ -850,17 +850,17 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
         </div>
       )}
       
-      {/* Cost / Description - Changed from "Software Cost" to "Cost" */}
+      {/* Description - Changed from "Cost" to "Description" */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Cost <span className="text-gray-400 text-xs">(optional)</span>
+          Description <span className="text-gray-400 text-xs">(optional)</span>
         </label>
         <input
           type="text"
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          placeholder="What was this cost for?"
+          placeholder="What is this credit for?"
         />
       </div>
       

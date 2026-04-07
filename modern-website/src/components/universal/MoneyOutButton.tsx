@@ -266,14 +266,14 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    Cost <span className="text-gray-400 text-xs">(optional)</span>
+                    Description <span className="text-gray-400 text-xs">(optional)</span>
                   </label>
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                    placeholder="What was this cost for?"
+                    placeholder="What is this credit for?"
                   />
                 </div>
 
