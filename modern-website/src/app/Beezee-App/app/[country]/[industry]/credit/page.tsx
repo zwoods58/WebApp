@@ -123,32 +123,22 @@ export default function CreditPage() {
     // Set type based on active tab
     const creditType = activeTab === 'customers' ? 'receivable' : 'payable';
     
-    const fullCreditData = {
-      ...newCredit,
-      business_id: business.id,
-      industry,
-      currency,
-      type: creditType,
-      date_given: new Date().toISOString().split('T')[0],
-      created_at: new Date().toISOString()
-    };
-    
     try {
-      // Create the credit record and get the returned object with ID
-      const creditResult = await addCreditAsync(fullCreditData);
+      // Check for existing customer with exact name match (case-insensitive, trimmed)
+      const existingCredit = creditData.find((c: any) => 
+        c.customer_name.toLowerCase().trim() === newCredit.customer_name.toLowerCase().trim() &&
+        (c.type === creditType || (!c.type && creditType === 'receivable'))
+      );
       
-      // Get the credit ID from the result
-      const creditId = creditResult?.id;
-      
-      console.log('📝 [CreditPage] Created credit with ID:', creditId);
-      
-      // Create initial line item for this credit
-      if (creditId) {
+      if (existingCredit) {
+        // Customer exists - add line item to existing customer
+        console.log('📝 [CreditPage] Adding line item to existing customer:', existingCredit.customer_name);
+        
         await addCreditItemAsync({
-          credit_id: creditId,
+          credit_id: existingCredit.id,
           business_id: business.id,
           industry,
-          description: `Initial credit for ${newCredit.customer_name}`,
+          description: newCredit.description || `Credit purchase for ${newCredit.customer_name}`,
           amount: parseFloat(newCredit.amount),
           paid_amount: 0,
           currency,
@@ -158,12 +148,63 @@ export default function CreditPage() {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         });
-        console.log('✅ [CreditPage] Created initial line item for credit:', creditId);
+        
+        // Update credit total
+        const newTotalAmount = existingCredit.amount + parseFloat(newCredit.amount);
+        await updateCreditAsync({
+          id: existingCredit.id,
+          data: {
+            amount: newTotalAmount,
+            due_date: newCredit.due_date,
+            updated_at: new Date().toISOString()
+          }
+        });
+        
+        console.log('✅ [CreditPage] Added line item and updated total for:', existingCredit.customer_name);
+        showSuccess(`Credit line item added to ${existingCredit.customer_name}`);
       } else {
-        console.warn('⚠️ [CreditPage] No credit ID returned, line item not created');
+        // New customer - create credit account and first line item
+        console.log('📝 [CreditPage] Creating new credit customer:', newCredit.customer_name);
+        
+        const fullCreditData = {
+          ...newCredit,
+          business_id: business.id,
+          industry,
+          currency,
+          type: creditType,
+          date_given: new Date().toISOString().split('T')[0],
+          created_at: new Date().toISOString()
+        };
+        
+        const creditResult = await addCreditAsync(fullCreditData);
+        const creditId = creditResult?.id;
+        
+        console.log('📝 [CreditPage] Created credit with ID:', creditId);
+        
+        // Create initial line item for this credit
+        if (creditId) {
+          await addCreditItemAsync({
+            credit_id: creditId,
+            business_id: business.id,
+            industry,
+            description: newCredit.description || `Initial credit for ${newCredit.customer_name}`,
+            amount: parseFloat(newCredit.amount),
+            paid_amount: 0,
+            currency,
+            status: 'outstanding',
+            due_date: newCredit.due_date,
+            date_given: new Date().toISOString().split('T')[0],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          console.log('✅ [CreditPage] Created initial line item for credit:', creditId);
+        } else {
+          console.warn('⚠️ [CreditPage] No credit ID returned, line item not created');
+        }
+        
+        showSuccess('New credit customer added successfully');
       }
       
-      showSuccess('Credit added successfully');
       setShowAddModal(false);
       // ✅ Force refresh after adding
       await refetch();
@@ -642,7 +683,8 @@ function AddCreditForm({ onSubmit, onCancel, t }: {
   const [formData, setFormData] = useState({
     customer_name: '',
     amount: '',
-    due_date: ''
+    due_date: '',
+    description: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -664,6 +706,19 @@ function AddCreditForm({ onSubmit, onCancel, t }: {
           onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder={t('credit.customer_name')}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('common.description')} ({t('common.optional', 'Optional')})
+        </label>
+        <input
+          type="text"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder={t('credit.description_placeholder', 'What was this credit for?')}
         />
       </div>
 
