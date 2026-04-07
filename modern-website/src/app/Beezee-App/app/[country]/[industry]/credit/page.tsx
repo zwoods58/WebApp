@@ -72,23 +72,16 @@ export default function CreditPage() {
   const overdueCredit = creditData.filter((c: any) => isOverdue(c.due_date || '', c.status));
   
   const totalOwed = creditData.reduce((sum: number, c: any) => {
-    // If status is 'paid', remaining amount is 0
-    if (c.status === 'paid') {
-      console.log(`💳 Credit calculation: ${c.customer_name} - Fully paid, remaining: 0`);
-      return sum + 0;
-    }
-    
-    const remainingAmount = c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount;
-    console.log(`💳 Credit calculation: ${c.customer_name} - Original: ${c.amount}, Paid: ${c.paid_amount || 0}, Status: ${c.status}, Remaining: ${remainingAmount}`);
+    const remainingAmount = c.status === 'paid' ? 0 : 
+                           c.status === 'partial' ? c.amount - (c.paid_amount || 0) : 
+                           c.amount;
+    console.log(`Credit calculation: ${c.customer_name} - Original: ${c.amount}, Paid: ${c.paid_amount || 0}, Status: ${c.status}, Remaining: ${remainingAmount}`);
     return sum + remainingAmount;
   }, 0);
   const overdueAmount = overdueCredit.reduce((sum: number, c: any) => {
-    // If status is 'paid', remaining amount is 0
-    if (c.status === 'paid') {
-      return sum + 0;
-    }
-    
-    const remainingAmount = c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount;
+    const remainingAmount = c.status === 'paid' ? 0 : 
+                           c.status === 'partial' ? c.amount - (c.paid_amount || 0) : 
+                           c.amount;
     return sum + remainingAmount;
   }, 0);
   
@@ -166,6 +159,14 @@ export default function CreditPage() {
     const newStatus = newPaidAmount >= creditRecord.amount ? 'paid' : 
                      newPaidAmount > 0 ? 'partial' : 'outstanding';
     
+    console.log(`Payment processing: ${creditRecord.customer_name}`);
+    console.log(`- Original amount: ${creditRecord.amount}`);
+    console.log(`- Payment amount: ${paymentAmount}`);
+    console.log(`- Current paid: ${currentPaid}`);
+    console.log(`- New paid amount: ${newPaidAmount}`);
+    console.log(`- New status: ${newStatus}`);
+    console.log(`- Remaining balance: ${creditRecord.amount - newPaidAmount}`);
+    
     try {
       // Update credit record with payment - AWAIT to complete before transaction
       await updateCreditAsync({ 
@@ -192,9 +193,10 @@ export default function CreditPage() {
         }
       });
       
-      // ✅ Force refresh to show updated balance
+      // Force refresh to show updated balance
       await refetch();
       
+      console.log(`Payment completed successfully for ${creditRecord.customer_name}`);
       showSuccess('Payment recorded successfully');
       setShowPaymentModal(false);
     } catch (error) {
@@ -209,7 +211,9 @@ export default function CreditPage() {
   };
 
   const generateCreditDetailsText = (creditItem: any): string => {
-    const remainingAmount = creditItem.status === 'partial' ? creditItem.amount - (creditItem.paid_amount || 0) : creditItem.amount;
+    const remainingAmount = creditItem.status === 'paid' ? 0 : 
+                           creditItem.status === 'partial' ? creditItem.amount - (creditItem.paid_amount || 0) : 
+                           creditItem.amount;
     const daysOverdue = creditItem.due_date ? Math.max(0, Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24))) : 0;
     
     let text = `${t('credit.reminder_from', 'Credit Reminder from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
@@ -217,7 +221,7 @@ export default function CreditPage() {
     text += `${t('credit.amount_owed', 'Amount Owed')}: ${formatCurrency(remainingAmount, country)}\n`;
     text += `${t('credit.original_amount', 'Original Amount')}: ${formatCurrency(creditItem.amount, country)}\n`;
     
-    if (creditItem.status === 'partial') {
+    if (creditItem.status === 'partial' || creditItem.status === 'paid') {
       text += `${t('credit.amount_paid', 'Amount Paid')}: ${formatCurrency(creditItem.paid_amount || 0, country)}\n`;
     }
     
@@ -401,7 +405,9 @@ export default function CreditPage() {
           ) : (
             <div className="space-y-3">
               {filteredCredit.map((item: any, index: number) => {
-                const remainingAmount = item.status === 'partial' ? item.amount - item.paid_amount : item.amount;
+                const remainingAmount = item.status === 'paid' ? 0 : 
+                                       item.status === 'partial' ? item.amount - (item.paid_amount || 0) : 
+                                       item.amount;
                 const overdue = isOverdue(item.due_date || '', item.status);
                 
                 return (
@@ -531,6 +537,7 @@ export default function CreditPage() {
               <div className="font-medium text-gray-900 mb-1">{selectedCreditForShare.customer_name}</div>
               <div className="text-sm text-gray-600">
                 {t('credit.amount_owed', 'Amount Owed')}: {formatCurrency(
+                  selectedCreditForShare.status === 'paid' ? 0 :
                   selectedCreditForShare.status === 'partial' 
                     ? selectedCreditForShare.amount - (selectedCreditForShare.paid_amount || 0)
                     : selectedCreditForShare.amount, 
