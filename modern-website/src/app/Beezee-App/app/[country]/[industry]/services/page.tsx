@@ -72,7 +72,7 @@ export default function ServicesPage() {
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending } = useServicesTanStack({ industry, businessId: business?.id });
-  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, isOffline: inventoryOffline } = useInventoryTanStack({ industry, businessId: business?.id });
+  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, deleteInventory: deleteInventoryItemFn, isOffline: inventoryOffline } = useInventoryTanStack({ industry, businessId: business?.id });
   const { data: transactions, isLoading: transactionsLoading, addTransaction, addTransactionAsync, isOffline: transactionsOffline } = useTransactionsTanStack({ industry, businessId: business?.id });
   
   // Ensure services is always an array
