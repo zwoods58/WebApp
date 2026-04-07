@@ -191,7 +191,7 @@ export default function ServicesPage() {
   const updateInventoryItem = industry === 'transport' ? () => {} : updateInventoryItemFn;
   const deleteInventoryItem = industry === 'transport' ? 
     () => {} : 
-    (id: string) => console.log('Delete item:', id); // Simplified for TanStack version
+    deleteInventoryItemFn;
   
   // Tab state for split screen (only show tabs for non-transport industries)
   const [activeTab, setActiveTab] = useState<'services' | 'inventory'>('services');
