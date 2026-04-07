@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Appointment } from './types';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface CalendarViewProps {
   appointments: Appointment[];
@@ -10,9 +11,14 @@ interface CalendarViewProps {
   selectedDate: string | null;
 }
 
-export default function CalendarView({ appointments, onDateSelect, selectedDate }: CalendarViewProps) {
-  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+export default function CalendarView({
+  appointments,
+  onDateSelect,
+  selectedDate
+}: CalendarViewProps) {
+  const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -132,13 +138,13 @@ export default function CalendarView({ appointments, onDateSelect, selectedDate 
         
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-gray-900">
-            {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            {currentDate.toLocaleDateString(t('appointments.locale', 'en-US'), { month: 'long', year: 'numeric' })}
           </h2>
           <button
             onClick={navigateToToday}
             className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Today
+            {t('appointments.today_button', 'Today')}
           </button>
         </div>
 
@@ -153,7 +159,7 @@ export default function CalendarView({ appointments, onDateSelect, selectedDate 
 
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+        {[t('appointments.sun', 'Sun'), t('appointments.mon', 'Mon'), t('appointments.tue', 'Tue'), t('appointments.wed', 'Wed'), t('appointments.thu', 'Thu'), t('appointments.fri', 'Fri'), t('appointments.sat', 'Sat')].map((day) => (
           <div key={day} className="text-center text-xs sm:text-sm font-medium text-gray-600 py-2">
             {day}
           </div>
@@ -169,11 +175,11 @@ export default function CalendarView({ appointments, onDateSelect, selectedDate 
       <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-50 border border-blue-300 rounded"></div>
-          <span>Today</span>
+          <span>{t('appointments.today', 'Today')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-blue-600 rounded-full"></div>
-          <span>Has appointments</span>
+          <span>{t('appointments.has_appointments', 'Has appointments')}</span>
         </div>
       </div>
     </div>

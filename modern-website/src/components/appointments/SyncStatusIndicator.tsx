@@ -5,12 +5,14 @@ import { Wifi, WifiOff, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react
 import { db } from '@/lib/database';
 import { syncManager } from '@/lib/sync-manager';
 import { getNetworkStatus } from '@/lib/network-status';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface SyncStatusIndicatorProps {
   businessId?: string;
 }
 
-export default function SyncStatusIndicator({ businessId }: SyncStatusIndicatorProps) {
+export default function SyncStatusIndicator({ businessId }: { businessId?: string }) {
+  const { t } = useLanguage();
   const [isOnline, setIsOnline] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -64,8 +66,8 @@ export default function SyncStatusIndicator({ businessId }: SyncStatusIndicatorP
         <div className="flex items-center gap-2">
           <WifiOff size={18} className="text-amber-600" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-amber-800">Offline Mode</p>
-            <p className="text-xs text-amber-700">Changes will sync when you're back online</p>
+            <p className="text-sm font-medium text-amber-800">{t('appointments.offline_mode', 'Offline Mode')}</p>
+            <p className="text-xs text-amber-700">{t('appointments.offline_message', 'Changes will sync when you\'re back online')}</p>
           </div>
         </div>
       </div>
@@ -78,9 +80,9 @@ export default function SyncStatusIndicator({ businessId }: SyncStatusIndicatorP
         <div className="flex items-center gap-2">
           <RefreshCw size={18} className="text-blue-600 animate-spin" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-blue-800">Syncing...</p>
+            <p className="text-sm font-medium text-blue-800">{t('appointments.syncing', 'Syncing...')}</p>
             <p className="text-xs text-blue-700">
-              {pendingCount > 0 ? `${pendingCount} changes remaining` : 'Updating data'}
+              {pendingCount > 0 ? `${pendingCount} ${t('appointments.changes_remaining', 'changes remaining')}` : t('appointments.updating_data', 'Updating data')}
             </p>
           </div>
         </div>
@@ -94,14 +96,14 @@ export default function SyncStatusIndicator({ businessId }: SyncStatusIndicatorP
         <div className="flex items-center gap-2">
           <AlertCircle size={18} className="text-yellow-600" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-yellow-800">Pending Changes</p>
-            <p className="text-xs text-yellow-700">{pendingCount} changes waiting to sync</p>
+            <p className="text-sm font-medium text-yellow-800">{t('appointments.pending_changes', 'Pending Changes')}</p>
+            <p className="text-xs text-yellow-700">{pendingCount} {t('appointments.waiting_to_sync', 'changes waiting to sync')}</p>
           </div>
           <button
             onClick={handleManualSync}
             className="px-3 py-1 text-xs bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
           >
-            Sync Now
+            {t('appointments.sync_now', 'Sync Now')}
           </button>
         </div>
       </div>
@@ -113,8 +115,8 @@ export default function SyncStatusIndicator({ businessId }: SyncStatusIndicatorP
       <div className="flex items-center gap-2">
         <CheckCircle size={18} className="text-green-600" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-green-800">All Changes Saved</p>
-          <p className="text-xs text-green-700">Your data is up to date</p>
+          <p className="text-sm font-medium text-green-800">{t('appointments.all_changes_saved', 'All Changes Saved')}</p>
+          <p className="text-xs text-green-700">{t('appointments.data_up_to_date', 'Your data is up to date')}</p>
         </div>
         <Wifi size={18} className="text-green-600" />
       </div>

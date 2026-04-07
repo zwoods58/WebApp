@@ -101,29 +101,29 @@ export default function CreateAppointmentSheet({
     const newErrors: AppointmentFormErrors = {};
     
     if (!formData.customerName.trim()) {
-      newErrors.customerName = 'Customer name is required';
+      newErrors.customerName = t('appointments.customer_name_required', 'Customer name is required');
     } else if (formData.customerName.trim().length < 2) {
-      newErrors.customerName = 'Customer name must be at least 2 characters';
+      newErrors.customerName = t('appointments.customer_name_min_length', 'Customer name must be at least 2 characters');
     }
     
     if (!formData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = t('appointments.date_required', 'Date is required');
     } else if (formData.date < getStableDateString()) {
-      newErrors.date = 'Date cannot be in the past';
+      newErrors.date = t('appointments.date_past', 'Date cannot be in the past');
     }
     
     if (!formData.startTime) {
-      newErrors.startTime = 'Start time is required';
+      newErrors.startTime = t('appointments.start_time_required', 'Start time is required');
     }
     
     if (!formData.endTime) {
-      newErrors.endTime = 'End time is required';
+      newErrors.endTime = t('appointments.end_time_required', 'End time is required');
     } else if (formData.startTime && formData.endTime <= formData.startTime) {
-      newErrors.endTime = 'End time must be after start time';
+      newErrors.endTime = t('appointments.end_time_after_start', 'End time must be after start time');
     }
     
     if (!formData.serviceId) {
-      newErrors.serviceId = 'Please select a service';
+      newErrors.serviceId = t('appointments.service_required', 'Please select a service');
     }
     
     setErrors(newErrors);
@@ -134,12 +134,12 @@ export default function CreateAppointmentSheet({
     e.preventDefault();
     
     if (!validateForm()) {
-      showError('Please fix the errors in the form');
+      showError(t('appointments.fix_form_errors', 'Please fix the errors in the form'));
       return;
     }
     
     if (!business?.id) {
-      showError('No business information available');
+      showError(t('appointments.no_business_info', 'No business information available'));
       return;
     }
     
@@ -195,7 +195,7 @@ export default function CreateAppointmentSheet({
       
     } catch (error) {
       console.error('Error creating appointment:', error);
-      showError('Failed to create appointment. Please try again.');
+      showError(t('appointments.create_error', 'Failed to create appointment. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -290,7 +290,7 @@ export default function CreateAppointmentSheet({
             {/* Customer Name */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                Customer Name <span style={{ color: '#ef4444' }}>*</span>
+                {t('appointments.customer_name', 'Customer Name')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
@@ -306,7 +306,7 @@ export default function CreateAppointmentSheet({
                   outline: 'none',
                   backgroundColor: '#ffffff'
                 }}
-                placeholder="Enter customer name"
+                placeholder={t('appointments.enter_customer_name', 'Enter customer name')}
               />
               {errors.customerName && (
                 <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -319,7 +319,7 @@ export default function CreateAppointmentSheet({
             {/* Customer Contact */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                Customer Contact
+                {t('appointments.customer_contact', 'Customer Contact')}
               </label>
               <input
                 type="tel"
@@ -334,14 +334,14 @@ export default function CreateAppointmentSheet({
                   outline: 'none',
                   backgroundColor: '#ffffff'
                 }}
-                placeholder="Phone number (optional)"
+                placeholder={t('appointments.phone_number_optional', 'Phone number (optional)')}
               />
             </div>
 
             {/* Date */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                Date <span style={{ color: '#ef4444' }}>*</span>
+                {t('appointments.date', 'Date')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="date"

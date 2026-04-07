@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, Clock, User, Calendar, FileText, Trash2 } from 'lucide-react';
 import { Appointment } from './types';
 import { formatDate, getCurrency } from '@/utils/currency';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface AppointmentDetailsSheetProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function AppointmentDetailsSheet({
   onCancel,
   onDelete
 }: AppointmentDetailsSheetProps) {
+  const { t } = useLanguage();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
@@ -38,7 +40,7 @@ export default function AppointmentDetailsSheet({
   if (!portalRoot) return null;
 
   const formatTime = (time: string) => {
-    if (!time) return 'All day';
+    if (!time) return t('appointments.all_day', 'All day');
     
     if (time.includes(':')) {
       const [hour, minute] = time.split(':');
@@ -69,7 +71,7 @@ export default function AppointmentDetailsSheet({
 
   const handleCancel = () => {
     if (!cancelReason.trim()) {
-      alert('Please provide a cancellation reason');
+      alert(t('appointments.provide_cancel_reason', 'Please provide a cancellation reason'));
       return;
     }
     onCancel?.(appointment.id);
@@ -93,7 +95,7 @@ export default function AppointmentDetailsSheet({
       >
         {/* Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Appointment Details</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('appointments.details_title', 'Appointment Details')}</h2>
           <button 
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
@@ -124,7 +126,7 @@ export default function AppointmentDetailsSheet({
               <div className="flex items-start gap-3">
                 <User size={20} className="text-gray-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-500">Customer</p>
+                  <p className="text-sm text-gray-500">{t('appointments.customer', 'Customer')}</p>
                   <p className="text-base font-medium text-gray-900">{appointment.customer_name}</p>
                   {appointment.customer_contact && (
                     <p className="text-sm text-gray-600 mt-1">{appointment.customer_contact}</p>
@@ -135,7 +137,7 @@ export default function AppointmentDetailsSheet({
               <div className="flex items-start gap-3">
                 <Calendar size={20} className="text-gray-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-500">Date & Time</p>
+                  <p className="text-sm text-gray-500">{t('appointments.date_time', 'Date & Time')}</p>
                   <p className="text-base font-medium text-gray-900">
                     {formatDate(appointment.appointment_date)}
                   </p>
@@ -144,7 +146,7 @@ export default function AppointmentDetailsSheet({
                     {appointment.end_time && ` - ${formatTime(appointment.end_time)}`}
                   </p>
                   {appointment.duration > 0 && (
-                    <p className="text-sm text-gray-500 mt-1">Duration: {appointment.duration} minutes</p>
+                    <p className="text-sm text-gray-500 mt-1">{t('appointments.duration', 'Duration')}: {appointment.duration} {t('appointments.minutes', 'min')}</p>
                   )}
                 </div>
               </div>
@@ -152,8 +154,8 @@ export default function AppointmentDetailsSheet({
               <div className="flex items-start gap-3">
                 <Clock size={20} className="text-gray-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-gray-500">Service</p>
-                  <p className="text-base font-medium text-gray-900">{appointment.service_name || 'Service'}</p>
+                  <p className="text-sm text-gray-500">{t('appointments.service', 'Service')}</p>
+                  <p className="text-base font-medium text-gray-900">{appointment.service_name || t('appointments.service', 'Service')}</p>
                   {appointment.metadata?.price && (
                     <p className="text-sm text-gray-600 mt-1">
                       {getCurrency(country)}{appointment.metadata.price}
@@ -166,7 +168,7 @@ export default function AppointmentDetailsSheet({
                 <div className="flex items-start gap-3">
                   <FileText size={20} className="text-gray-400 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500">Notes</p>
+                    <p className="text-sm text-gray-500">{t('appointments.notes', 'Notes')}</p>
                     <p className="text-base text-gray-900 mt-1 whitespace-pre-wrap">{appointment.notes}</p>
                   </div>
                 </div>
@@ -177,7 +179,7 @@ export default function AppointmentDetailsSheet({
             {appointment.syncStatus && (
               <div className="pt-4 border-t border-gray-200">
                 <p className="text-xs text-gray-500">
-                  Sync Status: <span className="font-medium">{appointment.syncStatus}</span>
+                  {t('appointments.sync_status', 'Sync Status')}: <span className="font-medium">{appointment.syncStatus}</span>
                 </p>
               </div>
             )}
@@ -186,20 +188,20 @@ export default function AppointmentDetailsSheet({
             {showDeleteConfirm && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-sm font-medium text-red-900 mb-3">
-                  Are you sure you want to delete this appointment?
+                  {t('appointments.delete_confirm', 'Are you sure you want to delete this appointment?')}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
                     className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                   >
-                    Cancel
+                    {t('appointments.cancel', 'Cancel')}
                   </button>
                   <button
                     onClick={handleDelete}
                     className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                   >
-                    Delete
+                    {t('appointments.delete', 'Delete')}
                   </button>
                 </div>
               </div>
@@ -209,12 +211,12 @@ export default function AppointmentDetailsSheet({
             {showCancelConfirm && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm font-medium text-yellow-900 mb-3">
-                  Cancel this appointment?
+                  {t('appointments.cancel_confirm', 'Cancel this appointment?')}
                 </p>
                 <textarea
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Reason for cancellation (optional)"
+                  placeholder={t('appointments.cancel_reason', 'Reason for cancellation (optional)')}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg mb-3"
                   rows={2}
                   style={{ fontSize: '16px' }}
@@ -233,7 +235,7 @@ export default function AppointmentDetailsSheet({
                     onClick={handleCancel}
                     className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
                   >
-                    Confirm Cancel
+                    {t('appointments.confirm_cancel', 'Confirm Cancel')}
                   </button>
                 </div>
               </div>
