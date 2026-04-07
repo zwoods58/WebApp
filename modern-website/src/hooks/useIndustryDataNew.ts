@@ -169,6 +169,7 @@ export const useIndustryDataNew = ({
             .from('inventory')
             .select('*')
             .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('item_name', { ascending: true });
           freshData = iData || [];
           error = iError;
@@ -177,7 +178,9 @@ export const useIndustryDataNew = ({
           const { data: crData, error: crError } = await supabase
             .from('credit')
             .select('*')
-            .eq('business_id', businessId);
+            .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
+            .order('created_at', { ascending: false });
           freshData = crData || [];
           error = crError;
           break;
@@ -186,6 +189,7 @@ export const useIndustryDataNew = ({
             .from('services')
             .select('*')
             .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('service_name', { ascending: true });
           freshData = sData || [];
           error = sError;
@@ -195,6 +199,7 @@ export const useIndustryDataNew = ({
             .from('appointments')
             .select('*')
             .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('appointment_date', { ascending: true })
             .order('appointment_time', { ascending: true });
           freshData = aData || [];
@@ -205,6 +210,7 @@ export const useIndustryDataNew = ({
             .from('expenses')
             .select('*')
             .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('expense_date', { ascending: false });
           freshData = eData || [];
           error = eError;
@@ -213,7 +219,9 @@ export const useIndustryDataNew = ({
           const { data: tgtData, error: tgtError } = await supabase
             .from('targets')
             .select('*')
-            .eq('business_id', businessId);
+            .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
+            .order('created_at', { ascending: false });
           freshData = tgtData || [];
           error = tgtError;
           break;
@@ -221,7 +229,9 @@ export const useIndustryDataNew = ({
           const { data: gData, error: gError } = await supabase
             .from(table)
             .select('*')
-            .eq('business_id', businessId);
+            .eq('business_id', businessId)
+            .is('deleted_at', 'null') // Filter out soft-deleted records
+            .order('created_at', { ascending: false });
           freshData = gData || [];
           error = gError;
       }
