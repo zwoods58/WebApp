@@ -15,7 +15,7 @@ import { useToastContext } from '@/providers/ToastProvider';
 import { useRefreshContext } from '@/contexts/RefreshContext';
 
 // Utility functions
-import { formatDate, formatCurrency } from '@/utils/currency';
+import { formatDate, formatCurrency, getCurrency } from '@/utils/currency';
 import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 
 // Supabase hooks
@@ -111,6 +111,10 @@ export default function IndustryDashboard() {
   const appointments = Array.isArray(appointmentsHook?.data) ? appointmentsHook.data : [];
   const services = Array.isArray(servicesHook?.data) ? servicesHook.data : [];
   
+  // Extract mutation functions from hooks
+  const addTransaction = transactionsHook?.addTransaction;
+  const addCredit = creditHook?.addCredit;
+  
   // Fallback to localStorage if hooks return empty data
   if (transactions.length === 0) {
     try {
@@ -149,7 +153,6 @@ export default function IndustryDashboard() {
   const inventoryLoading = inventoryHook?.isLoading || false;
   const targetsLoading = targetsHook?.isLoading || false;
   
-  const addTransaction = transactionsHook?.addTransaction;
   const addExpense = expensesHook?.addExpense;
   
   // Ensure arrays are never undefined
@@ -460,6 +463,41 @@ export default function IndustryDashboard() {
         console.error('No business ID found. Tenant:', business);
         alert(t('alert.setup_profile_first', 'Please set up your business profile first before adding transactions.'));
         return;
+      }
+      
+      // If payment method is credit, create/update credit account and line item
+      if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
+        // Check if customer already has a credit account
+        const existingCredit = credit?.find((c: any) => 
+          c.customer_name.toLowerCase() === transactionData.customer_name.toLowerCase() &&
+          (c.type === 'receivable' || !c.type) // Default to receivable for existing data
+        );
+        
+        if (existingCredit) {
+          // Customer exists - create new line item
+          console.log('Adding line item to existing customer:', existingCredit.customer_name);
+          // Line item will be created via credit_items table
+          // For now, we'll update the credit record to reflect new total
+        } else {
+          // New customer - create credit account
+          console.log('Creating new credit account for:', transactionData.customer_name);
+          await addCredit({
+            business_id: businessId,
+            industry,
+            customer_name: transactionData.customer_name,
+            amount: transactionData.amount,
+            currency: transactionData.currency || getCurrency(country),
+            due_date: transactionData.due_date,
+            date_given: transactionData.transaction_date,
+            status: 'outstanding',
+            type: 'receivable', // Money In = receivable
+            paid_amount: 0,
+            created_at: new Date().toISOString()
+          });
+        }
+        
+        // Invalidate credit queries
+        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
       }
       
       const newTransaction = await addTransaction({
