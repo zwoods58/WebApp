@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import smartTranslate from '../smart-translation.js';
+import smartTranslate from '../translations/smart-translation.js';
 
 interface LanguageContextType {
   currentLanguage: string;
@@ -29,6 +29,13 @@ interface LanguageProviderProps {
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, industry = 'retail' }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
+
+  // Debug: Log industry parameter
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('LanguageContext Debug - Industry parameter:', industry);
+    }
+  }, [industry]);
 
   const supportedLanguages = ['en', 'sw', 'ha', 'yo', 'ig', 'zu', 'xh', 'af', 'tw', 'rw', 'lg'];
   
@@ -61,7 +68,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
   };
 
   const t = (key: string, defaultText?: string, vars?: Record<string, any>) => {
-    return smartTranslate(key, currentLanguage, industry, defaultText, vars);
+    // Debug: Log industry parameter for appointment keys
+    if (key.startsWith('appointments.') && process.env.NODE_ENV === 'development') {
+      console.log('Translation Debug:', { key, language: currentLanguage, industry, defaultText });
+    }
+    
+    const result = smartTranslate(key, currentLanguage, industry, defaultText, vars);
+    
+    // Debug: Log result for appointment keys
+    if (key.startsWith('appointments.') && process.env.NODE_ENV === 'development') {
+      console.log('Translation Result:', result);
+    }
+    
+    return result;
   };
 
   return (

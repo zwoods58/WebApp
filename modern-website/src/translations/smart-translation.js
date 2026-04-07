@@ -18,21 +18,29 @@ export default function smartTranslate(
   vars
 ) {
   try {
+    // Debug for appointment keys
+    if (key.startsWith('appointments.') && process.env.NODE_ENV === 'development') {
+      console.log('Smart Translate Input:', { key, language, industry, defaultText });
+    }
+    
     // Split the key into parts (e.g., 'tailor.orders.title' -> ['tailor', 'orders', 'title'])
     const keyParts = key.split('.');
     
     // Try to find the translation in the translations object
     let translation = null;
+    let translationSource = 'none';
     
     // FIRST: For appointment keys, always prioritize universal section
     // This ensures appointments work consistently across all industries
     if (key.startsWith('appointments.') && translations.universal && translations.universal[key]) {
       translation = translations.universal[key];
+      translationSource = 'universal (appointments priority)';
     }
     
     // SECOND: Try universal section for ANY key (most efficient and future-proof)
     if (!translation && translations.universal && translations.universal[key]) {
       translation = translations.universal[key];
+      translationSource = 'universal (general)';
     }
     
     // Handle nested modal keys (e.g., "modal.update_available")
@@ -110,11 +118,23 @@ export default function smartTranslate(
         // For industry-specific sections, the full key is stored (e.g., "tailor.jobs")
         // So we look for the complete key, not navigate through parts
         translation = translations[industrySection][key];
+        translationSource = `industry-specific (${industrySection})`;
         
         // If industry-specific translation is not found, fall back to universal
         if (!translation && translations.universal && translations.universal[key]) {
           translation = translations.universal[key];
+          translationSource = 'universal (industry fallback)';
         }
+      }
+    }
+    
+    // Debug for appointment keys
+    if (key.startsWith('appointments.') && process.env.NODE_ENV === 'development') {
+      console.log('Translation Source:', translationSource);
+      console.log('Translation Found:', !!translation);
+      if (translation) {
+        console.log('Available Languages:', Object.keys(translation));
+        console.log('Selected Language:', language, 'Available?', language in translation);
       }
     }
     
@@ -150,7 +170,15 @@ export default function smartTranslate(
     }
     
     // If no translation found, return default text or key
-    return defaultText || key;
+    const finalResult = defaultText || key;
+    
+    // Debug for appointment keys
+    if (key.startsWith('appointments.') && process.env.NODE_ENV === 'development') {
+      console.log('Final Result:', finalResult);
+      console.log('=== End Smart Translate Debug ===');
+    }
+    
+    return finalResult;
     
   } catch (error) {
     console.error('Translation error:', error);

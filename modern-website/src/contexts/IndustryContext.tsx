@@ -34,13 +34,25 @@ export const IndustryProvider: React.FC<IndustryProviderProps> = ({ children }) 
     // Pattern: /Beezee-App/app/[country]/[industry]/...
     const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
     
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Industry Context Debug:', { pathname, pathMatch });
+    }
+    
     if (pathMatch) {
       const extractedCountry = pathMatch[1];
       const extractedIndustry = pathMatch[2];
       
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Extracted:', { country: extractedCountry, industry: extractedIndustry });
+      }
+      
       if (extractedCountry && extractedIndustry) {
         setCountry(extractedCountry);
         setIndustry(extractedIndustry);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Industry Context Updated:', { country: extractedCountry, industry: extractedIndustry });
+        }
       }
     }
   }, [pathname]);
