@@ -542,8 +542,42 @@ export default function IndustryDashboard() {
         return;
       }
       
+      // If payment method is credit, create/update payable credit account
+      if (expenseData.payment_method === 'credit' && expenseData.supplier_name) {
+        // Check if supplier already has a credit account
+        const existingCredit = credit?.find((c: any) => 
+          c.customer_name.toLowerCase() === expenseData.supplier_name.toLowerCase() &&
+          c.type === 'payable'
+        );
+        
+        if (existingCredit) {
+          // Supplier exists - create new line item
+          console.log('Adding line item to existing supplier:', existingCredit.customer_name);
+          // Line item will be created via credit_items table
+        } else {
+          // New supplier - create credit account
+          console.log('Creating new payable credit account for:', expenseData.supplier_name);
+          await addCredit({
+            business_id: businessId,
+            industry,
+            customer_name: expenseData.supplier_name, // Using customer_name field for supplier
+            amount: expenseData.amount,
+            currency: expenseData.currency || getCurrency(country),
+            due_date: expenseData.due_date,
+            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
+            status: 'outstanding',
+            type: 'payable', // Money Out = payable
+            paid_amount: 0,
+            created_at: new Date().toISOString()
+          });
+        }
+        
+        // Invalidate credit queries
+        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
+      }
+      
       // Remove payment_method from expense data as it doesn't exist in the database
-      const { payment_method, ...cleanExpenseData } = expenseData;
+      const { payment_method, supplier_name, due_date, ...cleanExpenseData } = expenseData;
       
       if (addExpense) {
         await addExpense({
