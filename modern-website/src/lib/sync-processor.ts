@@ -251,29 +251,25 @@ export class SyncProcessor {
   }
 
   /**
-   * Sync DELETE operation to Supabase
+   * Sync DELETE operation to Supabase - HARD DELETE
    */
   private async syncDelete(table: string, id: string, userId?: string): Promise<void> {
-    // Soft delete with user context and timestamp
-    const updateData: any = {
-      deleted_at: new Date().toISOString(),
-    };
-    
-    if (userId) {
-      updateData.deleted_by = userId;
-    }
+    // HARD DELETE - permanently remove from database
+    console.log(`[syncDelete] Hard deleting ${table} item: ${id}`);
 
     const { error } = await supabase
       .from(table)
-      .update(updateData)
+      .delete()  // HARD DELETE
       .eq('id', id);
 
     if (error) {
       throw new Error(`Supabase DELETE failed: ${error.message}`);
     }
 
-    // Remove from local cache
+    // Remove from local cache (already implemented)
     await db.table(table as any).delete(id);
+    
+    console.log(`[syncDelete] ✅ Hard deleted ${table} item: ${id}`);
   }
 
   /**

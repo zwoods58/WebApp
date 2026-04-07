@@ -446,30 +446,26 @@ export default function ServicesPage() {
     try {
       console.log(`🗑️ [ServicesPage] Starting comprehensive delete for service:`, { id: serviceId, name: serviceName });
       
-      // Step 1: Mark as deleted in sync manager
-      const { syncManager } = await import('@/lib/sync-manager');
-      syncManager.markAsDeleted('services', serviceId);
-      
-      // Step 2: Hard delete from Supabase
+      // Step 1: Hard delete from Supabase (no soft delete tracking needed)
       await deleteServiceFn(serviceId);
       
-      // Step 3: Clear from all local storage immediately
+      // Step 2: Clear from all local storage immediately
       const storageKey = `services_${business?.id}`;
       localStorage.removeItem(storageKey);
       
-      // Step 4: Remove from persistent storage state
+      // Step 3: Remove from persistent storage state
       setPersistentServices(prev => prev.filter(s => s.id !== serviceId));
       
-      // Step 5: Clear from React Query cache
+      // Step 4: Clear from React Query cache
       queryClient.removeQueries({ queryKey: ['services', industry, business?.id] });
       
-      // Step 6: Force refetch
+      // Step 5: Force refetch
       await refetchServices();
       
-      // Step 7: Show success
+      // Step 6: Show success
       showSuccess(t('services.delete_success', `"${serviceName}" permanently deleted`));
       
-      // Step 8: Close any open modals
+      // Step 7: Close any open modals
       setShowServiceDetail(null);
       
       console.log(`✅ [ServicesPage] Comprehensive delete complete for service:`, serviceName);
@@ -615,27 +611,23 @@ export default function ServicesPage() {
     try {
       console.log(`🗑️ [ServicesPage] Starting comprehensive delete for inventory item:`, { id: itemId, name: itemName });
       
-      // Step 1: Mark as deleted in sync manager
-      const { syncManager } = await import('@/lib/sync-manager');
-      syncManager.markAsDeleted('inventory', itemId);
-      
-      // Step 2: Hard delete from Supabase
+      // Step 1: Hard delete from Supabase (no soft delete tracking needed)
       await deleteInventoryItem(itemId);
       
-      // Step 3: Clear from all local storage immediately
+      // Step 2: Clear from all local storage immediately
       const storageKey = `inventory_${business?.id}`;
       localStorage.removeItem(storageKey);
       
-      // Step 4: Remove from persistent storage state
+      // Step 3: Remove from persistent storage state
       setPersistentInventory(prev => prev.filter(i => i.id !== itemId));
       
-      // Step 5: Clear from React Query cache
+      // Step 4: Clear from React Query cache
       queryClient.removeQueries({ queryKey: ['inventory', industry, business?.id] });
       
-      // Step 6: Force refetch
+      // Step 5: Force refetch
       await refetchInventory();
       
-      // Step 7: Show success
+      // Step 6: Show success
       showSuccess(`"${itemName}" permanently deleted`);
       
       console.log(`✅ [ServicesPage] Comprehensive delete complete for inventory item:`, itemName);
@@ -730,10 +722,6 @@ export default function ServicesPage() {
         console.log(`Storage key: ${key}`, value ? JSON.parse(value).length : 'null');
       }
     }
-    
-    // Check deleted items tracking
-    const deletedItems = syncManager.getDeletedItems();
-    console.log('Deleted items tracked:', deletedItems);
     
     // Check React Query cache
     const servicesCache = queryClient.getQueryData(['services', industry, business?.id]) as any[] || [];
