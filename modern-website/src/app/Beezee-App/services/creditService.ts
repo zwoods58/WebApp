@@ -451,6 +451,58 @@ export async function makePaymentOnLineItem(
 }
 
 /**
+ * Get all payable credit customers (who YOU owe money to)
+ * For Money Out functionality
+ */
+export async function getPayableCustomers(businessId: string): Promise<CreditCustomer[]> {
+  try {
+    const { data, error } = await supabase
+      .from('credit')
+      .select('*')
+      .eq('business_id', businessId)
+      .eq('type', 'payable')
+      .order('customer_name', { ascending: true });
+    
+    if (error) {
+      console.error(' [creditService] Error fetching payable customers:', error);
+      return [];
+    }
+    
+    console.log(` [creditService] Found ${data?.length || 0} payable customers`);
+    return data || [];
+  } catch (error) {
+    console.error(' [creditService] Error in getPayableCustomers:', error);
+    return [];
+  }
+}
+
+/**
+ * Get all receivable credit customers (who owe YOU money)
+ * For Money In functionality
+ */
+export async function getReceivableCustomers(businessId: string): Promise<CreditCustomer[]> {
+  try {
+    const { data, error } = await supabase
+      .from('credit')
+      .select('*')
+      .eq('business_id', businessId)
+      .eq('type', 'receivable')
+      .order('customer_name', { ascending: true });
+    
+    if (error) {
+      console.error(' [creditService] Error fetching receivable customers:', error);
+      return [];
+    }
+    
+    console.log(` [creditService] Found ${data?.length || 0} receivable customers`);
+    return data || [];
+  } catch (error) {
+    console.error(' [creditService] Error in getReceivableCustomers:', error);
+    return [];
+  }
+}
+
+/**
  * Get all credit customers for a business
  */
 export async function getCreditCustomers(

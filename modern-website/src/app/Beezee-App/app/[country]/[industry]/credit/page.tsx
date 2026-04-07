@@ -18,6 +18,7 @@ import PaymentModal from '@/components/universal/PaymentModal';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
 import AddCreditLineItemModal from '@/components/credit/AddCreditLineItemModal';
 import CreditCustomerCard from '@/components/credit/CreditCustomerCard';
+import PayableCreditCard from '@/components/credit/PayableCreditCard';
 
 export default function CreditPage() {
   const params = useParams();
@@ -508,16 +509,27 @@ export default function CreditPage() {
           ) : (
             <div className="space-y-3">
               {filteredCredit.map((item: any, index: number) => (
-                <CreditCustomerCard
-                  key={item.id || index}
-                  customer={item}
-                  country={country}
-                  industry={industry}
-                  businessId={business?.id}
-                  onCustomerClick={handleCustomerClick}
-                  isExpanded={expandedCustomers.has(item.id || index.toString())}
-                  onToggleExpand={handleToggleExpand}
-                />
+                activeTab === 'customers' ? (
+                  <CreditCustomerCard
+                    key={item.id || index}
+                    customer={item}
+                    country={country}
+                    industry={industry}
+                    businessId={business?.id}
+                    onCustomerClick={handleCustomerClick}
+                    isExpanded={expandedCustomers.has(item.id || index.toString())}
+                    onToggleExpand={handleToggleExpand}
+                  />
+                ) : (
+                  <PayableCreditCard
+                    key={item.id || index}
+                    credit={item}
+                    country={country}
+                    industry={industry}
+                    businessId={business?.id}
+                    onRefresh={refetch}
+                  />
+                )
               ))}
             </div>
           )}

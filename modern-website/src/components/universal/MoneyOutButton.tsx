@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Minus, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { getPayableCustomers, addCreditUnified, CreditCustomer } from '@/app/Beezee-App/services/creditService';
 
 interface MoneyOutButtonProps {
   industry: string;
@@ -24,12 +26,19 @@ const industryLabels = {
 
 export default function MoneyOutButton({ industry, country, onSuccess, disabled = false }: MoneyOutButtonProps) {
   const { t } = useLanguage();
+  const { business } = useUnifiedAuth();
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [creditCustomers, setCreditCustomers] = useState<CreditCustomer[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<string>('');
+  const [newCustomerName, setNewCustomerName] = useState<string>('');
+  const [showCustomerSelect, setShowCustomerSelect] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
     category: 'supplies',
-    payment_method: 'cash'
+    payment_method: 'cash',
+    due_date: ''
   });
 
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
@@ -38,9 +47,36 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
   // Close modal handler
   const closeModal = () => setShowModal(false);
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Load payable customers when modal opens or payment method changes to credit
+  useEffect(() => {
+    if (showModal && formData.payment_method === 'credit' && business?.id) {
+      loadPayableCustomers();
+    }
+  }, [showModal, formData.payment_method, business?.id]);
+
+  const loadPayableCustomers = async () => {
+    if (!business?.id) return;
     
+    try {
+      const customers = await getPayableCustomers(business.id);
+      setCreditCustomers(customers);
+      setShowCustomerSelect(true);
+      console.log(`[MoneyOutButton] Loaded ${customers.length} payable customers`);
+    } catch (error) {
+      console.error('[MoneyOutButton] Error loading payable customers:', error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Handle credit payments differently
+    if (formData.payment_method === 'credit') {
+      await handleCreditPayment();
+      return;
+    }
+
+    // Handle regular payments
     const expenseData = {
       amount: parseFloat(formData.amount),
       currency: getCurrency(country),
@@ -51,12 +87,73 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
 
     onSuccess(expenseData);
     setShowModal(false);
-    setFormData({ amount: '', description: '', category: 'supplies', payment_method: 'cash' });
+    setFormData({ amount: '', description: '', category: 'supplies', payment_method: 'cash', due_date: '' });
+  };
+
+  const handleCreditPayment = async () => {
+    if (!business?.id) {
+      alert('Business ID not found');
+      return;
+    }
+
+    const customerName = selectedCustomer || newCustomerName;
+    if (!customerName || customerName.trim() === '') {
+      alert('Please select who you owe money to or enter a new name');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await addCreditUnified(
+        customerName.trim(),
+        parseFloat(formData.amount),
+        formData.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        formData.description || `Cost - ${formData.category || 'General'}`,
+        business.id,
+        industry,
+        getCurrency(country),
+        'payable'  // KEY: 'payable' for money out (who YOU owe)
+      );
+
+      if (!result) {
+        throw new Error('Failed to add credit payment');
+      }
+
+      if (result.isNew) {
+        alert(`New vendor "${customerName}" created. You owe them ${getCurrency(country)} ${formData.amount}`);
+      } else {
+        alert(`${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}`);
+      }
+
+      // Create expense record as well
+      const expenseData = {
+        amount: parseFloat(formData.amount),
+        currency: getCurrency(country),
+        description: formData.description,
+        category: formData.category,
+        expense_date: new Date().toISOString().split('T')[0],
+        payment_method: 'credit',
+        customer_name: customerName
+      };
+
+      onSuccess(expenseData);
+      setShowModal(false);
+      setFormData({ amount: '', description: '', category: 'supplies', payment_method: 'cash', due_date: '' });
+      setSelectedCustomer('');
+      setNewCustomerName('');
+
+    } catch (error: any) {
+      console.error('[MoneyOutButton] Credit payment failed:', error);
+      alert(error.message || 'Failed to process credit payment');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <>
-      {/* ✅ REPLACED: motion.button with CSS button-tap class */}
+      {/* Money Out Button */}
       <button
         onClick={() => {
           if (disabled) return;
@@ -74,10 +171,10 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
         {t('common.money_out')}
       </button>
 
-      {/* ✅ REPLACED: AnimatePresence with CSS-based show/hide */}
+      {/* Modal */}
       {showModal && (
         <>
-          {/* BACKDROP - 100% SOLID WHITE - NO TRANSPARENCY */}
+          {/* BACKDROP */}
           <div
             onClick={closeModal}
             style={{
@@ -121,6 +218,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Amount */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
                     {(industry === 'transport' || industry === 'services') && formData.category === 'transport' 
@@ -164,19 +262,21 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   </div>
                 </div>
 
+                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    {t('common.description')}
+                    Cost <span className="text-gray-400 text-xs">(optional)</span>
                   </label>
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                    placeholder={t('common.description_placeholder', 'What was this for?')}
+                    placeholder="What was this cost for?"
                   />
                 </div>
 
+                {/* Category */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
                     {t('common.category', 'Category')}
@@ -190,6 +290,64 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   />
                 </div>
 
+                {/* Credit Payment UI - Show when payment method is credit */}
+                {formData.payment_method === 'credit' && (
+                  <>
+                    {/* Customer/Vendor Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
+                        Who do you owe? <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={selectedCustomer}
+                        onChange={(e) => setSelectedCustomer(e.target.value)}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)]"
+                      >
+                        <option value="">Select a vendor or person...</option>
+                        {creditCustomers.map((customer) => (
+                          <option key={customer.id} value={customer.customer_name}>
+                            {customer.customer_name} - Owed: {getCurrency(country)} {customer.amount}
+                          </option>
+                        ))}
+                      </select>
+                      {creditCustomers.length === 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          No vendors found. Enter a new vendor name below.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* New Customer Name */}
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
+                        New vendor name <span className="text-gray-400 text-xs">(if not listed above)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={newCustomerName}
+                        onChange={(e) => setNewCustomerName(e.target.value)}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                        placeholder="Enter vendor or person name"
+                      />
+                    </div>
+
+                    {/* Due Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
+                        Due Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.due_date}
+                        onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+                        className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)]"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Payment Method */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
                     {t('payment_method', 'Payment Method')}
@@ -217,8 +375,8 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   </div>
                 </div>
 
+                {/* Action Buttons */}
                 <div className="pt-4 space-y-3">
-                  {/* Cancel Button */}
                   <button
                     type="button"
                     onClick={closeModal}
@@ -227,12 +385,12 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     Cancel
                   </button>
 
-                  {/* Existing Submit Button - Keep orange gradient */}
                   <button
                     type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap"
+                    disabled={isSubmitting}
+                    className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {t('common.save')} {t('common.transaction', 'Transaction')}
+                    {isSubmitting ? 'Processing...' : t('common.save') + ' ' + t('common.transaction', 'Transaction')}
                   </button>
                 </div>
               </form>
