@@ -100,7 +100,7 @@ export default function AppointmentList({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('appointments.appointments')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('appointments.appointments', 'Appointments')}</h3>
           <p className="text-sm text-gray-500">{t('appointments.today_count', `${todayAppointments.length} today`)}</p>
         </div>
         <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -217,14 +217,14 @@ export default function AppointmentList({
           onClick={onManageAppointments}
           className="flex-1 py-2 px-3 text-blue-600 font-medium text-sm hover:bg-blue-50 rounded-lg transition-colors"
         >
-          {t('appointments.manage_appointments')}
+          {t('appointments.manage_appointments', 'Manage Appointments')}
         </button>
         <button
           onClick={onScheduleAppointment}
           className="flex-1 py-2 px-3 bg-purple-500 text-white font-medium text-sm hover:bg-purple-600 rounded-lg transition-colors flex items-center justify-center gap-1"
         >
           <Plus size={16} />
-          {t('appointments.add_appointment')}
+          {t('appointments.add_appointment', 'Add Appointment')}
         </button>
       </div>
 
