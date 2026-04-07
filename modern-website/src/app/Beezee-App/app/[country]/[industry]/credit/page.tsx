@@ -15,6 +15,7 @@ import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
 import AddCreditLineItemModal from '@/components/credit/AddCreditLineItemModal';
+import CreditCustomerCard from '@/components/credit/CreditCustomerCard';
 
 export default function CreditPage() {
   const params = useParams();
@@ -57,6 +58,7 @@ export default function CreditPage() {
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
   const [showAddLineItemModal, setShowAddLineItemModal] = useState(false);
+  const [expandedCustomers, setExpandedCustomers] = useState<Set<string>>(new Set());
 
   // Calculate credit statistics from data
   // Helper function to check if credit is overdue
@@ -230,6 +232,18 @@ export default function CreditPage() {
     // Close payment modal and open add line item modal
     setShowPaymentModal(false);
     setShowAddLineItemModal(true);
+  };
+
+  const handleToggleExpand = (customerId: string) => {
+    setExpandedCustomers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(customerId)) {
+        newSet.delete(customerId);
+      } else {
+        newSet.add(customerId);
+      }
+      return newSet;
+    });
   };
 
   const generateCreditDetailsText = (creditItem: any): string => {
@@ -472,97 +486,18 @@ export default function CreditPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredCredit.map((item: any, index: number) => {
-                const remainingAmount = item.status === 'paid' ? 0 : 
-                                       item.status === 'partial' ? item.amount - (item.paid_amount || 0) : 
-                                       item.amount;
-                const overdue = isOverdue(item.due_date || '', item.status);
-                
-                return (
-                  <div 
-                    key={item.id || index}
-                    onClick={() => handleCustomerClick(item)}
-                    className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-all ${
-                      overdue 
-                        ? 'bg-red-50 border-red-200 hover:bg-red-100' 
-                        : item.status === 'paid'
-                        ? 'bg-green-50 border-green-200 hover:bg-green-100'
-                        : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        {getStatusIcon(item.status)}
-                        <div>
-                          <div className="font-medium text-gray-900">{item.customer_name}</div>
-                          <div className="text-xs text-gray-500">
-                            Given: {new Date(item.date_given).toLocaleDateString()}
-                            {overdue && (
-                              <span className="text-red-600 ml-2 font-medium">
-                                {Math.max(0, Math.ceil((new Date().getTime() - new Date(item.due_date || '').getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="font-bold text-gray-900">
-                          {formatCurrency(remainingAmount, country)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Due: {new Date(item.due_date || '').toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className={`text-xs px-2 py-1 rounded-full inline-block ${getStatusColor(item.status)}`}>
-                        {item.status}
-                      </div>
-                      
-                      {/* Copy and Share Buttons */}
-                      <div className="flex gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopyCreditDetails(item);
-                          }}
-                          className={`p-1.5 rounded-lg transition-colors ${
-                            copiedCredit === item.id
-                              ? 'bg-green-100 text-green-600'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
-                          title={copiedCredit === item.id ? t('common.copied', 'Copied!') : t('common.copy', 'Copy Details')}
-                        >
-                          <Copy size={14} />
-                        </button>
-                        
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShareCredit(item);
-                          }}
-                          className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                          title={t('credit.share_via_whatsapp', 'Share via WhatsApp')}
-                        >
-                          <MessageSquare size={14} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {item.status === 'partial' && (
-                      <div className="mt-2 pt-2 border-t border-gray-200">
-                        <div className="flex justify-between text-xs text-gray-600">
-                          <span>{t('credit.original')}: {formatCurrency(item.amount, country)}</span>
-                          <span>{t('credit.paid')}: {formatCurrency(item.paid_amount || 0, country)}</span>
-                          <span>{t('credit.remaining')}: {formatCurrency(remainingAmount, country)}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {filteredCredit.map((item: any, index: number) => (
+                <CreditCustomerCard
+                  key={item.id || index}
+                  customer={item}
+                  country={country}
+                  industry={industry}
+                  businessId={business?.id}
+                  onCustomerClick={handleCustomerClick}
+                  isExpanded={expandedCustomers.has(item.id || index.toString())}
+                  onToggleExpand={handleToggleExpand}
+                />
+              ))}
             </div>
           )}
         </div>
