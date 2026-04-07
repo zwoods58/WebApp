@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
-import { X, DollarSign, CheckCircle, Clock, AlertCircle, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, DollarSign, CheckCircle, Clock, AlertCircle, Calendar, Plus, History } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useCreditItems, applyPaymentFIFO, calculateTotalOwed } from '@/hooks/useCreditItems';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -15,21 +17,48 @@ interface PaymentModalProps {
     paid_amount: number;
     status: string;
     due_date?: string;
+    type?: 'receivable' | 'payable';
   };
   country: string;
+  industry?: string;
   onPayment: (creditId: string, paymentAmount: number) => Promise<void>;
+  onAddNewCredit?: () => void;
 }
 
-export default function PaymentModal({ isOpen, onClose, customer, country, onPayment }: PaymentModalProps) {
+export default function PaymentModal({ isOpen, onClose, customer, country, industry = 'retail', onPayment, onAddNewCredit }: PaymentModalProps) {
   const { t } = useLanguage();
+  const { business } = useUnifiedAuth();
   const [paymentAmount, setPaymentAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  
+  // Fetch credit line items for this customer
+  const { 
+    data: lineItems = [], 
+    isLoading: itemsLoading,
+    updateCreditItem,
+    updateCreditItemAsync,
+    refetch: refetchItems
+  } = useCreditItems({ 
+    businessId: business?.id,
+    industry,
+    creditId: customer.id 
+  });
 
-  const remainingBalance = customer.status === 'paid' ? 0 :
-    customer.status === 'partial' 
-    ? customer.amount - (customer.paid_amount || 0)
-    : customer.amount;
+  // Calculate remaining balance from line items if they exist, otherwise use legacy calculation
+  const remainingBalance = lineItems.length > 0 
+    ? calculateTotalOwed(lineItems)
+    : customer.status === 'paid' ? 0 :
+      customer.status === 'partial' 
+      ? customer.amount - (customer.paid_amount || 0)
+      : customer.amount;
+  
+  // Separate active and paid line items
+  const activeItems = lineItems.filter(item => item.status !== 'paid');
+  const paidItems = lineItems.filter(item => item.status === 'paid');
+  
+  const isPaidInFull = remainingBalance === 0;
 
   // Calculate overdue status
   const isOverdue = () => {
@@ -57,7 +86,29 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
 
     setLoading(true);
     try {
+      // If line items exist, apply FIFO payment logic
+      if (lineItems.length > 0) {
+        const { updates } = applyPaymentFIFO(lineItems, amount);
+        
+        // Update each line item with new payment amounts
+        for (const update of updates) {
+          await updateCreditItemAsync({
+            id: update.id,
+            data: {
+              paid_amount: update.paid_amount,
+              status: update.status,
+              updated_at: new Date().toISOString()
+            }
+          });
+        }
+        
+        // Refresh line items
+        await refetchItems();
+      }
+      
+      // Call the parent payment handler (updates credit record and creates transaction)
       await onPayment(customer.id, amount);
+      
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -75,6 +126,24 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
   const handleMarkAsPaid = async () => {
     setLoading(true);
     try {
+      // If line items exist, mark all as paid using FIFO
+      if (lineItems.length > 0) {
+        const { updates } = applyPaymentFIFO(lineItems, remainingBalance);
+        
+        for (const update of updates) {
+          await updateCreditItemAsync({
+            id: update.id,
+            data: {
+              paid_amount: update.paid_amount,
+              status: update.status,
+              updated_at: new Date().toISOString()
+            }
+          });
+        }
+        
+        await refetchItems();
+      }
+      
       await onPayment(customer.id, remainingBalance);
       setSuccess(true);
       setTimeout(() => {
@@ -87,6 +156,13 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
       alert(t('credit.payment_failed', 'Payment failed. Please try again.'));
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const handleAddNewCredit = () => {
+    onClose();
+    if (onAddNewCredit) {
+      onAddNewCredit();
     }
   };
 
@@ -123,11 +199,168 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                 {t('payment.payment_success_message')}
               </p>
             </div>
+          ) : isPaidInFull ? (
+            // Paid customer view - show option to add new credit
+            <>
+              <p className="text-sm text-black/70 mb-6">
+                {t('payment.for_customer')}: <span className="font-semibold text-black">{customer.customer_name}</span>
+              </p>
+
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 text-center">
+                <CheckCircle size={48} className="text-green-600 mx-auto mb-3" />
+                <h3 className="text-lg font-bold text-green-900 mb-2">
+                  {t('credit.account_paid_in_full', 'Account Paid in Full')}
+                </h3>
+                <p className="text-sm text-green-700">
+                  {t('credit.no_outstanding_balance', 'This customer has no outstanding balance')}
+                </p>
+              </div>
+
+              {/* Line Items History */}
+              {lineItems.length > 0 && (
+                <div className="mb-6">
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="w-full flex items-center justify-between p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <History size={18} />
+                      <span className="font-medium">{t('credit.payment_history', 'Payment History')}</span>
+                    </div>
+                    <span className="text-sm text-gray-600">{lineItems.length} {t('credit.items', 'items')}</span>
+                  </button>
+                  
+                  {showHistory && (
+                    <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                      {lineItems.map((item) => (
+                        <div key={item.id} className="p-3 bg-white border border-gray-200 rounded-lg">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-sm font-medium text-gray-900">
+                              {item.description || t('credit.credit_purchase', 'Credit Purchase')}
+                            </span>
+                            <span className="text-sm font-bold text-green-600">
+                              {formatCurrency(item.amount, country)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>{new Date(item.date_given).toLocaleDateString()}</span>
+                            <span className="text-green-600 font-medium">{t('credit.paid', 'Paid')}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                {onAddNewCredit && (
+                  <button
+                    onClick={handleAddNewCredit}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Plus size={20} />
+                    {t('credit.add_new_credit', 'Add New Credit')}
+                  </button>
+                )}
+                
+                <button
+                  onClick={onClose}
+                  className="w-full py-3 bg-gray-200/50 text-black font-semibold rounded-xl hover:bg-gray-300/50 transition-colors"
+                >
+                  {t('modal.close', 'Close')}
+                </button>
+              </div>
+            </>
           ) : (
             <>
               <p className="text-sm text-black/70 mb-6">
                 {t('payment.for_customer')}: <span className="font-semibold text-black">{customer.customer_name}</span>
               </p>
+
+              {/* Line Items Display */}
+              {lineItems.length > 0 && activeItems.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-black mb-3">
+                    {t('credit.active_credits', 'Active Credits')} ({activeItems.length})
+                  </h4>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {activeItems.map((item, index) => {
+                      const itemRemaining = item.amount - (item.paid_amount || 0);
+                      const isOverdueItem = new Date(item.due_date) < new Date() && item.status !== 'paid';
+                      
+                      return (
+                        <div 
+                          key={item.id} 
+                          className={`p-3 rounded-lg border ${
+                            isOverdueItem 
+                              ? 'bg-red-50 border-red-200' 
+                              : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start mb-1">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-gray-500">#{index + 1}</span>
+                                <span className="text-sm font-medium text-gray-900">
+                                  {item.description || t('credit.credit_purchase', 'Credit Purchase')}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {t('credit.due', 'Due')}: {new Date(item.due_date).toLocaleDateString()}
+                                {isOverdueItem && (
+                                  <span className="text-red-600 font-medium ml-2">
+                                    ({t('credit.overdue', 'Overdue')})
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className={`text-sm font-bold ${
+                                isOverdueItem ? 'text-red-600' : 'text-orange-600'
+                              }`}>
+                                {formatCurrency(itemRemaining, country)}
+                              </div>
+                              {item.status === 'partial' && (
+                                <div className="text-xs text-gray-500">
+                                  {t('credit.paid', 'Paid')}: {formatCurrency(item.paid_amount || 0, country)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {paidItems.length > 0 && (
+                    <button
+                      onClick={() => setShowHistory(!showHistory)}
+                      className="w-full mt-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      {showHistory ? t('credit.hide_history', 'Hide History') : `${t('credit.show_history', 'Show History')} (${paidItems.length})`}
+                    </button>
+                  )}
+                  
+                  {showHistory && paidItems.length > 0 && (
+                    <div className="mt-3 space-y-2 max-h-40 overflow-y-auto">
+                      {paidItems.map((item) => (
+                        <div key={item.id} className="p-2 bg-green-50 border border-green-200 rounded-lg opacity-75">
+                          <div className="flex justify-between items-start">
+                            <span className="text-xs text-gray-700">
+                              {item.description || t('credit.credit_purchase', 'Credit Purchase')}
+                            </span>
+                            <span className="text-xs font-medium text-green-600">
+                              {formatCurrency(item.amount, country)} ✓
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Balance Info */}
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/30">
@@ -169,11 +402,23 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                 )}
 
                 <div className="flex justify-between items-center pt-3 border-t border-white/30">
-                  <span className="text-sm font-semibold text-black">{t('payment.remaining_balance')}</span>
+                  <span className="text-sm font-semibold text-black">
+                    {customer.type === 'payable' 
+                      ? t('payment.total_you_owe', 'Total You Owe')
+                      : t('payment.remaining_balance', 'Remaining Balance')}
+                  </span>
                   <span className={`text-xl font-bold ${overdue ? 'text-red-600' : 'text-orange-600'}`}>
                     {formatCurrency(remainingBalance, country)}
                   </span>
                 </div>
+                
+                {lineItems.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-white/30">
+                    <p className="text-xs text-gray-500">
+                      {t('credit.fifo_payment_note', 'Payments are applied to oldest debts first (FIFO)')}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Payment Form */}
@@ -208,7 +453,10 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     <Clock size={20} />
-                    {loading ? t('modal.processing') : t('payment.record_partial_payment')}
+                    {loading ? t('modal.processing') : 
+                      customer.type === 'payable' 
+                        ? t('payment.record_payment_made', 'Record Payment Made')
+                        : t('payment.record_partial_payment', 'Record Payment Received')}
                   </button>
 
                   <button
@@ -218,8 +466,20 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
                     className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     <CheckCircle size={20} />
-                    {loading ? t('modal.processing') : t('payment.mark_as_paid')}
+                    {loading ? t('modal.processing') : t('payment.mark_as_paid', 'Mark as Paid in Full')}
                   </button>
+                  
+                  {onAddNewCredit && (
+                    <button
+                      type="button"
+                      onClick={handleAddNewCredit}
+                      disabled={loading}
+                      className="w-full py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Plus size={20} />
+                      {t('credit.add_new_credit', 'Add New Credit')}
+                    </button>
+                  )}
 
                   <button
                     type="button"

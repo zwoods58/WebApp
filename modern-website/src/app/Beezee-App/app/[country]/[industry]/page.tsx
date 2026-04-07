@@ -19,7 +19,7 @@ import { formatDate, formatCurrency, getCurrency } from '@/utils/currency';
 import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 
 // Supabase hooks
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack } from '@/hooks';
+import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack, useCreditItems } from '@/hooks';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
 import { useServices, useAppointmentsTanStack } from '@/hooks';
 
@@ -95,6 +95,7 @@ export default function IndustryDashboard() {
   const transactionsHook = useTransactionsTanStack({ industry, businessId });
   const expensesHook = useExpensesTanStack({ industry, businessId });
   const creditHook = useCreditTanStack({ industry, businessId });
+  const creditItemsHook = useCreditItems({ industry, businessId });
   const inventoryHook = useInventoryTanStack({ industry, businessId });
   const targetsHook = useTargetsTanStack({ industry, businessId });
   
@@ -105,7 +106,6 @@ export default function IndustryDashboard() {
   // Safely extract values with fallbacks - add extra defensive checks
   let transactions = Array.isArray(transactionsHook?.data) ? transactionsHook.data : [];
   let expenses = Array.isArray(expensesHook?.data) ? expensesHook.data : [];
-  const credit = Array.isArray(creditHook?.data) ? creditHook.data : [];
   const inventory = Array.isArray(inventoryHook?.data) ? inventoryHook.data : [];
   const targets = Array.isArray(targetsHook?.data) ? targetsHook.data : [];
   const appointments = Array.isArray(appointmentsHook?.data) ? appointmentsHook.data : [];
@@ -113,7 +113,6 @@ export default function IndustryDashboard() {
   
   // Extract mutation functions from hooks
   const addTransaction = transactionsHook?.addTransaction;
-  const addCredit = creditHook?.addCredit;
   
   // Fallback to localStorage if hooks return empty data
   if (transactions.length === 0) {
@@ -143,7 +142,8 @@ export default function IndustryDashboard() {
   // Extract refetch functions for manual refresh when needed
   const refetchTransactions = transactionsHook?.refetch || (() => Promise.resolve());
   const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
-  const refetchCredit = creditHook?.refetch || (() => Promise.resolve());
+  const { data: credit, addCredit, updateCredit, refetch: refetchCredit } = creditHook;
+  const { addCreditItemAsync } = creditItemsHook;
   const refetchInventory = inventoryHook?.refetch || (() => Promise.resolve());
   const refetchTargets = targetsHook?.refetch || (() => Promise.resolve());
   
@@ -473,15 +473,42 @@ export default function IndustryDashboard() {
           (c.type === 'receivable' || !c.type) // Default to receivable for existing data
         );
         
+        let creditId = existingCredit?.id;
+        
         if (existingCredit) {
           // Customer exists - create new line item
           console.log('Adding line item to existing customer:', existingCredit.customer_name);
-          // Line item will be created via credit_items table
-          // For now, we'll update the credit record to reflect new total
+          
+          // Create new credit line item
+          await addCreditItemAsync({
+            credit_id: existingCredit.id,
+            business_id: businessId,
+            industry,
+            description: transactionData.description || 'Credit purchase',
+            amount: transactionData.amount,
+            paid_amount: 0,
+            currency: transactionData.currency || getCurrency(country),
+            status: 'outstanding',
+            due_date: transactionData.due_date,
+            date_given: transactionData.transaction_date,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+          // Update credit account totals
+          const newTotalAmount = existingCredit.amount + transactionData.amount;
+          await updateCredit({
+            id: existingCredit.id,
+            data: {
+              amount: newTotalAmount,
+              due_date: transactionData.due_date, // Update to latest due date
+              updated_at: new Date().toISOString()
+            }
+          });
         } else {
-          // New customer - create credit account
+          // New customer - create credit account and first line item
           console.log('Creating new credit account for:', transactionData.customer_name);
-          await addCredit({
+          const newCredit: any = await addCredit({
             business_id: businessId,
             industry,
             customer_name: transactionData.customer_name,
@@ -494,10 +521,31 @@ export default function IndustryDashboard() {
             paid_amount: 0,
             created_at: new Date().toISOString()
           });
+          
+          creditId = newCredit?.id;
+          
+          // Create first line item for new customer
+          if (creditId) {
+            await addCreditItemAsync({
+              credit_id: creditId,
+              business_id: businessId,
+              industry,
+              description: transactionData.description || 'Credit purchase',
+              amount: transactionData.amount,
+              paid_amount: 0,
+              currency: transactionData.currency || getCurrency(country),
+              status: 'outstanding',
+              due_date: transactionData.due_date,
+              date_given: transactionData.transaction_date,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          }
         }
         
         // Invalidate credit queries
         queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
+        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
       }
       
       const newTransaction = await addTransaction({
@@ -542,7 +590,7 @@ export default function IndustryDashboard() {
         return;
       }
       
-      // If payment method is credit, create/update payable credit account
+      // If payment method is credit, create/update payable credit account and line item
       if (expenseData.payment_method === 'credit' && expenseData.supplier_name) {
         // Check if supplier already has a credit account
         const existingCredit = credit?.find((c: any) => 
@@ -550,14 +598,42 @@ export default function IndustryDashboard() {
           c.type === 'payable'
         );
         
+        let creditId = existingCredit?.id;
+        
         if (existingCredit) {
           // Supplier exists - create new line item
           console.log('Adding line item to existing supplier:', existingCredit.customer_name);
-          // Line item will be created via credit_items table
+          
+          // Create new credit line item
+          await addCreditItemAsync({
+            credit_id: existingCredit.id,
+            business_id: businessId,
+            industry,
+            description: expenseData.description || 'Credit expense',
+            amount: expenseData.amount,
+            paid_amount: 0,
+            currency: expenseData.currency || getCurrency(country),
+            status: 'outstanding',
+            due_date: expenseData.due_date,
+            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+          // Update credit account totals
+          const newTotalAmount = existingCredit.amount + expenseData.amount;
+          await updateCredit({
+            id: existingCredit.id,
+            data: {
+              amount: newTotalAmount,
+              due_date: expenseData.due_date, // Update to latest due date
+              updated_at: new Date().toISOString()
+            }
+          });
         } else {
-          // New supplier - create credit account
+          // New supplier - create credit account and first line item
           console.log('Creating new payable credit account for:', expenseData.supplier_name);
-          await addCredit({
+          const newCredit: any = await addCredit({
             business_id: businessId,
             industry,
             customer_name: expenseData.supplier_name, // Using customer_name field for supplier
@@ -570,10 +646,31 @@ export default function IndustryDashboard() {
             paid_amount: 0,
             created_at: new Date().toISOString()
           });
+          
+          creditId = newCredit?.id;
+          
+          // Create first line item for new supplier
+          if (creditId) {
+            await addCreditItemAsync({
+              credit_id: creditId,
+              business_id: businessId,
+              industry,
+              description: expenseData.description || 'Credit expense',
+              amount: expenseData.amount,
+              paid_amount: 0,
+              currency: expenseData.currency || getCurrency(country),
+              status: 'outstanding',
+              due_date: expenseData.due_date,
+              date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+          }
         }
         
         // Invalidate credit queries
         queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
+        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
       }
       
       // Remove payment_method from expense data as it doesn't exist in the database

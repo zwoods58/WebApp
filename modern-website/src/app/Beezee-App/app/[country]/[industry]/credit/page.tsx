@@ -14,6 +14,7 @@ import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
+import AddCreditLineItemModal from '@/components/credit/AddCreditLineItemModal';
 
 export default function CreditPage() {
   const params = useParams();
@@ -55,6 +56,7 @@ export default function CreditPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedCreditForShare, setSelectedCreditForShare] = useState<any>(null);
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
+  const [showAddLineItemModal, setShowAddLineItemModal] = useState(false);
 
   // Calculate credit statistics from data
   // Helper function to check if credit is overdue
@@ -222,6 +224,12 @@ export default function CreditPage() {
   const handleCustomerClick = (customer: any) => {
     setSelectedCustomer(customer);
     setShowPaymentModal(true);
+  };
+  
+  const handleAddNewCreditToExisting = () => {
+    // Close payment modal and open add line item modal
+    setShowPaymentModal(false);
+    setShowAddLineItemModal(true);
   };
 
   const generateCreditDetailsText = (creditItem: any): string => {
@@ -583,7 +591,28 @@ export default function CreditPage() {
           }}
           customer={selectedCustomer}
           country={country}
+          industry={industry}
           onPayment={handlePayment}
+          onAddNewCredit={handleAddNewCreditToExisting}
+        />
+      )}
+
+      {/* Add Credit Line Item Modal */}
+      {showAddLineItemModal && selectedCustomer && (
+        <AddCreditLineItemModal
+          isOpen={showAddLineItemModal}
+          onClose={() => {
+            setShowAddLineItemModal(false);
+            setSelectedCustomer(null);
+          }}
+          creditId={selectedCustomer.id}
+          customerName={selectedCustomer.customer_name}
+          industry={industry}
+          country={country}
+          onSuccess={async () => {
+            await refetch();
+            showSuccess(t('credit.credit_added_successfully', 'Credit added successfully'));
+          }}
         />
       )}
 
