@@ -229,7 +229,7 @@ export default function AppointmentDetailsSheet({
                     }}
                     className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                   >
-                    Back
+                    {t('appointments.back', 'Back')}
                   </button>
                   <button
                     onClick={handleCancel}
@@ -251,13 +251,13 @@ export default function AppointmentDetailsSheet({
                 onClick={handleComplete}
                 className="flex-1 py-3 rounded-lg font-medium text-base bg-green-600 text-white hover:bg-green-700"
               >
-                Mark as Completed
+                {t('appointments.mark_completed', 'Mark as Completed')}
               </button>
               <button
                 onClick={() => setShowCancelConfirm(true)}
                 className="flex-1 py-3 rounded-lg font-medium text-base bg-yellow-600 text-white hover:bg-yellow-700"
               >
-                Cancel Appointment
+                {t('appointments.cancel_appointment', 'Cancel Appointment')}
               </button>
             </div>
             <button
@@ -265,7 +265,7 @@ export default function AppointmentDetailsSheet({
               className="w-full py-3 rounded-lg font-medium text-base bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center gap-2"
             >
               <Trash2 size={18} />
-              Delete Appointment
+              {t('appointments.delete_appointment', 'Delete Appointment')}
             </button>
           </div>
         )}
@@ -277,7 +277,7 @@ export default function AppointmentDetailsSheet({
               className="w-full py-3 rounded-lg font-medium text-base bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center gap-2"
             >
               <Trash2 size={18} />
-              Delete Appointment
+              {t('appointments.delete_appointment', 'Delete Appointment')}
             </button>
           </div>
         )}

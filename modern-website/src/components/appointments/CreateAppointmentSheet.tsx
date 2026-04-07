@@ -370,7 +370,7 @@ export default function CreateAppointmentSheet({
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                  Start Time <span style={{ color: '#ef4444' }}>*</span>
+                  {t('appointments.start_time_label', 'Start Time')} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
                   value={formData.startTime}
@@ -395,7 +395,7 @@ export default function CreateAppointmentSheet({
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                  End Time <span style={{ color: '#ef4444' }}>*</span>
+                  {t('appointments.end_time_label', 'End Time')} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
                   value={formData.endTime}
@@ -423,7 +423,7 @@ export default function CreateAppointmentSheet({
             {/* Service */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                Service <span style={{ color: '#ef4444' }}>*</span>
+                {t('appointments.service_label', 'Service')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <select
                 value={formData.serviceId}
@@ -438,7 +438,7 @@ export default function CreateAppointmentSheet({
                   backgroundColor: '#ffffff'
                 }}
               >
-                <option value="">Select a service</option>
+                <option value="">{t('appointments.select_service', 'Select a service')}</option>
                 {services?.map((service: Service) => (
                   <option key={service.id} value={service.id}>
                     {service.service_name} - {getCurrency(country)}{service.price}
@@ -450,7 +450,7 @@ export default function CreateAppointmentSheet({
               )}
               {services?.length === 0 && (
                 <p style={{ marginTop: '4px', fontSize: '14px', color: '#eab308' }}>
-                  No services available. Please add services first.
+                  {t('appointments.no_services', 'No services available. Please add services first.')}
                 </p>
               )}
             </div>
@@ -458,7 +458,7 @@ export default function CreateAppointmentSheet({
             {/* Notes */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                Notes
+                {t('appointments.notes_label', 'Notes')}
               </label>
               <textarea
                 value={formData.notes}
@@ -474,7 +474,7 @@ export default function CreateAppointmentSheet({
                   resize: 'vertical'
                 }}
                 rows={3}
-                placeholder="Additional notes or special requests..."
+                placeholder={t('appointments.notes_placeholder', 'Additional notes or special requests...')}
               />
             </div>
           </form>
@@ -511,7 +511,7 @@ export default function CreateAppointmentSheet({
               if (!submitting) e.currentTarget.style.backgroundColor = '#f3f4f6';
             }}
           >
-            Cancel
+            {t('appointments.cancel', 'Cancel')}
           </button>
           <button
             type="submit"
@@ -540,7 +540,7 @@ export default function CreateAppointmentSheet({
               }
             }}
           >
-            {submitting ? 'Creating...' : 'Add Appointment'}
+            {submitting ? t('appointments.creating', 'Creating...') : t('appointments.add_appointment', 'Add Appointment')}
           </button>
         </div>
       </div>

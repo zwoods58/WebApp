@@ -131,7 +131,7 @@ export default function CalendarView({
         <button
           onClick={() => navigateMonth(-1)}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label="Previous month"
+          aria-label={t('appointments.previous_month', 'Previous month')}
         >
           <ChevronLeft size={20} />
         </button>
@@ -151,7 +151,7 @@ export default function CalendarView({
         <button
           onClick={() => navigateMonth(1)}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label="Next month"
+          aria-label={t('appointments.next_month', 'Next month')}
         >
           <ChevronRight size={20} />
         </button>

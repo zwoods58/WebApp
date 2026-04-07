@@ -29,7 +29,7 @@ export default function AppointmentCard({
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
           <RefreshCw size={12} />
-          Pending
+          {t('appointments.pending_sync', 'Pending')}
         </span>
       );
     }
@@ -75,7 +75,7 @@ export default function AppointmentCard({
       const [hour, minute] = time.split(':');
       const hourNum = parseInt(hour);
       const hour12 = hourNum % 12 || 12;
-      const ampm = hourNum < 12 ? 'AM' : 'PM';
+      const ampm = hourNum < 12 ? t('appointments.am', 'AM') : t('appointments.pm', 'PM');
       return `${hour12}:${minute} ${ampm}`;
     }
     
@@ -119,7 +119,7 @@ export default function AppointmentCard({
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Clock size={14} className="flex-shrink-0" />
           <span>{formatDate(appointment.appointment_date)}</span>
-          <span>at {formatTime(appointment.start_time || appointment.appointment_time)}</span>
+          <span>{t('appointments.at_time', 'at')} {formatTime(appointment.start_time || appointment.appointment_time)}</span>
         </div>
 
         {appointment.duration > 0 && (
