@@ -173,6 +173,8 @@ export default function CreditPage() {
           currency,
           type: creditType,
           date_given: new Date().toISOString().split('T')[0],
+          status: 'outstanding',
+          paid_amount: 0,
           created_at: new Date().toISOString()
         };
         
