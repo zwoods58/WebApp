@@ -142,17 +142,17 @@ export default function EditServiceModal({
               {(industry === 'salon' || industry === 'freelance') && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('services.duration_hours', 'Duration (hours)')}
+                    {t('services.duration_minutes', 'Duration (minutes)')}
                   </label>
                   <input
                     type="number"
                     value={formData.duration}
                     onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="1"
-                    min="1"
-                    max="8"
-                    step="1"
+                    placeholder="30"
+                    min="15"
+                    max="480"
+                    step="5"
                   />
                 </div>
               )}

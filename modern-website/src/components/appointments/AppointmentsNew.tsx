@@ -148,11 +148,11 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
         });
       }
       
-      showSuccess('Appointment completed successfully');
+      showSuccess(t('appointments.complete_success', 'Appointment completed successfully'));
       console.log('✅ Appointment completed');
     } catch (error) {
       console.error('❌ Error completing appointment:', error);
-      showError('Failed to complete appointment');
+      showError(t('appointments.complete_error', 'Failed to complete appointment'));
     } finally {
       setLoadingAppointmentId(null);
     }
@@ -176,11 +176,11 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
       
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       
-      showSuccess('Appointment cancelled successfully');
+      showSuccess(t('appointments.cancel_success', 'Appointment cancelled successfully'));
       console.log('✅ Appointment cancelled');
     } catch (error) {
       console.error('❌ Error cancelling appointment:', error);
-      showError('Failed to cancel appointment');
+      showError(t('appointments.cancel_error', 'Failed to cancel appointment'));
     } finally {
       setLoadingAppointmentId(null);
     }
@@ -202,11 +202,11 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
       
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
       
-      showSuccess('Appointment deleted successfully');
+      showSuccess(t('appointments.delete_success', 'Appointment deleted successfully'));
       console.log('✅ Appointment deleted');
     } catch (error) {
       console.error('❌ Error deleting appointment:', error);
-      showError('Failed to delete appointment');
+      showError(t('appointments.delete_error', 'Failed to delete appointment'));
     } finally {
       setLoadingAppointmentId(null);
     }
@@ -222,7 +222,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading appointments...</p>
+          <p className="text-gray-600">{t('appointments.loading', 'Loading appointments...')}</p>
         </div>
       </div>
     );
@@ -243,7 +243,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus size={20} />
-            <span className="hidden sm:inline">Add Appointment</span>
+            <span className="hidden sm:inline">{t('appointments.add_appointment', 'Add Appointment')}</span>
           </button>
         </div>
 
@@ -263,7 +263,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               }`}
             >
               <List size={18} />
-              <span className="text-sm font-medium">List</span>
+              <span className="text-sm font-medium">{t('appointments.list_view', 'List')}</span>
             </button>
             <button
               onClick={() => setView('calendar')}
@@ -274,7 +274,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               }`}
             >
               <CalendarIcon size={18} />
-              <span className="text-sm font-medium">Calendar</span>
+              <span className="text-sm font-medium">{t('appointments.calendar_view', 'Calendar')}</span>
             </button>
           </div>
 
@@ -283,7 +283,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
             <Search size={18} className="text-gray-400" />
             <input
               type="text"
-              placeholder="Search appointments..."
+              placeholder={t('appointments.search_placeholder', 'Search appointments...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 outline-none text-sm"
@@ -300,10 +300,10 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               className="outline-none text-sm bg-transparent"
               style={{ fontSize: '16px' }}
             >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all">{t('appointments.all_statuses', 'All Status')}</option>
+              <option value="pending">{t('appointments.pending', 'Pending')}</option>
+              <option value="completed">{t('appointments.completed', 'Completed')}</option>
+              <option value="cancelled">{t('appointments.cancelled', 'Cancelled')}</option>
             </select>
           </div>
         </div>
@@ -322,7 +322,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  Upcoming ({pendingAppointments.length})
+                  {t('appointments.upcoming', 'Upcoming')} ({pendingAppointments.length})
                 </h2>
                 <div className="space-y-3">
                   {pendingAppointments.map((appointment: Appointment) => (
@@ -345,7 +345,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-600 rounded-full"></span>
-                  Completed ({completedAppointments.length})
+                  {t('appointments.completed', 'Completed')} ({completedAppointments.length})
                 </h2>
                 <div className="space-y-3">
                   {completedAppointments.map((appointment: Appointment) => (
@@ -366,7 +366,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="w-2 h-2 bg-gray-600 rounded-full"></span>
-                  Cancelled ({cancelledAppointments.length})
+                  {t('appointments.cancelled', 'Cancelled')} ({cancelledAppointments.length})
                 </h2>
                 <div className="space-y-3">
                   {cancelledAppointments.map((appointment: Appointment) => (
@@ -386,11 +386,11 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
             {filteredAppointments.length === 0 && (
               <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
                 <CalendarIcon size={48} className="text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments found</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('appointments.no_appointments_found', 'No appointments found')}</h3>
                 <p className="text-gray-500 mb-4">
                   {searchTerm || statusFilter !== 'all' 
-                    ? 'Try adjusting your filters' 
-                    : 'Get started by creating your first appointment'}
+                    ? t('appointments.adjust_filters', 'Try adjusting your filters') 
+                    : t('appointments.get_started', 'Get started by creating your first appointment')}
                 </p>
                 {!searchTerm && statusFilter === 'all' && (
                   <button
@@ -398,7 +398,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={20} />
-                    Add Appointment
+                    {t('appointments.add_appointment', 'Add Appointment')}
                   </button>
                 )}
               </div>

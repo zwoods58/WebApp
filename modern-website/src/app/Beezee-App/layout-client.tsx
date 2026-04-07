@@ -5,6 +5,7 @@ import { RefreshCw } from 'lucide-react';
 import { LanguageProvider } from '@/hooks/LanguageContext';
 import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
+import { IndustryProvider, useIndustry } from '@/contexts/IndustryContext';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,6 +18,16 @@ const PWAInstallPrompt = lazy(() => import('@/components/PWAInstallPrompt'));
 const ConnectionToast = lazy(() => import('@/components/universal/ConnectionToast').then(mod => ({ default: mod.ConnectionToast })));
 
 // Add custom styles for animations (will be added in useEffect)
+
+function BeezeeContentWithLanguage({ children }: { children: React.ReactNode }) {
+  const { industry } = useIndustry();
+  
+  return (
+    <LanguageProvider industry={industry}>
+      <BeezeeContent>{children}</BeezeeContent>
+    </LanguageProvider>
+  );
+}
 
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -185,11 +196,11 @@ export default function BeezeeLayoutClient({
     <AuthErrorBoundary onRetry={handleRetry} onClearSession={handleClearSession}>
       <UnifiedAuthProvider>
         <BusinessProfileProvider>
-          <LanguageProvider industry="retail">
+          <IndustryProvider>
             <ToastProvider>
-              <BeezeeContent>{children}</BeezeeContent>
+              <BeezeeContentWithLanguage>{children}</BeezeeContentWithLanguage>
             </ToastProvider>
-          </LanguageProvider>
+          </IndustryProvider>
         </BusinessProfileProvider>
       </UnifiedAuthProvider>
     </AuthErrorBoundary>

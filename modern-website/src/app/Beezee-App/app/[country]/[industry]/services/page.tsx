@@ -1316,17 +1316,17 @@ function EditServiceModal({ service, onClose, onUpdate, country, industry }: {
             {(industry === 'salon' || industry === 'freelance') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {industry === 'salon' ? 'Duration (minutes)' : 'Duration (hours)'}
+                  Duration (minutes)
                 </label>
                 <input
                   type="number"
                   value={formData.duration}
                   onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={industry === 'freelance' ? '1' : '30'}
-                  min="1"
-                  max="8"
-                  step="1"
+                  placeholder="30"
+                  min="15"
+                  max="480"
+                  step="5"
                 />
               </div>
             )}
@@ -1914,17 +1914,17 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
           {(industry === 'salon' || industry === 'freelance') && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {industry === 'salon' ? 'Duration (min)' : 'Duration (hours)'}
+                Duration (minutes)
               </label>
               <input
                 type="number"
                 value={formData.duration || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={industry === 'freelance' ? '1' : '30'}
-                min="1"
-                max="8"
-                step="1"
+                placeholder="30"
+                min="15"
+                max="480"
+                step="5"
               />
             </div>
           )}

@@ -24,8 +24,14 @@ export default function smartTranslate(
     // Try to find the translation in the translations object
     let translation = null;
     
-    // FIRST: Try universal section for ANY key (most efficient and future-proof)
-    if (translations.universal && translations.universal[key]) {
+    // FIRST: For appointment keys, always prioritize universal section
+    // This ensures appointments work consistently across all industries
+    if (key.startsWith('appointments.') && translations.universal && translations.universal[key]) {
+      translation = translations.universal[key];
+    }
+    
+    // SECOND: Try universal section for ANY key (most efficient and future-proof)
+    if (!translation && translations.universal && translations.universal[key]) {
       translation = translations.universal[key];
     }
     
@@ -104,6 +110,11 @@ export default function smartTranslate(
         // For industry-specific sections, the full key is stored (e.g., "tailor.jobs")
         // So we look for the complete key, not navigate through parts
         translation = translations[industrySection][key];
+        
+        // If industry-specific translation is not found, fall back to universal
+        if (!translation && translations.universal && translations.universal[key]) {
+          translation = translations.universal[key];
+        }
       }
     }
     
