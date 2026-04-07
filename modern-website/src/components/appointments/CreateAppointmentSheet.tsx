@@ -213,61 +213,103 @@ export default function CreateAppointmentSheet({
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[9999] bg-white opacity-100"
-      style={{ 
-        backgroundColor: '#ffffff !important',
-        opacity: '1 !important',
-        backdropFilter: 'none !important',
-        WebkitBackdropFilter: 'none !important'
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#ffffff',
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}
+      onClick={onClose}
     >
       <div
-        className="w-full h-full bg-white overflow-hidden flex flex-col"
-        style={{ 
-          backgroundColor: '#ffffff !important',
-          opacity: '1 !important',
-          backdropFilter: 'none !important',
-          WebkitBackdropFilter: 'none !important'
+        style={{
+          backgroundColor: '#ffffff',
+          width: '90%',
+          maxWidth: '500px',
+          maxHeight: '90vh',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          opacity: 1
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div style={{ 
+          padding: '16px', 
+          borderBottom: '1px solid #e5e7eb',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#ffffff'
+        }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', margin: 0 }}>
             {t('calendar.add_appointment', 'Add Appointment')}
           </h2>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+            style={{
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '9999px',
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} style={{ color: '#6b7280' }} />
           </button>
         </div>
 
         {/* Scrollable content */}
         <div 
-          className="flex-1 overflow-y-auto bg-white"
           style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehavior: 'contain'
+            flex: 1,
+            overflowY: 'auto',
+            padding: '16px',
+            backgroundColor: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
           }}
         >
-          <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Customer Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Customer Name <span className="text-red-500">*</span>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                Customer Name <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
                 name="customerName"
                 value={formData.customerName}
                 onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
-                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontSize: '16px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff'
+                }}
                 placeholder="Enter customer name"
               />
               {errors.customerName && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <AlertCircle size={14} />
                   {errors.customerName}
                 </p>
@@ -276,34 +318,48 @@ export default function CreateAppointmentSheet({
 
             {/* Customer Contact */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
                 Customer Contact
               </label>
               <input
                 type="tel"
                 value={formData.customerContact}
                 onChange={(e) => setFormData(prev => ({ ...prev, customerContact: e.target.value }))}
-                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontSize: '16px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff'
+                }}
                 placeholder="Phone number (optional)"
               />
             </div>
 
             {/* Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Date <span className="text-red-500">*</span>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                Date <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontSize: '16px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff'
+                }}
                 min={getStableDateString()}
               />
               {errors.date && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <AlertCircle size={14} />
                   {errors.date}
                 </p>
@@ -311,61 +367,76 @@ export default function CreateAppointmentSheet({
             </div>
 
             {/* Time Row */}
-            <div className="grid grid-cols-2 gap-3">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Start Time <span className="text-red-500">*</span>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                  Start Time <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
                   value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  style={{ fontSize: '16px' }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    fontSize: '16px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    outline: 'none',
+                    backgroundColor: '#ffffff'
+                  }}
                 >
                   {timeOptions.map(time => (
                     <option key={time} value={time}>{formatTimeDisplay(time)}</option>
                   ))}
                 </select>
                 {errors.startTime && (
-                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    {errors.startTime}
-                  </p>
+                  <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444' }}>{errors.startTime}</p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  End Time <span className="text-red-500">*</span>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                  End Time <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
                   value={formData.endTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  style={{ fontSize: '16px' }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    fontSize: '16px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    outline: 'none',
+                    backgroundColor: '#ffffff'
+                  }}
                 >
                   {timeOptions.map(time => (
                     <option key={time} value={time}>{formatTimeDisplay(time)}</option>
                   ))}
                 </select>
                 {errors.endTime && (
-                  <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    {errors.endTime}
-                  </p>
+                  <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444' }}>{errors.endTime}</p>
                 )}
               </div>
             </div>
 
             {/* Service */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Service <span className="text-red-500">*</span>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                Service <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <select
                 value={formData.serviceId}
                 onChange={(e) => setFormData(prev => ({ ...prev, serviceId: e.target.value }))}
-                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontSize: '16px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff'
+                }}
               >
                 <option value="">Select a service</option>
                 {services?.map((service: Service) => (
@@ -375,28 +446,33 @@ export default function CreateAppointmentSheet({
                 ))}
               </select>
               {errors.serviceId && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle size={14} />
-                  {errors.serviceId}
-                </p>
+                <p style={{ marginTop: '4px', fontSize: '14px', color: '#ef4444' }}>{errors.serviceId}</p>
               )}
               {services?.length === 0 && (
-                <p className="mt-1 text-sm text-yellow-600">
-                  ⚠️ No services available. Please add services first.
+                <p style={{ marginTop: '4px', fontSize: '14px', color: '#eab308' }}>
+                  No services available. Please add services first.
                 </p>
               )}
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
                 Notes
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                style={{ fontSize: '16px' }}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontSize: '16px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  outline: 'none',
+                  backgroundColor: '#ffffff',
+                  resize: 'vertical'
+                }}
                 rows={3}
                 placeholder="Additional notes or special requests..."
               />
@@ -405,25 +481,67 @@ export default function CreateAppointmentSheet({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-200 bg-white">
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="flex-1 py-3 rounded-lg font-medium text-base bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={submitting || !services || services.length === 0}
-              className="flex-1 py-3 rounded-lg font-medium text-base bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              {submitting ? 'Creating...' : 'Add Appointment'}
-            </button>
-          </div>
+        <div style={{ 
+          padding: '16px', 
+          borderTop: '1px solid #e5e7eb',
+          backgroundColor: '#ffffff',
+          display: 'flex',
+          gap: '12px'
+        }}>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={submitting}
+            style={{
+              flex: 1,
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: 500,
+              fontSize: '16px',
+              border: 'none',
+              backgroundColor: '#f3f4f6',
+              color: '#374151',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              opacity: submitting ? 0.5 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!submitting) e.currentTarget.style.backgroundColor = '#e5e7eb';
+            }}
+            onMouseLeave={(e) => {
+              if (!submitting) e.currentTarget.style.backgroundColor = '#f3f4f6';
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={submitting || !services || services.length === 0}
+            style={{
+              flex: 1,
+              padding: '12px',
+              borderRadius: '8px',
+              fontWeight: 500,
+              fontSize: '16px',
+              border: 'none',
+              backgroundColor: '#2563eb',
+              color: '#ffffff',
+              cursor: (submitting || !services || services.length === 0) ? 'not-allowed' : 'pointer',
+              opacity: (submitting || !services || services.length === 0) ? 0.5 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!submitting && services && services.length > 0) {
+                e.currentTarget.style.backgroundColor = '#1d4ed8';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!submitting && services && services.length > 0) {
+                e.currentTarget.style.backgroundColor = '#2563eb';
+              }
+            }}
+          >
+            {submitting ? 'Creating...' : 'Add Appointment'}
+          </button>
         </div>
       </div>
     </div>,
