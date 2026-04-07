@@ -4,6 +4,7 @@ import React from 'react';
 import { Clock, User, CheckCircle, XCircle, Eye, RefreshCw, AlertCircle } from 'lucide-react';
 import { Appointment } from './types';
 import { formatDate, formatCurrency, getCurrency } from '@/utils/currency';
+import { useLanguage } from '@/hooks/LanguageContext';
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -22,6 +23,7 @@ export default function AppointmentCard({
   onView,
   isLoading = false
 }: AppointmentCardProps) {
+  const { t } = useLanguage();
   const getSyncStatusBadge = () => {
     if (appointment.syncStatus === 'pending') {
       return (
@@ -35,25 +37,25 @@ export default function AppointmentCard({
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
           <AlertCircle size={12} />
-          Error
+          {t('appointments.sync_error', 'Error')}
         </span>
       );
     }
     return (
       <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
         <CheckCircle size={12} />
-        Synced
+        {t('appointments.synced', 'Synced')}
       </span>
     );
   };
 
   const getStatusBadge = () => {
     const statusConfig = {
-      pending: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Scheduled' },
-      confirmed: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Confirmed' },
-      completed: { bg: 'bg-green-100', text: 'text-green-800', label: 'Completed' },
-      cancelled: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Cancelled' },
-      'no-show': { bg: 'bg-red-100', text: 'text-red-800', label: 'No Show' }
+      pending: { bg: 'bg-blue-100', text: 'text-blue-800', label: t('appointments.scheduled', 'Scheduled') },
+      confirmed: { bg: 'bg-purple-100', text: 'text-purple-800', label: t('appointments.confirmed', 'Confirmed') },
+      completed: { bg: 'bg-green-100', text: 'text-green-800', label: t('appointments.completed', 'Completed') },
+      cancelled: { bg: 'bg-gray-100', text: 'text-gray-800', label: t('appointments.cancelled', 'Cancelled') },
+      'no-show': { bg: 'bg-red-100', text: 'text-red-800', label: t('appointments.no_show', 'No Show') }
     };
 
     const config = statusConfig[appointment.status] || statusConfig.pending;
@@ -66,7 +68,7 @@ export default function AppointmentCard({
   };
 
   const formatTime = (time: string) => {
-    if (!time) return 'All day';
+    if (!time) return t('appointments.all_day', 'All day');
     
     // If it's in HH:MM:SS format, convert to 12-hour
     if (time.includes(':')) {
@@ -90,7 +92,7 @@ export default function AppointmentCard({
           <div className="flex items-center gap-2 mb-1">
             <User size={16} className="text-gray-400 flex-shrink-0" />
             <h3 className="font-semibold text-gray-900 truncate">
-              {appointment.customer_name || 'No customer'}
+              {appointment.customer_name || t('appointments.no_customer', 'No customer')}
             </h3>
           </div>
           {appointment.customer_contact && (
@@ -106,7 +108,7 @@ export default function AppointmentCard({
       {/* Service Info */}
       <div className="space-y-2 mb-3">
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-700">✂️ {appointment.service_name || 'Service'}</span>
+          <span className="text-gray-700">✂️ {appointment.service_name || t('appointments.service', 'Service')}</span>
           {appointment.metadata?.price && (
             <span className="text-gray-600">
               - {getCurrency(country)}{appointment.metadata.price}
@@ -122,7 +124,7 @@ export default function AppointmentCard({
 
         {appointment.duration > 0 && (
           <div className="text-sm text-gray-500">
-            ⏱️ Duration: {appointment.duration} min
+            ⏱️ {t('appointments.duration', 'Duration')}: {appointment.duration} {t('appointments.minutes', 'min')}
           </div>
         )}
       </div>
@@ -143,7 +145,7 @@ export default function AppointmentCard({
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors disabled:opacity-50"
           >
             <CheckCircle size={16} />
-            Complete
+            {t('appointments.complete', 'Complete')}
           </button>
           <button
             onClick={() => onCancel?.(appointment.id)}
@@ -151,7 +153,7 @@ export default function AppointmentCard({
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
           >
             <XCircle size={16} />
-            Cancel
+            {t('appointments.cancel', 'Cancel')}
           </button>
           <button
             onClick={() => onView?.(appointment)}
@@ -170,7 +172,7 @@ export default function AppointmentCard({
             className="flex items-center gap-2 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
           >
             <Eye size={16} />
-            View Details
+            {t('appointments.view_details', 'View Details')}
           </button>
         </div>
       )}
