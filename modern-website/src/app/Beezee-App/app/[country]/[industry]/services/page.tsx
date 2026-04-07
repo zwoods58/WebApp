@@ -22,11 +22,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useServicesTanStack, useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import { usePersistentStorage } from '@/hooks/usePersistentStorage';
+import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 
@@ -734,10 +736,10 @@ export default function ServicesPage() {
     console.log('Deleted items tracked:', deletedItems);
     
     // Check React Query cache
-    const servicesCache = queryClient.getQueryData(['services', industry, business?.id]);
-    const inventoryCache = queryClient.getQueryData(['inventory', industry, business?.id]);
-    console.log('React Query cache - Services:', servicesCache?.length || 0);
-    console.log('React Query cache - Inventory:', inventoryCache?.length || 0);
+    const servicesCache = queryClient.getQueryData(['services', industry, business?.id]) as any[] || [];
+    const inventoryCache = queryClient.getQueryData(['inventory', industry, business?.id]) as any[] || [];
+    console.log('React Query cache - Services:', servicesCache.length);
+    console.log('React Query cache - Inventory:', inventoryCache.length);
   };
 
   return (
