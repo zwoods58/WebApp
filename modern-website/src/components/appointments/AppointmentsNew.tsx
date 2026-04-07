@@ -97,12 +97,12 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
       
       setShowCreateSheet(false);
       setSelectedDate(null);
-      showSuccess('Appointment created successfully');
+      showSuccess(t('appointments.create_success', 'Appointment created successfully'));
       
       console.log('✅ Appointment created and saved');
     } catch (error) {
       console.error('❌ Error creating appointment:', error);
-      showError('Failed to create appointment. Please try again.');
+      showError(t('appointments.create_error', 'Failed to create appointment. Please try again.'));
     }
   };
 

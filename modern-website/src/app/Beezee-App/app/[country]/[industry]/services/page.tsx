@@ -385,7 +385,7 @@ export default function ServicesPage() {
   const handleAddInventoryItem = async (newItem: any) => {
     try {
       if (!business?.id) {
-        alert('Please wait for business data to load or refresh the page to log in properly.');
+        alert(t('services.business_load_error', 'Please wait for business data to load or refresh the page to log in properly.'));
         return;
       }
       
@@ -431,12 +431,10 @@ export default function ServicesPage() {
     const serviceName = service?.service_name || 'Unknown service';
     
     const confirmed = await confirm(
-      'Permanently Delete Service?',
-      `Are you sure you want to permanently delete "${serviceName}"?
-
-This will remove the service from the database and all local storage. This action cannot be undone.`,
+      t('services.confirm_delete_service', 'Permanently Delete Service?'),
+      t('services.confirm_delete_service_message', 'Are you sure you want to permanently delete "{serviceName}"?\n\nThis will remove the service from the database and all local storage. This action cannot be undone.', { serviceName }),
       {
-        confirmText: 'Yes, Delete Permanently',
+        confirmText: t('services.confirm_delete_permanently', 'Yes, Delete Permanently'),
         cancelText: 'Cancel',
         type: 'danger'
       }
@@ -546,7 +544,7 @@ This will remove the service from the database and all local storage. This actio
       
     } catch (error) {
       console.error('❌ Failed to create inventory sale:', error);
-      alert('Failed to complete sale. Please try again.');
+      alert(t('services.sale_failed', 'Failed to complete sale. Please try again.'));
     }
   };
 
@@ -597,12 +595,10 @@ This will remove the service from the database and all local storage. This actio
     const itemName = item?.item_name || 'Unknown item';
     
     const confirmed = await confirm(
-      'Permanently Delete Inventory Item?',
-      `Are you sure you want to permanently delete "${itemName}"?
-
-This will remove the item from the database and all local storage. This action cannot be undone.`,
+      t('services.confirm_delete_inventory', 'Permanently Delete Inventory Item?'),
+      t('services.confirm_delete_inventory_message', 'Are you sure you want to permanently delete "{itemName}"?\n\nThis will remove the item from the database and all local storage. This action cannot be undone.', { itemName }),
       {
-        confirmText: 'Yes, Delete Permanently',
+        confirmText: t('services.confirm_delete_permanently', 'Yes, Delete Permanently'),
         cancelText: 'Cancel',
         type: 'danger'
       }
@@ -703,7 +699,7 @@ This will remove the item from the database and all local storage. This action c
       
     } catch (error) {
       console.error('Failed to create transport transaction:', error);
-      alert('Failed to complete trip. Please try again.');
+      alert(t('services.trip_failed', 'Failed to complete trip. Please try again.'));
     }
     
     setShowKmModal(null);
@@ -783,7 +779,7 @@ This will remove the item from the database and all local storage. This action c
               <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                 <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                   <DollarSign size={16} />
-                  Total Service Value
+      t('services.total_service_value', 'Total Service Value')
                 </div>
                 <div className="text-xl font-bold text-green-600">
                   {formatCurrency(totalRevenue, country)}
@@ -793,7 +789,7 @@ This will remove the item from the database and all local storage. This action c
               <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mt-4">
                 <div className="flex items-center gap-2 text-sm text-purple-700 mb-1">
                   <TrendingUp size={16} />
-                  Avg Price
+      t('services.avg_price', 'Avg Price')
                 </div>
                 <div className="text-xl font-bold text-purple-600">
                   {formatCurrency(Math.round(averageServicePrice * 100) / 100, country)}

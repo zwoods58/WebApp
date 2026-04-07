@@ -734,7 +734,7 @@ function AddCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
           disabled={isSubmitting}
           className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Adding...' : t('credit.add_customer')}
+          {isSubmitting ? t('credit.adding', 'Adding...') : t('credit.add_customer')}
         </button>
       </div>
     </form>
@@ -800,7 +800,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
     const finalCustomerName = showNewCustomerInput ? newCustomerName : selectedCustomer;
     
     if (!finalCustomerName) {
-      alert('Please select or enter a vendor name');
+      alert(t('credit.select_vendor_error', 'Please select or enter a vendor name'));
       return;
     }
     
@@ -817,20 +817,20 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {/* Who do you owe? - Same as Money Out */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Who do you owe? <span className="text-red-500">*</span>
+          {t('credit.who_do_you_owe', 'Who do you owe?')} <span className="text-red-500">*</span>
         </label>
         <select
           value={showNewCustomerInput ? 'new' : selectedCustomer}
           onChange={handleCustomerSelect}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Select a vendor or person...</option>
+          <option value="">{t('credit.select_vendor_placeholder', 'Select a vendor or person...')}</option>
           {creditCustomers.map((customer) => (
             <option key={customer.id} value={customer.customer_name}>
               {customer.customer_name} - Owed: ${customer.amount}
             </option>
           ))}
-          <option value="new">+ Add new vendor/person</option>
+          <option value="new">{t('credit.add_new_vendor', '+ Add new vendor/person')}</option>
         </select>
       </div>
       
@@ -908,7 +908,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
           disabled={isSubmitting}
           className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
-          {isSubmitting ? 'Adding...' : 'Add Customer'}
+          {isSubmitting ? t('credit.adding', 'Adding...') : 'Add Customer'}
         </button>
       </div>
     </form>
