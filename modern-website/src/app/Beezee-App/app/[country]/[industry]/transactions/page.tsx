@@ -269,6 +269,7 @@ export default function TransactionsPage() {
           <MoneyInButton 
             industry={industry} 
             country={country}
+            businessId={business?.id || ''}
             onSuccess={handleNewTransaction}
           />
         </div>

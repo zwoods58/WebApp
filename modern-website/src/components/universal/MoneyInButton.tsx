@@ -5,6 +5,7 @@ import { Plus, TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices } from '@/hooks';
+import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 
 type Service = {
   id: string;
@@ -16,6 +17,7 @@ type Service = {
 interface MoneyInButtonProps {
   industry: string;
   country: string;
+  businessId: string;
   onSuccess: (transactionData: any) => void;
   disabled?: boolean;
 }
@@ -37,9 +39,10 @@ const getDefaultDueDate = () => {
   return date.toISOString().split('T')[0];
 };
 
-export default function MoneyInButton({ industry, country, onSuccess, disabled = false }: MoneyInButtonProps) {
+export default function MoneyInButton({ industry, country, businessId, onSuccess, disabled = false }: MoneyInButtonProps) {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dueDateRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
@@ -98,33 +101,96 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
     }
   }, [formData.service_id, formData.distance, formData.tips, formData.use_base_amount, industry, services]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    const transactionData = {
-      amount: parseFloat(formData.amount),
-      currency: getCurrency(country),
-      description: formData.description,
-      customer_name: formData.customer_name,
-      payment_method: formData.payment_method,
-      transaction_date: new Date().toISOString().split('T')[0],
-      due_date: formData.payment_method === 'credit' ? formData.due_date : undefined,
-    };
-
-    console.log('[MoneyInButton] Transaction data:', transactionData);
-    onSuccess(transactionData);
-    setShowModal(false);
-    setFormData({ 
-      amount: '', 
-      description: '', 
-      customer_name: '', 
-      payment_method: 'cash',
-      service_id: '',
-      distance: '',
-      tips: '',
-      use_base_amount: false,
-      due_date: getDefaultDueDate(),
-    });
+    const amount = parseFloat(formData.amount);
+    const currency = getCurrency(country);
+    
+    try {
+      // Handle credit payments with unified service
+      if (formData.payment_method === 'credit' || formData.payment_method === 'Credit') {
+        console.log(' [MoneyInButton] Processing credit payment for:', formData.customer_name);
+        
+        if (!formData.customer_name || formData.customer_name.trim() === '') {
+          alert('Customer name is required for credit payment');
+          setIsSubmitting(false);
+          return;
+        }
+        
+        // Use unified credit service - this handles BOTH new and existing customers
+        const result = await addCreditUnified(
+          formData.customer_name.trim(),
+          amount,
+          formData.due_date,
+          formData.description || `Credit purchase - ${industry || 'General'}`,
+          businessId,
+          industry,
+          currency,
+          'receivable'  // Money In is always receivable (customers owe you)
+        );
+        
+        if (!result) {
+          throw new Error(`Failed to add credit for ${formData.customer_name}`);
+        }
+        
+        // Show appropriate success message
+        if (result.isNew) {
+          alert(` New customer "${formData.customer_name}" created with ${currency} ${amount} credit`);
+        } else {
+          alert(` ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}`);
+        }
+        
+        // Continue with normal transaction creation
+        const transactionData = {
+          amount,
+          currency,
+          description: formData.description,
+          customer_name: formData.customer_name,
+          payment_method: formData.payment_method,
+          transaction_date: new Date().toISOString().split('T')[0],
+          due_date: formData.due_date,
+        };
+        
+        console.log('[MoneyInButton] Transaction data:', transactionData);
+        onSuccess(transactionData);
+      } else {
+        // Handle non-credit payments normally
+        const transactionData = {
+          amount,
+          currency,
+          description: formData.description,
+          customer_name: formData.customer_name,
+          payment_method: formData.payment_method,
+          transaction_date: new Date().toISOString().split('T')[0],
+          due_date: undefined,
+        };
+        
+        console.log('[MoneyInButton] Transaction data:', transactionData);
+        onSuccess(transactionData);
+      }
+      
+      // Reset and close modal
+      setShowModal(false);
+      setFormData({ 
+        amount: '', 
+        description: '', 
+        customer_name: '', 
+        payment_method: 'cash',
+        service_id: '',
+        distance: '',
+        tips: '',
+        use_base_amount: false,
+        due_date: getDefaultDueDate(),
+      });
+      
+    } catch (error) {
+      console.error('Payment failed:', error);
+      alert(error instanceof Error ? error.message : 'Failed to process payment');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Close modal handler
@@ -423,9 +489,10 @@ export default function MoneyInButton({ industry, country, onSuccess, disabled =
                   {/* Existing Submit Button */}
                   <button
                     type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl font-bold text-lg hover:from-green-400 hover:to-green-500 transition-colors shadow-lg button-tap"
+                    disabled={isSubmitting}
+                    className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl font-bold text-lg hover:from-green-400 hover:to-green-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {t('common.save')} {t('transaction', 'Transaction')}
+                    {isSubmitting ? 'Processing...' : `${t('common.save')} ${t('transaction', 'Transaction')}`}
                   </button>
                 </div>
               </form>

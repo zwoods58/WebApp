@@ -5,6 +5,7 @@ import { formatCurrency } from '@/utils/currency';
 import { useCreditItems } from '@/hooks/useCreditItems';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
+import { makePaymentOnLineItem } from '@/app/Beezee-App/services/creditService';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -51,21 +52,11 @@ export default function PaymentModal({
     setIsSubmitting(true);
     
     try {
-      const newPaidAmount = lineItem.paid_amount + amount;
-      const newStatus = newPaidAmount >= lineItem.amount ? 'paid' : 'partial';
+      // Use unified credit service for payment
+      const result = await makePaymentOnLineItem(lineItem.id, amount);
       
-      // Update line item
-      const updateResult = await updateCreditItemAsync({
-        id: lineItem.id,
-        data: {
-          paid_amount: newPaidAmount,
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        }
-      });
-      
-      if (!updateResult) {
-        throw new Error('Failed to update line item');
+      if (!result) {
+        throw new Error('Failed to process payment');
       }
       
       showSuccess(`Payment of ${formatCurrency(amount, country)} applied successfully`);

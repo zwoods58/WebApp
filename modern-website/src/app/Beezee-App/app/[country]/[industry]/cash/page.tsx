@@ -322,6 +322,7 @@ export default function CashPage() {
             <MoneyInButton 
               industry={industry}
               country={country}
+              businessId={business?.id || ''}
               onSuccess={handleMoneyIn}
             />
           </div>

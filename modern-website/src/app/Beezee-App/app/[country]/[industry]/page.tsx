@@ -827,6 +827,7 @@ export default function IndustryDashboard() {
             <MoneyInButton 
               industry={industry} 
               country={country}
+              businessId={business?.id || ''}
               onSuccess={handleMoneyIn}
               disabled={!business}
             />

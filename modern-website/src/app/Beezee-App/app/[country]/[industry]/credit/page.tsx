@@ -11,6 +11,7 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import { findMatchingCreditCustomer, validateCreditData, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
+import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
@@ -126,111 +127,27 @@ export default function CreditPage() {
     setIsSubmitting(true);
     
     try {
-      // STEP 1: Validate input data
-      const validation = validateCreditData({
-        ...newCredit,
-        business_id: business.id,
+      // Use unified credit service - this handles BOTH new and existing customers
+      const result = await addCreditUnified(
+        newCredit.customer_name.trim(),
+        parseFloat(newCredit.amount),
+        newCredit.due_date,
+        newCredit.description?.trim() || generateDefaultDescription(newCredit.customer_name),
+        business.id,
         industry,
         currency,
-        type: creditType
-      });
+        creditType
+      );
       
-      if (!validation.isValid) {
-        throw new Error(validation.errors.join(', '));
+      if (!result) {
+        throw new Error(`Failed to add credit for ${newCredit.customer_name}`);
       }
       
-      // STEP 2: Find existing customer using unified matching logic
-      const existingCredit = findMatchingCreditCustomer(creditData, newCredit.customer_name, creditType);
-      
-      // STEP 3: Prepare line item data
-      const lineItemData = {
-        business_id: business.id,
-        industry,
-        description: newCredit.description?.trim() || generateDefaultDescription(newCredit.customer_name),
-        amount: parseFloat(newCredit.amount),
-        paid_amount: 0,
-        currency,
-        status: 'outstanding' as const,
-        due_date: newCredit.due_date,
-        date_given: new Date().toISOString().split('T')[0],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      if (existingCredit) {
-        // CASE 1: Add line item to EXISTING customer
-        console.log(' Adding line item to existing customer:', {
-          id: existingCredit.id,
-          name: existingCredit.customer_name,
-          currentTotal: existingCredit.amount,
-          newAmount: parseFloat(newCredit.amount)
-        });
-        
-        // Add line item
-        const itemResult = await addCreditItemAsync({
-          credit_id: existingCredit.id,
-          ...lineItemData
-        });
-        
-        if (!itemResult) {
-          throw new Error('Failed to add line item');
-        }
-        
-        // Update credit total
-        const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, parseFloat(newCredit.amount));
-        const updateResult = await updateCreditAsync({
-          id: existingCredit.id,
-          data: {
-            amount: newTotalAmount,
-            due_date: newCredit.due_date,
-            updated_at: new Date().toISOString()
-          }
-        });
-        
-        if (!updateResult) {
-          throw new Error('Failed to update credit total');
-        }
-        
-        showSuccess(`Line item added to ${existingCredit.customer_name}. New total: ${formatCurrency(newTotalAmount, country)}`);
-        
+      // Show appropriate success message
+      if (result.isNew) {
+        showSuccess(`New customer "${newCredit.customer_name}" created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
       } else {
-        // CASE 2: Create NEW customer with initial line item
-        console.log(' Creating new credit customer:', {
-          name: newCredit.customer_name,
-          amount: newCredit.amount,
-          type: creditType
-        });
-        
-        // Create credit account
-        const creditResult = await addCreditAsync({
-          ...newCredit,
-          business_id: business.id,
-          industry,
-          currency,
-          type: creditType,
-          amount: parseFloat(newCredit.amount),
-          date_given: new Date().toISOString().split('T')[0],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-        
-        const creditId = creditResult?.id;
-        
-        if (!creditId) {
-          throw new Error('Failed to create credit account');
-        }
-        
-        // Create initial line item
-        const itemResult = await addCreditItemAsync({
-          credit_id: creditId,
-          ...lineItemData
-        });
-        
-        if (!itemResult) {
-          throw new Error('Failed to create line item');
-        }
-        
-        showSuccess(`New customer ${newCredit.customer_name} created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
+        showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} credit added to ${newCredit.customer_name}. New total: ${formatCurrency(result.customer.amount, country)}`);
       }
       
       // Close modal and refresh data
