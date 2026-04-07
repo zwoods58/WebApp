@@ -29,13 +29,17 @@ export default function CreditPage() {
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
   // ✅ ADDED: refetch to force refresh
-  const { data: credit, isLoading, addCredit, updateCredit, updateCreditAsync, isOffline, refetch } = useCreditTanStack({ 
+  const { data: credit, isLoading, addCredit, addCreditAsync, updateCredit, updateCreditAsync, isOffline, refetch } = useCreditTanStack({ 
     industry,
     businessId: business?.id 
   });
   const { addTransaction, addTransactionAsync } = useTransactionsTanStack({ 
     industry,
     businessId: business?.id 
+  });
+  const { addCreditItemAsync } = useCreditItems({ 
+    businessId: business?.id,
+    industry 
   });
   
   // ✅ ADDED: Refresh credit data when businessId is available
@@ -130,7 +134,35 @@ export default function CreditPage() {
     };
     
     try {
-      await addCredit(fullCreditData);
+      // Create the credit record and get the returned object with ID
+      const creditResult = await addCreditAsync(fullCreditData);
+      
+      // Get the credit ID from the result
+      const creditId = creditResult?.id;
+      
+      console.log('📝 [CreditPage] Created credit with ID:', creditId);
+      
+      // Create initial line item for this credit
+      if (creditId) {
+        await addCreditItemAsync({
+          credit_id: creditId,
+          business_id: business.id,
+          industry,
+          description: `Initial credit for ${newCredit.customer_name}`,
+          amount: parseFloat(newCredit.amount),
+          paid_amount: 0,
+          currency,
+          status: 'outstanding',
+          due_date: newCredit.due_date,
+          date_given: new Date().toISOString().split('T')[0],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+        console.log('✅ [CreditPage] Created initial line item for credit:', creditId);
+      } else {
+        console.warn('⚠️ [CreditPage] No credit ID returned, line item not created');
+      }
+      
       showSuccess('Credit added successfully');
       setShowAddModal(false);
       // ✅ Force refresh after adding
