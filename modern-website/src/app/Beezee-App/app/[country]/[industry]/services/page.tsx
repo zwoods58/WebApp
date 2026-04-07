@@ -71,8 +71,8 @@ export default function ServicesPage() {
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
-  const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending } = useServicesTanStack({ industry, businessId: business?.id });
-  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, deleteInventory: deleteInventoryItemFn, isOffline: inventoryOffline } = useInventoryTanStack({ industry, businessId: business?.id });
+  const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending, refetch: refetchServices } = useServicesTanStack({ industry, businessId: business?.id });
+  const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, deleteInventory: deleteInventoryItemFn, isOffline: inventoryOffline, refetch: refetchInventory } = useInventoryTanStack({ industry, businessId: business?.id });
   const { data: transactions, isLoading: transactionsLoading, addTransaction, addTransactionAsync, isOffline: transactionsOffline } = useTransactionsTanStack({ industry, businessId: business?.id });
   
   // Ensure services is always an array
@@ -393,21 +393,28 @@ export default function ServicesPage() {
   };
 
   const handleDeleteService = async (serviceId: string) => {
-    if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+    const service = safeServices.find((s: any) => s.id === serviceId);
+    const serviceName = service?.service_name || 'Unknown service';
+    
+    if (!confirm(`⚠️ Are you SURE you want to permanently delete "${serviceName}"? This action CANNOT be undone.`)) {
       return;
     }
     
     setDeletingServiceId(serviceId);
     try {
+      console.log(`🗑️ [ServicesPage] Hard deleting service:`, { id: serviceId, name: serviceName });
       await deleteServiceFn(serviceId);
       
       // Automatic sync will be handled by useIndustryDataNew hook
       
       setShowServiceDetail(null);
-      showSuccess(t('services.delete_success', 'Service deleted successfully'));
+      showSuccess(t('services.delete_success', 'Service permanently deleted'));
+      
+      // Force refetch to ensure UI is in sync
+      await refetchServices();
     } catch (error) {
       console.error('Failed to delete service:', error);
-      showError(t('services.delete_error', 'Failed to delete service'));
+      showError(t('services.delete_error', 'Failed to delete service. Please try again.'));
     } finally {
       setDeletingServiceId(null);
     }
@@ -525,17 +532,24 @@ export default function ServicesPage() {
   };
 
   const handleDeleteInventoryItem = async (itemId: string) => {
-    if (!confirm('Are you sure you want to delete this inventory item? This action cannot be undone.')) {
+    const item = safeInventory.find((i: any) => i.id === itemId);
+    const itemName = item?.item_name || 'Unknown item';
+    
+    if (!confirm(`⚠️ Are you SURE you want to permanently delete "${itemName}"? This action CANNOT be undone.`)) {
       return;
     }
     
     setDeletingInventoryId(itemId);
     try {
+      console.log(`🗑️ [ServicesPage] Hard deleting inventory item:`, { id: itemId, name: itemName });
       await deleteInventoryItem(itemId);
-      showSuccess('Inventory item deleted successfully');
+      showSuccess('Inventory item permanently deleted');
+      
+      // Force refetch to ensure UI is in sync
+      await refetchInventory();
     } catch (error) {
       console.error('Failed to delete inventory item:', error);
-      showError('Failed to delete inventory item');
+      showError('Failed to delete inventory item. Please try again.');
     } finally {
       setDeletingInventoryId(null);
     }

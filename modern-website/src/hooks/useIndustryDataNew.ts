@@ -100,14 +100,11 @@ export const useIndustryDataNew = ({
         cachedData = [];
       }
 
-      // Filter out soft-deleted items
-      const filteredData = Array.isArray(cachedData) ? cachedData.filter(item => !item._deleted) : [];
-      const deletedCount = cachedData.length - filteredData.length;
+      // No filtering - return all data since we're doing hard deletes now
+      const filteredData = Array.isArray(cachedData) ? cachedData : [];
       
       console.log(`🔍 [QUERY ${table}] Data filtering`, { 
-        original: cachedData.length,
-        deleted: deletedCount,
-        final: filteredData.length,
+        total: filteredData.length,
         pendingItems: filteredData.filter(item => item.syncStatus === 'pending').length
       });
 
@@ -169,7 +166,6 @@ export const useIndustryDataNew = ({
             .from('inventory')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('item_name', { ascending: true });
           freshData = iData || [];
           error = iError;
@@ -179,7 +175,6 @@ export const useIndustryDataNew = ({
             .from('credit')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('created_at', { ascending: false });
           freshData = crData || [];
           error = crError;
@@ -189,7 +184,6 @@ export const useIndustryDataNew = ({
             .from('services')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('service_name', { ascending: true });
           freshData = sData || [];
           error = sError;
@@ -199,7 +193,6 @@ export const useIndustryDataNew = ({
             .from('appointments')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('appointment_date', { ascending: true })
             .order('appointment_time', { ascending: true });
           freshData = aData || [];
@@ -210,7 +203,6 @@ export const useIndustryDataNew = ({
             .from('expenses')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('expense_date', { ascending: false });
           freshData = eData || [];
           error = eError;
@@ -220,7 +212,6 @@ export const useIndustryDataNew = ({
             .from('targets')
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('created_at', { ascending: false });
           freshData = tgtData || [];
           error = tgtError;
@@ -230,7 +221,6 @@ export const useIndustryDataNew = ({
             .from(table)
             .select('*')
             .eq('business_id', businessId)
-            .is('deleted_at', 'null') // Filter out soft-deleted records
             .order('created_at', { ascending: false });
           freshData = gData || [];
           error = gError;
@@ -433,11 +423,13 @@ export const useIndustryDataNew = ({
   });
 
   // ============================================================
-  // DELETE MUTATION
+  // DELETE MUTATION - HARD DELETE
   // ============================================================
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       if (!businessId) throw new Error('Business ID required for delete operation');
+      
+      console.log(`🗑️ [Hard Delete ${table}] Starting delete for item:`, id);
       
       const operationId = crypto.randomUUID();
       
@@ -457,8 +449,8 @@ export const useIndustryDataNew = ({
       };
       await db.operations_queue.add(operation);
       
-      // Soft delete in IndexedDB
-      await softDeleteFromCache(table, id);
+      // HARD DELETE from IndexedDB
+      await hardDeleteFromCache(table, id);
       
       // Optimistic update - remove from cache
       queryClient.setQueryData(
@@ -477,16 +469,17 @@ export const useIndustryDataNew = ({
         await swManager.triggerSync();
       }
       
+      console.log(`✅ [Hard Delete ${table}] Item ${id} deleted successfully`);
       return id;
     },
-    onSuccess: () => {
-      console.log(`✅ [DELETE ${table}] Mutation successful - optimistic update should remove item`);
+    onSuccess: (deletedId) => {
+      console.log(`✅ [DELETE ${table}] Hard delete successful - item ${deletedId} permanently removed`);
       // Note: Removed queryClient.invalidateQueries() to prevent race condition
       // The optimistic update set during mutation should be sufficient for immediate UI update
       // Background refresh will handle syncing with server when online
     },
     onError: (error) => {
-      console.error(`[useIndustryDataNew] Delete failed for ${table}:`, error);
+      console.error(`❌ [DELETE ${table}] Hard delete failed for ${table}:`, error);
       queryClient.invalidateQueries({ queryKey: [table, industry, country, businessId] });
     },
   });
@@ -526,58 +519,39 @@ export const useIndustryDataNew = ({
     }
   };
 
-  const softDeleteFromCache = async (tableName: TableName, id: string): Promise<void> => {
+  const hardDeleteFromCache = async (tableName: TableName, id: string): Promise<void> => {
     try {
-      let existing: any;
+      console.log(`🗑️ [Hard Delete Cache] Removing ${tableName} item:`, id);
       
       switch (tableName) {
         case 'transactions':
-          existing = await db.transactions.get(id);
-          if (existing) {
-            await db.transactions.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.transactions.delete(id);
           break;
         case 'inventory':
-          existing = await db.inventory.get(id);
-          if (existing) {
-            await db.inventory.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.inventory.delete(id);
           break;
         case 'credit':
-          existing = await db.credit.get(id);
-          if (existing) {
-            await db.credit.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.credit.delete(id);
           break;
         case 'expenses':
-          existing = await db.expenses.get(id);
-          if (existing) {
-            await db.expenses.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.expenses.delete(id);
           break;
         case 'services':
-          existing = await db.services.get(id);
-          if (existing) {
-            await db.services.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.services.delete(id);
           break;
         case 'appointments':
-          existing = await db.appointments.get(id);
-          if (existing) {
-            await db.appointments.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.appointments.delete(id);
           break;
         case 'targets':
-          existing = await db.targets.get(id);
-          if (existing) {
-            await db.targets.put({ ...existing, _deleted: true, _deletedAt: Date.now() });
-          }
+          await db.targets.delete(id);
           break;
         default:
           await db.table(tableName as any).delete(id);
       }
+      
+      console.log(`✅ [Hard Delete Cache] Successfully removed ${tableName} item:`, id);
     } catch (error) {
-      console.error(`[useIndustryDataNew] Failed to soft delete from cache:`, error);
+      console.error(`❌ [Hard Delete Cache] Failed to delete from cache:`, error);
     }
   };
 
