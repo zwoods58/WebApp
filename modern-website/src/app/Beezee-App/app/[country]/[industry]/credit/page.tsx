@@ -10,6 +10,7 @@ import { useCreditTanStack, useTransactionsTanStack, useCreditItems } from '@/ho
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
+import { findMatchingCreditCustomer, validateCreditData, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import PaymentModal from '@/components/universal/PaymentModal';
@@ -63,6 +64,7 @@ export default function CreditPage() {
   const [copiedCredit, setCopiedCredit] = useState<string | null>(null);
   const [showAddLineItemModal, setShowAddLineItemModal] = useState(false);
   const [expandedCustomers, setExpandedCustomers] = useState<Set<string>>(new Set());
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Calculate credit statistics from data
   // Helper function to check if credit is overdue
@@ -117,41 +119,66 @@ export default function CreditPage() {
       return;
     }
     
-    // Get currency from business country
     const currency = getCurrency(business.country || country);
-    
-    // Set type based on active tab
     const creditType = activeTab === 'customers' ? 'receivable' : 'payable';
     
+    // Disable button and show loading state
+    setIsSubmitting(true);
+    
     try {
-      // Check for existing customer with exact name match (case-insensitive, trimmed)
-      const existingCredit = creditData.find((c: any) => 
-        c.customer_name.toLowerCase().trim() === newCredit.customer_name.toLowerCase().trim() &&
-        (c.type === creditType || (!c.type && creditType === 'receivable'))
-      );
+      // STEP 1: Validate input data
+      const validation = validateCreditData({
+        ...newCredit,
+        business_id: business.id,
+        industry,
+        currency,
+        type: creditType
+      });
+      
+      if (!validation.isValid) {
+        throw new Error(validation.errors.join(', '));
+      }
+      
+      // STEP 2: Find existing customer using unified matching logic
+      const existingCredit = findMatchingCreditCustomer(creditData, newCredit.customer_name, creditType);
+      
+      // STEP 3: Prepare line item data
+      const lineItemData = {
+        business_id: business.id,
+        industry,
+        description: newCredit.description?.trim() || generateDefaultDescription(newCredit.customer_name),
+        amount: parseFloat(newCredit.amount),
+        paid_amount: 0,
+        currency,
+        status: 'outstanding' as const,
+        due_date: newCredit.due_date,
+        date_given: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
       
       if (existingCredit) {
-        // Customer exists - add line item to existing customer
-        console.log('📝 [CreditPage] Adding line item to existing customer:', existingCredit.customer_name);
-        
-        await addCreditItemAsync({
-          credit_id: existingCredit.id,
-          business_id: business.id,
-          industry,
-          description: newCredit.description || `Credit purchase for ${newCredit.customer_name}`,
-          amount: parseFloat(newCredit.amount),
-          paid_amount: 0,
-          currency,
-          status: 'outstanding',
-          due_date: newCredit.due_date,
-          date_given: new Date().toISOString().split('T')[0],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+        // CASE 1: Add line item to EXISTING customer
+        console.log(' Adding line item to existing customer:', {
+          id: existingCredit.id,
+          name: existingCredit.customer_name,
+          currentTotal: existingCredit.amount,
+          newAmount: parseFloat(newCredit.amount)
         });
         
+        // Add line item
+        const itemResult = await addCreditItemAsync({
+          credit_id: existingCredit.id,
+          ...lineItemData
+        });
+        
+        if (!itemResult) {
+          throw new Error('Failed to add line item');
+        }
+        
         // Update credit total
-        const newTotalAmount = existingCredit.amount + parseFloat(newCredit.amount);
-        await updateCreditAsync({
+        const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, parseFloat(newCredit.amount));
+        const updateResult = await updateCreditAsync({
           id: existingCredit.id,
           data: {
             amount: newTotalAmount,
@@ -160,59 +187,61 @@ export default function CreditPage() {
           }
         });
         
-        console.log('✅ [CreditPage] Added line item and updated total for:', existingCredit.customer_name);
-        showSuccess(`Credit line item added to ${existingCredit.customer_name}`);
-      } else {
-        // New customer - create credit account and first line item
-        console.log('📝 [CreditPage] Creating new credit customer:', newCredit.customer_name);
+        if (!updateResult) {
+          throw new Error('Failed to update credit total');
+        }
         
-        const fullCreditData = {
+        showSuccess(`Line item added to ${existingCredit.customer_name}. New total: ${formatCurrency(newTotalAmount, country)}`);
+        
+      } else {
+        // CASE 2: Create NEW customer with initial line item
+        console.log(' Creating new credit customer:', {
+          name: newCredit.customer_name,
+          amount: newCredit.amount,
+          type: creditType
+        });
+        
+        // Create credit account
+        const creditResult = await addCreditAsync({
           ...newCredit,
           business_id: business.id,
           industry,
           currency,
           type: creditType,
+          amount: parseFloat(newCredit.amount),
           date_given: new Date().toISOString().split('T')[0],
-          status: 'outstanding',
-          paid_amount: 0,
-          created_at: new Date().toISOString()
-        };
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
         
-        const creditResult = await addCreditAsync(fullCreditData);
         const creditId = creditResult?.id;
         
-        console.log('📝 [CreditPage] Created credit with ID:', creditId);
-        
-        // Create initial line item for this credit
-        if (creditId) {
-          await addCreditItemAsync({
-            credit_id: creditId,
-            business_id: business.id,
-            industry,
-            description: newCredit.description || `Initial credit for ${newCredit.customer_name}`,
-            amount: parseFloat(newCredit.amount),
-            paid_amount: 0,
-            currency,
-            status: 'outstanding',
-            due_date: newCredit.due_date,
-            date_given: new Date().toISOString().split('T')[0],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          console.log('✅ [CreditPage] Created initial line item for credit:', creditId);
-        } else {
-          console.warn('⚠️ [CreditPage] No credit ID returned, line item not created');
+        if (!creditId) {
+          throw new Error('Failed to create credit account');
         }
         
-        showSuccess('New credit customer added successfully');
+        // Create initial line item
+        const itemResult = await addCreditItemAsync({
+          credit_id: creditId,
+          ...lineItemData
+        });
+        
+        if (!itemResult) {
+          throw new Error('Failed to create line item');
+        }
+        
+        showSuccess(`New customer ${newCredit.customer_name} created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
       }
       
+      // Close modal and refresh data
       setShowAddModal(false);
-      // ✅ Force refresh after adding
       await refetch();
-    } catch (error) {
-      console.error('Failed to add credit:', error);
-      showError('Failed to add credit. Please try again.');
+      
+    } catch (error: any) {
+      console.error(' Failed to add credit:', error);
+      showError(error.message || 'Failed to add credit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -586,7 +615,7 @@ export default function CreditPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('credit.add_credit_customer')}</h3>
             
-            <AddCreditForm onSubmit={handleAddCredit} onCancel={() => setShowAddModal(false)} t={t} />
+            <AddCreditForm onSubmit={handleAddCredit} onCancel={() => setShowAddModal(false)} t={t} isSubmitting={isSubmitting} />
           </div>
         </div>
       )}
@@ -677,10 +706,11 @@ export default function CreditPage() {
   );
 }
 
-function AddCreditForm({ onSubmit, onCancel, t }: { 
+function AddCreditForm({ onSubmit, onCancel, t, isSubmitting }: { 
   onSubmit: (data: any) => void, 
   onCancel: () => void,
-  t: (key: string, defaultText?: string, vars?: Record<string, any>) => string 
+  t: (key: string, defaultText?: string, vars?: Record<string, any>) => string,
+  isSubmitting?: boolean
 }) {
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -757,9 +787,10 @@ function AddCreditForm({ onSubmit, onCancel, t }: {
         </button>
         <button
           type="submit"
-          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={isSubmitting}
+          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {t('credit.add_customer')}
+          {isSubmitting ? 'Adding...' : t('credit.add_customer')}
         </button>
       </div>
     </form>

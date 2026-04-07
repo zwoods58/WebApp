@@ -15,8 +15,9 @@ import { useToastContext } from '@/providers/ToastProvider';
 import { useRefreshContext } from '@/contexts/RefreshContext';
 
 // Utility functions
-import { formatDate, formatCurrency, getCurrency } from '@/utils/currency';
+import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
+import { findMatchingCreditCustomer, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
 
 // Supabase hooks
 import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack, useCreditItems } from '@/hooks';
@@ -467,13 +468,8 @@ export default function IndustryDashboard() {
       
       // If payment method is credit, create/update credit account and line item
       if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
-        // Check if customer already has a credit account
-        const existingCredit = credit?.find((c: any) => 
-          c.customer_name.toLowerCase() === transactionData.customer_name.toLowerCase() &&
-          (c.type === 'receivable' || !c.type) // Default to receivable for existing data
-        );
-        
-        let creditId = existingCredit?.id;
+        // Find existing customer using unified matching logic
+        const existingCredit = findMatchingCreditCustomer(credit || [], transactionData.customer_name, 'receivable');
         
         if (existingCredit) {
           // Customer exists - create new line item
@@ -484,7 +480,7 @@ export default function IndustryDashboard() {
             credit_id: existingCredit.id,
             business_id: businessId,
             industry,
-            description: transactionData.description || 'Credit purchase',
+            description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
             amount: transactionData.amount,
             paid_amount: 0,
             currency: transactionData.currency || getCurrency(country),
@@ -496,7 +492,7 @@ export default function IndustryDashboard() {
           });
           
           // Update credit account totals
-          const newTotalAmount = existingCredit.amount + transactionData.amount;
+          const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, transactionData.amount);
           await updateCredit({
             id: existingCredit.id,
             data: {
@@ -504,6 +500,12 @@ export default function IndustryDashboard() {
               due_date: transactionData.due_date, // Update to latest due date
               updated_at: new Date().toISOString()
             }
+          });
+          
+          console.log(' Credit line item added successfully:', {
+            customer: existingCredit.customer_name,
+            lineAmount: transactionData.amount,
+            newTotal: newTotalAmount
           });
         } else {
           // New customer - create credit account and first line item
@@ -522,7 +524,7 @@ export default function IndustryDashboard() {
             created_at: new Date().toISOString()
           });
           
-          creditId = newCredit?.id;
+          const creditId = newCredit?.id;
           
           // Create first line item for new customer
           if (creditId) {
@@ -530,7 +532,7 @@ export default function IndustryDashboard() {
               credit_id: creditId,
               business_id: businessId,
               industry,
-              description: transactionData.description || 'Credit purchase',
+              description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
               amount: transactionData.amount,
               paid_amount: 0,
               currency: transactionData.currency || getCurrency(country),
@@ -539,6 +541,12 @@ export default function IndustryDashboard() {
               date_given: transactionData.transaction_date,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
+            });
+            
+            console.log(' New credit account created successfully:', {
+              customer: transactionData.customer_name,
+              amount: transactionData.amount,
+              creditId
             });
           }
         }

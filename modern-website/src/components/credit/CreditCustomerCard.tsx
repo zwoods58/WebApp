@@ -5,6 +5,8 @@ import { ChevronDown, ChevronUp, Calendar, CheckCircle, Clock, AlertCircle } fro
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useCreditItems } from '@/hooks/useCreditItems';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { useToast } from '@/hooks/useToast';
+import PaymentModal from './PaymentModal';
 
 interface CreditCustomerCardProps {
   customer: any;
@@ -26,13 +28,16 @@ export default function CreditCustomerCard({
   onToggleExpand
 }: CreditCustomerCardProps) {
   const { t } = useLanguage();
-  const { data: creditItems, isLoading: itemsLoading } = useCreditItems({ 
+  const { showSuccess, showError } = useToast();
+  const { data: creditItems, isLoading: itemsLoading, refetch: refetchItems } = useCreditItems({ 
     businessId, 
     industry,
     creditId: customer.id 
   });
 
   const [localExpanded, setLocalExpanded] = useState(isExpanded);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedLineItem, setSelectedLineItem] = useState<any>(null);
 
   // Calculate totals from line items
   const calculateTotals = () => {
@@ -104,6 +109,18 @@ export default function CreditCustomerCard({
     } else {
       setLocalExpanded(!localExpanded);
     }
+  };
+
+  const handlePayment = (lineItem: any) => {
+    setSelectedLineItem(lineItem);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = async () => {
+    showSuccess('Payment applied successfully');
+    await refetchItems();
+    setShowPaymentModal(false);
+    setSelectedLineItem(null);
   };
 
   const expanded = onToggleExpand ? isExpanded : localExpanded;
@@ -251,13 +268,31 @@ export default function CreditCustomerCard({
                         )}
                       </div>
                       
-                      <div className="text-xs text-gray-500 flex items-center gap-1">
-                        <Calendar size={12} />
-                        {formatDate(item.due_date || '')}
-                        {itemOverdue && (
-                          <span className="text-red-600 font-medium ml-1">
-                            ({Math.max(0, Math.ceil((new Date().getTime() - new Date(item.due_date).getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')})
-                          </span>
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs text-gray-500 flex items-center gap-1">
+                          <Calendar size={12} />
+                          {formatDate(item.due_date || '')}
+                          {itemOverdue && (
+                            <span className="text-red-600 font-medium ml-1">
+                              ({Math.max(0, Math.ceil((new Date().getTime() - new Date(item.due_date).getTime()) / (1000 * 60 * 60 * 24)))} {t('credit.days_overdue')})
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Payment Buttons */}
+                        {itemOutstanding > 0 && (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePayment(item);
+                              }}
+                              className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                              title="Make payment"
+                            >
+                              Pay
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -273,6 +308,21 @@ export default function CreditCustomerCard({
             </div>
           )}
         </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && selectedLineItem && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedLineItem(null);
+          }}
+          lineItem={selectedLineItem}
+          credit={customer}
+          country={country}
+          onSuccess={handlePaymentSuccess}
+        />
       )}
     </div>
   );
