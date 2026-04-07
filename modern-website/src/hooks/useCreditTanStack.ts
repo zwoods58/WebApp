@@ -14,6 +14,7 @@ export interface Credit {
   date_given: string; // Required field from database
   status: 'outstanding' | 'partial' | 'paid' | 'overdue'; // Changed from 'pending' to 'outstanding'
   paid_amount?: number; // Amount paid so far for partial payments (defaults to 0)
+  type?: 'receivable' | 'payable'; // receivable = customer owes us, payable = we owe supplier
   notes?: string;
   metadata?: Record<string, any>;
   created_at: string;

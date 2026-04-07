@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Clock, CheckCircle, AlertCircle, Calendar, Search, Filter, Copy, MessageSquare } from 'lucide-react';
+import { Users, Plus, Clock, CheckCircle, AlertCircle, Calendar, Search, Filter, Copy, MessageSquare, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useCreditTanStack, useTransactionsTanStack } from '@/hooks';
+import { useCreditTanStack, useTransactionsTanStack, useCreditItems } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
@@ -44,6 +44,9 @@ export default function CreditPage() {
     }
   }, [business?.id, refetch]);
   
+  // Tab state for Customers/Personal split
+  const [activeTab, setActiveTab] = useState<'customers' | 'personal'>('customers');
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'outstanding' | 'partial' | 'paid'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -67,15 +70,22 @@ export default function CreditPage() {
   };
 
   const creditData = credit || [];
-  const outstandingCredit = creditData.filter((c: any) => c.status === 'outstanding');
-  const partialCredit = creditData.filter((c: any) => c.status === 'partial');
-  const overdueCredit = creditData.filter((c: any) => isOverdue(c.due_date || '', c.status));
   
-  const totalOwed = creditData.reduce((sum: number, c: any) => {
+  // Filter by tab type: customers (receivable) or personal (payable)
+  const tabFilteredData = creditData.filter((c: any) => {
+    const creditType = c.type || 'receivable'; // Default to receivable for existing data
+    return activeTab === 'customers' ? creditType === 'receivable' : creditType === 'payable';
+  });
+  
+  const outstandingCredit = tabFilteredData.filter((c: any) => c.status === 'outstanding');
+  const partialCredit = tabFilteredData.filter((c: any) => c.status === 'partial');
+  const overdueCredit = tabFilteredData.filter((c: any) => isOverdue(c.due_date || '', c.status));
+  
+  const totalOwed = tabFilteredData.reduce((sum: number, c: any) => {
     const remainingAmount = c.status === 'paid' ? 0 : 
                            c.status === 'partial' ? c.amount - (c.paid_amount || 0) : 
                            c.amount;
-    console.log(`Credit calculation: ${c.customer_name} - Original: ${c.amount}, Paid: ${c.paid_amount || 0}, Status: ${c.status}, Remaining: ${remainingAmount}`);
+    console.log(`💳 Credit calculation: ${c.customer_name} - Original: ${c.amount}, Paid: ${c.paid_amount || 0}, Status: ${c.status}, Remaining: ${remainingAmount}`);
     return sum + remainingAmount;
   }, 0);
   const overdueAmount = overdueCredit.reduce((sum: number, c: any) => {
@@ -85,9 +95,9 @@ export default function CreditPage() {
     return sum + remainingAmount;
   }, 0);
   
-  console.log(`📊 Credit Summary: Total Owed: ${totalOwed}, Overdue: ${overdueAmount}, Customers: ${creditData.length}`);
+  console.log(`📊 Credit Summary (${activeTab}): Total Owed: ${totalOwed}, Overdue: ${overdueAmount}, Count: ${tabFilteredData.length}`);
 
-  const filteredCredit = creditData.filter((item: any) => {
+  const filteredCredit = tabFilteredData.filter((item: any) => {
     const matchesSearch = item.customer_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
     return matchesSearch && matchesStatus;
@@ -102,11 +112,15 @@ export default function CreditPage() {
     // Get currency from business country
     const currency = getCurrency(business.country || country);
     
+    // Set type based on active tab
+    const creditType = activeTab === 'customers' ? 'receivable' : 'payable';
+    
     const fullCreditData = {
       ...newCredit,
       business_id: business.id,
       industry,
       currency,
+      type: creditType,
       date_given: new Date().toISOString().split('T')[0],
       created_at: new Date().toISOString()
     };
@@ -306,17 +320,61 @@ export default function CreditPage() {
           {t('credit')}
         </h1>
 
+        {/* Tab Switcher - Customers/Personal */}
+        <div className="fade-in mt-6">
+          <div className="bg-gray-100 rounded-xl p-1 flex">
+            <button
+              onClick={() => setActiveTab('customers')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'customers'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Users size={18} />
+                {t('credit.customers_tab', 'Customers')}
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('personal')}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
+                activeTab === 'personal'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Wallet size={18} />
+                {t('credit.personal_tab', 'Personal')}
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Summary Cards */}
-        <div className="fade-in mt-8">
-          <div className="bg-white p-4 rounded-xl border border-gray-200">
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <Users className="text-gray-600" size={16} />
-              {t('credit.total_owed')}
+        <div className="fade-in mt-6">
+          <div className={`p-4 rounded-xl border ${
+            activeTab === 'customers' 
+              ? 'bg-green-50 border-green-200' 
+              : 'bg-orange-50 border-orange-200'
+          }`}>
+            <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+              {activeTab === 'customers' ? <Users size={16} /> : <Wallet size={16} />}
+              {activeTab === 'customers' 
+                ? t('credit.total_owed_to_you', 'Total Owed to You')
+                : t('credit.total_you_owe', 'Total You Owe')}
             </div>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className={`text-2xl font-bold ${
+              activeTab === 'customers' ? 'text-green-600' : 'text-orange-600'
+            }`}>
               {formatCurrency(totalOwed, country)}
             </div>
-            <div className="text-xs text-gray-500">{creditData.length} {t('credit.customers')}</div>
+            <div className="text-xs text-gray-500">
+              {tabFilteredData.length} {activeTab === 'customers' 
+                ? t('credit.customers', 'Customers') 
+                : t('credit.suppliers', 'Suppliers')}
+            </div>
           </div>
 
           <div className="bg-red-50 p-4 rounded-xl border border-red-200 mt-4">
@@ -338,7 +396,9 @@ export default function CreditPage() {
             className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} />
-            {t('credit.add_credit_customer')}
+            {activeTab === 'customers' 
+              ? t('credit.add_credit_customer', 'Add Credit Customer')
+              : t('credit.add_personal_credit', 'Add Personal Credit')}
           </button>
         </div>
 

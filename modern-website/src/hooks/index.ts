@@ -9,6 +9,7 @@ export { useUnifiedAuth } from '../contexts/UnifiedAuthContext';
 export { useTransactionsTanStack } from './useTransactionsTanStack';
 export { useExpensesTanStack } from './useExpensesTanStack';
 export { useCreditTanStack } from './useCreditTanStack';
+export { useCreditItems, applyPaymentFIFO, calculateCreditStatus, calculateTotalOwed, getEarliestDueDate } from './useCreditItems';
 export { useInventoryTanStack } from './useInventoryTanStack';
 export { useServicesTanStack } from './useServicesTanStack';
 export { useAppointmentsTanStack } from './useAppointmentsTanStack';
