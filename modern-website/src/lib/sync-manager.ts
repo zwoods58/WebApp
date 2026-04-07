@@ -12,8 +12,12 @@ class SyncManager {
   private isProcessing = false;
   private syncTimeout: NodeJS.Timeout | null = null;
   private readonly SYNC_COOLDOWN = 5000; // 5 seconds between syncs
+  private deletedItems: Set<string> = new Set(); // Track deleted items
+  private readonly DELETED_ITEMS_KEY = 'deleted_items';
 
-  private constructor() {}
+  private constructor() {
+    this.loadDeletedItems();
+  }
 
   static getInstance(): SyncManager {
     if (!SyncManager.instance) {
@@ -151,6 +155,69 @@ class SyncManager {
     
     // Execute immediately
     await this.executeSync();
+  }
+
+  // ============================================================
+  // Delete Tracking Methods
+  // ============================================================
+
+  /**
+   * Track deleted items to prevent re-syncing
+   */
+  markAsDeleted(table: string, id: string): void {
+    const key = `${table}:${id}`;
+    this.deletedItems.add(key);
+    
+    // Persist to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.DELETED_ITEMS_KEY, JSON.stringify([...this.deletedItems]));
+    }
+    
+    console.log(`[SyncManager] Marked as deleted: ${key}`);
+  }
+
+  /**
+   * Check if item is marked as deleted
+   */
+  isDeleted(table: string, id: string): boolean {
+    const key = `${table}:${id}`;
+    return this.deletedItems.has(key);
+  }
+
+  /**
+   * Load deleted items from localStorage
+   */
+  private loadDeletedItems(): void {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(this.DELETED_ITEMS_KEY);
+      if (stored) {
+        try {
+          this.deletedItems = new Set(JSON.parse(stored));
+          console.log(`[SyncManager] Loaded ${this.deletedItems.size} deleted items from storage`);
+        } catch (error) {
+          console.warn('[SyncManager] Failed to load deleted items:', error);
+          this.deletedItems = new Set();
+        }
+      }
+    }
+  }
+
+  /**
+   * Clear deleted items tracking (useful for testing or cleanup)
+   */
+  clearDeletedItems(): void {
+    this.deletedItems.clear();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.DELETED_ITEMS_KEY);
+    }
+    console.log('[SyncManager] Cleared all deleted items tracking');
+  }
+
+  /**
+   * Get all deleted items for debugging
+   */
+  getDeletedItems(): string[] {
+    return [...this.deletedItems];
   }
 }
 

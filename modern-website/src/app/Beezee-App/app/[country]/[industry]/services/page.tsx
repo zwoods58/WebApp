@@ -21,7 +21,7 @@ import {
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { formatCurrency, getCurrency } from '@/utils/currency';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServicesTanStack, useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
@@ -74,6 +74,7 @@ export default function ServicesPage() {
   const { data: services, isLoading, addService, updateService, deleteService: deleteServiceFn, isOffline, isPending, refetch: refetchServices } = useServicesTanStack({ industry, businessId: business?.id });
   const { data: inventory, isLoading: inventoryLoading, addInventory: addInventoryItemFn, updateInventory: updateInventoryItemFn, deleteInventory: deleteInventoryItemFn, isOffline: inventoryOffline, refetch: refetchInventory } = useInventoryTanStack({ industry, businessId: business?.id });
   const { data: transactions, isLoading: transactionsLoading, addTransaction, addTransactionAsync, isOffline: transactionsOffline } = useTransactionsTanStack({ industry, businessId: business?.id });
+  const queryClient = useQueryClient(); // Get queryClient instance
   
   // Ensure services is always an array
   const safeServices = Array.isArray(services) ? services : [];
@@ -114,17 +115,35 @@ export default function ServicesPage() {
     };
   }, [services, inventory]);
 
-  // Fallback from localStorage to IndexedDB - Services only
+  // ✅ FIXED - Only restore from persistent storage when OFFLINE and NO data exists
+  // This prevents deleted items from reappearing
   useEffect(() => {
     let isMounted = true;
     let abortController = new AbortController();
     
-    if (isMounted && (!services || services.length === 0) && persistentServices && persistentServices.length > 0 && !hasInitializedServices.current) {
+    // Only restore if:
+    // 1. We're offline (no network)
+    // 2. There's no data from Supabase
+    // 3. There IS data in persistent storage
+    // 4. We haven't initialized yet
+    
+    const shouldRestore = !navigator.onLine && 
+                          (!services || services.length === 0) && 
+                          persistentServices && 
+                          persistentServices.length > 0 && 
+                          !hasInitializedServices.current;
+    
+    if (shouldRestore) {
+      console.log('📱 Offline mode: Restoring services from persistent storage');
       const restoreServices = async () => {
         for (const item of persistentServices) {
           if (!isMounted || abortController.signal.aborted) break;
           try {
-            await addService(item);
+            // Check if item still exists in current services (avoid duplicates)
+            const exists = services?.some(s => s.id === item.id);
+            if (!exists) {
+              await addService(item);
+            }
           } catch (error) {
             console.error('Failed to restore service:', error);
           }
@@ -140,19 +159,30 @@ export default function ServicesPage() {
       isMounted = false;
       abortController.abort();
     };
-  }, [services, persistentServices]); // Removed addService from dependencies
+  }, [services, persistentServices, addService]);
 
-  // Fallback from localStorage to IndexedDB - Inventory only
+  // ✅ FIXED - Only restore inventory when OFFLINE and NO data exists
   useEffect(() => {
     let isMounted = true;
     let abortController = new AbortController();
     
-    if (isMounted && (!inventory || inventory.length === 0) && persistentInventory && persistentInventory.length > 0 && !hasInitializedInventory.current) {
+    const shouldRestore = !navigator.onLine && 
+                          (!inventory || inventory.length === 0) && 
+                          persistentInventory && 
+                          persistentInventory.length > 0 && 
+                          !hasInitializedInventory.current;
+    
+    if (shouldRestore) {
+      console.log('📱 Offline mode: Restoring inventory from persistent storage');
       const restoreInventory = async () => {
         for (const item of persistentInventory) {
           if (!isMounted || abortController.signal.aborted) break;
           try {
-            await addInventoryItemFn(item);
+            // Check if item still exists in current inventory (avoid duplicates)
+            const exists = inventory?.some(i => i.id === item.id);
+            if (!exists) {
+              await addInventoryItemFn(item);
+            }
           } catch (error) {
             console.error('Failed to restore inventory item:', error);
           }
@@ -168,7 +198,7 @@ export default function ServicesPage() {
       isMounted = false;
       abortController.abort();
     };
-  }, [inventory, persistentInventory]); // Removed addInventoryItemFn from dependencies
+  }, [inventory, persistentInventory, addInventoryItemFn]);
 
   // Periodic database sync to ensure data persistence
   useEffect(() => {
@@ -396,22 +426,52 @@ export default function ServicesPage() {
     const service = safeServices.find((s: any) => s.id === serviceId);
     const serviceName = service?.service_name || 'Unknown service';
     
-    if (!confirm(`⚠️ Are you SURE you want to permanently delete "${serviceName}"? This action CANNOT be undone.`)) {
-      return;
-    }
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT DELETE\n\n` +
+      `Are you sure you want to permanently delete "${serviceName}"?\n\n` +
+      `This will:\n` +
+      `• Remove from Supabase database\n` +
+      `• Remove from all caches\n` +
+      `• Remove from localStorage\n` +
+      `• Remove from offline storage\n\n` +
+      `This action CANNOT be undone!`
+    );
+    
+    if (!confirmed) return;
     
     setDeletingServiceId(serviceId);
+    
     try {
-      console.log(`🗑️ [ServicesPage] Hard deleting service:`, { id: serviceId, name: serviceName });
+      console.log(`🗑️ [ServicesPage] Starting comprehensive delete for service:`, { id: serviceId, name: serviceName });
+      
+      // Step 1: Mark as deleted in sync manager
+      const { syncManager } = await import('@/lib/sync-manager');
+      syncManager.markAsDeleted('services', serviceId);
+      
+      // Step 2: Hard delete from Supabase
       await deleteServiceFn(serviceId);
       
-      // Automatic sync will be handled by useIndustryDataNew hook
+      // Step 3: Clear from all local storage immediately
+      const storageKey = `services_${business?.id}`;
+      localStorage.removeItem(storageKey);
       
-      setShowServiceDetail(null);
-      showSuccess(t('services.delete_success', 'Service permanently deleted'));
+      // Step 4: Remove from persistent storage state
+      setPersistentServices(prev => prev.filter(s => s.id !== serviceId));
       
-      // Force refetch to ensure UI is in sync
+      // Step 5: Clear from React Query cache
+      queryClient.removeQueries({ queryKey: ['services', industry, business?.id] });
+      
+      // Step 6: Force refetch
       await refetchServices();
+      
+      // Step 7: Show success
+      showSuccess(t('services.delete_success', `"${serviceName}" permanently deleted`));
+      
+      // Step 8: Close any open modals
+      setShowServiceDetail(null);
+      
+      console.log(`✅ [ServicesPage] Comprehensive delete complete for service:`, serviceName);
+      
     } catch (error) {
       console.error('Failed to delete service:', error);
       showError(t('services.delete_error', 'Failed to delete service. Please try again.'));
@@ -535,18 +595,49 @@ export default function ServicesPage() {
     const item = safeInventory.find((i: any) => i.id === itemId);
     const itemName = item?.item_name || 'Unknown item';
     
-    if (!confirm(`⚠️ Are you SURE you want to permanently delete "${itemName}"? This action CANNOT be undone.`)) {
-      return;
-    }
+    const confirmed = window.confirm(
+      `⚠️ PERMANENT DELETE\n\n` +
+      `Are you sure you want to permanently delete "${itemName}"?\n\n` +
+      `This will:\n` +
+      `• Remove from Supabase database\n` +
+      `• Remove from all caches\n` +
+      `• Remove from localStorage\n` +
+      `• Remove from offline storage\n\n` +
+      `This action CANNOT be undone!`
+    );
+    
+    if (!confirmed) return;
     
     setDeletingInventoryId(itemId);
+    
     try {
-      console.log(`🗑️ [ServicesPage] Hard deleting inventory item:`, { id: itemId, name: itemName });
-      await deleteInventoryItem(itemId);
-      showSuccess('Inventory item permanently deleted');
+      console.log(`🗑️ [ServicesPage] Starting comprehensive delete for inventory item:`, { id: itemId, name: itemName });
       
-      // Force refetch to ensure UI is in sync
+      // Step 1: Mark as deleted in sync manager
+      const { syncManager } = await import('@/lib/sync-manager');
+      syncManager.markAsDeleted('inventory', itemId);
+      
+      // Step 2: Hard delete from Supabase
+      await deleteInventoryItem(itemId);
+      
+      // Step 3: Clear from all local storage immediately
+      const storageKey = `inventory_${business?.id}`;
+      localStorage.removeItem(storageKey);
+      
+      // Step 4: Remove from persistent storage state
+      setPersistentInventory(prev => prev.filter(i => i.id !== itemId));
+      
+      // Step 5: Clear from React Query cache
+      queryClient.removeQueries({ queryKey: ['inventory', industry, business?.id] });
+      
+      // Step 6: Force refetch
       await refetchInventory();
+      
+      // Step 7: Show success
+      showSuccess(`"${itemName}" permanently deleted`);
+      
+      console.log(`✅ [ServicesPage] Comprehensive delete complete for inventory item:`, itemName);
+      
     } catch (error) {
       console.error('Failed to delete inventory item:', error);
       showError('Failed to delete inventory item. Please try again.');
@@ -618,6 +709,35 @@ export default function ServicesPage() {
     }
     
     setShowKmModal(null);
+  };
+
+  // Debug storage functionality
+  const debugStorage = () => {
+    console.log('=== STORAGE DEBUG ===');
+    console.log('Services from Supabase:', safeServices.length);
+    console.log('Inventory from Supabase:', safeInventory.length);
+    console.log('Persistent services:', persistentServices.length);
+    console.log('Persistent inventory:', persistentInventory.length);
+    console.log('Online status:', navigator.onLine);
+    
+    // Check for any stored services in localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.includes('service') || key?.includes('inventory')) {
+        const value = localStorage.getItem(key);
+        console.log(`Storage key: ${key}`, value ? JSON.parse(value).length : 'null');
+      }
+    }
+    
+    // Check deleted items tracking
+    const deletedItems = syncManager.getDeletedItems();
+    console.log('Deleted items tracked:', deletedItems);
+    
+    // Check React Query cache
+    const servicesCache = queryClient.getQueryData(['services', industry, business?.id]);
+    const inventoryCache = queryClient.getQueryData(['inventory', industry, business?.id]);
+    console.log('React Query cache - Services:', servicesCache?.length || 0);
+    console.log('React Query cache - Inventory:', inventoryCache?.length || 0);
   };
 
   return (
@@ -720,6 +840,14 @@ export default function ServicesPage() {
               >
                 <Plus size={20} />
                 {t('services.add_service')}
+              </button>
+              
+              {/* Debug Storage Button - Temporary for testing */}
+              <button
+                onClick={debugStorage}
+                className="w-full py-2 mt-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-xl transition-colors"
+              >
+                🐛 Debug Storage
               </button>
             </div>
 
