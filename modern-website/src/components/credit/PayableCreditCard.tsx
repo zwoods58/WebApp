@@ -7,6 +7,7 @@ import { useCreditItems } from '@/hooks/useCreditItems';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import { makePaymentOnLineItem } from '@/app/Beezee-App/services/creditService';
+import PaymentModal from './PaymentModal';
 import { debugCustomerLineItems } from '@/app/Beezee-App/services/creditService';
 
 interface PayableCreditCardProps {
@@ -35,10 +36,8 @@ export default function PayableCreditCard({
   const [localExpanded, setLocalExpanded] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedLineItem, setSelectedLineItem] = useState<any>(null);
-  const [paymentAmount, setPaymentAmount] = useState('');
   const [fallbackItems, setFallbackItems] = useState<any[]>([]);
   const [debugMode, setDebugMode] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const expanded = localExpanded;
 
@@ -133,47 +132,7 @@ export default function PayableCreditCard({
 
   const handlePayment = (lineItem: any) => {
     setSelectedLineItem(lineItem);
-    setPaymentAmount('');
     setShowPaymentModal(true);
-  };
-
-  const handlePartialPayment = async () => {
-    const amount = parseFloat(paymentAmount);
-    const remainingAmount = (selectedLineItem?.amount || 0) - (selectedLineItem?.paid_amount || 0);
-    
-    if (isNaN(amount) || amount <= 0) {
-      showError('Please enter a valid amount');
-      return;
-    }
-    
-    if (amount > remainingAmount) {
-      showError(`Amount cannot exceed remaining balance of ${formatCurrency(remainingAmount, country)}`);
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const result = await makePaymentOnLineItem(selectedLineItem.id, amount);
-      
-      if (!result) {
-        throw new Error('Payment failed');
-      }
-      
-      showSuccess(`Partial payment of ${formatCurrency(amount, country)} successful!`);
-      setShowPaymentModal(false);
-      setSelectedLineItem(null);
-      setPaymentAmount('');
-      await refetchItems();
-      if (onRefresh) {
-        onRefresh();
-      }
-    } catch (error: any) {
-      console.error('[PayableCreditCard] Partial payment failed:', error);
-      showError(error.message || 'Payment failed. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handlePaymentSuccess = async () => {
@@ -183,39 +142,6 @@ export default function PayableCreditCard({
     setSelectedLineItem(null);
     if (onRefresh) {
       onRefresh();
-    }
-  };
-
-  const handlePayLineItem = async (lineItem: any) => {
-    if (!lineItem || !lineItem.id) return;
-    
-    const remainingAmount = lineItem.amount - lineItem.paid_amount;
-    
-    if (window.confirm(`Pay ${formatCurrency(remainingAmount, country)} to ${credit.customer_name} for "${lineItem.description || 'Cost'}"?`)) {
-      try {
-        setIsSubmitting(true);
-        
-        // Use the unified service to make payment
-        const result = await makePaymentOnLineItem(lineItem.id, remainingAmount);
-        
-        if (!result) {
-          throw new Error('Payment failed');
-        }
-        
-        showSuccess(`Paid ${formatCurrency(remainingAmount, country)} to ${credit.customer_name}`);
-        
-        // Refresh data
-        await refetchItems();
-        if (onRefresh) {
-          onRefresh();
-        }
-        
-      } catch (error: any) {
-        console.error('[PayableCreditCard] Payment failed:', error);
-        showError(error.message || 'Payment failed. Please try again.');
-      } finally {
-        setIsSubmitting(false);
-      }
     }
   };
 
@@ -378,16 +304,9 @@ export default function PayableCreditCard({
                             <button
                               onClick={() => handlePayment(item)}
                               className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-                              title="Make partial payment"
+                              title="Make payment"
                             >
-                              Partial
-                            </button>
-                            <button
-                              onClick={() => handlePayLineItem(item)}
-                              className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
-                              title={`Pay full amount: ${formatCurrency(itemOutstanding, country)}`}
-                            >
-                              Pay Full ({formatCurrency(itemOutstanding, country)})
+                              Pay
                             </button>
                           </div>
                         )}
@@ -407,81 +326,19 @@ export default function PayableCreditCard({
         </div>
       )}
       
-      {/* Partial Payment Modal */}
+      {/* Payment Modal - Using Customer Credit Style */}
       {showPaymentModal && selectedLineItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="p-6">
-              <h2 className="text-xl font-bold mb-4">Make Partial Payment</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600">Vendor</p>
-                  <p className="font-medium">{credit.customer_name}</p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Description</p>
-                  <p className="font-medium">{selectedLineItem.description || 'Credit'}</p>
-                </div>
-                
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600">Original Amount</p>
-                  <p className="font-bold">{formatCurrency(selectedLineItem.amount, country)}</p>
-                  
-                  {selectedLineItem.paid_amount > 0 && (
-                    <>
-                      <p className="text-sm text-gray-600 mt-2">Already Paid</p>
-                      <p className="font-medium text-green-600">{formatCurrency(selectedLineItem.paid_amount, country)}</p>
-                    </>
-                  )}
-                  
-                  <p className="text-sm text-gray-600 mt-2">Remaining Balance</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {formatCurrency((selectedLineItem.amount - selectedLineItem.paid_amount), country)}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Payment Amount ({country === 'ke' ? 'KSh' : '$'})
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    max={selectedLineItem.amount - selectedLineItem.paid_amount}
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter amount"
-                    autoFocus
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => {
-                    setShowPaymentModal(false);
-                    setSelectedLineItem(null);
-                    setPaymentAmount('');
-                  }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handlePartialPayment}
-                  disabled={isSubmitting || !paymentAmount}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Processing...' : 'Submit Payment'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedLineItem(null);
+          }}
+          lineItem={selectedLineItem}
+          credit={credit}
+          country={country}
+          onSuccess={handlePaymentSuccess}
+        />
       )}
     </div>
   );
