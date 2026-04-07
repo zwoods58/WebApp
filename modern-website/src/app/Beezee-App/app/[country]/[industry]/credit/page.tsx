@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Plus, Clock, CheckCircle, AlertCircle, Calendar, Search, Filter, Copy, MessageSquare, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useCreditTanStack, useTransactionsTanStack, useCreditItems } from '@/hooks';
@@ -144,11 +145,19 @@ export default function CreditPage() {
         throw new Error(`Failed to add credit for ${newCredit.customer_name}`);
       }
       
-      // Show appropriate success message
+      // Show appropriate success message based on type
       if (result.isNew) {
-        showSuccess(`New customer "${newCredit.customer_name}" created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
+        if (creditType === 'payable') {
+          showSuccess(`New vendor "${newCredit.customer_name}" added - you owe ${formatCurrency(parseFloat(newCredit.amount), country)}`);
+        } else {
+          showSuccess(`New customer "${newCredit.customer_name}" created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
+        }
       } else {
-        showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} credit added to ${newCredit.customer_name}. New total: ${formatCurrency(result.customer.amount, country)}`);
+        if (creditType === 'payable') {
+          showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} added to ${newCredit.customer_name} (you owe them). Total: ${formatCurrency(result.customer.amount, country)}`);
+        } else {
+          showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} credit added to ${newCredit.customer_name}. Total owed: ${formatCurrency(result.customer.amount, country)}`);
+        }
       }
       
       // Close modal and refresh data
@@ -541,10 +550,16 @@ export default function CreditPage() {
       {/* Add Credit Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-white flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('credit.add_credit_customer')}</h3>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {activeTab === 'customers' ? t('credit.add_credit_customer') : t('credit.add_personal_credit')}
+            </h3>
             
-            <AddCreditForm onSubmit={handleAddCredit} onCancel={() => setShowAddModal(false)} t={t} isSubmitting={isSubmitting} />
+            {activeTab === 'customers' ? (
+              <AddCreditForm onSubmit={handleAddCredit} onCancel={() => setShowAddModal(false)} t={t} isSubmitting={isSubmitting} />
+            ) : (
+              <PersonalCreditForm onSubmit={handleAddCredit} onCancel={() => setShowAddModal(false)} t={t} isSubmitting={isSubmitting} />
+            )}
           </div>
         </div>
       )}
@@ -720,6 +735,180 @@ function AddCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
           className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Adding...' : t('credit.add_customer')}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: { 
+  onSubmit: (data: any) => void, 
+  onCancel: () => void,
+  t: (key: string, defaultText?: string, vars?: Record<string, any>) => string,
+  isSubmitting?: boolean
+}) {
+  const { business } = useUnifiedAuth();
+  const [creditCustomers, setCreditCustomers] = useState<any[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [newCustomerName, setNewCustomerName] = useState('');
+  const [showNewCustomerInput, setShowNewCustomerInput] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    amount: '',
+    due_date: '',
+    description: ''
+  });
+  
+  // Load existing payable customers
+  useEffect(() => {
+    loadPayableCustomers();
+  }, []);
+  
+  const loadPayableCustomers = async () => {
+    if (!business?.id) return;
+    
+    try {
+      const { data } = await supabase
+        .from('credit')
+        .select('*')
+        .eq('business_id', business.id)
+        .eq('type', 'payable')
+        .order('customer_name');
+      
+      setCreditCustomers(data || []);
+    } catch (error) {
+      console.error('Error loading payable customers:', error);
+    }
+  };
+  
+  const handleCustomerSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === 'new') {
+      setShowNewCustomerInput(true);
+      setSelectedCustomer('');
+      setNewCustomerName('');
+    } else {
+      setShowNewCustomerInput(false);
+      setSelectedCustomer(value);
+      setNewCustomerName('');
+    }
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const finalCustomerName = showNewCustomerInput ? newCustomerName : selectedCustomer;
+    
+    if (!finalCustomerName) {
+      alert('Please select or enter a vendor name');
+      return;
+    }
+    
+    onSubmit({
+      customer_name: finalCustomerName,
+      amount: formData.amount,
+      due_date: formData.due_date,
+      description: formData.description || `Cost - Personal` 
+    });
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Who do you owe? - Same as Money Out */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Who do you owe? <span className="text-red-500">*</span>
+        </label>
+        <select
+          value={showNewCustomerInput ? 'new' : selectedCustomer}
+          onChange={handleCustomerSelect}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select a vendor or person...</option>
+          {creditCustomers.map((customer) => (
+            <option key={customer.id} value={customer.customer_name}>
+              {customer.customer_name} - Owed: ${customer.amount}
+            </option>
+          ))}
+          <option value="new">+ Add new vendor/person</option>
+        </select>
+      </div>
+      
+      {/* New vendor name input - conditionally shown */}
+      {showNewCustomerInput && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            New vendor name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            value={newCustomerName}
+            onChange={(e) => setNewCustomerName(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            placeholder="Enter vendor or person name"
+          />
+        </div>
+      )}
+      
+      {/* Cost / Description - Changed from "Software Cost" to "Cost" */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Cost <span className="text-gray-400 text-xs">(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={formData.description}
+          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+          placeholder="What was this cost for?"
+        />
+      </div>
+      
+      {/* Amount Owed */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Amount Owed ($)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          value={formData.amount}
+          onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+          placeholder="0.00"
+          required
+        />
+      </div>
+      
+      {/* Due Date */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Due Date <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="date"
+          value={formData.due_date}
+          onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+          required
+        />
+      </div>
+      
+      {/* Buttons */}
+      <div className="flex gap-3 pt-4">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isSubmitting ? 'Adding...' : 'Add Customer'}
         </button>
       </div>
     </form>

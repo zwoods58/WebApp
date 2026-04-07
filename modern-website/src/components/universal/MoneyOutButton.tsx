@@ -201,15 +201,16 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
               boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.1)',
               paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
               maxHeight: 'calc(100vh - 5rem - env(safe-area-inset-bottom))',
-              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
               zIndex: 70
             }}
           >
-            <div className="p-4 flex justify-center">
+            <div className="p-4 flex justify-center flex-shrink-0">
               <div className="w-12 h-1.5 bg-[var(--text-3)] opacity-50 rounded-full" />
             </div>
             
-            <div className="px-6 pb-8 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 3rem - env(safe-area-inset-bottom))' }}>
+            <div className="px-6 pb-0 flex-1 overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(100vh - 8rem - env(safe-area-inset-bottom))' }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 glass-regular rounded-xl flex items-center justify-center border border-orange-200/50">
                   <Icon className="text-orange-600" size={24} />
@@ -217,7 +218,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                 <h3 className="text-xl font-semibold text-[var(--text-1)]">{t('common.add')} {t('common.transaction', 'Transaction')}</h3>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form id="money-out-form" onSubmit={handleSubmit} className="space-y-4">
                 {/* Amount */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
@@ -375,25 +376,29 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="pt-4 space-y-3">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
+                </form>
+            </div>
+            
+            {/* Fixed Action Buttons at Bottom */}
+            <div className="px-6 py-4 border-t border-gray-200 flex-shrink-0 bg-white">
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Processing...' : t('common.save') + ' ' + t('common.transaction', 'Transaction')}
-                  </button>
-                </div>
-              </form>
+                <button
+                  type="submit"
+                  form="money-out-form" // Link to form ID
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Processing...' : t('common.save') + ' ' + t('common.transaction', 'Transaction')}
+                </button>
+              </div>
             </div>
           </div>
         </>
