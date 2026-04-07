@@ -31,12 +31,14 @@ import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
+import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
 
 export default function ServicesPage() {
   const params = useParams();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
+  const { confirm, DialogComponent } = useBeeZeeConfirm();
   
   // Loading states for delete operations
   const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
@@ -428,15 +430,16 @@ export default function ServicesPage() {
     const service = safeServices.find((s: any) => s.id === serviceId);
     const serviceName = service?.service_name || 'Unknown service';
     
-    const confirmed = window.confirm(
-      `⚠️ PERMANENT DELETE\n\n` +
-      `Are you sure you want to permanently delete "${serviceName}"?\n\n` +
-      `This will:\n` +
-      `• Remove from Supabase database\n` +
-      `• Remove from all caches\n` +
-      `• Remove from localStorage\n` +
-      `• Remove from offline storage\n\n` +
-      `This action CANNOT be undone!`
+    const confirmed = await confirm(
+      'Permanently Delete Service?',
+      `Are you sure you want to permanently delete "${serviceName}"?
+
+This will remove the service from the database and all local storage. This action cannot be undone.`,
+      {
+        confirmText: 'Yes, Delete Permanently',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
     );
     
     if (!confirmed) return;
@@ -593,15 +596,16 @@ export default function ServicesPage() {
     const item = safeInventory.find((i: any) => i.id === itemId);
     const itemName = item?.item_name || 'Unknown item';
     
-    const confirmed = window.confirm(
-      `⚠️ PERMANENT DELETE\n\n` +
-      `Are you sure you want to permanently delete "${itemName}"?\n\n` +
-      `This will:\n` +
-      `• Remove from Supabase database\n` +
-      `• Remove from all caches\n` +
-      `• Remove from localStorage\n` +
-      `• Remove from offline storage\n\n` +
-      `This action CANNOT be undone!`
+    const confirmed = await confirm(
+      'Permanently Delete Inventory Item?',
+      `Are you sure you want to permanently delete "${itemName}"?
+
+This will remove the item from the database and all local storage. This action cannot be undone.`,
+      {
+        confirmText: 'Yes, Delete Permanently',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
     );
     
     if (!confirmed) return;
@@ -1271,6 +1275,9 @@ export default function ServicesPage() {
       )}
 
       <BottomNav industry={industry} country={country} />
+      
+      {/* BeeZee Confirmation Dialog */}
+      <DialogComponent />
     </div>
   );
 }

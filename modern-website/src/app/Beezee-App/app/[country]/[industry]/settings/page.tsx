@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
 
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
@@ -40,6 +41,7 @@ export default function SettingsPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   const { business } = useUnifiedAuth();
+  const { confirm, DialogComponent } = useBeeZeeConfirm();
   
   // Check if accessed from More page
   const showProfileOnly = searchParams.get('from') === 'more';
@@ -123,8 +125,14 @@ export default function SettingsPage() {
   };
 
   const resetAccountData = async () => {
-    const confirmed = window.confirm(
-      'WARNING: This will delete ALL your data (appointments, inventory, services, credit, transactions, expenses).\n\nThis action cannot be undone. Are you absolutely sure?'
+    const confirmed = await confirm(
+      'Reset All Account Data?',
+      'WARNING: This will delete ALL your data (appointments, inventory, services, credit, transactions, expenses).\n\nThis action cannot be undone. Are you absolutely sure?',
+      {
+        confirmText: 'Yes, Reset Everything',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
     );
     
     if (!confirmed) return;
@@ -490,6 +498,9 @@ export default function SettingsPage() {
       </div>
 
       <BottomNav industry={industry} country={country} />
+      
+      {/* BeeZee Confirmation Dialog */}
+      <DialogComponent />
     </div>
   );
 
@@ -706,6 +717,9 @@ export default function SettingsPage() {
       </div>
 
       <BottomNav industry={industry} country={country} />
+      
+      {/* BeeZee Confirmation Dialog */}
+      <DialogComponent />
     </div>
   );
 }

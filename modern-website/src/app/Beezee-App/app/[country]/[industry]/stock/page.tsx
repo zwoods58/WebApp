@@ -13,6 +13,7 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import BottomNav from '@/components/universal/BottomNav';
+import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
 
 export default function StockPage() {
   // ✅ STEP 1: Basic hooks (always called) - LIKE OTHER PAGES
@@ -21,6 +22,7 @@ export default function StockPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   const queryClient = useQueryClient();
+  const { confirm, DialogComponent } = useBeeZeeConfirm();
   
   const { business, loading: businessLoading } = useUnifiedAuth();
   const businessId = business?.id;
@@ -116,8 +118,16 @@ export default function StockPage() {
   };
 
   const handleDeleteItem = async (item: any) => {
-    // NATIVE CONFIRM - No external popup
-    const confirmed = window.confirm(`Delete "${item.item_name}"? This action cannot be undone.`);
+    // BeeZee Confirm - Custom styled dialog
+    const confirmed = await confirm(
+      'Delete Inventory Item?',
+      `Are you sure you want to delete "${item.item_name}"? This action cannot be undone.`,
+      {
+        confirmText: 'Yes, Delete',
+        cancelText: 'Cancel',
+        type: 'danger'
+      }
+    );
     if (!confirmed) return;
     
     setIsDeleting(true);
@@ -499,6 +509,9 @@ export default function StockPage() {
       </div>
 
       <BottomNav industry={industry} country={country} />
+      
+      {/* BeeZee Confirmation Dialog */}
+      <DialogComponent />
 
       {/* Add Item Modal */}
       {showAddModal && (
