@@ -26,8 +26,9 @@ export default function PaymentModal({ isOpen, onClose, customer, country, onPay
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const remainingBalance = customer.status === 'partial' 
-    ? customer.amount - customer.paid_amount 
+  const remainingBalance = customer.status === 'paid' ? 0 :
+    customer.status === 'partial' 
+    ? customer.amount - (customer.paid_amount || 0)
     : customer.amount;
 
   // Calculate overdue status
