@@ -16,7 +16,6 @@ import CalendarView from './CalendarView';
 import AppointmentCard from './AppointmentCard';
 import CreateAppointmentSheet from './CreateAppointmentSheet';
 import AppointmentDetailsSheet from './AppointmentDetailsSheet';
-import SimpleTranslationTest from '@/debug/SimpleTranslationTest';
 import { Appointment } from './types';
 
 interface AppointmentsNewProps {
@@ -25,20 +24,8 @@ interface AppointmentsNewProps {
 }
 
 export default function AppointmentsNew({ industry, country }: AppointmentsNewProps) {
-  const { t, currentLanguage } = useLanguage();
+  const { t } = useLanguage();
   const { business } = useUnifiedAuth();
-
-  // Debug translation system
-  useEffect(() => {
-    console.log('=== TRANSLATION DEBUG ===');
-    console.log('Language:', currentLanguage);
-    console.log('Industry:', industry);
-    console.log('appointments.title:', t('appointments.title'));
-    console.log('appointments.add_appointment:', t('appointments.add_appointment'));
-    console.log('appointments.upcoming:', t('appointments.upcoming'));
-    console.log('nav.home:', t('nav.home'));
-    console.log('========================');
-  }, [currentLanguage, industry, t]);
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useToast();
 
@@ -244,30 +231,6 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
   return (
     <div className="min-h-screen bg-gray-50">
       <Header industry={industry} country={country} />
-      
-      {/* Debug Panel */}
-      <div style={{ 
-        position: 'fixed', 
-        top: '10px', 
-        left: '10px', 
-        background: 'yellow', 
-        border: '2px solid orange', 
-        padding: '15px', 
-        zIndex: 9999,
-        fontSize: '14px',
-        borderRadius: '8px',
-        maxWidth: '400px'
-      }}>
-        <h3 style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>Translation Debug</h3>
-        <p><strong>Language:</strong> {currentLanguage}</p>
-        <p><strong>Industry:</strong> {industry}</p>
-        <p><strong>appointments.title:</strong> {t('appointments.title')}</p>
-        <p><strong>appointments.add_appointment:</strong> {t('appointments.add_appointment')}</p>
-        <p><strong>appointments.upcoming:</strong> {t('appointments.upcoming')}</p>
-        <p><strong>nav.home:</strong> {t('nav.home')}</p>
-      </div>
-      
-      <SimpleTranslationTest />
       
       <div className="container mx-auto px-4 py-6 pb-20">
         {/* Page Header */}
