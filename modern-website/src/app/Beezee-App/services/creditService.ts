@@ -203,6 +203,146 @@ export async function addCreditUnified(
 }
 
 /**
+ * Add a line item to an existing credit customer
+ * THIS IS THE KEY FUNCTION FOR INDIVIDUAL LINE ITEM TRACKING
+ */
+export async function addLineItemToCustomer(
+  creditId: string,
+  lineItemData: {
+    description: string;
+    amount: number;
+    due_date: string;
+    businessId: string;
+    industry: string;
+    currency: string;
+  }
+): Promise<CreditItem | null> {
+  console.log(' [creditService] Adding line item:', { creditId, ...lineItemData });
+  
+  try {
+    // Get current credit customer
+    const { data: credit, error: creditError } = await supabase
+      .from('credit')
+      .select('*')
+      .eq('id', creditId)
+      .single();
+    
+    if (creditError || !credit) {
+      console.error(' [creditService] Credit customer not found:', creditError);
+      throw new Error('Credit customer not found');
+    }
+    
+    // Create the line item
+    const newLineItem = {
+      credit_id: creditId,
+      business_id: lineItemData.businessId,
+      industry: lineItemData.industry,
+      description: lineItemData.description || 'Credit purchase',
+      amount: lineItemData.amount,
+      paid_amount: 0,
+      currency: lineItemData.currency,
+      status: 'outstanding',
+      due_date: lineItemData.due_date,
+      date_given: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    console.log(' [creditService] Creating line item:', newLineItem);
+    
+    const { data: item, error: itemError } = await supabase
+      .from('credit_items')
+      .insert(newLineItem)
+      .select()
+      .single();
+    
+    if (itemError) {
+      console.error(' [creditService] Failed to create line item:', itemError);
+      throw new Error(`Failed to create line item: ${itemError.message}`);
+    }
+    
+    // Update credit total
+    const newTotal = credit.amount + lineItemData.amount;
+    const { error: updateError } = await supabase
+      .from('credit')
+      .update({
+        amount: newTotal,
+        due_date: lineItemData.due_date,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', creditId);
+    
+    if (updateError) {
+      console.error(' [creditService] Failed to update credit total:', updateError);
+      // Line item created but total update failed - still return item
+      console.warn(' [creditService] Line item created but total update failed');
+    } else {
+      console.log(` [creditService] Updated credit total from ${credit.amount} to ${newTotal}`);
+    }
+    
+    console.log(' [creditService] Line item created successfully:', item);
+    return item;
+    
+  } catch (error) {
+    console.error(' [creditService] Error in addLineItemToCustomer:', error);
+    throw error;
+  }
+}
+/**
+ * Debug function to check line items for a customer
+ */
+export async function debugCustomerLineItems(customerName: string, businessId: string) {
+  console.log(` [creditService] DEBUG: Checking line items for "${customerName}"`);
+  
+  try {
+    // Find customer
+    const { data: customers, error: customerError } = await supabase
+      .from('credit')
+      .select('*')
+      .eq('business_id', businessId)
+      .ilike('customer_name', customerName);
+    
+    if (customerError) {
+      console.error(' [creditService] DEBUG: Error finding customer:', customerError);
+      return null;
+    }
+    
+    console.log(` [creditService] DEBUG: Found ${customers?.length || 0} customers`);
+    
+    if (!customers || customers.length === 0) {
+      console.log(' [creditService] DEBUG: No customer found');
+      return null;
+    }
+    
+    const customer = customers[0];
+    console.log(' [creditService] DEBUG: Customer details:', customer);
+    
+    // Get line items
+    const { data: lineItems, error: itemsError } = await supabase
+      .from('credit_items')
+      .select('*')
+      .eq('credit_id', customer.id)
+      .order('created_at', { ascending: false });
+    
+    if (itemsError) {
+      console.error(' [creditService] DEBUG: Error fetching line items:', itemsError);
+      return null;
+    }
+    
+    console.log(` [creditService] DEBUG: Found ${lineItems?.length || 0} line items:`, lineItems);
+    
+    return {
+      customer,
+      lineItems: lineItems || []
+    };
+    
+  } catch (error) {
+    console.error(' [creditService] DEBUG: Error in debug function:', error);
+    return null;
+  }
+}
+
+/**
  * Get all line items for a specific customer
  */
 export async function getLineItemsForCustomer(creditId: string): Promise<CreditItem[]> {

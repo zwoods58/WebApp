@@ -7,6 +7,7 @@ import { useCreditItems } from '@/hooks/useCreditItems';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useToast } from '@/hooks/useToast';
 import PaymentModal from './PaymentModal';
+import { debugCustomerLineItems } from '@/app/Beezee-App/services/creditService';
 
 interface CreditCustomerCardProps {
   customer: any;
@@ -38,10 +39,42 @@ export default function CreditCustomerCard({
   const [localExpanded, setLocalExpanded] = useState(isExpanded);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedLineItem, setSelectedLineItem] = useState<any>(null);
+  const [fallbackItems, setFallbackItems] = useState<any[]>([]);
+  const [debugMode, setDebugMode] = useState(false);
+
+  const expanded = onToggleExpand ? isExpanded : localExpanded;
+
+  // Fallback data fetching when expanded and no items found
+  useEffect(() => {
+    if (expanded && businessId && (!creditItems || creditItems.length === 0)) {
+      console.log(`[CreditCustomerCard] No line items found for ${customer.customer_name}, trying fallback fetch`);
+      fetchFallbackData();
+    }
+  }, [expanded, businessId, creditItems, customer.customer_name]);
+
+  const fetchFallbackData = async () => {
+    if (!businessId) return;
+    
+    try {
+      const debugResult = await debugCustomerLineItems(customer.customer_name, businessId);
+      if (debugResult && debugResult.lineItems.length > 0) {
+        console.log(`[CreditCustomerCard] Fallback fetch found ${debugResult.lineItems.length} items`);
+        setFallbackItems(debugResult.lineItems);
+      } else {
+        console.log(`[CreditCustomerCard] Fallback fetch also found no items`);
+      }
+    } catch (error) {
+      console.error('[CreditCustomerCard] Fallback fetch failed:', error);
+    }
+  };
+
+  // Use creditItems or fallbackItems
+  const displayItems = creditItems && creditItems.length > 0 ? creditItems : fallbackItems;
+  const isItemsLoading = itemsLoading || (expanded && !displayItems.length && businessId);
 
   // Calculate totals from line items
   const calculateTotals = () => {
-    if (!creditItems || creditItems.length === 0) {
+    if (!displayItems || displayItems.length === 0) {
       return {
         totalAmount: customer.amount || 0,
         totalPaid: customer.paid_amount || 0,
@@ -51,8 +84,8 @@ export default function CreditCustomerCard({
       };
     }
 
-    const totalAmount = creditItems.reduce((sum, item) => sum + item.amount, 0);
-    const totalPaid = creditItems.reduce((sum, item) => sum + item.paid_amount, 0);
+    const totalAmount = displayItems.reduce((sum, item) => sum + item.amount, 0);
+    const totalPaid = displayItems.reduce((sum, item) => sum + item.paid_amount, 0);
     const totalOutstanding = totalAmount - totalPaid;
 
     return { totalAmount, totalPaid, totalOutstanding };
@@ -122,8 +155,6 @@ export default function CreditCustomerCard({
     setShowPaymentModal(false);
     setSelectedLineItem(null);
   };
-
-  const expanded = onToggleExpand ? isExpanded : localExpanded;
 
   return (
     <div className={`p-3 rounded-lg border cursor-pointer transition-all ${
@@ -208,16 +239,16 @@ export default function CreditCustomerCard({
           </div>
 
           {/* Line Items List */}
-          {itemsLoading ? (
+          {isItemsLoading ? (
             <div className="text-center py-4">
               <div className="text-gray-400 text-sm">{t('common.loading', 'Loading...')}</div>
             </div>
-          ) : creditItems && creditItems.length > 0 ? (
+          ) : displayItems && displayItems.length > 0 ? (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               <h4 className="font-medium text-gray-900 text-sm mb-2">
-                {t('credit.credit_purchases', 'Credit Purchases')} ({creditItems.length})
+                {t('credit.credit_purchases', 'Credit Purchases')} ({displayItems.length})
               </h4>
-              {creditItems.map((item) => {
+              {displayItems.map((item) => {
                 const itemStatus = getLineItemStatus(item);
                 const itemOverdue = item.due_date && itemStatus !== 'paid' && 
                                  new Date(item.due_date) < new Date();
