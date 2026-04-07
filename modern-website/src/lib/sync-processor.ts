@@ -172,17 +172,20 @@ export class SyncProcessor {
       timestamp: new Date(operation.timestamp).toISOString()
     });
 
-    const { table, type, data } = operation;
+    const { table, type, data, userId } = operation;
 
     switch (type) {
       case 'CREATE':
-        await this.syncCreate(table, data);
+        await this.syncCreate(table, data, userId);
         break;
       case 'UPDATE':
-        await this.syncUpdate(table, data);
+        await this.syncUpdate(table, data, userId);
         break;
       case 'DELETE':
-        await this.syncDelete(table, data.id);
+        if (!operation.entityId) {
+          throw new Error(`DELETE operation requires entityId for table ${table}`);
+        }
+        await this.syncDelete(table, operation.entityId, userId);
         break;
       default:
         throw new Error(`Unknown operation type: ${type}`);
@@ -198,11 +201,17 @@ export class SyncProcessor {
   /**
    * Sync CREATE operation to Supabase
    */
-  private async syncCreate(table: string, data: any): Promise<void> {
+  private async syncCreate(table: string, data: any, userId?: string): Promise<void> {
     // Remove sync-related and internal fields
     const cleanData = stripInternalFields(data);
 
-    console.log('[syncCreate] cleanData:', cleanData);
+    // Add user context for audit trail
+    if (userId) {
+      cleanData.created_by = userId;
+      cleanData.updated_by = userId;
+    }
+
+    console.log('[syncCreate] cleanData with user context:', cleanData);
 
     const { error } = await supabase
       .from(table)
@@ -219,9 +228,14 @@ export class SyncProcessor {
   /**
    * Sync UPDATE operation to Supabase
    */
-  private async syncUpdate(table: string, data: any): Promise<void> {
+  private async syncUpdate(table: string, data: any, userId?: string): Promise<void> {
     const { id } = data;
     const cleanData = stripInternalFields(data);
+
+    // Add user context for audit trail
+    if (userId) {
+      cleanData.updated_by = userId;
+    }
 
     const { error } = await supabase
       .from(table)
@@ -239,10 +253,19 @@ export class SyncProcessor {
   /**
    * Sync DELETE operation to Supabase
    */
-  private async syncDelete(table: string, id: string): Promise<void> {
+  private async syncDelete(table: string, id: string, userId?: string): Promise<void> {
+    // Soft delete with user context and timestamp
+    const updateData: any = {
+      deleted_at: new Date().toISOString(),
+    };
+    
+    if (userId) {
+      updateData.deleted_by = userId;
+    }
+
     const { error } = await supabase
       .from(table)
-      .delete()
+      .update(updateData)
       .eq('id', id);
 
     if (error) {

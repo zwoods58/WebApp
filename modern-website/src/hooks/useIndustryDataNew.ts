@@ -27,8 +27,9 @@ export const useIndustryDataNew = ({
   businessId?: string;
 }) => {
   const queryClient = useQueryClient();
-  const { business } = useUnifiedAuth();
+  const { business, user } = useUnifiedAuth();
   const businessId = externalBusinessId || business?.id;
+  const userId = user?.id;
   const isOnline = getNetworkStatus();
 
   const hasRequiredParams = !!(industry && country && table && businessId);
@@ -274,6 +275,7 @@ export const useIndustryDataNew = ({
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
+        userId: userId, // Include user context
       };
       await db.operations_queue.add(operation);
 
@@ -374,6 +376,7 @@ export const useIndustryDataNew = ({
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
+        userId: userId, // Include user context
       };
       await db.operations_queue.add(operation);
       
@@ -440,6 +443,7 @@ export const useIndustryDataNew = ({
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
+        userId: userId, // Include user context
       };
       await db.operations_queue.add(operation);
       

@@ -133,6 +133,7 @@ export interface QueuedOperation {
   retryCount: number;
   errorMessage?: string;
   businessId: string;
+  userId?: string; // User who performed the operation
 }
 
 export class BeezeeDatabase extends Dexie {
