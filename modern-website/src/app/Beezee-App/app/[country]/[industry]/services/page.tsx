@@ -709,31 +709,6 @@ This will remove the item from the database and all local storage. This action c
     setShowKmModal(null);
   };
 
-  // Debug storage functionality
-  const debugStorage = () => {
-    console.log('=== STORAGE DEBUG ===');
-    console.log('Services from Supabase:', safeServices.length);
-    console.log('Inventory from Supabase:', safeInventory.length);
-    console.log('Persistent services:', persistentServices.length);
-    console.log('Persistent inventory:', persistentInventory.length);
-    console.log('Online status:', navigator.onLine);
-    
-    // Check for any stored services in localStorage
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.includes('service') || key?.includes('inventory')) {
-        const value = localStorage.getItem(key);
-        console.log(`Storage key: ${key}`, value ? JSON.parse(value).length : 'null');
-      }
-    }
-    
-    // Check React Query cache
-    const servicesCache = queryClient.getQueryData(['services', industry, business?.id]) as any[] || [];
-    const inventoryCache = queryClient.getQueryData(['inventory', industry, business?.id]) as any[] || [];
-    console.log('React Query cache - Services:', servicesCache.length);
-    console.log('React Query cache - Inventory:', inventoryCache.length);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
@@ -834,14 +809,6 @@ This will remove the item from the database and all local storage. This action c
               >
                 <Plus size={20} />
                 {t('services.add_service')}
-              </button>
-              
-              {/* Debug Storage Button - Temporary for testing */}
-              <button
-                onClick={debugStorage}
-                className="w-full py-2 mt-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-xl transition-colors"
-              >
-                🐛 Debug Storage
               </button>
             </div>
 
