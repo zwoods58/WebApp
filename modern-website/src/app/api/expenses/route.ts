@@ -4,7 +4,7 @@ import { getCurrency } from '@/utils/currency';
 import { expenseSchema } from '@/lib/validation/schemas';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -84,5 +84,12 @@ async function expenseHandler(request: NextRequest) {
   }
 }
 
-// Export with rate limiting (100 requests per minute)
-export const POST = withRateLimit(expenseHandler, RATE_LIMITS.DATA);
+// Export with user-based rate limiting
+export const POST = withRateLimit(expenseHandler, {
+  type: 'expenses',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.business_id; // Use business_id as user identifier
+  },
+  isProgressive: false,
+});

@@ -2,14 +2,16 @@
 // This bypasses RLS by using service role key on the server
 
 import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
 import { sanitizeUserContent } from '@/lib/validation/sanitizer';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-export async function POST(request: Request) {
+async function beehiveHandler(request: NextRequest) {
   try {
     const body = await request.json();
     const { action, data, userId, industry, country } = body;
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     if (!userId && action !== 'list' && action !== 'listComments') {
-      return Response.json({ error: 'User ID required' }, { status: 400 });
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
     switch (action) {
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
           .single();
 
         if (addError) throw addError;
-        return Response.json({ data: requestData });
+        return NextResponse.json({ data: requestData });
 
       case 'list':
         // List requests for a specific industry and country
@@ -98,7 +100,7 @@ export async function POST(request: Request) {
         const { data: requests, error: listError } = await query;
 
         if (listError) throw listError;
-        return Response.json({ data: requests || [] });
+        return NextResponse.json({ data: requests || [] });
 
       case 'voteOnRequest':
         const { requestId, voteType } = data;
@@ -204,7 +206,7 @@ export async function POST(request: Request) {
           }
         }
 
-        return Response.json({ success: true });
+        return NextResponse.json({ success: true });
 
       case 'addComment':
         const { requestId: commentRequestId, comment_text } = data;
@@ -260,7 +262,7 @@ export async function POST(request: Request) {
           }
         }
 
-        return Response.json({ data: commentData });
+        return NextResponse.json({ data: commentData });
 
       case 'deleteComment':
         const { commentId } = data;
@@ -273,7 +275,7 @@ export async function POST(request: Request) {
           .single();
         
         if (!commentToDelete) {
-          return Response.json({ error: 'Comment not found' }, { status: 404 });
+          return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
         }
 
         // Validate business_id exists in businesses table
@@ -293,7 +295,7 @@ export async function POST(request: Request) {
         
         // Check if user owns the comment
         if (commentToDelete.business_id !== validDeleteBusinessId) {
-          return Response.json({ error: 'Unauthorized' }, { status: 403 });
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
         // Delete comment
@@ -326,7 +328,7 @@ export async function POST(request: Request) {
           }
         }
 
-        return Response.json({ success: true });
+        return NextResponse.json({ success: true });
 
       case 'listComments':
         const { requestId: commentsRequestId } = data;
@@ -339,15 +341,25 @@ export async function POST(request: Request) {
           .order('created_at', { ascending: true });
 
         if (commentsError) throw commentsError;
-        return Response.json({ data: comments || [] });
+        return NextResponse.json({ data: comments || [] });
 
       default:
-        return Response.json({ error: 'Invalid action' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error: any) {
     console.error('Beehive API error:', error);
-    return Response.json({ 
+    return NextResponse.json({ 
       error: error.message || 'Internal server error' 
     }, { status: 500 });
   }
 }
+
+// Export with user-based rate limiting
+export const POST = withRateLimit(beehiveHandler, {
+  type: 'beehive',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.userId || body.data?.business_id || 'anonymous';
+  },
+  isProgressive: false,
+});

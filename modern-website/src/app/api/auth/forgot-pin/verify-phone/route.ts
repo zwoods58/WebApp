@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -168,5 +168,12 @@ async function verifyPhoneHandler(request: NextRequest) {
   }
 }
 
-// Export with rate limiting (10 requests per 15 minutes)
-export const POST = withRateLimit(verifyPhoneHandler, RATE_LIMITS.AUTH);
+// Export with phone-based rate limiting
+export const POST = withRateLimit(verifyPhoneHandler, {
+  type: 'forgot_pin_phone',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.phoneNumber;
+  },
+  isProgressive: false,
+});

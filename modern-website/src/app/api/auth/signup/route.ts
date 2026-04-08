@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 import { businessSignupSchema } from '@/lib/validation/schemas';
 import { validateRequest, handleValidationError, formatValidationErrors } from '@/middleware/validate';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
+import { rateLimiter } from '@/lib/rate-limit/phone-limiter';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -150,13 +151,16 @@ async function signupHandler(request: NextRequest) {
       }, { status: 500 });
     }
 
-    console.log('✅ [API] Business created successfully with PIN hash:', {
+    console.log('API] Business created successfully with PIN hash:', {
       id: business.id,
       business_name: business.business_name,
       country: business.country,
       industry: business.industry,
       home_currency: business.home_currency
     });
+
+    // On successful signup, ensure no failed PIN attempts remain
+    await rateLimiter.resetPinVerification(userData.phoneNumber);
 
     // Remove PIN hash from response for security
     const { pin_hash: _, ...businessResponse } = business;
@@ -192,5 +196,12 @@ async function signupHandler(request: NextRequest) {
   }
 }
 
-// Export with rate limiting
-export const POST = withRateLimit(signupHandler, RATE_LIMITS.AUTH);
+// Export with phone-based rate limiting
+export const POST = withRateLimit(signupHandler, {
+  type: 'signup',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.phoneNumber;
+  },
+  isProgressive: false,
+});

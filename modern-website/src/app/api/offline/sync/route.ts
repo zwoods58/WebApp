@@ -2,8 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
-export async function POST(request: Request) {
+async function syncHandler(request: Request) {
   try {
     const body = await request.json();
     
@@ -310,3 +311,18 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// Export with user-based rate limiting for sync operations
+export const POST = withRateLimit(syncHandler, {
+  type: 'expenses', // Use expenses as the base type for sync operations (1000/min)
+  getIdentifier: async (request: Request) => {
+    const body = await request.json();
+    // Extract business_id from the first operation if available
+    if (body.operations && body.operations.length > 0) {
+      const firstOp = body.operations[0];
+      return firstOp.data?.business_id || 'anonymous';
+    }
+    return 'anonymous';
+  },
+  isProgressive: false,
+});

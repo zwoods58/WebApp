@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
 import { sanitizePhone } from '@/lib/validation/sanitizer';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -109,5 +109,12 @@ async function pinResetVerifyHandler(request: NextRequest) {
   }
 }
 
-// Export with strict rate limiting (3 attempts per 15 minutes)
-export const POST = withRateLimit(pinResetVerifyHandler, RATE_LIMITS.PIN_VERIFY);
+// Export with progressive phone-based rate limiting
+export const POST = withRateLimit(pinResetVerifyHandler, {
+  type: 'pin_reset_verify',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.phoneNumber;
+  },
+  isProgressive: true,
+});

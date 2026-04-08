@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -164,5 +164,12 @@ async function pinResetCompleteHandler(request: NextRequest) {
   }
 }
 
-// Export with rate limiting (5 requests per 15 minutes)
-export const POST = withRateLimit(pinResetCompleteHandler, RATE_LIMITS.AUTH);
+// Export with phone-based rate limiting
+export const POST = withRateLimit(pinResetCompleteHandler, {
+  type: 'pin_reset_complete',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.businessId; // Use businessId as identifier for completion
+  },
+  isProgressive: false,
+});

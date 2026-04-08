@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
-import { withRateLimit, RATE_LIMITS } from '@/middleware/rateLimit';
+import { withRateLimit } from '@/middleware/rate-limit-middleware';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -238,8 +238,12 @@ async function verifyAnswersHandler(request: NextRequest) {
   }
 }
 
-// Export with strict rate limiting (3 attempts per 15 minutes)
+// Export with progressive phone-based rate limiting
 export const POST = withRateLimit(verifyAnswersHandler, {
-  maxRequests: 3,
-  windowMs: 15 * 60 * 1000
+  type: 'forgot_pin_answers',
+  getIdentifier: async (request: NextRequest) => {
+    const body = await request.json();
+    return body.phoneNumber;
+  },
+  isProgressive: true,
 });
