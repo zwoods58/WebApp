@@ -65,7 +65,8 @@ class KyshiApiClient {
   private secretKey: string;
 
   constructor() {
-    this.baseUrl = process.env.KYSHI_BASE_URL || 'https://kyshi-mor-dev-qkuod6snia-nw.a.run.app/api/v1';
+    // According to docs: https://api.kyshi.co for live, remove /v1 from URL
+    this.baseUrl = process.env.KYSHI_BASE_URL || 'https://kyshi-mor-dev-qkuod6snia-nw.a.run.app/api';
     this.secretKey = process.env.KYSHI_SECRET_KEY || '';
     
     // Only throw error in runtime, not during build

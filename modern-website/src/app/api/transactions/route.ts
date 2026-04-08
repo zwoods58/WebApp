@@ -101,8 +101,7 @@ async function transactionHandler(request: NextRequest) {
 // Export with user-based rate limiting
 export const POST = withRateLimit(transactionHandler, {
   type: 'transactions',
-  getIdentifier: async (request: NextRequest) => {
-    const body = await request.json();
+  getIdentifier: async (body: any) => {
     return body.business_id; // Use business_id as user identifier
   },
   isProgressive: false,

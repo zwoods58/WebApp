@@ -315,8 +315,7 @@ async function syncHandler(request: Request) {
 // Export with user-based rate limiting for sync operations
 export const POST = withRateLimit(syncHandler, {
   type: 'expenses', // Use expenses as the base type for sync operations (1000/min)
-  getIdentifier: async (request: Request) => {
-    const body = await request.json();
+  getIdentifier: async (body: any) => {
     // Extract business_id from the first operation if available
     if (body.operations && body.operations.length > 0) {
       const firstOp = body.operations[0];

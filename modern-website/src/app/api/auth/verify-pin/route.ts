@@ -118,8 +118,7 @@ async function verifyPinHandler(request: NextRequest) {
 // Export with progressive phone-based rate limiting
 export const POST = withRateLimit(verifyPinHandler, {
   type: 'pin_verify',
-  getIdentifier: async (request: NextRequest) => {
-    const body = await request.json();
+  getIdentifier: async (body: any) => {
     return body.phoneNumber;
   },
   isProgressive: true, // Enables progressive backoff

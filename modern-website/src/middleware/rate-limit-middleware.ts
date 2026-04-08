@@ -7,12 +7,22 @@ export function withRateLimit(
   handler: (request: NextRequest) => Promise<NextResponse>,
   options: {
     type: RateLimitType;
-    getIdentifier: (request: NextRequest) => Promise<string> | string;
+    getIdentifier: (body: any) => Promise<string> | string;
     isProgressive?: boolean;
   }
 ) {
   return async function (request: NextRequest): Promise<NextResponse> {
-    const identifier = await options.getIdentifier(request);
+    let body;
+    try {
+      body = await request.json();
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
+    
+    const identifier = await options.getIdentifier(body);
     
     if (!identifier) {
       return NextResponse.json(
@@ -33,7 +43,14 @@ export function withRateLimit(
       return rateLimitErrorResponse(result);
     }
     
-    const response = await handler(request);
+    // Create a new request with the same body for the handler
+    const newRequest = new NextRequest(request.url, {
+      method: request.method,
+      headers: request.headers,
+      body: JSON.stringify(body),
+    });
+    
+    const response = await handler(newRequest);
     
     // Add rate limit headers to response
     response.headers.set('X-RateLimit-Limit', result.remaining.toString());

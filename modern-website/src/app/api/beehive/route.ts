@@ -357,8 +357,7 @@ async function beehiveHandler(request: NextRequest) {
 // Export with user-based rate limiting
 export const POST = withRateLimit(beehiveHandler, {
   type: 'beehive',
-  getIdentifier: async (request: NextRequest) => {
-    const body = await request.json();
+  getIdentifier: async (body: any) => {
     return body.userId || body.data?.business_id || 'anonymous';
   },
   isProgressive: false,

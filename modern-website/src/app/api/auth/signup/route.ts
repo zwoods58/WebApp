@@ -199,8 +199,7 @@ async function signupHandler(request: NextRequest) {
 // Export with phone-based rate limiting
 export const POST = withRateLimit(signupHandler, {
   type: 'signup',
-  getIdentifier: async (request: NextRequest) => {
-    const body = await request.json();
+  getIdentifier: async (body: any) => {
     return body.phoneNumber;
   },
   isProgressive: false,
