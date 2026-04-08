@@ -25,6 +25,38 @@ const KYSHI_SUBSCRIPTION_PLANS = [
     currency: 'NGN',
     interval: 'weekly',
     code: 'NG_WEEKLY_500'
+  },
+  {
+    id: 'plan_za_weekly',
+    name: 'South Africa Weekly Plan',
+    amount: 30,
+    currency: 'ZAR',
+    interval: 'weekly',
+    code: 'ZA_WEEKLY_30'
+  },
+  {
+    id: 'plan_ug_weekly',
+    name: 'Uganda Weekly Plan',
+    amount: 4000,
+    currency: 'UGX',
+    interval: 'weekly',
+    code: 'UG_WEEKLY_4000'
+  },
+  {
+    id: 'plan_rw_weekly',
+    name: 'Rwanda Weekly Plan',
+    amount: 1500,
+    currency: 'RWF',
+    interval: 'weekly',
+    code: 'RW_WEEKLY_1500'
+  },
+  {
+    id: 'plan_tz_weekly',
+    name: 'Tanzania Weekly Plan',
+    amount: 2000,
+    currency: 'TZS',
+    interval: 'weekly',
+    code: 'TZ_WEEKLY_2000'
   }
 ];
 

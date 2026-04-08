@@ -12,7 +12,8 @@ import {
   Phone,
   Building,
   Globe,
-  Share2
+  Share2,
+  Crown
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -20,6 +21,7 @@ import { useParams } from 'next/navigation';
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
+import SubscriptionModal from '@/components/universal/SubscriptionModal';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useRouter } from 'next/navigation';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
@@ -39,7 +41,12 @@ interface LinkMenuItem extends BaseMenuItem {
   isButton?: false;
 }
 
-type MenuItem = LinkMenuItem;
+interface ButtonMenuItem extends BaseMenuItem {
+  onClick: () => void;
+  isButton: true;
+}
+
+type MenuItem = LinkMenuItem | ButtonMenuItem;
 
 export default function MorePage() {
   const { t } = useLanguage();
@@ -51,6 +58,7 @@ export default function MorePage() {
   const { business, loading, signOut } = useUnifiedAuth();
   const { profile } = useBusinessProfile();
   const { version, isLoading: versionLoading } = useServiceWorkerVersion();
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -111,7 +119,14 @@ export default function MorePage() {
           description: t('more.settings_description', 'Manage your business settings'),
           href: `/Beezee-App/app/${country}/${industry}/settings?from=more`,
           color: 'text-gray-600 bg-gray-50'
-        } as LinkMenuItem
+        } as LinkMenuItem,
+        {
+          icon: Crown,
+          label: t('more.subscription', 'Subscription'),
+          description: t('more.subscription_description', 'Upgrade to premium features'),
+          onClick: () => setShowSubscriptionModal(true),
+          color: 'text-teal-600 bg-teal-50'
+        } as ButtonMenuItem
       ]
     },
     {
@@ -214,16 +229,30 @@ export default function MorePage() {
                   </>
                 );
 
-                // Render link for LinkMenuItem (all items are now links)
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors"
-                  >
-                    {content}
-                  </Link>
-                );
+                // Render based on menu item type
+                if ('href' in item) {
+                  // LinkMenuItem
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className="flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors"
+                    >
+                      {content}
+                    </Link>
+                  );
+                } else {
+                  // ButtonMenuItem
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={item.onClick}
+                      className="flex items-center justify-between p-4 hover:bg-[var(--bg2)] transition-colors w-full text-left"
+                    >
+                      {content}
+                    </button>
+                  );
+                }
               })}
             </div>
           </div>
@@ -279,6 +308,13 @@ export default function MorePage() {
 
       {/* Bottom Navigation - Fixed */}
       <BottomNav industry={industry} country={country} />
+      
+      {/* Subscription Modal */}
+      <SubscriptionModal 
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        businessEmail="user@example.com"
+      />
     </div>
   );
 }
