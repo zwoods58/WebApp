@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import smartTranslate from '../translations/smart-translation.js';
+import smartTranslate from '../translations/smart-translation';
 
 interface LanguageContextType {
   currentLanguage: string;
