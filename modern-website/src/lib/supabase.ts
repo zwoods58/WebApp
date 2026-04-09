@@ -113,7 +113,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Admin Client for Elevated Operations
 // Uses service role key for admin operations (bypasses RLS)
 // =====================================================
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
+export const supabaseAdmin = supabaseServiceRoleKey 
+    ? createClient(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         persistSession: false, // Don't persist admin sessions
         autoRefreshToken: false,
@@ -130,7 +131,8 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
             'x-privilege-level': 'service-role',
         },
     },
-});
+})
+    : supabase; // Fallback to regular client if no service key
 
 // =====================================================
 // Connection Pool Monitor
