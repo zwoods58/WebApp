@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X, Check, Crown, CreditCard, Calendar, Shield, Star } from 'lucide-react';
+import { X, Check, Crown, CreditCard, Calendar, Shield, Star, Phone } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useParams } from 'next/navigation';
@@ -127,57 +127,50 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
   const country = (params.country as string) || 'ke';
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [mpesaNumber, setMpesaNumber] = useState('');
+  const [paymentState, setPaymentState] = useState<'initial' | 'initiating' | 'stk_sent' | 'complete'>('initial');
+  const [referenceNumber, setReferenceNumber] = useState('');
   
   const plan = SUBSCRIPTION_PLANS[country as keyof typeof SUBSCRIPTION_PLANS] || SUBSCRIPTION_PLANS.ke;
 
   const handleSubscribe = async () => {
+    // Validate M-Pesa number
+    if (!mpesaNumber || mpesaNumber.length < 10) {
+      alert('Please enter a valid M-Pesa number');
+      return;
+    }
+
     setLoading(true);
+    setPaymentState('initiating');
+    
     try {
-      // Webhook-only approach: simulate subscription creation
-      const webhookPayload = {
-        event: 'subscription.created',
-        data: {
-          subscription: {
-            id: `sub_test_${Date.now()}_${plan.planId}`,
-            customer: {
-              id: `cust_${Date.now()}`,
-              email: businessEmail || 'test@example.com',
-              currencyCode: plan.currency
-            },
-            plan: {
-              id: plan.planId,
-              name: `${plan.name} Weekly Plan`,
-              amount: plan.price,
-              currency: plan.currency,
-              interval: 'weekly',
-              code: `${plan.currency.toUpperCase()}_WEEKLY_${plan.price}`
-            },
-            startDate: new Date().toISOString(),
-            nextPaymentDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            isActive: true,
-            reference: `kyshi_ref_${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        }
-      };
+      // Generate reference number
+      const ref = `KYSH${Date.now().toString().slice(-6)}`;
+      setReferenceNumber(ref);
 
-      // Send webhook to simulate subscription creation
-      const response = await fetch('/api/webhook/kyshi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(webhookPayload)
-      });
-
-      if (response.ok) {
+      // Simulate API call to initiate STK Push
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay for demo
+      
+      // Move to STK sent state
+      setPaymentState('stk_sent');
+      
+      // Demo: Auto-complete payment after 5 seconds
+      setTimeout(() => {
+        setPaymentState('complete');
         setSuccess(true);
+        
+        // Close modal after showing success
         setTimeout(() => {
           setSuccess(false);
+          setPaymentState('initial');
+          setMpesaNumber('');
           onClose();
         }, 3000);
-      }
+      }, 5000);
+      
     } catch (error) {
-      console.error('Subscription failed:', error);
+      console.error('STK Push failed:', error);
+      setPaymentState('initial');
     } finally {
       setLoading(false);
     }
@@ -195,7 +188,7 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
       
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-[60] p-4">
-        <div className="glass-card rounded-2xl border border-[var(--border)] shadow-float-lg w-full max-w-md overflow-hidden">
+        <div className="glass-card rounded-2xl border border-[var(--border)] shadow-float-lg w-full max-w-sm overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
             <div className="flex items-center gap-3">
@@ -221,22 +214,60 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
           
           {/* Content */}
           <div className="p-6">
-            {/* Success State */}
-            {success ? (
+            {/* Success/Complete State */}
+            {success && paymentState === 'complete' ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check size={32} className="text-[var(--color-success)]" />
                 </div>
                 <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
-                  {t('subscription.subscription_activated', 'Subscription Activated!')}
+                  Payment Complete!
                 </h3>
                 <p className="text-[var(--text-2)] mb-4">
-                  {t('subscription.enjoy_premium_features', 'Enjoy all premium features')}
+                  Your subscription is now active. Enjoy all premium features!
                 </p>
                 <div className="bg-[var(--powder)]/10 rounded-lg p-3">
                   <p className="text-sm text-[var(--text-2)]">
-                    {t('subscription.next_billing', 'Next billing')}: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                    Next billing: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                   </p>
+                </div>
+              </div>
+            ) : paymentState === 'initiating' ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-8 h-8 border-3 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
+                </div>
+                <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
+                  Initiating M-Pesa STK Push...
+                </h3>
+                <p className="text-[var(--text-2)] mb-4">
+                  Please wait while we send the payment request to your phone.
+                </p>
+                <button
+                  onClick={() => setPaymentState('initial')}
+                  className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)]"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : paymentState === 'stk_sent' ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Phone size={32} className="text-[var(--powder-dark)]" />
+                </div>
+                <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
+                  STK Push Sent!
+                </h3>
+                <p className="text-[var(--text-2)] mb-2">
+                  Check your phone for M-Pesa prompt and enter your PIN to complete.
+                </p>
+                <div className="bg-[var(--powder)]/10 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-[var(--text-2)]">
+                    Reference: {referenceNumber}
+                  </p>
+                </div>
+                <div className="text-sm text-[var(--text-3)] animate-pulse">
+                  Waiting for payment...
                 </div>
               </div>
             ) : (
@@ -253,7 +284,7 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
                         {formatCurrency(plan.price, country)}
                       </div>
                       <div className="text-sm text-[var(--text-3)]">
-                        {t('subscription.per_week', '/week')}
+                        /week
                       </div>
                     </div>
                   </div>
@@ -262,66 +293,77 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
                 {/* Features */}
                 <div className="mb-6">
                   <h4 className="font-semibold text-[var(--text-1)] mb-3">
-                    {t('subscription.what_you_get', 'What you get:')}
+                    What you get:
                   </h4>
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-[var(--color-success-light)]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Check size={12} className="text-[var(--color-success)]" />
+                  <ul className="space-y-2">
+                    {plan.features.slice(0, 3).map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[var(--color-success-light)]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Check size={10} className="text-[var(--color-success)]" />
                         </div>
-                        <span className="text-sm text-[var(--text-2)]">{feature}</span>
+                        <span className="text-xs text-[var(--text-2)]">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
+                {/* M-Pesa Input */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-[var(--text-1)] mb-2">
+                    M-Pesa Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={mpesaNumber}
+                    onChange={(e) => setMpesaNumber(e.target.value)}
+                    placeholder="254712345678"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder)] focus:border-transparent text-sm"
+                  />
+                </div>
+
                 {/* Benefits */}
-                <div className="bg-[var(--powder)]/5 rounded-lg p-4 mb-6">
-                  <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-6">
+                  <div className="grid grid-cols-3 gap-2 text-center">
                     <div>
-                      <Shield size={20} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">{t('subscription.secure', 'Secure')}</p>
+                      <Shield size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Secure</p>
                     </div>
                     <div>
-                      <Calendar size={20} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">{t('subscription.weekly', 'Weekly')}</p>
+                      <Calendar size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Weekly</p>
                     </div>
                     <div>
-                      <Star size={20} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">{t('subscription.premium', 'Premium')}</p>
+                      <Star size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Premium</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Info */}
                 <div className="bg-[var(--bg2)] rounded-lg p-3 mb-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CreditCard size={16} className="text-[var(--text-3)]" />
-                    <p className="text-xs text-[var(--text-3)]">
-                      {t('subscription.payment_via_kyshi', 'Payment processed securely via Kyshi')}
-                    </p>
-                  </div>
                   <p className="text-xs text-[var(--text-3)]">
-                    {t('subscription.no_card_data', 'Your payment details are never stored on our servers')}
+                    Payment via M-Pesa STK Push
+                  </p>
+                  <p className="text-xs text-[var(--text-3)]">
+                    Enter your number to continue
                   </p>
                 </div>
 
                 {/* Action Button */}
                 <button
                   onClick={handleSubscribe}
-                  disabled={loading}
+                  disabled={loading || !mpesaNumber}
                   className="w-full py-3 bg-[var(--powder-dark)] text-white rounded-xl font-semibold hover:bg-[var(--powder-darker)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      {t('subscription.processing', 'Processing...')}
+                      Processing...
                     </>
                   ) : (
                     <>
                       <Crown size={20} />
-                      {t('subscription.subscribe_now', 'Subscribe Now')}
+                      Subscribe Now
                     </>
                   )}
                 </button>
