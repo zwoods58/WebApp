@@ -1,15 +1,10 @@
 // Server-side API route for beehive operations
 // This bypasses RLS by using service role key on the server
 
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 import { sanitizeUserContent } from '@/lib/validation/sanitizer';
 import { withRateLimit } from '@/middleware/rate-limit-middleware';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+import { supabaseAdmin } from '@/lib/supabase';
 
 async function beehiveHandler(request: NextRequest) {
   try {

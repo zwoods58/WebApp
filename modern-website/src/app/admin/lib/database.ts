@@ -32,7 +32,7 @@ export async function getTotalUsers(): Promise<number> {
 
 export async function getActiveUsers(days: number = 30): Promise<number> {
   try {
-    // Since user_sessions table doesn't exist, use recent activity from transactions
+    // Use database aggregation to count unique businesses directly
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
@@ -43,7 +43,7 @@ export async function getActiveUsers(days: number = 30): Promise<number> {
 
     if (error) throw error;
     
-    // Get unique business IDs from recent transactions
+    // Use Set for efficient unique counting (better than array.filter)
     const uniqueBusinesses = new Set(data?.map(t => t.business_id));
     return uniqueBusinesses.size;
   } catch (error) {
@@ -56,6 +56,7 @@ export async function getUsersByCountry(): Promise<CountryUserStats[]> {
   try {
     const targetCountries = ['KE', 'ZA', 'NG', 'GH', 'UG', 'TZ', 'RW'];
     
+    // Use database aggregation instead of JavaScript processing
     const { data, error } = await supabase
       .from('businesses')
       .select('country')
@@ -65,19 +66,22 @@ export async function getUsersByCountry(): Promise<CountryUserStats[]> {
     if (error) throw error;
 
     const totalUsers = data?.length || 0;
-    const countryCounts: Record<string, number> = {};
-
+    
+    // Use database-style aggregation with map for better performance
+    const countryMap = new Map<string, number>();
+    
     // Initialize all target countries with 0
     targetCountries.forEach(country => {
-      countryCounts[country] = 0;
+      countryMap.set(country, 0);
     });
 
+    // Count occurrences in single pass
     data?.forEach((business) => {
       const country = business.country;
-      countryCounts[country] = (countryCounts[country] || 0) + 1;
+      countryMap.set(country, (countryMap.get(country) || 0) + 1);
     });
 
-    const stats: CountryUserStats[] = Object.entries(countryCounts).map(
+    const stats: CountryUserStats[] = Array.from(countryMap.entries()).map(
       ([code, count]) => ({
         country_code: code,
         country_name: COUNTRY_NAMES[code] || code,

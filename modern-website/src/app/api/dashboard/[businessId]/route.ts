@@ -9,6 +9,10 @@ import { UserTier } from '@/lib/rate-limit/supabase-distributed-rate-limit';
 import { supabaseCachedQueries } from '@/lib/cache/supabase-cached-queries';
 import { supabaseRateLimiter } from '@/lib/rate-limit/supabase-distributed-rate-limit';
 
+// Simple in-memory cache for user tiers (5 minute TTL)
+const userTierCache = new Map<string, { tier: UserTier; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // Rate limiting configuration for dashboard endpoints
 const dashboardRateLimit = createRateLimitMiddleware({
   ...DEFAULT_RATE_LIMITS.api,
@@ -24,25 +28,45 @@ const dashboardRateLimit = createRateLimitMiddleware({
 
     try {
       const token = authHeader.substring(7);
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
+      
+      // Check cache first
+      const cacheKey = token.substring(0, 20); // Use partial token for cache key
+      const cached = userTierCache.get(cacheKey);
+      
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.tier;
+      }
 
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+      const { supabaseAdmin } = await import('@/lib/supabase');
+
+      const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
       
       if (error || !user) {
         return 'free';
       }
 
-      const { data: business } = await supabase
+      const { data: business } = await supabaseAdmin
         .from('businesses')
         .select('subscription_tier')
         .eq('user_id', user.id)
         .single();
 
-      return business?.subscription_tier as UserTier || 'free';
+      const tier = business?.subscription_tier as UserTier || 'free';
+      
+      // Cache the result
+      userTierCache.set(cacheKey, { tier, timestamp: Date.now() });
+      
+      // Clean up old cache entries periodically
+      if (userTierCache.size > 1000) {
+        const now = Date.now();
+        for (const [key, value] of userTierCache.entries()) {
+          if (now - value.timestamp > CACHE_TTL) {
+            userTierCache.delete(key);
+          }
+        }
+      }
+
+      return tier;
     } catch (error) {
       console.error('Error getting user tier:', error);
       return 'free';
