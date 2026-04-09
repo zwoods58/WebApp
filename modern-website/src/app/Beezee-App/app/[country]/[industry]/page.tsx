@@ -27,8 +27,6 @@ import { useServices, useAppointmentsTanStack } from '@/hooks';
 // Universal Components - use dynamic imports for heavy components
 import { 
   DailyTarget, 
-  MoneyInButton, 
-  MoneyOutButton, 
   CreditList, 
   InventoryList, 
   BottomNav, 
@@ -456,125 +454,7 @@ export default function IndustryDashboard() {
   
   // All hooks have been called above - safe to render now
 
-  const handleMoneyIn = async (transactionData: any) => {
-    try {
-      console.log('Tenant data:', { business, businessId });
-      
-      if (!businessId) {
-        console.error('No business ID found. Tenant:', business);
-        alert(t('alert.setup_profile_first', 'Please set up your business profile first before adding transactions.'));
-        return;
-      }
-      
-      // If payment method is credit, create/update credit account and line item
-      if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
-        // Find existing customer using unified matching logic
-        const existingCredit = findMatchingCreditCustomer(credit || [], transactionData.customer_name, 'receivable');
-        
-        if (existingCredit) {
-          // Customer exists - create new line item
-          console.log('Adding line item to existing customer:', existingCredit.customer_name);
-          
-          // Create new credit line item
-          await addCreditItemAsync({
-            credit_id: existingCredit.id,
-            business_id: businessId,
-            industry,
-            description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
-            amount: transactionData.amount,
-            paid_amount: 0,
-            currency: transactionData.currency || getCurrency(country),
-            status: 'outstanding',
-            due_date: transactionData.due_date,
-            date_given: transactionData.transaction_date,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          
-          // Update credit account totals
-          const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, transactionData.amount);
-          await updateCredit({
-            id: existingCredit.id,
-            data: {
-              amount: newTotalAmount,
-              due_date: transactionData.due_date, // Update to latest due date
-              updated_at: new Date().toISOString()
-            }
-          });
-          
-          console.log(' Credit line item added successfully:', {
-            customer: existingCredit.customer_name,
-            lineAmount: transactionData.amount,
-            newTotal: newTotalAmount
-          });
-        } else {
-          // New customer - create credit account and first line item
-          console.log('Creating new credit account for:', transactionData.customer_name);
-          const newCredit: any = await addCredit({
-            business_id: businessId,
-            industry,
-            customer_name: transactionData.customer_name,
-            amount: transactionData.amount,
-            currency: transactionData.currency || getCurrency(country),
-            due_date: transactionData.due_date,
-            date_given: transactionData.transaction_date,
-            status: 'outstanding',
-            type: 'receivable', // Money In = receivable
-            paid_amount: 0,
-            created_at: new Date().toISOString()
-          });
-          
-          const creditId = newCredit?.id;
-          
-          // Create first line item for new customer
-          if (creditId) {
-            await addCreditItemAsync({
-              credit_id: creditId,
-              business_id: businessId,
-              industry,
-              description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
-              amount: transactionData.amount,
-              paid_amount: 0,
-              currency: transactionData.currency || getCurrency(country),
-              status: 'outstanding',
-              due_date: transactionData.due_date,
-              date_given: transactionData.transaction_date,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-            
-            console.log(' New credit account created successfully:', {
-              customer: transactionData.customer_name,
-              amount: transactionData.amount,
-              creditId
-            });
-          }
-        }
-        
-        // Invalidate credit queries
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
-      }
-      
-      const newTransaction = await addTransaction({
-        ...transactionData,
-        business_id: businessId,
-        industry
-      });
-      
-      // Update BuzzInsights data immediately after adding transaction
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'inventory'] });
-      
-      showSuccess(`Money in: ${formatCurrency(transactionData.amount, country)} received successfully!`);
-      
-      console.log('Transaction added successfully and BuzzInsights updated');
-    } catch (error) {
-      console.error('Failed to add transaction:', error);
-      showError(t('alert.failed_transaction', 'Failed to add transaction. Please try again.'));
-    }
-  };
-
+  
   // Helper functions for BuzzInsights data
 
   const calculateAverageOverdueDays = (overdueCredits: any[]) => {
@@ -588,123 +468,7 @@ export default function IndustryDashboard() {
     return Math.round(totalDays / overdueCredits.length);
   };
 
-  const handleMoneyOut = async (expenseData: any) => {
-    try {
-      console.log('Tenant data:', { business, businessId });
-      
-      if (!businessId) {
-        console.error('No business ID found. Tenant:', business);
-        alert(t('alert.setup_profile_first_expenses', 'Please set up your business profile first before adding expenses.'));
-        return;
-      }
-      
-      // If payment method is credit, create/update payable credit account and line item
-      if (expenseData.payment_method === 'credit' && expenseData.supplier_name) {
-        // Check if supplier already has a credit account
-        const existingCredit = credit?.find((c: any) => 
-          c.customer_name.toLowerCase() === expenseData.supplier_name.toLowerCase() &&
-          c.type === 'payable'
-        );
-        
-        let creditId = existingCredit?.id;
-        
-        if (existingCredit) {
-          // Supplier exists - create new line item
-          console.log('Adding line item to existing supplier:', existingCredit.customer_name);
-          
-          // Create new credit line item
-          await addCreditItemAsync({
-            credit_id: existingCredit.id,
-            business_id: businessId,
-            industry,
-            description: expenseData.description || 'Credit expense',
-            amount: expenseData.amount,
-            paid_amount: 0,
-            currency: expenseData.currency || getCurrency(country),
-            status: 'outstanding',
-            due_date: expenseData.due_date,
-            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          
-          // Update credit account totals
-          const newTotalAmount = existingCredit.amount + expenseData.amount;
-          await updateCredit({
-            id: existingCredit.id,
-            data: {
-              amount: newTotalAmount,
-              due_date: expenseData.due_date, // Update to latest due date
-              updated_at: new Date().toISOString()
-            }
-          });
-        } else {
-          // New supplier - create credit account and first line item
-          console.log('Creating new payable credit account for:', expenseData.supplier_name);
-          const newCredit: any = await addCredit({
-            business_id: businessId,
-            industry,
-            customer_name: expenseData.supplier_name, // Using customer_name field for supplier
-            amount: expenseData.amount,
-            currency: expenseData.currency || getCurrency(country),
-            due_date: expenseData.due_date,
-            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-            status: 'outstanding',
-            type: 'payable', // Money Out = payable
-            paid_amount: 0,
-            created_at: new Date().toISOString()
-          });
-          
-          creditId = newCredit?.id;
-          
-          // Create first line item for new supplier
-          if (creditId) {
-            await addCreditItemAsync({
-              credit_id: creditId,
-              business_id: businessId,
-              industry,
-              description: expenseData.description || 'Credit expense',
-              amount: expenseData.amount,
-              paid_amount: 0,
-              currency: expenseData.currency || getCurrency(country),
-              status: 'outstanding',
-              due_date: expenseData.due_date,
-              date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-          }
-        }
-        
-        // Invalidate credit queries
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
-      }
-      
-      // Remove payment_method from expense data as it doesn't exist in the database
-      const { payment_method, supplier_name, due_date, ...cleanExpenseData } = expenseData;
-      
-      if (addExpense) {
-        await addExpense({
-          ...cleanExpenseData,
-          business_id: businessId,
-          industry
-        });
-      }
-      
-      // Update BuzzInsights data immediately after adding expense
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'expenses'] });
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
-      
-      showSuccess(`Money out: ${formatCurrency(expenseData.amount, country)} paid successfully!`);
-      
-      console.log('Expense added successfully and BuzzInsights updated');
-    } catch (error) {
-      console.error('Failed to add expense:', error);
-      showError(t('alert.failed_expense', 'Failed to add expense. Please try again.'));
-    }
-  };
-
+  
   // handleRefresh moved above to fix initialization order
 
   // Modal handlers for homepage quick actions
@@ -821,27 +585,7 @@ export default function IndustryDashboard() {
           />
         </div>
 
-        {/* Money In/Out Row - Universal */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="money-in-button">
-            <MoneyInButton 
-              industry={industry} 
-              country={country}
-              businessId={business?.id || ''}
-              onSuccess={handleMoneyIn}
-              disabled={!business}
-            />
-          </div>
-          <div className="money-out-button">
-            <MoneyOutButton 
-              industry={industry} 
-              country={country}
-              onSuccess={handleMoneyOut}
-              disabled={!business}
-            />
-          </div>
-        </div>
-
+        
         {/* Industry-Specific Lists */}
         <div className="space-y-5">
           {/* Customer List - All Industries */}

@@ -11,7 +11,6 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import MoneyInButton from '@/components/universal/MoneyInButton';
 import ReceiptGenerator from '@/components/universal/ReceiptGenerator';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
 import { useLanguage } from '@/hooks/LanguageContext';
@@ -41,41 +40,7 @@ export default function TransactionsPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedTransactionForShare, setSelectedTransactionForShare] = useState<any>(null);
 
-  const handleNewTransaction = async (newTransaction: any) => {
-    if (!business?.id) {
-      showError('No business ID found');
-      return;
-    }
-    
-    const fullTransactionData = {
-      ...newTransaction,
-      business_id: business.id,
-      industry,
-      transaction_date: new Date().toISOString().split('T')[0],
-      created_at: new Date().toISOString()
-    };
-    
-    try {
-      if (isOnline) {
-        // Try online first
-        try {
-          await addTransaction(fullTransactionData);
-          showSuccess('Transaction added successfully');
-        } catch (error) {
-          console.error('Failed to add transaction:', error);
-          showError('Failed to add transaction');
-        }
-      } else {
-        // Offline mode - TanStack Query handles this automatically
-        await addTransaction(fullTransactionData);
-        showInfo('Transaction queued - will sync when online');
-      }
-    } catch (error) {
-      console.error('Failed to add transaction:', error);
-      showError('Failed to add transaction. Please try again.');
-    }
-  };
-
+  
   const handleTransactionClick = (transaction: any) => {
     setSelectedTransaction(transaction);
     setShowReceiptModal(true);
@@ -264,16 +229,7 @@ export default function TransactionsPage() {
           )}
         </div>
 
-        {/* Add Transaction Button */}
-        <div className="mb-6">
-          <MoneyInButton 
-            industry={industry} 
-            country={country}
-            businessId={business?.id || ''}
-            onSuccess={handleNewTransaction}
-          />
-        </div>
-
+        
         {/* Search and Filter */}
         <div className="mb-4 space-y-3">
           <div className="relative">
