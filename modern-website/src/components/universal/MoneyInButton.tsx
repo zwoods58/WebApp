@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
+import { TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useServices } from '@/hooks';
@@ -232,7 +232,6 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
         }`}
         disabled={disabled}
       >
-        <Plus size={22} strokeWidth={2.5} />
         {t('common.money_in')}
       </button>
 

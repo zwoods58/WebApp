@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Minus, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
+import { Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -167,7 +167,6 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
         }`}
         disabled={disabled}
       >
-        <Minus size={22} strokeWidth={2.5} />
         {t('common.money_out')}
       </button>
 
