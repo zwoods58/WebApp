@@ -1,9 +1,10 @@
 // =====================================================
 // DATABASE: Expenses Service
-// PURPOSE: CRUD operations using hot/cold tables
+// PURPOSE: CRUD operations using hot/cold tables with cursor pagination
 // =====================================================
 
 import { createClient } from '@supabase/supabase-js';
+import { optimizedQueries } from './optimized-queries';
 
 export interface Expense {
   id?: string;
@@ -186,6 +187,251 @@ class ExpensesService {
       top_categories,
       monthly_trend,
     };
+  }
+
+  // =====================================================
+  // Phase 2 Optimizations: Cursor Pagination & Batch Operations
+  // =====================================================
+
+  /**
+   * Get expenses with cursor pagination (optimized for large datasets)
+   */
+  async getExpensesCursor(
+    businessId: string,
+    cursor?: string,
+    limit: number = 50
+  ): Promise<{
+    data: Expense[];
+    nextCursor: string | null;
+    hasMore: boolean;
+    error?: any;
+  }> {
+    try {
+      // Use optimized queries for cursor pagination
+      const result = await optimizedQueries.getExpensesCursor(businessId, cursor, limit);
+      
+      // Transform to match Expense interface
+      const expenses = result.data?.map(item => ({
+        id: item.id,
+        user_id: item.business_id, // Map business_id to user_id for compatibility
+        amount: item.amount,
+        description: item.description || '',
+        category: item.category || 'uncategorized',
+        status: 'approved' as const, // Default status since schema doesn't have it
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: new Date()
+      })) || [];
+
+      return {
+        data: expenses,
+        nextCursor: result.nextCursor,
+        hasMore: !!result.nextCursor,
+        error: result.error
+      };
+    } catch (cursorError) {
+      console.error('Cursor pagination failed, falling back to offset:', cursorError);
+      
+      // Fallback to traditional offset-based pagination
+      let query = this.supabase
+        .from(this.hotTable)
+        .select('*')
+        .eq('user_id', businessId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      if (cursor) {
+        const cursorDate = new Date(cursor);
+        query = query.lt('created_at', cursorDate.toISOString());
+      }
+      
+      const { data, error } = await query;
+      
+      const expenses = data?.map(item => ({
+        id: item.id,
+        user_id: item.user_id,
+        amount: item.amount,
+        description: item.description,
+        category: item.category,
+        status: item.status,
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: item.updated_at ? new Date(item.updated_at) : new Date()
+      })) || [];
+
+      const nextCursor = data?.length === limit 
+        ? data[data.length - 1].created_at 
+        : null;
+
+      return {
+        data: expenses,
+        nextCursor,
+        hasMore: !!nextCursor,
+        error
+      };
+    }
+  }
+
+  /**
+   * Batch insert expenses (optimized for high-volume operations)
+   */
+  async batchInsertExpenses(
+    expenses: Array<Omit<Expense, 'id' | 'created_at' | 'updated_at'>>,
+    batchSize: number = 100
+  ): Promise<{ data: Expense[]; errors: any[] }> {
+    const results: Expense[] = [];
+    const errors: any[] = [];
+    
+    for (let i = 0; i < expenses.length; i += batchSize) {
+      const batch = expenses.slice(i, i + batchSize);
+      
+      try {
+        const { data, error } = await this.supabase
+          .from(this.hotTable)
+          .insert(batch)
+          .select();
+        
+        if (error) {
+          errors.push({ batch: i / batchSize + 1, error });
+        } else if (data) {
+          results.push(...data.map(item => ({
+            id: item.id,
+            user_id: item.user_id,
+            amount: item.amount,
+            description: item.description,
+            category: item.category,
+            status: item.status,
+            created_at: item.created_at ? new Date(item.created_at) : new Date(),
+            updated_at: item.updated_at ? new Date(item.updated_at) : new Date()
+          })));
+        }
+      } catch (error) {
+        errors.push({ batch: i / batchSize + 1, error });
+      }
+    }
+    
+    return { data: results, errors };
+  }
+
+  /**
+   * Get expenses by date range (optimized)
+   */
+  async getExpensesByDateRange(
+    businessId: string,
+    startDate: string,
+    endDate: string,
+    limit: number = 100
+  ): Promise<{ data: Expense[]; error?: any }> {
+    try {
+      // Use optimized query
+      const result = await optimizedQueries.getTransactionsByDateRange(
+        businessId, 
+        startDate, 
+        endDate, 
+        limit
+      );
+      
+      // Transform to match Expense interface
+      const expenses = result.data?.map(item => ({
+        id: item.id,
+        user_id: item.business_id,
+        amount: item.amount,
+        description: item.description || '',
+        category: item.category || 'uncategorized',
+        status: 'approved' as const,
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: new Date()
+      })) || [];
+
+      return { data: expenses, error: result.error };
+    } catch (dateRangeError) {
+      console.error('Optimized date range query failed, falling back:', dateRangeError);
+      
+      // Fallback to regular query
+      const { data, error } = await this.supabase
+        .from(this.hotTable)
+        .select('*')
+        .eq('user_id', businessId)
+        .gte('expense_date', startDate)
+        .lte('expense_date', endDate)
+        .order('expense_date', { ascending: false })
+        .limit(limit);
+      
+      const expenses = data?.map(item => ({
+        id: item.id,
+        user_id: item.user_id,
+        amount: item.amount,
+        description: item.description,
+        category: item.category,
+        status: item.status,
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: item.updated_at ? new Date(item.updated_at) : new Date()
+      })) || [];
+
+      return { data: expenses, error };
+    }
+  }
+
+  /**
+   * Get expenses by supplier (optimized)
+   */
+  async getExpensesBySupplier(
+    businessId: string,
+    supplier: string,
+    limit: number = 20
+  ): Promise<{ data: Expense[]; error?: any }> {
+    try {
+      // Use optimized query
+      const result = await optimizedQueries.getExpensesBySupplier(businessId, supplier, limit);
+      
+      // Transform to match Expense interface
+      const expenses = result.data?.map(item => ({
+        id: item.id,
+        user_id: item.business_id,
+        amount: item.amount,
+        description: item.description || '',
+        category: item.category || 'uncategorized',
+        status: 'approved' as const,
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: new Date()
+      })) || [];
+
+      return { data: expenses, error: result.error };
+    } catch (supplierError) {
+      console.error('Optimized supplier query failed, falling back:', supplierError);
+      
+      // Fallback to regular query
+      const { data, error } = await this.supabase
+        .from(this.hotTable)
+        .select('*')
+        .eq('user_id', businessId)
+        .ilike('supplier', `%${supplier}%`)
+        .order('expense_date', { ascending: false })
+        .limit(limit);
+      
+      const expenses = data?.map(item => ({
+        id: item.id,
+        user_id: item.user_id,
+        amount: item.amount,
+        description: item.description,
+        category: item.category,
+        status: item.status,
+        created_at: item.created_at ? new Date(item.created_at) : new Date(),
+        updated_at: item.updated_at ? new Date(item.updated_at) : new Date()
+      })) || [];
+
+      return { data: expenses, error };
+    }
+  }
+
+  /**
+   * Get estimated count (avoids full table scans)
+   */
+  async getEstimatedCount(businessId: string): Promise<number> {
+    try {
+      return await optimizedQueries.getEstimatedCount('expenses', businessId);
+    } catch (error) {
+      console.error('Estimated count failed, using fallback:', error);
+      return 0; // Conservative estimate
+    }
   }
 }
 

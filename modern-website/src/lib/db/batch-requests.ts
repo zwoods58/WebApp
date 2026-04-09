@@ -1,6 +1,7 @@
 // =====================================================
-// Batch multiple requests into one database call
-// Reduces connection usage by 70-80%
+// Phase 2: Enhanced Batch Request System
+// Batches multiple requests into one database call
+// Reduces connection usage by 70-80% and improves performance for 50k users
 // =====================================================
 
 interface BatchRequest {
@@ -10,18 +11,65 @@ interface BatchRequest {
   params: any;
   resolve: (value: any) => void;
   reject: (reason: any) => void;
+  priority?: 'high' | 'normal' | 'low';
+  timestamp: number;
+  timeout?: number;
+}
+
+interface BatchStats {
+  totalRequests: number;
+  batchesProcessed: number;
+  averageBatchSize: number;
+  connectionReduction: number;
+  errorRate: number;
+  averageLatency: number;
 }
 
 class RequestBatcher {
   private batch: BatchRequest[] = [];
   private timeout: NodeJS.Timeout | null = null;
   private readonly batchWindow = 50; // ms to wait for more requests
+  private readonly maxBatchSize = 100; // Maximum requests per batch
   
-  async execute<T>(request: Omit<BatchRequest, 'resolve' | 'reject'>): Promise<T> {
+  // Performance tracking
+  private stats: BatchStats = {
+    totalRequests: 0,
+    batchesProcessed: 0,
+    averageBatchSize: 0,
+    connectionReduction: 0,
+    errorRate: 0,
+    averageLatency: 0
+  };
+  
+  private batchStartTimes: Map<string, number> = new Map();
+  
+  async execute<T>(request: Omit<BatchRequest, 'resolve' | 'reject' | 'timestamp'>): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.batch.push({ ...request, resolve, reject });
+      const batchRequest: BatchRequest = {
+        ...request,
+        resolve,
+        reject,
+        timestamp: Date.now(),
+        priority: request.priority || 'normal'
+      };
       
-      if (!this.timeout) {
+      this.batch.push(batchRequest);
+      this.stats.totalRequests++;
+      
+      // Sort by priority (high first)
+      this.batch.sort((a, b) => {
+        const priorityOrder = { high: 0, normal: 1, low: 2 };
+        return priorityOrder[a.priority || 'normal'] - priorityOrder[b.priority || 'normal'];
+      });
+      
+      // Auto-flush if batch is full
+      if (this.batch.length >= this.maxBatchSize) {
+        if (this.timeout) {
+          clearTimeout(this.timeout);
+          this.timeout = null;
+        }
+        this.flush();
+      } else if (!this.timeout) {
         this.timeout = setTimeout(() => this.flush(), this.batchWindow);
       }
     });
@@ -34,23 +82,69 @@ class RequestBatcher {
     
     if (batch.length === 0) return;
     
-    // Group by table and operation
-    const groups = new Map();
-    for (const req of batch) {
-      const key = `${req.table}:${req.operation}`;
-      if (!groups.has(key)) {
-        groups.set(key, []);
+    const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.batchStartTimes.set(batchId, Date.now());
+    
+    try {
+      // Group by table and operation
+      const groups = new Map();
+      for (const req of batch) {
+        const key = `${req.table}:${req.operation}`;
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key).push(req);
       }
-      groups.get(key).push(req);
+      
+      // Execute each group in parallel
+      const promises = [];
+      for (const [key, requests] of groups) {
+        promises.push(this.executeBatch(key, requests));
+      }
+      
+      const results = await Promise.allSettled(promises);
+      
+      // Update stats
+      this.updateBatchStats(batchId, batch.length, results);
+      
+    } catch (error) {
+      console.error('Batch execution failed:', error);
+      // Reject all requests in the batch
+      batch.forEach(req => req.reject(error));
+      this.updateBatchStats(batchId, batch.length, []);
+    } finally {
+      this.batchStartTimes.delete(batchId);
     }
+  }
+  
+  private updateBatchStats(batchId: string, batchSize: number, results: PromiseSettledResult<void>[]): void {
+    const startTime = this.batchStartTimes.get(batchId);
+    if (!startTime) return;
     
-    // Execute each group in parallel
-    const promises = [];
-    for (const [key, requests] of groups) {
-      promises.push(this.executeBatch(key, requests));
-    }
+    const latency = Date.now() - startTime;
+    this.stats.batchesProcessed++;
     
-    await Promise.all(promises);
+    // Update average batch size
+    this.stats.averageBatchSize = 
+      (this.stats.averageBatchSize * (this.stats.batchesProcessed - 1) + batchSize) / 
+      this.stats.batchesProcessed;
+    
+    // Update average latency
+    this.stats.averageLatency = 
+      (this.stats.averageLatency * (this.stats.batchesProcessed - 1) + latency) / 
+      this.stats.batchesProcessed;
+    
+    // Calculate error rate
+    const errors = results.filter(r => r.status === 'rejected').length;
+    this.stats.errorRate = (this.stats.errorRate * (this.stats.batchesProcessed - 1) + errors) / this.stats.batchesProcessed;
+    
+    // Calculate connection reduction (assuming each batch would have been individual connections)
+    const individualConnections = batchSize;
+    const batchConnections = new Map(Array.from(results).map((_, i) => [`group_${i}`, 1])).size;
+    const reduction = Math.max(0, (individualConnections - batchConnections) / individualConnections);
+    this.stats.connectionReduction = 
+      (this.stats.connectionReduction * (this.stats.batchesProcessed - 1) + reduction) / 
+      this.stats.batchesProcessed;
   }
   
   private async executeBatch(key: string, requests: BatchRequest[]) {
@@ -136,14 +230,114 @@ class RequestBatcher {
   }
   
   /**
-   * Get batch statistics
+   * Get comprehensive batch statistics
    */
   getStats() {
     return {
       pendingRequests: this.batch.length,
       hasActiveBatch: this.timeout !== null,
-      batchWindow: this.batchWindow
+      batchWindow: this.batchWindow,
+      maxBatchSize: this.maxBatchSize,
+      performance: this.stats,
+      activeBatches: this.batchStartTimes.size
     };
+  }
+  
+  /**
+   * Get detailed performance metrics
+   */
+  getPerformanceMetrics(): BatchStats {
+    return { ...this.stats };
+  }
+  
+  /**
+   * Reset performance statistics
+   */
+  resetStats(): void {
+    this.stats = {
+      totalRequests: 0,
+      batchesProcessed: 0,
+      averageBatchSize: 0,
+      connectionReduction: 0,
+      errorRate: 0,
+      averageLatency: 0
+    };
+  }
+  
+  /**
+   * Execute high-priority request immediately (bypasses batching)
+   */
+  async executeHighPriority<T>(request: Omit<BatchRequest, 'resolve' | 'reject' | 'timestamp'>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const batchRequest: BatchRequest = {
+        ...request,
+        resolve,
+        reject,
+        timestamp: Date.now(),
+        priority: 'high'
+      };
+      
+      // Execute immediately without batching
+      this.executeImmediate(batchRequest).then(resolve).catch(reject);
+    });
+  }
+  
+  /**
+   * Execute a single request immediately (bypasses batching)
+   */
+  private async executeImmediate(request: BatchRequest): Promise<any> {
+    const { supabase } = await import('@/lib/supabase');
+    
+    try {
+      switch (request.operation) {
+        case 'select':
+          if (request.params.id) {
+            const { data } = await supabase
+              .from(request.table)
+              .select('*')
+              .eq('id', request.params.id)
+              .single();
+            return data;
+          } else {
+            const { data } = await supabase
+              .from(request.table)
+              .select('*');
+            return data;
+          }
+          
+        case 'insert':
+          const { data: insertData } = await supabase
+            .from(request.table)
+            .insert(request.params.data)
+            .select()
+            .single();
+          return insertData;
+          
+        case 'update':
+          const { data: updateData } = await supabase
+            .from(request.table)
+            .update(request.params.data)
+            .eq('id', request.params.id)
+            .select()
+            .single();
+          return updateData;
+          
+        case 'delete':
+          const { data: deleteData } = await supabase
+            .from(request.table)
+            .delete()
+            .eq('id', request.params.id)
+            .select()
+            .single();
+          return deleteData;
+          
+        default:
+          throw new Error(`Unsupported operation: ${request.operation}`);
+      }
+    } catch (error) {
+      console.error(`Immediate execution failed for ${request.operation} on ${request.table}:`, error);
+      throw error;
+    }
   }
   
   /**

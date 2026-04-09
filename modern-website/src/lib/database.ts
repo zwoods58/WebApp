@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie';
+import { optimizedQueries } from './db/optimized-queries';
 
 // Define data types for IndexedDB
 export interface StoredTransaction {
@@ -358,6 +359,166 @@ export class BeezeeDatabase extends Dexie {
       .equals(businessId)
       .and(op => op.status === 'pending')
       .count();
+  }
+
+  // =====================================================
+  // Optimized Query Integration (Phase 2)
+  // =====================================================
+
+  /**
+   * Get business summary using optimized database function
+   */
+  async getBusinessSummaryOptimized(businessId: string) {
+    try {
+      return await optimizedQueries.getBusinessSummary(businessId);
+    } catch (error) {
+      console.error('Failed to get optimized business summary:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get dashboard data using optimized database function
+   */
+  async getDashboardDataOptimized(businessId: string) {
+    try {
+      return await optimizedQueries.getDashboardData(businessId);
+    } catch (error) {
+      console.error('Failed to get optimized dashboard data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get monthly report using optimized database function
+   */
+  async getMonthlyReportOptimized(businessId: string, year: number, month: number) {
+    try {
+      return await optimizedQueries.getMonthlyReport(businessId, year, month);
+    } catch (error) {
+      console.error('Failed to get optimized monthly report:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get customer analytics using optimized database function
+   */
+  async getCustomerAnalyticsOptimized(businessId: string, limit: number = 50) {
+    try {
+      return await optimizedQueries.getCustomerAnalytics(businessId, limit);
+    } catch (error) {
+      console.error('Failed to get optimized customer analytics:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get quick stats using optimized database function
+   */
+  async getQuickStatsOptimized(businessId: string) {
+    try {
+      return await optimizedQueries.getQuickStats(businessId);
+    } catch (error) {
+      console.error('Failed to get optimized quick stats:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get transactions with cursor pagination
+   */
+  async getTransactionsCursor(businessId: string, cursor?: string, limit: number = 50) {
+    try {
+      return await optimizedQueries.getTransactionsCursor(businessId, cursor, limit);
+    } catch (error) {
+      console.error('Failed to get transactions with cursor:', error);
+      return { data: [], nextCursor: null, error };
+    }
+  }
+
+  /**
+   * Get expenses with cursor pagination
+   */
+  async getExpensesCursor(businessId: string, cursor?: string, limit: number = 50) {
+    try {
+      return await optimizedQueries.getExpensesCursor(businessId, cursor, limit);
+    } catch (error) {
+      console.error('Failed to get expenses with cursor:', error);
+      return { data: [], nextCursor: null, error };
+    }
+  }
+
+  /**
+   * Get appointments with cursor pagination
+   */
+  async getAppointmentsCursor(businessId: string, cursor?: string, limit: number = 50) {
+    try {
+      return await optimizedQueries.getAppointmentsCursor(businessId, cursor, limit);
+    } catch (error) {
+      console.error('Failed to get appointments with cursor:', error);
+      return { data: [], nextCursor: null, error };
+    }
+  }
+
+  /**
+   * Get estimated count to avoid full table scans
+   */
+  async getEstimatedCount(table: string, businessId?: string): Promise<number> {
+    try {
+      return await optimizedQueries.getEstimatedCount(table, businessId);
+    } catch (error) {
+      console.error('Failed to get estimated count:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Refresh materialized views for performance
+   */
+  async refreshMaterializedViews() {
+    try {
+      return await optimizedQueries.refreshMaterializedViews();
+    } catch (error) {
+      console.error('Failed to refresh materialized views:', error);
+      return { success: false, views: [] };
+    }
+  }
+
+  /**
+   * Get daily transaction summaries from materialized view
+   */
+  async getDailyTransactionSummaries(businessId: string, startDate: string, endDate: string) {
+    try {
+      return await optimizedQueries.getDailyTransactionSummaries(businessId, startDate, endDate);
+    } catch (error) {
+      console.error('Failed to get daily transaction summaries:', error);
+      return { data: [], error };
+    }
+  }
+
+  /**
+   * Get monthly business metrics from materialized view
+   */
+  async getMonthlyBusinessMetrics(businessId: string, year: number) {
+    try {
+      return await optimizedQueries.getMonthlyBusinessMetrics(businessId, year);
+    } catch (error) {
+      console.error('Failed to get monthly business metrics:', error);
+      return { data: [], error };
+    }
+  }
+
+  /**
+   * Archive old data using optimized functions
+   */
+  async archiveOldDataOptimized(businessId?: string) {
+    try {
+      return await optimizedQueries.archiveOldData(businessId);
+    } catch (error) {
+      console.error('Failed to archive old data:', error);
+      return [];
+    }
   }
 }
 

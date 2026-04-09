@@ -350,6 +350,72 @@ export class OptimizedQueries {
     
     return results;
   }
+  
+  /**
+   * Get estimated count to avoid full table scans
+   */
+  async getEstimatedCount(table: string, businessId?: string): Promise<number> {
+    const { data, error } = await supabase
+      .rpc('get_estimated_count', { 
+        p_table_name: table,
+        p_business_id: businessId 
+      });
+    
+    return data?.estimated_count || 0;
+  }
+  
+  /**
+   * Refresh materialized views
+   */
+  async refreshMaterializedViews(): Promise<{ success: boolean; views: string[] }> {
+    const views = ['daily_transaction_summaries', 'monthly_business_metrics'];
+    const results = [];
+    
+    for (const view of views) {
+      const { error } = await supabase.rpc(`refresh_${view}`);
+      if (!error) {
+        results.push(view);
+      }
+    }
+    
+    return { success: results.length > 0, views: results };
+  }
+  
+  /**
+   * Get daily transaction summaries from materialized view
+   */
+  async getDailyTransactionSummaries(
+    businessId: string, 
+    startDate: string, 
+    endDate: string
+  ) {
+    const { data, error } = await supabase
+      .from('daily_transaction_summaries')
+      .select('*')
+      .eq('business_id', businessId)
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true });
+    
+    return { data, error };
+  }
+  
+  /**
+   * Get monthly business metrics from materialized view
+   */
+  async getMonthlyBusinessMetrics(
+    businessId: string, 
+    year: number
+  ) {
+    const { data, error } = await supabase
+      .from('monthly_business_metrics')
+      .select('*')
+      .eq('business_id', businessId)
+      .eq('year', year)
+      .order('month', { ascending: true });
+    
+    return { data, error };
+  }
 }
 
 // Singleton instance
