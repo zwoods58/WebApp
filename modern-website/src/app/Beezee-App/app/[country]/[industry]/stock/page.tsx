@@ -286,11 +286,6 @@ export default function StockPage() {
       <Header industry={industry} country={country} />
 
       <div className="flex-1 p-4 max-w-md mx-auto">
-        {isOffline && (
-          <div className="bg-red-500 text-white px-4 py-2 text-center text-sm mb-4 rounded">
-            You're offline. Some features may be limited.
-          </div>
-        )}
 
         {!businessId ? (
           <div className="text-center py-8">
