@@ -4,18 +4,18 @@
  */
 
 // Dynamic version that will be fetched from API
-let CACHE_VERSION = 'v110';
-let CURRENT_VERSION = 'v110';
+let CACHE_VERSION = 'v111';
+let CURRENT_VERSION = 'v111';
 
 // Helper function to get current version from API
 async function getCurrentVersion() {
   try {
     const response = await fetch('/api/version-check');
     const data = await response.json();
-    return data.version || 'v110';
+    return data.version || 'v111';
   } catch (error) {
     console.warn('[SW] Failed to fetch current version, using fallback:', error);
-    return 'v110';
+    return 'v111';
   }
 }
 

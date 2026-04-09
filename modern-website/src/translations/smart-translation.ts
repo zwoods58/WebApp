@@ -1,4 +1,5 @@
 import translations from '../translations-new';
+import essentialTranslations from './essential-translations';
 
 // Cache-busting timestamp to force refresh translations
 const TRANSLATION_CACHE_BUSTER = Date.now();
@@ -10,6 +11,10 @@ interface TranslationObject {
 
 interface TranslationValue {
   [language: string]: string;
+}
+
+interface EssentialTranslations {
+  [key: string]: TranslationValue;
 }
 
 /**
@@ -83,11 +88,37 @@ export default function smartTranslate(
       }
     }
     
+    // THIRD: Try essential translations as fallback
+    if ((essentialTranslations as EssentialTranslations)[key]) {
+      const essentialTranslation = (essentialTranslations as EssentialTranslations)[key];
+      if (language in essentialTranslation) {
+        return essentialTranslation[language];
+      }
+      // Fallback to English in essential translations
+      if ('en' in essentialTranslation) {
+        return essentialTranslation.en;
+      }
+    }
+    
     // If no translation found, return default text or key
     return defaultText || key;
     
   } catch (error) {
     console.error('Translation error:', error);
+    // Try essential translations as error fallback
+    try {
+      if ((essentialTranslations as EssentialTranslations)[key]) {
+        const essentialTranslation = (essentialTranslations as EssentialTranslations)[key];
+        if (language in essentialTranslation) {
+          return essentialTranslation[language];
+        }
+        if ('en' in essentialTranslation) {
+          return essentialTranslation.en;
+        }
+      }
+    } catch (fallbackError) {
+      console.error('Fallback translation error:', fallbackError);
+    }
     return defaultText || key;
   }
 }
