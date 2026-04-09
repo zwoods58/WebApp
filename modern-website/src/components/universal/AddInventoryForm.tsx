@@ -51,11 +51,11 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
 
   const getItemPlaceholder = () => {
     switch (industry) {
-      case 'food': return 'e.g., Fresh Vegetables';
-      case 'retail': return 'e.g., Premium Headphones';
-      case 'transport': return 'e.g., Fuel Can';
-      case 'freelance': return 'e.g., Software License';
-      default: return 'e.g., Item Name';
+      case 'food': return t('inventory.example_vegetables', 'e.g., Fresh Vegetables');
+      case 'retail': return t('inventory.example_headphones', 'e.g., Premium Headphones');
+      case 'transport': return t('inventory.example_fuel', 'e.g., Fuel Can');
+      case 'freelance': return t('inventory.example_software', 'e.g., Software License');
+      default: return t('inventory.example_item', 'e.g., Item Name');
     }
   };
 
@@ -126,7 +126,7 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
                     value={formData.quantity}
                     onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="10"
+                    placeholder={t('inventory.example_quantity', '10')}
                   />
                 </div>
                 
@@ -138,7 +138,7 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
                     value={formData.threshold}
                     onChange={(e) => setFormData(prev => ({ ...prev, threshold: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="5"
+                    placeholder={t('inventory.example_threshold', '5')}
                   />
                 </div>
               </div>
@@ -182,7 +182,7 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
                     value={formData.cost_price}
                     onChange={(e) => setFormData(prev => ({ ...prev, cost_price: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="0.00"
+                    placeholder={t('inventory.example_price', '0.00')}
                   />
                 </div>
                 
@@ -194,7 +194,7 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
                     value={formData.selling_price}
                     onChange={(e) => setFormData(prev => ({ ...prev, selling_price: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="0.00"
+                    placeholder={t('inventory.example_price', '0.00')}
                   />
                 </div>
               </div>

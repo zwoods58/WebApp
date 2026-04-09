@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, DollarSign, Package, FileText, MoreHorizontal, Calendar, MapPin, WifiOff } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
+import { isClient } from '@/utils/stableDates';
 
 interface BottomNavProps {
   industry: string;
@@ -21,6 +22,7 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
   const basePath = `/Beezee-App/app/${country}/${industry}`;
   const [navigationError, setNavigationError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Preload critical routes on mount
   useEffect(() => {
@@ -96,6 +98,11 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
       return pathname.includes(`${basePath}${itemPath}`);
     };
   }, [pathname, basePath]);
+
+  // Set mounted state to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Update offline status on client side only to prevent hydration mismatch
   useEffect(() => {
@@ -173,7 +180,7 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
                   )}
                 </div>
                 <span className={`text-[9px] font-medium tracking-wide whitespace-nowrap ${active ? 'font-bold' : ''} ${isOffline && !active ? 'text-gray-400' : ''}`}>
-                  {t(item.nameKey)}
+                  {isMounted ? t(item.nameKey) : ''}
                 </span>
               </Link>
             );

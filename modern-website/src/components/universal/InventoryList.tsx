@@ -70,7 +70,7 @@ export default function InventoryList({ industry, country, items, businessId }: 
         </div>
         <div className="text-center py-6 text-[var(--text-3)]">
           <Package size={40} className="mx-auto mb-3 opacity-30" />
-          <p className="text-sm">{t('inventory.no_items', 'No items in inventory')}</p>
+          <p className="text-sm">{t('common.no_items_in_inventory', 'No items in inventory')}</p>
         </div>
       </div>
     );
@@ -140,14 +140,14 @@ export default function InventoryList({ industry, country, items, businessId }: 
                     <button
                       onClick={() => handleEditInventory(item.id)}
                       className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                      title="Edit item"
+                      title={t('inventory.edit_item', 'Edit item')}
                     >
                       <Edit2 size={14} />
                     </button>
                     <button
                       onClick={() => setConfirmDelete(item.id)}
                       className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                      title="Delete item"
+                      title={t('inventory.delete_item', 'Delete item')}
                     >
                       <Trash2 size={14} />
                     </button>

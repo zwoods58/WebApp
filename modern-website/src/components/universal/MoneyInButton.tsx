@@ -114,7 +114,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
         console.log(' [MoneyInButton] Processing credit payment for:', formData.customer_name);
         
         if (!formData.customer_name || formData.customer_name.trim() === '') {
-          alert('Customer name is required for credit payment');
+          alert(t('credit.customer_name_required'));
           setIsSubmitting(false);
           return;
         }
@@ -132,14 +132,14 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
         );
         
         if (!result) {
-          throw new Error(`Failed to add credit for ${formData.customer_name}`);
+          throw new Error(t('credit.failed_to_add') + ` ${formData.customer_name}`);
         }
         
         // Show appropriate success message
         if (result.isNew) {
-          alert(` New customer "${formData.customer_name}" created with ${currency} ${amount} credit`);
+          alert(t('credit.new_customer_created').replace('{name}', formData.customer_name).replace('{currency}', currency).replace('{amount}', amount.toString()));
         } else {
-          alert(` ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}`);
+          alert(t('credit.added_to_customer').replace('{name}', formData.customer_name).replace('{currency}', currency).replace('{amount}', amount.toString()).replace('{total}', result.customer.amount.toString()));
         }
         
         // Continue with normal transaction creation
@@ -187,7 +187,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
       
     } catch (error) {
       console.error('Payment failed:', error);
-      alert(error instanceof Error ? error.message : 'Failed to process payment');
+      alert(error instanceof Error ? error.message : t('credit.payment_failed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -408,7 +408,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                     style={{ backgroundColor: '#ffffff' }}
-                    placeholder={t('common.description_placeholder', 'What was this for?')}
+                    placeholder={t('common.description_placeholder_money_in', 'What was this for?')}
                   />
                 </div>
 
@@ -428,7 +428,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
 
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    {t('payment_method', 'Payment Method')}
+                    {t('payment_method.title', 'Payment Method')}
                   </label>
                   
                   <div className="grid grid-cols-3 gap-2">
@@ -460,7 +460,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                 {formData.payment_method === 'credit' && (
                   <div ref={dueDateRef} className="scroll-mt-4">
                     <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                      Due Date <span className="text-red-500">*</span>
+                      {t('credit.due_date')} <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="date"
@@ -471,7 +471,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                       style={{ backgroundColor: '#ffffff' }}
                     />
                     <p className="text-xs text-[var(--text-3)] mt-1">
-                      Payment due date (default: 30 days from today)
+                      {t('common.payment_due_note', 'Payment due date (default: 30 days from today)')}
                     </p>
                   </div>
                 )}
@@ -483,7 +483,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                     onClick={closeModal}
                     className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
                   >
-                    Cancel
+                    {t('common.cancel', 'Cancel')}
                   </button>
 
                   {/* Existing Submit Button */}
@@ -492,7 +492,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                     disabled={isSubmitting}
                     className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl font-bold text-lg hover:from-green-400 hover:to-green-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? 'Processing...' : `${t('common.save')} ${t('transaction', 'Transaction')}`}
+                    {isSubmitting ? t('common.processing', 'Processing...') : t('transaction.save', 'Save Transaction')}
                   </button>
                 </div>
               </form>

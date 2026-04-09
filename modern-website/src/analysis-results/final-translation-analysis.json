@@ -1,0 +1,4214 @@
+{
+  "summary": {
+    "totalTranslationKeys": 1843,
+    "totalUsedKeys": 893,
+    "duplicateKeyGroups": 214,
+    "unusedKeys": 196,
+    "missingKeys": 772
+  },
+  "duplicates": {
+    "nav.home": [
+      {
+        "position": 1399,
+        "line": 63
+      },
+      {
+        "position": 242178,
+        "line": 8526
+      }
+    ],
+    "nav.more": [
+      {
+        "position": 1637,
+        "line": 76
+      },
+      {
+        "position": 242418,
+        "line": 8539
+      }
+    ],
+    "daily_profit": [
+      {
+        "position": 3717,
+        "line": 130
+      },
+      {
+        "position": 380499,
+        "line": 12971
+      }
+    ],
+    "buzz.title": [
+      {
+        "position": 7433,
+        "line": 299
+      },
+      {
+        "position": 90455,
+        "line": 3139
+      }
+    ],
+    "services.no_services": [
+      {
+        "position": 17133,
+        "line": 650
+      },
+      {
+        "position": 216252,
+        "line": 7723
+      },
+      {
+        "position": 254289,
+        "line": 8921
+      }
+    ],
+    "services.add_first": [
+      {
+        "position": 17539,
+        "line": 663
+      },
+      {
+        "position": 216590,
+        "line": 7736
+      },
+      {
+        "position": 254753,
+        "line": 8934
+      }
+    ],
+    "common.cancel": [
+      {
+        "position": 21386,
+        "line": 834
+      },
+      {
+        "position": 250655,
+        "line": 8815
+      }
+    ],
+    "common.all_jobs": [
+      {
+        "position": 26143,
+        "line": 1042
+      },
+      {
+        "position": 516320,
+        "line": 17497
+      }
+    ],
+    "calendar.no_appointments": [
+      {
+        "position": 45781,
+        "line": 1720
+      },
+      {
+        "position": 109525,
+        "line": 3848
+      }
+    ],
+    "appointments.today_count": [
+      {
+        "position": 50699,
+        "line": 1915
+      },
+      {
+        "position": 247193,
+        "line": 8722
+      }
+    ],
+    "calendar.select_time": [
+      {
+        "position": 54446,
+        "line": 2045
+      },
+      {
+        "position": 64681,
+        "line": 2357
+      }
+    ],
+    "calendar.notes_placeholder": [
+      {
+        "position": 64991,
+        "line": 2370
+      },
+      {
+        "position": 69568,
+        "line": 2500
+      }
+    ],
+    "common.view_all": [
+      {
+        "position": 73816,
+        "line": 2578
+      },
+      {
+        "position": 178732,
+        "line": 6371
+      }
+    ],
+    "common.record_income": [
+      {
+        "position": 74140,
+        "line": 2593
+      },
+      {
+        "position": 118374,
+        "line": 4084
+      },
+      {
+        "position": 243026,
+        "line": 8565
+      }
+    ],
+    "common.record_expense": [
+      {
+        "position": 74548,
+        "line": 2606
+      },
+      {
+        "position": 243429,
+        "line": 8578
+      }
+    ],
+    "common.count_cash": [
+      {
+        "position": 74929,
+        "line": 2619
+      },
+      {
+        "position": 243821,
+        "line": 8591
+      },
+      {
+        "position": 530882,
+        "line": 17978
+      }
+    ],
+    "common.reconcile_cash": [
+      {
+        "position": 75239,
+        "line": 2632
+      },
+      {
+        "position": 244141,
+        "line": 8604
+      }
+    ],
+    "credit.original_amount": [
+      {
+        "position": 85419,
+        "line": 2983
+      },
+      {
+        "position": 203746,
+        "line": 7294
+      }
+    ],
+    "common.processing": [
+      {
+        "position": 90133,
+        "line": 3126
+      },
+      {
+        "position": 253109,
+        "line": 8881
+      }
+    ],
+    "common.end_day": [
+      {
+        "position": 103838,
+        "line": 3621
+      },
+      {
+        "position": 244497,
+        "line": 8617
+      }
+    ],
+    "common.close_day_fresh": [
+      {
+        "position": 105087,
+        "line": 3686
+      },
+      {
+        "position": 119100,
+        "line": 4110
+      },
+      {
+        "position": 244814,
+        "line": 8630
+      }
+    ],
+    "common.expected": [
+      {
+        "position": 105495,
+        "line": 3701
+      },
+      {
+        "position": 177076,
+        "line": 6306
+      },
+      {
+        "position": 245199,
+        "line": 8643
+      },
+      {
+        "position": 533126,
+        "line": 18030
+      }
+    ],
+    "common.actual": [
+      {
+        "position": 105804,
+        "line": 3714
+      },
+      {
+        "position": 177364,
+        "line": 6319
+      },
+      {
+        "position": 245498,
+        "line": 8656
+      },
+      {
+        "position": 533425,
+        "line": 18043
+      }
+    ],
+    "common.who_owes_you": [
+      {
+        "position": 106071,
+        "line": 3727
+      },
+      {
+        "position": 177635,
+        "line": 6332
+      },
+      {
+        "position": 246058,
+        "line": 8682
+      }
+    ],
+    "common.no_outstanding_credit": [
+      {
+        "position": 106417,
+        "line": 3740
+      },
+      {
+        "position": 178013,
+        "line": 6345
+      },
+      {
+        "position": 246430,
+        "line": 8695
+      }
+    ],
+    "common.view_performance": [
+      {
+        "position": 118754,
+        "line": 4097
+      },
+      {
+        "position": 123442,
+        "line": 4281
+      }
+    ],
+    "common.more": [
+      {
+        "position": 126055,
+        "line": 4385
+      },
+      {
+        "position": 526640,
+        "line": 17861
+      }
+    ],
+    "common.more_subtitle": [
+      {
+        "position": 126319,
+        "line": 4398
+      },
+      {
+        "position": 526888,
+        "line": 17874
+      }
+    ],
+    "target.achieved": [
+      {
+        "position": 126868,
+        "line": 4413
+      },
+      {
+        "position": 155447,
+        "line": 5473
+      },
+      {
+        "position": 168627,
+        "line": 5966
+      }
+    ],
+    "target.of": [
+      {
+        "position": 127674,
+        "line": 4439
+      },
+      {
+        "position": 155735,
+        "line": 5486
+      },
+      {
+        "position": 168915,
+        "line": 5979
+      }
+    ],
+    "home.starting_cash": [
+      {
+        "position": 129901,
+        "line": 4547
+      },
+      {
+        "position": 154712,
+        "line": 5445
+      },
+      {
+        "position": 167892,
+        "line": 5938
+      },
+      {
+        "position": 242676,
+        "line": 8552
+      }
+    ],
+    "home.quick_actions": [
+      {
+        "position": 130246,
+        "line": 4560
+      },
+      {
+        "position": 155057,
+        "line": 5458
+      },
+      {
+        "position": 168237,
+        "line": 5951
+      }
+    ],
+    "saving": [
+      {
+        "position": 132939,
+        "line": 4666
+      },
+      {
+        "position": 284773,
+        "line": 10009
+      }
+    ],
+    "cancel": [
+      {
+        "position": 137141,
+        "line": 4797
+      },
+      {
+        "position": 185203,
+        "line": 6605
+      }
+    ],
+    "inventory.total_items": [
+      {
+        "position": 143136,
+        "line": 5023
+      },
+      {
+        "position": 156316,
+        "line": 5516
+      },
+      {
+        "position": 263259,
+        "line": 9260
+      }
+    ],
+    "inventory.total_qty": [
+      {
+        "position": 143476,
+        "line": 5036
+      },
+      {
+        "position": 156656,
+        "line": 5529
+      }
+    ],
+    "inventory.low_stock": [
+      {
+        "position": 143811,
+        "line": 5049
+      },
+      {
+        "position": 156991,
+        "line": 5542
+      },
+      {
+        "position": 262970,
+        "line": 9247
+      }
+    ],
+    "inventory.total_stock_value": [
+      {
+        "position": 144180,
+        "line": 5062
+      },
+      {
+        "position": 157360,
+        "line": 5555
+      }
+    ],
+    "inventory.add_new_item": [
+      {
+        "position": 144623,
+        "line": 5075
+      },
+      {
+        "position": 157803,
+        "line": 5568
+      }
+    ],
+    "inventory.search_items": [
+      {
+        "position": 144995,
+        "line": 5088
+      },
+      {
+        "position": 158175,
+        "line": 5581
+      }
+    ],
+    "inventory.running_low": [
+      {
+        "position": 145355,
+        "line": 5101
+      },
+      {
+        "position": 158535,
+        "line": 5594
+      },
+      {
+        "position": 263888,
+        "line": 9286
+      }
+    ],
+    "inventory.reorder_soon": [
+      {
+        "position": 145676,
+        "line": 5114
+      },
+      {
+        "position": 158856,
+        "line": 5607
+      }
+    ],
+    "inventory.min": [
+      {
+        "position": 146060,
+        "line": 5127
+      },
+      {
+        "position": 159240,
+        "line": 5620
+      },
+      {
+        "position": 263595,
+        "line": 9273
+      }
+    ],
+    "inventory.units": [
+      {
+        "position": 146307,
+        "line": 5140
+      },
+      {
+        "position": 159487,
+        "line": 5633
+      },
+      {
+        "position": 259427,
+        "line": 9104
+      }
+    ],
+    "inventory.pieces": [
+      {
+        "position": 146566,
+        "line": 5153
+      },
+      {
+        "position": 159746,
+        "line": 5646
+      },
+      {
+        "position": 260089,
+        "line": 9130
+      }
+    ],
+    "inventory.left": [
+      {
+        "position": 146826,
+        "line": 5166
+      },
+      {
+        "position": 160006,
+        "line": 5659
+      }
+    ],
+    "inventory.manage": [
+      {
+        "position": 147078,
+        "line": 5179
+      },
+      {
+        "position": 160258,
+        "line": 5672
+      },
+      {
+        "position": 264301,
+        "line": 9299
+      }
+    ],
+    "inventory.check_alerts": [
+      {
+        "position": 147463,
+        "line": 5192
+      },
+      {
+        "position": 160643,
+        "line": 5685
+      }
+    ],
+    "inventory.checking": [
+      {
+        "position": 147817,
+        "line": 5205
+      },
+      {
+        "position": 160997,
+        "line": 5698
+      }
+    ],
+    "inventory.quick_add": [
+      {
+        "position": 148146,
+        "line": 5218
+      },
+      {
+        "position": 161326,
+        "line": 5711
+      },
+      {
+        "position": 264666,
+        "line": 9312
+      }
+    ],
+    "stockSubtitle": [
+      {
+        "position": 148550,
+        "line": 5233
+      },
+      {
+        "position": 161730,
+        "line": 5726
+      },
+      {
+        "position": 331416,
+        "line": 11430
+      }
+    ],
+    "totalProducts": [
+      {
+        "position": 148963,
+        "line": 5246
+      },
+      {
+        "position": 162143,
+        "line": 5739
+      },
+      {
+        "position": 173018,
+        "line": 6153
+      },
+      {
+        "position": 332022,
+        "line": 11443
+      }
+    ],
+    "items": [
+      {
+        "position": 149326,
+        "line": 5259
+      },
+      {
+        "position": 162506,
+        "line": 5752
+      },
+      {
+        "position": 173381,
+        "line": 6166
+      },
+      {
+        "position": 380945,
+        "line": 12988
+      }
+    ],
+    "runningLowLabel": [
+      {
+        "position": 149570,
+        "line": 5272
+      },
+      {
+        "position": 162750,
+        "line": 5765
+      },
+      {
+        "position": 332383,
+        "line": 11456
+      }
+    ],
+    "noItemsYet": [
+      {
+        "position": 149895,
+        "line": 5285
+      },
+      {
+        "position": 163075,
+        "line": 5778
+      },
+      {
+        "position": 334010,
+        "line": 11521
+      }
+    ],
+    "inventoryEmptyDescription": [
+      {
+        "position": 150267,
+        "line": 5298
+      },
+      {
+        "position": 163447,
+        "line": 5791
+      },
+      {
+        "position": 334371,
+        "line": 11534
+      }
+    ],
+    "addItemButton": [
+      {
+        "position": 150966,
+        "line": 5311
+      },
+      {
+        "position": 164146,
+        "line": 5804
+      },
+      {
+        "position": 335235,
+        "line": 11547
+      }
+    ],
+    "searchItems": [
+      {
+        "position": 151303,
+        "line": 5324
+      },
+      {
+        "position": 164483,
+        "line": 5817
+      },
+      {
+        "position": 172703,
+        "line": 6140
+      }
+    ],
+    "quickActions": [
+      {
+        "position": 151618,
+        "line": 5337
+      },
+      {
+        "position": 164798,
+        "line": 5830
+      },
+      {
+        "position": 332738,
+        "line": 11469
+      }
+    ],
+    "addItem": [
+      {
+        "position": 151978,
+        "line": 5350
+      },
+      {
+        "position": 165158,
+        "line": 5843
+      },
+      {
+        "position": 333105,
+        "line": 11482
+      }
+    ],
+    "stockTake": [
+      {
+        "position": 152284,
+        "line": 5363
+      },
+      {
+        "position": 165464,
+        "line": 5856
+      },
+      {
+        "position": 333409,
+        "line": 11495
+      }
+    ],
+    "more_subtitle": [
+      {
+        "position": 152657,
+        "line": 5378
+      },
+      {
+        "position": 165837,
+        "line": 5871
+      }
+    ],
+    "share.app": [
+      {
+        "position": 153166,
+        "line": 5391
+      },
+      {
+        "position": 166346,
+        "line": 5884
+      },
+      {
+        "position": 175147,
+        "line": 6235
+      }
+    ],
+    "community_insights": [
+      {
+        "position": 153467,
+        "line": 5404
+      },
+      {
+        "position": 166647,
+        "line": 5897
+      },
+      {
+        "position": 175477,
+        "line": 6250
+      }
+    ],
+    "decision_insights": [
+      {
+        "position": 153878,
+        "line": 5417
+      },
+      {
+        "position": 167058,
+        "line": 5910
+      },
+      {
+        "position": 175888,
+        "line": 6263
+      }
+    ],
+    "beehive_community": [
+      {
+        "position": 154296,
+        "line": 5430
+      },
+      {
+        "position": 167476,
+        "line": 5923
+      },
+      {
+        "position": 176306,
+        "line": 6276
+      }
+    ],
+    "stock": [
+      {
+        "position": 169167,
+        "line": 5994
+      },
+      {
+        "position": 331156,
+        "line": 11417
+      }
+    ],
+    "inventory": [
+      {
+        "position": 169428,
+        "line": 6007
+      },
+      {
+        "position": 333742,
+        "line": 11508
+      },
+      {
+        "position": 380924,
+        "line": 12987
+      }
+    ],
+    "common.difference": [
+      {
+        "position": 178451,
+        "line": 6358
+      },
+      {
+        "position": 245772,
+        "line": 8669
+      }
+    ],
+    "all_good": [
+      {
+        "position": 179037,
+        "line": 6384
+      },
+      {
+        "position": 335547,
+        "line": 11560
+      }
+    ],
+    "no_sales_yet": [
+      {
+        "position": 180164,
+        "line": 6423
+      },
+      {
+        "position": 336333,
+        "line": 11586
+      }
+    ],
+    "record_sale": [
+      {
+        "position": 181190,
+        "line": 6449
+      },
+      {
+        "position": 337356,
+        "line": 11612
+      }
+    ],
+    "quantity": [
+      {
+        "position": 183837,
+        "line": 6553
+      },
+      {
+        "position": 187217,
+        "line": 6683
+      }
+    ],
+    "units": [
+      {
+        "position": 184953,
+        "line": 6592
+      },
+      {
+        "position": 188329,
+        "line": 6722
+      }
+    ],
+    "sell": [
+      {
+        "position": 188579,
+        "line": 6735
+      },
+      {
+        "position": 328187,
+        "line": 11324
+      }
+    ],
+    "sellSubtitle": [
+      {
+        "position": 188814,
+        "line": 6748
+      },
+      {
+        "position": 328422,
+        "line": 11337
+      }
+    ],
+    "retailMode": [
+      {
+        "position": 189464,
+        "line": 6761
+      },
+      {
+        "position": 329042,
+        "line": 11350
+      }
+    ],
+    "allProducts": [
+      {
+        "position": 190169,
+        "line": 6787
+      },
+      {
+        "position": 329407,
+        "line": 11363
+      }
+    ],
+    "credit": [
+      {
+        "position": 194734,
+        "line": 6969
+      },
+      {
+        "position": 382567,
+        "line": 13056
+      }
+    ],
+    "credit.paid": [
+      {
+        "position": 200227,
+        "line": 7151
+      },
+      {
+        "position": 202155,
+        "line": 7229
+      }
+    ],
+    "reports.title": [
+      {
+        "position": 229432,
+        "line": 8019
+      },
+      {
+        "position": 707585,
+        "line": 23851
+      }
+    ],
+    "reports.sales": [
+      {
+        "position": 231233,
+        "line": 8110
+      },
+      {
+        "position": 708565,
+        "line": 23891
+      }
+    ],
+    "reports.expenses": [
+      {
+        "position": 231482,
+        "line": 8123
+      },
+      {
+        "position": 708190,
+        "line": 23875
+      }
+    ],
+    "reports.total_revenue": [
+      {
+        "position": 234121,
+        "line": 8227
+      },
+      {
+        "position": 235956,
+        "line": 8292
+      }
+    ],
+    "reports.customers": [
+      {
+        "position": 235673,
+        "line": 8279
+      },
+      {
+        "position": 708709,
+        "line": 23899
+      }
+    ],
+    "reports.net_profit": [
+      {
+        "position": 236652,
+        "line": 8318
+      },
+      {
+        "position": 708360,
+        "line": 23883
+      }
+    ],
+    "noItemsAdded": [
+      {
+        "position": 240018,
+        "line": 8461
+      },
+      {
+        "position": 329757,
+        "line": 11376
+      }
+    ],
+    "addFirstItemToStart": [
+      {
+        "position": 240446,
+        "line": 8474
+      },
+      {
+        "position": 330170,
+        "line": 11389
+      }
+    ],
+    "trackItems": [
+      {
+        "position": 240993,
+        "line": 8487
+      },
+      {
+        "position": 330804,
+        "line": 11402
+      }
+    ],
+    "retail.settings.tabs.general": [
+      {
+        "position": 280907,
+        "line": 9905
+      },
+      {
+        "position": 323136,
+        "line": 11140
+      }
+    ],
+    "retail.settings.tabs.payments": [
+      {
+        "position": 281205,
+        "line": 9918
+      },
+      {
+        "position": 323416,
+        "line": 11153
+      }
+    ],
+    "retail.settings.tabs.inventory": [
+      {
+        "position": 281485,
+        "line": 9931
+      },
+      {
+        "position": 323731,
+        "line": 11166
+      }
+    ],
+    "retail.settings.tabs.receipts": [
+      {
+        "position": 281786,
+        "line": 9944
+      },
+      {
+        "position": 324025,
+        "line": 11179
+      }
+    ],
+    "retail.all_good": [
+      {
+        "position": 325339,
+        "line": 11231
+      },
+      {
+        "position": 337671,
+        "line": 11625
+      }
+    ],
+    "retail.stock_ok": [
+      {
+        "position": 325662,
+        "line": 11244
+      },
+      {
+        "position": 337991,
+        "line": 11638
+      }
+    ],
+    "retail.no_sales_yet": [
+      {
+        "position": 326808,
+        "line": 11283
+      },
+      {
+        "position": 338471,
+        "line": 11651
+      }
+    ],
+    "retail.start_selling_desc": [
+      {
+        "position": 327191,
+        "line": 11296
+      },
+      {
+        "position": 338858,
+        "line": 11664
+      }
+    ],
+    "retail.record_sale": [
+      {
+        "position": 327833,
+        "line": 11309
+      },
+      {
+        "position": 339508,
+        "line": 11677
+      }
+    ],
+    "food.ingredients": [
+      {
+        "position": 384390,
+        "line": 13127
+      },
+      {
+        "position": 391759,
+        "line": 13395
+      }
+    ],
+    "food.no_results": [
+      {
+        "position": 388795,
+        "line": 13291
+      },
+      {
+        "position": 395893,
+        "line": 13525
+      }
+    ],
+    "food.search_menu_items": [
+      {
+        "position": 401978,
+        "line": 13698
+      },
+      {
+        "position": 412416,
+        "line": 14026
+      },
+      {
+        "position": 443214,
+        "line": 15110
+      }
+    ],
+    "food.recent_orders": [
+      {
+        "position": 406911,
+        "line": 13842
+      },
+      {
+        "position": 411725,
+        "line": 14000
+      }
+    ],
+    "food.view_all": [
+      {
+        "position": 407304,
+        "line": 13855
+      },
+      {
+        "position": 412111,
+        "line": 14013
+      }
+    ],
+    "food.quantity": [
+      {
+        "position": 410405,
+        "line": 13948
+      },
+      {
+        "position": 427537,
+        "line": 14500
+      }
+    ],
+    "food.customer_name": [
+      {
+        "position": 410668,
+        "line": 13961
+      },
+      {
+        "position": 437089,
+        "line": 14863
+      }
+    ],
+    "salon.title": [
+      {
+        "position": 429324,
+        "line": 14567
+      },
+      {
+        "position": 614504,
+        "line": 20637
+      }
+    ],
+    "salon.appointments": [
+      {
+        "position": 429692,
+        "line": 14580
+      },
+      {
+        "position": 616059,
+        "line": 20689
+      },
+      {
+        "position": 640183,
+        "line": 21684
+      }
+    ],
+    "salon.calendar": [
+      {
+        "position": 429982,
+        "line": 14593
+      },
+      {
+        "position": 653699,
+        "line": 22192
+      }
+    ],
+    "salon.clients": [
+      {
+        "position": 430259,
+        "line": 14606
+      },
+      {
+        "position": 615780,
+        "line": 20676
+      },
+      {
+        "position": 660508,
+        "line": 22387
+      }
+    ],
+    "salon.services": [
+      {
+        "position": 430542,
+        "line": 14619
+      },
+      {
+        "position": 616344,
+        "line": 20702
+      }
+    ],
+    "salon.service_amount": [
+      {
+        "position": 430785,
+        "line": 14631
+      },
+      {
+        "position": 616584,
+        "line": 20714
+      }
+    ],
+    "salon.product_cost": [
+      {
+        "position": 431099,
+        "line": 14643
+      },
+      {
+        "position": 616897,
+        "line": 20726
+      }
+    ],
+    "salon.new_appointment": [
+      {
+        "position": 431427,
+        "line": 14655
+      },
+      {
+        "position": 618447,
+        "line": 20790
+      },
+      {
+        "position": 649327,
+        "line": 22024
+      }
+    ],
+    "salon.new_client": [
+      {
+        "position": 431786,
+        "line": 14668
+      },
+      {
+        "position": 627006,
+        "line": 21154
+      }
+    ],
+    "salon.clients_who_owe": [
+      {
+        "position": 432133,
+        "line": 14681
+      },
+      {
+        "position": 618032,
+        "line": 20777
+      }
+    ],
+    "transport.fuel": [
+      {
+        "position": 444816,
+        "line": 15166
+      },
+      {
+        "position": 472899,
+        "line": 16055
+      }
+    ],
+    "transport.maintenance": [
+      {
+        "position": 445077,
+        "line": 15179
+      },
+      {
+        "position": 447532,
+        "line": 15270
+      }
+    ],
+    "transport.new_route": [
+      {
+        "position": 448564,
+        "line": 15309
+      },
+      {
+        "position": 471742,
+        "line": 16003
+      }
+    ],
+    "transport.more.reports_subtitle": [
+      {
+        "position": 448889,
+        "line": 15322
+      },
+      {
+        "position": 465543,
+        "line": 15820
+      }
+    ],
+    "transport.vehicles.subtitle": [
+      {
+        "position": 456695,
+        "line": 15559
+      },
+      {
+        "position": 502627,
+        "line": 17088
+      }
+    ],
+    "transport.dashboard.no_trips_today": [
+      {
+        "position": 494465,
+        "line": 16841
+      },
+      {
+        "position": 498703,
+        "line": 16997
+      }
+    ],
+    "tailor.materials": [
+      {
+        "position": 509670,
+        "line": 17289
+      },
+      {
+        "position": 518974,
+        "line": 17614
+      }
+    ],
+    "repairs.manage_components": [
+      {
+        "position": 549635,
+        "line": 18553
+      },
+      {
+        "position": 561515,
+        "line": 18930
+      }
+    ],
+    "repairs.workshop": [
+      {
+        "position": 564941,
+        "line": 19021
+      },
+      {
+        "position": 575380,
+        "line": 19348
+      }
+    ],
+    "repairs.jobs_workflow": [
+      {
+        "position": 565240,
+        "line": 19034
+      },
+      {
+        "position": 575661,
+        "line": 19361
+      }
+    ],
+    "repairs.active_repairs_history": [
+      {
+        "position": 565655,
+        "line": 19047
+      },
+      {
+        "position": 576072,
+        "line": 19374
+      }
+    ],
+    "repairs.parts_stock": [
+      {
+        "position": 566155,
+        "line": 19060
+      },
+      {
+        "position": 576594,
+        "line": 19387
+      }
+    ],
+    "repairs.inventory_low_stock": [
+      {
+        "position": 566547,
+        "line": 19073
+      },
+      {
+        "position": 576970,
+        "line": 19400
+      }
+    ],
+    "repairs.service_pricing": [
+      {
+        "position": 567028,
+        "line": 19086
+      },
+      {
+        "position": 577433,
+        "line": 19413
+      }
+    ],
+    "repairs.quotes_rates": [
+      {
+        "position": 567396,
+        "line": 19099
+      },
+      {
+        "position": 577796,
+        "line": 19426
+      }
+    ],
+    "repairs.records_devices": [
+      {
+        "position": 567757,
+        "line": 19112
+      },
+      {
+        "position": 578780,
+        "line": 19466
+      }
+    ],
+    "repairs.expense_tracker": [
+      {
+        "position": 568159,
+        "line": 19125
+      },
+      {
+        "position": 579196,
+        "line": 19479
+      }
+    ],
+    "repairs.track_workshop_costs": [
+      {
+        "position": 568540,
+        "line": 19138
+      },
+      {
+        "position": 579577,
+        "line": 19492
+      }
+    ],
+    "repairs.financial_reports": [
+      {
+        "position": 569007,
+        "line": 19151
+      },
+      {
+        "position": 580037,
+        "line": 19505
+      }
+    ],
+    "repairs.revenue_analytics": [
+      {
+        "position": 569402,
+        "line": 19164
+      },
+      {
+        "position": 580440,
+        "line": 19518
+      }
+    ],
+    "repairs.app_language": [
+      {
+        "position": 569798,
+        "line": 19177
+      },
+      {
+        "position": 581163,
+        "line": 19545
+      }
+    ],
+    "repairs.english_swahili_etc": [
+      {
+        "position": 570132,
+        "line": 19190
+      },
+      {
+        "position": 581490,
+        "line": 19558
+      }
+    ],
+    "repairs.business_profile": [
+      {
+        "position": 570616,
+        "line": 19203
+      },
+      {
+        "position": 581967,
+        "line": 19571
+      }
+    ],
+    "repairs.target_tax_settings": [
+      {
+        "position": 571039,
+        "line": 19216
+      },
+      {
+        "position": 582371,
+        "line": 19584
+      }
+    ],
+    "repairs.support": [
+      {
+        "position": 571526,
+        "line": 19229
+      },
+      {
+        "position": 582908,
+        "line": 19598
+      }
+    ],
+    "repairs.decision_insights": [
+      {
+        "position": 571813,
+        "line": 19242
+      },
+      {
+        "position": 583189,
+        "line": 19611
+      }
+    ],
+    "repairs.ai_tips_workshop": [
+      {
+        "position": 572242,
+        "line": 19255
+      },
+      {
+        "position": 583595,
+        "line": 19624
+      }
+    ],
+    "repairs.beehive_community": [
+      {
+        "position": 572757,
+        "line": 19268
+      },
+      {
+        "position": 584141,
+        "line": 19637
+      }
+    ],
+    "repairs.repair_community_tips": [
+      {
+        "position": 573137,
+        "line": 19281
+      },
+      {
+        "position": 584516,
+        "line": 19650
+      }
+    ],
+    "salon.book_appointment": [
+      {
+        "position": 618799,
+        "line": 20803
+      },
+      {
+        "position": 652991,
+        "line": 22166
+      }
+    ],
+    "salon.booking": [
+      {
+        "position": 623819,
+        "line": 21011
+      },
+      {
+        "position": 680918,
+        "line": 22975
+      }
+    ],
+    "salon.email": [
+      {
+        "position": 635501,
+        "line": 21529
+      },
+      {
+        "position": 648085,
+        "line": 21985
+      }
+    ],
+    "salon.clients.new_this_month": [
+      {
+        "position": 642938,
+        "line": 21802
+      },
+      {
+        "position": 661979,
+        "line": 22427
+      }
+    ],
+    "salon.clients.active_loyalty": [
+      {
+        "position": 643342,
+        "line": 21815
+      },
+      {
+        "position": 662392,
+        "line": 22440
+      }
+    ],
+    "salon.clients.customer_directory": [
+      {
+        "position": 643761,
+        "line": 21828
+      },
+      {
+        "position": 662826,
+        "line": 22453
+      }
+    ],
+    "salon.more.analytics_growth": [
+      {
+        "position": 667087,
+        "line": 22559
+      },
+      {
+        "position": 733282,
+        "line": 24819
+      }
+    ],
+    "salon.more.financial_reports": [
+      {
+        "position": 667511,
+        "line": 22572
+      },
+      {
+        "position": 733680,
+        "line": 24832
+      }
+    ],
+    "salon.more.revenue_analytics": [
+      {
+        "position": 667914,
+        "line": 22585
+      },
+      {
+        "position": 734057,
+        "line": 24845
+      }
+    ],
+    "salon.more.staff_performance": [
+      {
+        "position": 668347,
+        "line": 22598
+      },
+      {
+        "position": 734464,
+        "line": 24858
+      }
+    ],
+    "salon.more.commission_stats": [
+      {
+        "position": 668773,
+        "line": 22611
+      },
+      {
+        "position": 734864,
+        "line": 24871
+      }
+    ],
+    "salon.more.operations": [
+      {
+        "position": 669219,
+        "line": 22624
+      },
+      {
+        "position": 735284,
+        "line": 24884
+      }
+    ],
+    "salon.more.expense_tracker": [
+      {
+        "position": 669531,
+        "line": 22637
+      },
+      {
+        "position": 735570,
+        "line": 24897
+      }
+    ],
+    "salon.more.record_business_costs": [
+      {
+        "position": 669958,
+        "line": 22650
+      },
+      {
+        "position": 735971,
+        "line": 24910
+      }
+    ],
+    "salon.more.count_daily_cash": [
+      {
+        "position": 670437,
+        "line": 22663
+      },
+      {
+        "position": 736424,
+        "line": 24923
+      }
+    ],
+    "salon.more.daily_summary_closing": [
+      {
+        "position": 670884,
+        "line": 22676
+      },
+      {
+        "position": 736845,
+        "line": 24936
+      }
+    ],
+    "salon.more.management": [
+      {
+        "position": 671436,
+        "line": 22689
+      },
+      {
+        "position": 737371,
+        "line": 24949
+      }
+    ],
+    "salon.more.service_management": [
+      {
+        "position": 671751,
+        "line": 22702
+      },
+      {
+        "position": 737660,
+        "line": 24962
+      }
+    ],
+    "salon.more.pricing_categories": [
+      {
+        "position": 672167,
+        "line": 22715
+      },
+      {
+        "position": 738050,
+        "line": 24975
+      }
+    ],
+    "salon.more.calendar_settings": [
+      {
+        "position": 672592,
+        "line": 22728
+      },
+      {
+        "position": 738449,
+        "line": 24988
+      }
+    ],
+    "salon.more.availability_booking": [
+      {
+        "position": 673038,
+        "line": 22741
+      },
+      {
+        "position": 738869,
+        "line": 25001
+      }
+    ],
+    "salon.more.product_inventory": [
+      {
+        "position": 673513,
+        "line": 22754
+      },
+      {
+        "position": 739318,
+        "line": 25014
+      }
+    ],
+    "salon.more.sales_alerts": [
+      {
+        "position": 673939,
+        "line": 22767
+      },
+      {
+        "position": 739718,
+        "line": 25027
+      }
+    ],
+    "salon.more.client_database": [
+      {
+        "position": 674367,
+        "line": 22780
+      },
+      {
+        "position": 740120,
+        "line": 25040
+      }
+    ],
+    "salon.more.loyalty_history": [
+      {
+        "position": 674785,
+        "line": 22793
+      },
+      {
+        "position": 740512,
+        "line": 25053
+      }
+    ],
+    "salon.more.system": [
+      {
+        "position": 675243,
+        "line": 22806
+      },
+      {
+        "position": 740944,
+        "line": 25066
+      }
+    ],
+    "salon.more.decision_insights": [
+      {
+        "position": 676035,
+        "line": 22832
+      },
+      {
+        "position": 741212,
+        "line": 25079
+      }
+    ],
+    "salon.more.ai_tips_salon": [
+      {
+        "position": 676470,
+        "line": 22845
+      },
+      {
+        "position": 741621,
+        "line": 25092
+      }
+    ],
+    "salon.more.beehive_community": [
+      {
+        "position": 676999,
+        "line": 22858
+      },
+      {
+        "position": 742124,
+        "line": 25105
+      }
+    ],
+    "salon.more.tips_other_businesses": [
+      {
+        "position": 677404,
+        "line": 22871
+      },
+      {
+        "position": 742503,
+        "line": 25118
+      }
+    ],
+    "salon.more.salon_settings": [
+      {
+        "position": 677983,
+        "line": 22884
+      },
+      {
+        "position": 743056,
+        "line": 25131
+      }
+    ],
+    "salon.more.profile_security": [
+      {
+        "position": 678399,
+        "line": 22897
+      },
+      {
+        "position": 743446,
+        "line": 25144
+      }
+    ],
+    "salon.more.salon_management_tools": [
+      {
+        "position": 678791,
+        "line": 22909
+      },
+      {
+        "position": 743848,
+        "line": 25157
+      }
+    ],
+    "salon.more.todays_revenue": [
+      {
+        "position": 679316,
+        "line": 22922
+      },
+      {
+        "position": 744347,
+        "line": 25170
+      }
+    ],
+    "salon.more.appointments_count": [
+      {
+        "position": 679701,
+        "line": 22935
+      },
+      {
+        "position": 744706,
+        "line": 25183
+      }
+    ],
+    "salon.more.beezee_salon_version": [
+      {
+        "position": 680019,
+        "line": 22948
+      },
+      {
+        "position": 744998,
+        "line": 25196
+      }
+    ],
+    "salon.more.premium_business_os": [
+      {
+        "position": 680461,
+        "line": 22961
+      },
+      {
+        "position": 745414,
+        "line": 25209
+      }
+    ],
+    "freelance.income": [
+      {
+        "position": 762318,
+        "line": 25746
+      },
+      {
+        "position": 775920,
+        "line": 26227
+      },
+      {
+        "position": 788250,
+        "line": 26618
+      }
+    ],
+    "freelance.income_subtitle": [
+      {
+        "position": 762570,
+        "line": 25759
+      },
+      {
+        "position": 776175,
+        "line": 26240
+      },
+      {
+        "position": 788515,
+        "line": 26631
+      }
+    ],
+    "freelance.total_income": [
+      {
+        "position": 763063,
+        "line": 25772
+      },
+      {
+        "position": 776719,
+        "line": 26253
+      },
+      {
+        "position": 788974,
+        "line": 26644
+      }
+    ],
+    "freelance.total_expenses": [
+      {
+        "position": 763400,
+        "line": 25785
+      },
+      {
+        "position": 789350,
+        "line": 26657
+      }
+    ],
+    "freelance.net_income": [
+      {
+        "position": 763749,
+        "line": 25798
+      },
+      {
+        "position": 789732,
+        "line": 26670
+      }
+    ],
+    "freelance.add_income": [
+      {
+        "position": 764080,
+        "line": 25811
+      },
+      {
+        "position": 790090,
+        "line": 26683
+      }
+    ],
+    "freelance.add_expense": [
+      {
+        "position": 764410,
+        "line": 25824
+      },
+      {
+        "position": 790427,
+        "line": 26696
+      }
+    ],
+    "freelance.no_income": [
+      {
+        "position": 764745,
+        "line": 25837
+      },
+      {
+        "position": 790758,
+        "line": 26709
+      }
+    ],
+    "freelance.no_income_desc": [
+      {
+        "position": 765141,
+        "line": 25850
+      },
+      {
+        "position": 791220,
+        "line": 26722
+      }
+    ],
+    "freelance.add_first_income": [
+      {
+        "position": 765720,
+        "line": 25863
+      },
+      {
+        "position": 791871,
+        "line": 26735
+      }
+    ],
+    "freelance.app_language": [
+      {
+        "position": 767127,
+        "line": 25928
+      },
+      {
+        "position": 780768,
+        "line": 26383
+      }
+    ],
+    "freelance.english_swahili_etc": [
+      {
+        "position": 767445,
+        "line": 25941
+      },
+      {
+        "position": 781108,
+        "line": 26396
+      }
+    ],
+    "freelance.business_profile": [
+      {
+        "position": 767900,
+        "line": 25954
+      },
+      {
+        "position": 781584,
+        "line": 26409
+      }
+    ],
+    "freelance.tax_target_settings": [
+      {
+        "position": 768281,
+        "line": 25967
+      },
+      {
+        "position": 781986,
+        "line": 26422
+      }
+    ],
+    "freelance.beehive_community": [
+      {
+        "position": 768777,
+        "line": 25980
+      },
+      {
+        "position": 782486,
+        "line": 26435
+      }
+    ],
+    "freelance.freelancer_community": [
+      {
+        "position": 769187,
+        "line": 25993
+      },
+      {
+        "position": 782865,
+        "line": 26448
+      }
+    ],
+    "freelance.freelance_management_settings": [
+      {
+        "position": 769622,
+        "line": 26006
+      },
+      {
+        "position": 783287,
+        "line": 26461
+      }
+    ],
+    "freelance.search_projects": [
+      {
+        "position": 770165,
+        "line": 26019
+      },
+      {
+        "position": 792816,
+        "line": 26761
+      }
+    ],
+    "freelance.total_value": [
+      {
+        "position": 770529,
+        "line": 26032
+      },
+      {
+        "position": 793195,
+        "line": 26774
+      }
+    ],
+    "freelance.completed_projects": [
+      {
+        "position": 770859,
+        "line": 26045
+      },
+      {
+        "position": 793563,
+        "line": 26787
+      }
+    ],
+    "freelance.no_clients": [
+      {
+        "position": 771239,
+        "line": 26058
+      },
+      {
+        "position": 785764,
+        "line": 26539
+      }
+    ],
+    "freelance.no_clients_desc": [
+      {
+        "position": 771618,
+        "line": 26071
+      },
+      {
+        "position": 786153,
+        "line": 26552
+      }
+    ],
+    "freelance.add_first_client": [
+      {
+        "position": 772209,
+        "line": 26084
+      },
+      {
+        "position": 786741,
+        "line": 26565
+      }
+    ],
+    "freelance.search_clients": [
+      {
+        "position": 772691,
+        "line": 26097
+      },
+      {
+        "position": 784960,
+        "line": 26513
+      }
+    ],
+    "freelance.total_outstanding": [
+      {
+        "position": 773068,
+        "line": 26110
+      },
+      {
+        "position": 785351,
+        "line": 26526
+      }
+    ],
+    "freelance.overdue": [
+      {
+        "position": 773507,
+        "line": 26123
+      },
+      {
+        "position": 787219,
+        "line": 26578
+      }
+    ],
+    "freelance.due_tomorrow": [
+      {
+        "position": 773797,
+        "line": 26136
+      },
+      {
+        "position": 787537,
+        "line": 26591
+      }
+    ],
+    "freelance.last_project": [
+      {
+        "position": 774116,
+        "line": 26149
+      },
+      {
+        "position": 787891,
+        "line": 26605
+      }
+    ],
+    "freelance.active": [
+      {
+        "position": 774473,
+        "line": 26162
+      },
+      {
+        "position": 793954,
+        "line": 26800
+      }
+    ],
+    "freelance.completed": [
+      {
+        "position": 774745,
+        "line": 26175
+      },
+      {
+        "position": 794237,
+        "line": 26813
+      }
+    ],
+    "freelance.on_hold": [
+      {
+        "position": 775018,
+        "line": 26188
+      },
+      {
+        "position": 794519,
+        "line": 26826
+      }
+    ],
+    "freelance.due_date": [
+      {
+        "position": 775300,
+        "line": 26201
+      },
+      {
+        "position": 794805,
+        "line": 26839
+      }
+    ],
+    "freelance.progress": [
+      {
+        "position": 775645,
+        "line": 26214
+      },
+      {
+        "position": 795130,
+        "line": 26852
+      }
+    ]
+  },
+  "unusedKeys": [
+    "about",
+    "active_loyalty",
+    "addFirstItemToStart",
+    "addItem",
+    "addItemButton",
+    "addItemModalTitle",
+    "addSupplier",
+    "add_item_modal_title",
+    "add_stock",
+    "alertWhenBelow",
+    "alert_when_below",
+    "allProducts",
+    "all_good",
+    "amountPaid",
+    "any_preferences_or_allergies",
+    "any_special_requests_notes",
+    "appDescription",
+    "appSettings",
+    "appearance",
+    "appointments_count",
+    "available",
+    "balanceDue",
+    "beehive_community",
+    "beezee_salon_version",
+    "bookings",
+    "cancel",
+    "capacity",
+    "cash",
+    "clearSale",
+    "clients_title",
+    "community_insights",
+    "completeSale",
+    "configurePaymentMethods",
+    "configureReceiptSettings",
+    "confirm",
+    "costPrice",
+    "currentSale",
+    "current_version",
+    "customer_directory",
+    "customer_name",
+    "customizeAppExperience",
+    "daily_profit",
+    "dashboard",
+    "day_view",
+    "days",
+    "decision_insights",
+    "difference",
+    "dueDate",
+    "due_date",
+    "each",
+    "english_swahili_etc",
+    "enterBusinessName",
+    "enterEmail",
+    "enterFullName",
+    "enterItemName",
+    "enterPhone",
+    "enter_email_address",
+    "enter_full_name",
+    "enter_item_name",
+    "enter_phone_number",
+    "enter_short_address",
+    "finishLater",
+    "for_customer",
+    "found",
+    "fullCashPaymentConfirmed",
+    "helpSupport",
+    "inStock",
+    "inventory",
+    "inventoryEmptyDescription",
+    "inventoryNotifications",
+    "inventoryNotificationsDescription",
+    "itemName",
+    "items",
+    "language",
+    "languageRegion",
+    "last_visit",
+    "later",
+    "lowStockAlert",
+    "low_stock_alert",
+    "manage",
+    "manageBusinessInfo",
+    "manageInventorySettings",
+    "manageNotificationPreferences",
+    "mark_as_paid",
+    "max_payment",
+    "min",
+    "modal",
+    "month_view",
+    "more_subtitle",
+    "new_appointment",
+    "new_client",
+    "new_this_month",
+    "new_version",
+    "nextWeek",
+    "noItemsAdded",
+    "noItemsYet",
+    "noResults",
+    "no_sales_yet",
+    "notifications",
+    "original_amount",
+    "overdue_by",
+    "paid",
+    "paidThisWeek",
+    "paid_so_far",
+    "partial",
+    "payment",
+    "paymentNotifications",
+    "paymentNotificationsDescription",
+    "payment_amount",
+    "payment_recorded",
+    "payment_success_message",
+    "phone_number_input",
+    "pieces",
+    "premium_business_os",
+    "privacySecurity",
+    "processing",
+    "quickActions",
+    "quickItems",
+    "quick_add",
+    "record_partial_payment",
+    "record_payment",
+    "record_sale",
+    "remaining_balance",
+    "reminder_24h",
+    "reportNotifications",
+    "reportNotificationsDescription",
+    "reports",
+    "resetDefaults",
+    "retailMode",
+    "runningLowLabel",
+    "salesNotifications",
+    "salesNotificationsDescription",
+    "salon_management_tools",
+    "saveNotifications",
+    "saveSettings",
+    "saving",
+    "searchCustomers",
+    "searchItems",
+    "search_appointments",
+    "search_by_name_or_phone",
+    "select_date_time",
+    "select_service",
+    "sellSubtitle",
+    "sellingPrice",
+    "service_braiding",
+    "service_braiding_option",
+    "service_color",
+    "service_color_option",
+    "service_haircut",
+    "service_haircut_option",
+    "service_shave",
+    "service_shave_option",
+    "service_treatment",
+    "service_treatment_option",
+    "services_count",
+    "start_recording_sales",
+    "start_selling_desc",
+    "stockSubtitle",
+    "stockTake",
+    "stockTakeCounting",
+    "stockTakeModeTitle",
+    "stockTakeNewCount",
+    "stockTakePrevious",
+    "stockTakeSaveAndNext",
+    "stockTakeSkip",
+    "stock_levels_healthy",
+    "stock_ok",
+    "supplierDebt",
+    "systemNotifications",
+    "systemNotificationsDescription",
+    "termsConditions",
+    "thisWeek",
+    "today",
+    "todays_revenue",
+    "tomorrow",
+    "total",
+    "totalProducts",
+    "totalYouOwe",
+    "total_customers",
+    "total_value",
+    "trackFleet",
+    "trackItems",
+    "tryDifferentSearch",
+    "units",
+    "update_available",
+    "update_description",
+    "update_now",
+    "updating",
+    "viewMore",
+    "view_all_history",
+    "view_appointment",
+    "view_day",
+    "view_list",
+    "view_month",
+    "view_week",
+    "week_view"
+  ],
+  "missingKeys": [
+    " ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}",
+    "${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}",
+    "${industry}.daily_target",
+    "*",
+    "+",
+    ",",
+    "-",
+    "100",
+    "100.50",
+    "2d",
+    ":",
+    "@/components/PWAInstallPrompt",
+    "@/components/universal/AddCustomerModal",
+    "@/components/universal/AddInventoryForm",
+    "@/components/universal/AppointmentList",
+    "@/components/universal/BottomNav",
+    "@/components/universal/BuzzInsights",
+    "@/components/universal/ConnectionToast",
+    "@/components/universal/CustomerList",
+    "@/components/universal/EditServiceModal",
+    "@/components/universal/ScrollToTop",
+    "@/components/universal/ServiceList",
+    "@/lib/cleanup-bad-operations",
+    "@/lib/sync-manager",
+    "Access-Control-Allow-Credentials",
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Methods",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Max-Age",
+    "Authorization",
+    "Cache-Control",
+    "Content-Length",
+    "Content-Type",
+    "Retry-After",
+    "T",
+    "X-Offline",
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
+    "X-RateLimit-Reset",
+    "XSS",
+    "_",
+    "a",
+    "abc",
+    "admin_session",
+    "alert.failed_expense",
+    "alert.failed_transaction",
+    "alert.setup_profile_first",
+    "alert.setup_profile_first_expenses",
+    "amount",
+    "app.balance",
+    "app.book",
+    "app.coach_analysis",
+    "app.demo",
+    "app.executive_tools",
+    "app.greeting",
+    "app.name",
+    "app.scan",
+    "app.voice",
+    "appointments.add_appointment",
+    "appointments.add_appointment_short",
+    "appointments.adjust_filters",
+    "appointments.all_changes_saved",
+    "appointments.all_day",
+    "appointments.all_statuses",
+    "appointments.am",
+    "appointments.at_time",
+    "appointments.back",
+    "appointments.book_first",
+    "appointments.calendar_view",
+    "appointments.cancel_appointment",
+    "appointments.cancel_confirm",
+    "appointments.cancel_error",
+    "appointments.cancel_reason",
+    "appointments.cancel_success",
+    "appointments.cancelled",
+    "appointments.changes_remaining",
+    "appointments.close",
+    "appointments.complete",
+    "appointments.complete_error",
+    "appointments.complete_success",
+    "appointments.completed",
+    "appointments.confirm_cancel",
+    "appointments.confirmed",
+    "appointments.create_error",
+    "appointments.create_success",
+    "appointments.creating",
+    "appointments.customer",
+    "appointments.customer_contact",
+    "appointments.customer_name_min_length",
+    "appointments.customer_name_required",
+    "appointments.data_up_to_date",
+    "appointments.date",
+    "appointments.date_past",
+    "appointments.date_required",
+    "appointments.date_time",
+    "appointments.delete",
+    "appointments.delete_appointment",
+    "appointments.delete_confirm",
+    "appointments.delete_error",
+    "appointments.delete_success",
+    "appointments.details",
+    "appointments.details_title",
+    "appointments.duration",
+    "appointments.end_time_after_start",
+    "appointments.end_time_label",
+    "appointments.end_time_required",
+    "appointments.enter_customer_name",
+    "appointments.error.date_required",
+    "appointments.fix_form_errors",
+    "appointments.fri",
+    "appointments.get_started",
+    "appointments.has_appointments",
+    "appointments.list_view",
+    "appointments.loading",
+    "appointments.locale",
+    "appointments.manage_appointments",
+    "appointments.manage_schedule",
+    "appointments.mark_completed",
+    "appointments.minutes",
+    "appointments.mon",
+    "appointments.next_month",
+    "appointments.no_appointments",
+    "appointments.no_appointments_found",
+    "appointments.no_business_info",
+    "appointments.no_customer",
+    "appointments.no_services",
+    "appointments.no_show",
+    "appointments.notes",
+    "appointments.notes_label",
+    "appointments.notes_placeholder",
+    "appointments.offline_mode",
+    "appointments.pending",
+    "appointments.pending_changes",
+    "appointments.pending_sync",
+    "appointments.phone_number_optional",
+    "appointments.pm",
+    "appointments.previous_month",
+    "appointments.price",
+    "appointments.provide_cancel_reason",
+    "appointments.sat",
+    "appointments.scheduled",
+    "appointments.search_placeholder",
+    "appointments.service",
+    "appointments.service_label",
+    "appointments.service_required",
+    "appointments.start_time_label",
+    "appointments.start_time_required",
+    "appointments.status",
+    "appointments.sun",
+    "appointments.sync_error",
+    "appointments.sync_now",
+    "appointments.sync_status",
+    "appointments.synced",
+    "appointments.syncing",
+    "appointments.thu",
+    "appointments.title",
+    "appointments.today_button",
+    "appointments.today_count",
+    "appointments.tue",
+    "appointments.untitled",
+    "appointments.upcoming",
+    "appointments.upcoming_appointments",
+    "appointments.updating_data",
+    "appointments.view_details",
+    "appointments.waiting_to_sync",
+    "appointments.wed",
+    "auth.sign_out",
+    "auth.welcome_back",
+    "bcrypt",
+    "beehive.add_comment",
+    "beehive.add_first_request",
+    "beehive.add_modal_title",
+    "beehive.add_request",
+    "beehive.all",
+    "beehive.bug_fix",
+    "beehive.bug_fixes",
+    "beehive.comments",
+    "beehive.community_member",
+    "beehive.completed",
+    "beehive.delete_confirm",
+    "beehive.delete_confirm_message",
+    "beehive.description",
+    "beehive.description_placeholder",
+    "beehive.edit_modal_title",
+    "beehive.error_description_min",
+    "beehive.error_description_required",
+    "beehive.error_title_min",
+    "beehive.error_title_required",
+    "beehive.improvement",
+    "beehive.improvements",
+    "beehive.in_progress",
+    "beehive.integration",
+    "beehive.integrations",
+    "beehive.new_feature",
+    "beehive.new_features",
+    "beehive.no_comments",
+    "beehive.no_requests",
+    "beehive.no_requests_description",
+    "beehive.priority",
+    "beehive.search_placeholder",
+    "beehive.title",
+    "beehive.title_placeholder",
+    "beehive.total_requests",
+    "beezee_unified_auth",
+    "business.auth_user",
+    "business.business_status",
+    "business.default_name",
+    "business.not_authenticated",
+    "business.setup_message",
+    "business.setup_required",
+    "business.suppliers",
+    "business_id",
+    "buzz.avg_overdue",
+    "buzz.credit_summary",
+    "buzz.daily_cash_summary",
+    "buzz.follow_up_needed",
+    "buzz.great_momentum",
+    "buzz.inventory_summary",
+    "buzz.left",
+    "buzz.low_stock",
+    "buzz.money_in",
+    "buzz.money_out",
+    "buzz.overdue",
+    "buzz.overdue_payments",
+    "buzz.popular_service",
+    "buzz.profit",
+    "buzz.profitable_area",
+    "buzz.restock_reminder",
+    "buzz.sold",
+    "buzz.title",
+    "buzz.top_seller",
+    "buzz.total_owed",
+    "buzz.transport_performance",
+    "buzz.view_details",
+    "calendar.add_appointment",
+    "calendar.book_appointment",
+    "calendar.complete_success",
+    "calendar.create_error",
+    "calendar.customer_contact",
+    "calendar.customer_contact_placeholder",
+    "calendar.customer_name_placeholder",
+    "calendar.date",
+    "calendar.end_time",
+    "calendar.error.end_time_required",
+    "calendar.error.no_business",
+    "calendar.error.service_required",
+    "calendar.error.start_time_required",
+    "calendar.notes",
+    "calendar.notes_placeholder",
+    "calendar.select_time",
+    "calendar.start_time",
+    "canvas",
+    "cash.all",
+    "cash.in",
+    "cash.money_in",
+    "cash.money_out",
+    "cash.no_cash_activity_found",
+    "cash.out",
+    "cash.profit",
+    "cash.recent_activity",
+    "cash.search_cash_flow",
+    "cash.start_by_recording_first_transaction",
+    "comments_count",
+    "common.add",
+    "common.all",
+    "common.appointments",
+    "common.avg_price",
+    "common.back",
+    "common.copied",
+    "common.copy",
+    "common.copy_to_clipboard",
+    "common.country",
+    "common.customer",
+    "common.delete",
+    "common.delete_appointment",
+    "common.delete_confirm",
+    "common.delete_inventory",
+    "common.delete_service",
+    "common.description",
+    "common.description_optional",
+    "common.description_placeholder_money_in",
+    "common.edit",
+    "common.email_address",
+    "common.industry",
+    "common.loading",
+    "common.money_in",
+    "common.money_out",
+    "common.next",
+    "common.no_upcoming_appointments",
+    "common.optional",
+    "common.payment_due_note",
+    "common.previous",
+    "common.save",
+    "common.schedule_first_appointment",
+    "common.send",
+    "common.submit",
+    "common.submitting",
+    "common.success",
+    "common.suppliers",
+    "common.to_go",
+    "common.total_amount",
+    "common.total_service_value",
+    "common.transaction",
+    "common.view_all",
+    "common.yesterday",
+    "country",
+    "country.current",
+    "credit.account_paid_in_full",
+    "credit.active_credits",
+    "credit.add_credit",
+    "credit.add_credit_customer",
+    "credit.add_customer",
+    "credit.add_first",
+    "credit.add_new_credit",
+    "credit.add_new_vendor",
+    "credit.add_personal_credit",
+    "credit.adding",
+    "credit.all",
+    "credit.all_customers",
+    "credit.amount",
+    "credit.amount_owed",
+    "credit.amount_paid",
+    "credit.costs",
+    "credit.credit_added_successfully",
+    "credit.credit_purchase",
+    "credit.credit_purchases",
+    "credit.customers",
+    "credit.customers_tab",
+    "credit.date_given",
+    "credit.days_overdue",
+    "credit.description",
+    "credit.description_placeholder",
+    "credit.due",
+    "credit.failed_to_add_item",
+    "credit.fifo_payment_note",
+    "credit.hide_history",
+    "credit.initial_credit",
+    "credit.invalid_payment_amount",
+    "credit.no_costs_found",
+    "credit.no_credit_customers_found",
+    "credit.no_customers",
+    "credit.no_line_items",
+    "credit.no_outstanding",
+    "credit.no_outstanding_balance",
+    "credit.outstanding",
+    "credit.outstanding_amount",
+    "credit.overdue",
+    "credit.paid_amount",
+    "credit.payment_failed",
+    "credit.payment_history",
+    "credit.payment_request",
+    "credit.personal_tab",
+    "credit.remaining",
+    "credit.reminder_from",
+    "credit.search_customers",
+    "credit.select_vendor_error",
+    "credit.select_vendor_placeholder",
+    "credit.share_credit_details",
+    "credit.share_via_whatsapp",
+    "credit.show_history",
+    "credit.start_by_adding_first_customer",
+    "credit.suppliers",
+    "credit.total_amount",
+    "credit.total_owed",
+    "credit.total_owed_to_you",
+    "credit.total_you_owe",
+    "credit.who_do_you_owe",
+    "daily_target",
+    "div",
+    "enter_category",
+    "error.no_business_id",
+    "expense_tracker.other",
+    "filter.all",
+    "footer.help",
+    "footer.privacy",
+    "footer.terms",
+    "from",
+    "help.all_categories",
+    "help.backup_data",
+    "help.call_support",
+    "help.comprehensive_guide",
+    "help.contact_support",
+    "help.description",
+    "help.download_backup",
+    "help.faq1_question",
+    "help.faq2_question",
+    "help.faq3_answer",
+    "help.faq3_question",
+    "help.faq4_answer",
+    "help.faq4_question",
+    "help.features",
+    "help.frequently_asked",
+    "help.getting_started",
+    "help.message",
+    "help.resources",
+    "help.search_placeholder",
+    "help.send_message",
+    "help.start_tour",
+    "help.subject",
+    "help.title",
+    "help.troubleshooting",
+    "help.tutorials",
+    "help.user_guide",
+    "help.your_email",
+    "help.your_name",
+    "hero.get_started",
+    "http://localhost:3000/api/test",
+    "id",
+    "industry",
+    "inventory.add_error",
+    "inventory.add_item",
+    "inventory.add_new_item",
+    "inventory.boxes",
+    "inventory.delete_error",
+    "inventory.delete_item",
+    "inventory.delete_offline_item",
+    "inventory.edit_error",
+    "inventory.edit_item",
+    "inventory.enter_category",
+    "inventory.example_fuel",
+    "inventory.example_headphones",
+    "inventory.example_item",
+    "inventory.example_price",
+    "inventory.example_quantity",
+    "inventory.example_software",
+    "inventory.example_threshold",
+    "inventory.example_vegetables",
+    "inventory.kg",
+    "inventory.left",
+    "inventory.liters",
+    "inventory.low_stock",
+    "inventory.meters",
+    "inventory.min_stock",
+    "inventory.no_items",
+    "inventory.reorder_soon",
+    "inventory.running_low",
+    "inventory.search_items",
+    "inventory.select_unit",
+    "inventory.sell_error",
+    "inventory.supplier",
+    "inventory.supplier_name",
+    "inventory.total_items",
+    "inventory.total_qty",
+    "inventory.total_stock_value",
+    "inventory.unit",
+    "language.select",
+    "limit",
+    "limit_multiplier",
+    "message_path",
+    "modal.close",
+    "modal.early_access_description",
+    "modal.gain_access",
+    "modal.join_waitlist",
+    "modal.maybe_later",
+    "modal.request_access",
+    "modal.system_status",
+    "more.beehive_description",
+    "more.business_tools",
+    "more.community_support",
+    "more.member_since",
+    "more.reports_description",
+    "more.settings",
+    "more.settings_description",
+    "more.share_app",
+    "more.share_app_message",
+    "nav.customers",
+    "nav.home",
+    "nav.more",
+    "nav.system_status",
+    "nav.transactions",
+    "origin",
+    "payment.record_payment_made",
+    "payment.total_you_owe",
+    "payment_method.title",
+    "pwa.add_to_home",
+    "pwa.install_description",
+    "pwa.install_title",
+    "receipt.amount",
+    "receipt.copied",
+    "receipt.copy",
+    "receipt.customer",
+    "receipt.date",
+    "receipt.description",
+    "receipt.enter_phone",
+    "receipt.error_phone_invalid",
+    "receipt.error_phone_required",
+    "receipt.payment_method",
+    "receipt.phone_hint",
+    "receipt.phone_label",
+    "receipt.receipt_from",
+    "receipt.share_receipt",
+    "receipt.share_whatsapp",
+    "receipt.thank_you",
+    "receipt.title",
+    "receipt.transaction_id",
+    "receipt.view_details",
+    "redirect",
+    "reference",
+    "refresh.data_refreshed",
+    "refresh.refresh_failed",
+    "repairs.try_adjusting",
+    "reports.achievement",
+    "reports.active_services",
+    "reports.average_credit",
+    "reports.avg_per_customer",
+    "reports.avg_purchases",
+    "reports.avg_revenue_per_service",
+    "reports.best_day",
+    "reports.customer_frequency",
+    "reports.customer_summary",
+    "reports.customers",
+    "reports.daily_history_info",
+    "reports.daily_performance",
+    "reports.date",
+    "reports.days_target_met",
+    "reports.expense_categories",
+    "reports.expenses",
+    "reports.expenses_breakdown",
+    "reports.export",
+    "reports.inventory_summary",
+    "reports.inventory_value",
+    "reports.last_30_days",
+    "reports.low_stock",
+    "reports.met",
+    "reports.net_profit",
+    "reports.no_daily_history",
+    "reports.not_met",
+    "reports.out_of",
+    "reports.outstanding",
+    "reports.outstanding_balance",
+    "reports.overall_achievement",
+    "reports.overview",
+    "reports.payment_methods",
+    "reports.peak_times",
+    "reports.period_sales",
+    "reports.profit_margin",
+    "reports.repeat_rate",
+    "reports.sales",
+    "reports.sales_performance",
+    "reports.service_performance",
+    "reports.services_summary",
+    "reports.sold",
+    "reports.status",
+    "reports.stock_turnover",
+    "reports.success_rate",
+    "reports.target",
+    "reports.title",
+    "reports.top_categories",
+    "reports.top_sellers",
+    "reports.top_services",
+    "reports.total_expenses",
+    "reports.total_expenses_period",
+    "reports.total_items",
+    "reports.total_owed",
+    "reports.total_revenue",
+    "reports.total_services",
+    "reports.total_transactions",
+    "reports.transactions",
+    "reports.turnover_rate",
+    "reports.unique_customers",
+    "response_data",
+    "retail.inventory.min_stock",
+    "services.active",
+    "services.add_error",
+    "services.add_first",
+    "services.add_inventory_item",
+    "services.add_service",
+    "services.base_km_pricing",
+    "services.business_load_error",
+    "services.confirm_delete_inventory",
+    "services.confirm_delete_permanently",
+    "services.confirm_delete_service",
+    "services.delete_error",
+    "services.delete_service",
+    "services.describe_service",
+    "services.description",
+    "services.duration_minutes",
+    "services.edit_service",
+    "services.enter_category",
+    "services.enter_service_name",
+    "services.inventory_tab",
+    "services.low_stock",
+    "services.no_inventory_found",
+    "services.no_services",
+    "services.no_services_found",
+    "services.price",
+    "services.products_need_restock",
+    "services.running_low",
+    "services.sale_failed",
+    "services.search_services",
+    "services.service",
+    "services.service_name",
+    "services.services_tab",
+    "services.start_by_adding_first_item",
+    "services.start_by_adding_first_service",
+    "services.total_services",
+    "services.transport_offline_mode",
+    "services.trip_failed",
+    "services.update_error",
+    "services.update_service",
+    "services.update_success",
+    "settings.2fa_desc",
+    "settings.account_info",
+    "settings.auto_backup",
+    "settings.backup_desc",
+    "settings.business",
+    "settings.cache_desc",
+    "settings.change_password",
+    "settings.clear",
+    "settings.clear_cache",
+    "settings.compact_desc",
+    "settings.compact_view",
+    "settings.confirm_password",
+    "settings.country",
+    "settings.currency_desc",
+    "settings.current_password",
+    "settings.dark_desc",
+    "settings.dark_mode",
+    "settings.data_storage",
+    "settings.edit_profile",
+    "settings.email",
+    "settings.export",
+    "settings.export_data",
+    "settings.export_desc",
+    "settings.general",
+    "settings.industry",
+    "settings.language_desc",
+    "settings.low_stock_alerts",
+    "settings.new_password",
+    "settings.password_desc",
+    "settings.phone",
+    "settings.privacy",
+    "settings.privacy_desc",
+    "settings.profile",
+    "settings.profile_desc",
+    "settings.push_desc",
+    "settings.push_notifications",
+    "settings.reset_account",
+    "settings.reset_desc",
+    "settings.security",
+    "settings.sound_desc",
+    "settings.sound_effects",
+    "settings.stock_desc",
+    "settings.sync_data",
+    "settings.sync_desc",
+    "settings.title",
+    "settings.two_factor",
+    "settings.update_password",
+    "severity",
+    "staff_performance.target_met",
+    "style",
+    "textarea",
+    "time.d",
+    "time.h",
+    "time.just_now",
+    "time.m",
+    "timeWindow",
+    "to",
+    "tour.add_appointment",
+    "tour.add_appointment_description",
+    "tour.add_ingredient",
+    "tour.add_ingredient_description",
+    "tour.add_product",
+    "tour.add_product_description",
+    "tour.add_service",
+    "tour.add_service_description",
+    "tour.add_transactions",
+    "tour.beehive_description",
+    "tour.business_reports",
+    "tour.business_settings",
+    "tour.buzz_description",
+    "tour.buzz_insights",
+    "tour.calendar_description",
+    "tour.cash_flow_description",
+    "tour.cash_management",
+    "tour.complete_tour",
+    "tour.completed",
+    "tour.credit_description",
+    "tour.credit_management",
+    "tour.credit_preview",
+    "tour.credit_preview_description",
+    "tour.credit_sales_description",
+    "tour.customers_description",
+    "tour.customers_title",
+    "tour.daily_goal_description",
+    "tour.daily_target",
+    "tour.dashboard_description",
+    "tour.finish",
+    "tour.get_started",
+    "tour.got_it",
+    "tour.history_description",
+    "tour.home_dashboard",
+    "tour.ingredients_description",
+    "tour.inventory_description",
+    "tour.inventory_management",
+    "tour.inventory_preview",
+    "tour.inventory_preview_description",
+    "tour.inventory_title",
+    "tour.jobs_description",
+    "tour.join_community",
+    "tour.manage_calendar",
+    "tour.manage_customer_credit",
+    "tour.manage_ingredients",
+    "tour.manage_inventory",
+    "tour.manage_jobs",
+    "tour.manage_projects",
+    "tour.manage_services",
+    "tour.manage_trips",
+    "tour.modal_title",
+    "tour.money_buttons",
+    "tour.money_description",
+    "tour.more_business_tools",
+    "tour.more_options",
+    "tour.more_tools_description",
+    "tour.navigation_description",
+    "tour.navigation_guide",
+    "tour.next",
+    "tour.of",
+    "tour.page",
+    "tour.pause",
+    "tour.payments_description",
+    "tour.play",
+    "tour.previous",
+    "tour.projects_description",
+    "tour.quick_add_money",
+    "tour.quick_links",
+    "tour.record_credit_sales",
+    "tour.reports_description",
+    "tour.reports_title",
+    "tour.sales_analytics",
+    "tour.sales_description",
+    "tour.services_description",
+    "tour.services_management",
+    "tour.set_daily_goal",
+    "tour.settings_description",
+    "tour.settings_title",
+    "tour.share_description",
+    "tour.share_insights",
+    "tour.skip",
+    "tour.step",
+    "tour.stock_alerts",
+    "tour.stock_alerts_description",
+    "tour.target_description",
+    "tour.track_cash_flow",
+    "tour.track_payments",
+    "tour.transaction_history",
+    "tour.transactions_description",
+    "tour.transactions_title",
+    "tour.trips_description",
+    "tour.view_reports",
+    "tour.welcome_dashboard",
+    "tour.welcome_title",
+    "transaction.save",
+    "transactions.no_found",
+    "transactions.search_placeholder",
+    "transactions.start_first",
+    "transport.base_amount_only",
+    "transport.calculated_fare",
+    "transport.distance",
+    "transport.distance_km",
+    "transport.rate",
+    "transport.tips",
+    "transport.tips_optional",
+    "transport.use_base_amount",
+    "type",
+    "usd_price",
+    "x-forwarded-for",
+    "x-kyshi-signature",
+    "x-real-ip",
+    "x-startbutton-signature",
+    "x-user-id",
+    "xss"
+  ],
+  "usedKeys": [
+    "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id\n      ",
+    "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id,\n        security_answer_1_hash\n      ",
+    " ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}",
+    "${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}",
+    "${industry}.daily_target",
+    "*",
+    "+",
+    ",",
+    "-",
+    ".",
+    "100",
+    "100.50",
+    "2d",
+    ":",
+    "@/components/PWAInstallPrompt",
+    "@/components/universal/AddCustomerModal",
+    "@/components/universal/AddInventoryForm",
+    "@/components/universal/AppointmentList",
+    "@/components/universal/BottomNav",
+    "@/components/universal/BuzzInsights",
+    "@/components/universal/ConnectionToast",
+    "@/components/universal/CustomerList",
+    "@/components/universal/EditServiceModal",
+    "@/components/universal/ScrollToTop",
+    "@/components/universal/ServiceList",
+    "@/lib/cleanup-bad-operations",
+    "@/lib/sync-manager",
+    "Access-Control-Allow-Credentials",
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Methods",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Max-Age",
+    "Account has been reset successfully. All data cleared.",
+    "Authorization",
+    "Business ID not found",
+    "Cache-Control",
+    "Content-Length",
+    "Content-Type",
+    "Customer name is required for credit payment",
+    "Error updating profile. Please try again.",
+    "Failed to reset account. Please try again.",
+    "Failed to update item. Please try again.",
+    "Passwords do not match",
+    "Please select who you owe money to or enter a new name",
+    "Profile updated successfully!",
+    "Retry-After",
+    "T",
+    "X-Offline",
+    "X-RateLimit-Limit",
+    "X-RateLimit-Remaining",
+    "X-RateLimit-Reset",
+    "XSS",
+    "_",
+    "a",
+    "abc",
+    "admin_session",
+    "alert.failed_expense",
+    "alert.failed_transaction",
+    "alert.setup_profile_first",
+    "alert.setup_profile_first_expenses",
+    "amount",
+    "amount, category, created_at",
+    "app.balance",
+    "app.book",
+    "app.coach_analysis",
+    "app.demo",
+    "app.executive_tools",
+    "app.greeting",
+    "app.name",
+    "app.scan",
+    "app.stock",
+    "app.voice",
+    "appointments.add_appointment",
+    "appointments.add_appointment_short",
+    "appointments.adjust_filters",
+    "appointments.all_changes_saved",
+    "appointments.all_day",
+    "appointments.all_statuses",
+    "appointments.am",
+    "appointments.at_time",
+    "appointments.back",
+    "appointments.book_first",
+    "appointments.calendar_view",
+    "appointments.cancel",
+    "appointments.cancel_appointment",
+    "appointments.cancel_confirm",
+    "appointments.cancel_error",
+    "appointments.cancel_reason",
+    "appointments.cancel_success",
+    "appointments.cancelled",
+    "appointments.changes_remaining",
+    "appointments.close",
+    "appointments.complete",
+    "appointments.complete_error",
+    "appointments.complete_success",
+    "appointments.completed",
+    "appointments.confirm_cancel",
+    "appointments.confirmed",
+    "appointments.create_error",
+    "appointments.create_success",
+    "appointments.creating",
+    "appointments.customer",
+    "appointments.customer_contact",
+    "appointments.customer_name",
+    "appointments.customer_name_min_length",
+    "appointments.customer_name_required",
+    "appointments.data_up_to_date",
+    "appointments.date",
+    "appointments.date_past",
+    "appointments.date_required",
+    "appointments.date_time",
+    "appointments.delete",
+    "appointments.delete_appointment",
+    "appointments.delete_confirm",
+    "appointments.delete_error",
+    "appointments.delete_success",
+    "appointments.details",
+    "appointments.details_title",
+    "appointments.duration",
+    "appointments.end_time_after_start",
+    "appointments.end_time_label",
+    "appointments.end_time_required",
+    "appointments.enter_customer_name",
+    "appointments.error.customer_name",
+    "appointments.error.date_required",
+    "appointments.fix_form_errors",
+    "appointments.fri",
+    "appointments.get_started",
+    "appointments.has_appointments",
+    "appointments.list_view",
+    "appointments.loading",
+    "appointments.locale",
+    "appointments.manage_appointments",
+    "appointments.manage_schedule",
+    "appointments.mark_completed",
+    "appointments.minutes",
+    "appointments.mon",
+    "appointments.next_month",
+    "appointments.no_appointments",
+    "appointments.no_appointments_found",
+    "appointments.no_business_info",
+    "appointments.no_customer",
+    "appointments.no_services",
+    "appointments.no_show",
+    "appointments.notes",
+    "appointments.notes_label",
+    "appointments.notes_placeholder",
+    "appointments.offline_mode",
+    "appointments.pending",
+    "appointments.pending_changes",
+    "appointments.pending_sync",
+    "appointments.phone_number_optional",
+    "appointments.pm",
+    "appointments.previous_month",
+    "appointments.price",
+    "appointments.provide_cancel_reason",
+    "appointments.sat",
+    "appointments.scheduled",
+    "appointments.search_placeholder",
+    "appointments.select_service",
+    "appointments.service",
+    "appointments.service_label",
+    "appointments.service_required",
+    "appointments.start_time_label",
+    "appointments.start_time_required",
+    "appointments.status",
+    "appointments.sun",
+    "appointments.sync_error",
+    "appointments.sync_now",
+    "appointments.sync_status",
+    "appointments.synced",
+    "appointments.syncing",
+    "appointments.thu",
+    "appointments.title",
+    "appointments.today",
+    "appointments.today_button",
+    "appointments.today_count",
+    "appointments.tue",
+    "appointments.untitled",
+    "appointments.upcoming",
+    "appointments.upcoming_appointments",
+    "appointments.updating_data",
+    "appointments.view_details",
+    "appointments.waiting_to_sync",
+    "appointments.wed",
+    "auth.sign_out",
+    "auth.welcome_back",
+    "bcrypt",
+    "beehive.add_comment",
+    "beehive.add_first_request",
+    "beehive.add_modal_title",
+    "beehive.add_request",
+    "beehive.all",
+    "beehive.bug_fix",
+    "beehive.bug_fixes",
+    "beehive.category",
+    "beehive.comments",
+    "beehive.community_member",
+    "beehive.completed",
+    "beehive.delete_confirm",
+    "beehive.delete_confirm_message",
+    "beehive.description",
+    "beehive.description_placeholder",
+    "beehive.edit_modal_title",
+    "beehive.error_description_min",
+    "beehive.error_description_required",
+    "beehive.error_title_min",
+    "beehive.error_title_required",
+    "beehive.improvement",
+    "beehive.improvements",
+    "beehive.in_progress",
+    "beehive.integration",
+    "beehive.integrations",
+    "beehive.new_feature",
+    "beehive.new_features",
+    "beehive.no_comments",
+    "beehive.no_requests",
+    "beehive.no_requests_description",
+    "beehive.priority",
+    "beehive.search_placeholder",
+    "beehive.title",
+    "beehive.title_placeholder",
+    "beehive.total_requests",
+    "beezee_unified_auth",
+    "business.auth_user",
+    "business.business_status",
+    "business.default_name",
+    "business.not_authenticated",
+    "business.setup_message",
+    "business.setup_required",
+    "business.suppliers",
+    "business_id",
+    "business_id, created_at",
+    "business_id, transaction_date",
+    "buzz.avg_overdue",
+    "buzz.credit_summary",
+    "buzz.daily_cash_summary",
+    "buzz.days",
+    "buzz.follow_up_needed",
+    "buzz.great_momentum",
+    "buzz.inventory_summary",
+    "buzz.left",
+    "buzz.low_stock",
+    "buzz.low_stock_alert",
+    "buzz.money_in",
+    "buzz.money_out",
+    "buzz.overdue",
+    "buzz.overdue_payments",
+    "buzz.popular_service",
+    "buzz.profit",
+    "buzz.profitable_area",
+    "buzz.restock_reminder",
+    "buzz.sold",
+    "buzz.title",
+    "buzz.top_seller",
+    "buzz.total_owed",
+    "buzz.total_value",
+    "buzz.transport_performance",
+    "buzz.view_details",
+    "calendar.add_appointment",
+    "calendar.book_appointment",
+    "calendar.complete_success",
+    "calendar.create_error",
+    "calendar.customer_contact",
+    "calendar.customer_contact_placeholder",
+    "calendar.customer_name",
+    "calendar.customer_name_placeholder",
+    "calendar.date",
+    "calendar.end_time",
+    "calendar.error.end_time_required",
+    "calendar.error.no_business",
+    "calendar.error.service_required",
+    "calendar.error.start_time_required",
+    "calendar.notes",
+    "calendar.notes_placeholder",
+    "calendar.select_service",
+    "calendar.select_time",
+    "calendar.start_time",
+    "canvas",
+    "cash.all",
+    "cash.in",
+    "cash.money_in",
+    "cash.money_out",
+    "cash.no_cash_activity_found",
+    "cash.out",
+    "cash.profit",
+    "cash.recent_activity",
+    "cash.search_cash_flow",
+    "cash.start_by_recording_first_transaction",
+    "category",
+    "comments_count",
+    "common.add",
+    "common.all",
+    "common.appointments",
+    "common.avg_price",
+    "common.back",
+    "common.cancel",
+    "common.category",
+    "common.copied",
+    "common.copy",
+    "common.copy_to_clipboard",
+    "common.country",
+    "common.customer",
+    "common.delete",
+    "common.delete_appointment",
+    "common.delete_confirm",
+    "common.delete_inventory",
+    "common.delete_service",
+    "common.description",
+    "common.description_optional",
+    "common.description_placeholder_money_in",
+    "common.due_date",
+    "common.edit",
+    "common.email_address",
+    "common.industry",
+    "common.loading",
+    "common.money_in",
+    "common.money_out",
+    "common.next",
+    "common.no_upcoming_appointments",
+    "common.optional",
+    "common.payment_due_note",
+    "common.previous",
+    "common.processing",
+    "common.save",
+    "common.saving",
+    "common.schedule_first_appointment",
+    "common.send",
+    "common.submit",
+    "common.submitting",
+    "common.success",
+    "common.suppliers",
+    "common.to_go",
+    "common.today",
+    "common.total",
+    "common.total_amount",
+    "common.total_service_value",
+    "common.transaction",
+    "common.view_all",
+    "common.yesterday",
+    "cost_price",
+    "country",
+    "country, is_active",
+    "country.current",
+    "credit",
+    "credit.account_paid_in_full",
+    "credit.active_credits",
+    "credit.add_credit",
+    "credit.add_credit_customer",
+    "credit.add_customer",
+    "credit.add_first",
+    "credit.add_new_credit",
+    "credit.add_new_vendor",
+    "credit.add_personal_credit",
+    "credit.adding",
+    "credit.all",
+    "credit.all_customers",
+    "credit.amount",
+    "credit.amount_owed",
+    "credit.amount_paid",
+    "credit.cancel",
+    "credit.costs",
+    "credit.credit_added_successfully",
+    "credit.credit_purchase",
+    "credit.credit_purchases",
+    "credit.customer_name",
+    "credit.customers",
+    "credit.customers_tab",
+    "credit.date_given",
+    "credit.days_overdue",
+    "credit.description",
+    "credit.description_placeholder",
+    "credit.due",
+    "credit.due_date",
+    "credit.failed_to_add_item",
+    "credit.fifo_payment_note",
+    "credit.for_customer",
+    "credit.hide_history",
+    "credit.initial_credit",
+    "credit.invalid_payment_amount",
+    "credit.items",
+    "credit.no_costs_found",
+    "credit.no_credit_customers_found",
+    "credit.no_customers",
+    "credit.no_line_items",
+    "credit.no_outstanding",
+    "credit.no_outstanding_balance",
+    "credit.original_amount",
+    "credit.outstanding",
+    "credit.outstanding_amount",
+    "credit.overdue",
+    "credit.paid",
+    "credit.paid_amount",
+    "credit.payment_failed",
+    "credit.payment_history",
+    "credit.payment_request",
+    "credit.personal_tab",
+    "credit.remaining",
+    "credit.reminder_from",
+    "credit.search_customers",
+    "credit.select_vendor_error",
+    "credit.select_vendor_placeholder",
+    "credit.share_credit_details",
+    "credit.share_via_whatsapp",
+    "credit.show_history",
+    "credit.start_by_adding_first_customer",
+    "credit.suppliers",
+    "credit.total_amount",
+    "credit.total_owed",
+    "credit.total_owed_to_you",
+    "credit.total_you_owe",
+    "credit.view_all_history",
+    "credit.who_do_you_owe",
+    "currency",
+    "customerName",
+    "daily_target",
+    "div",
+    "enter_category",
+    "error.no_business_id",
+    "expense_tracker.other",
+    "filter.all",
+    "footer.help",
+    "footer.privacy",
+    "footer.terms",
+    "from",
+    "help.all_categories",
+    "help.backup_data",
+    "help.call_support",
+    "help.comprehensive_guide",
+    "help.contact_support",
+    "help.description",
+    "help.download_backup",
+    "help.faq1_question",
+    "help.faq2_question",
+    "help.faq3_answer",
+    "help.faq3_question",
+    "help.faq4_answer",
+    "help.faq4_question",
+    "help.features",
+    "help.frequently_asked",
+    "help.getting_started",
+    "help.message",
+    "help.resources",
+    "help.search_placeholder",
+    "help.send_message",
+    "help.start_tour",
+    "help.subject",
+    "help.title",
+    "help.troubleshooting",
+    "help.tutorials",
+    "help.user_guide",
+    "help.your_email",
+    "help.your_name",
+    "hero.get_started",
+    "http://localhost:3000/api/test",
+    "id",
+    "id, business_id, expires_at, used_at",
+    "id, business_name, phone_number",
+    "id, country",
+    "id, country, created_at",
+    "id, country, industry",
+    "id, country, updated_at",
+    "id, created_at",
+    "id, owner_id",
+    "id, phone_number",
+    "id, phone_number, business_name",
+    "id, question_text, category",
+    "id, status, updated_at",
+    "industry",
+    "inventory.add_error",
+    "inventory.add_item",
+    "inventory.add_new_item",
+    "inventory.boxes",
+    "inventory.category",
+    "inventory.cost_price",
+    "inventory.delete_error",
+    "inventory.delete_item",
+    "inventory.delete_offline_item",
+    "inventory.edit_error",
+    "inventory.edit_item",
+    "inventory.enter_category",
+    "inventory.example_fuel",
+    "inventory.example_headphones",
+    "inventory.example_item",
+    "inventory.example_price",
+    "inventory.example_quantity",
+    "inventory.example_software",
+    "inventory.example_threshold",
+    "inventory.example_vegetables",
+    "inventory.item_name",
+    "inventory.items",
+    "inventory.kg",
+    "inventory.left",
+    "inventory.liters",
+    "inventory.low_stock",
+    "inventory.manage",
+    "inventory.meters",
+    "inventory.min",
+    "inventory.min_stock",
+    "inventory.no_items",
+    "inventory.pieces",
+    "inventory.quantity",
+    "inventory.quick_add",
+    "inventory.reorder_soon",
+    "inventory.running_low",
+    "inventory.search_items",
+    "inventory.select_unit",
+    "inventory.sell_error",
+    "inventory.selling_price",
+    "inventory.supplier",
+    "inventory.supplier_name",
+    "inventory.total_items",
+    "inventory.total_qty",
+    "inventory.total_stock_value",
+    "inventory.unit",
+    "inventory.units",
+    "item_name",
+    "language.select",
+    "limit",
+    "limit_multiplier",
+    "message_path",
+    "message_path, user_id, sent_at, read_at, message_length",
+    "modal.cancel",
+    "modal.close",
+    "modal.confirm",
+    "modal.early_access_description",
+    "modal.gain_access",
+    "modal.join_waitlist",
+    "modal.maybe_later",
+    "modal.processing",
+    "modal.request_access",
+    "modal.system_status",
+    "more.beehive_community",
+    "more.beehive_description",
+    "more.business_tools",
+    "more.community_support",
+    "more.member_since",
+    "more.reports",
+    "more.reports_description",
+    "more.settings",
+    "more.settings_description",
+    "more.share_app",
+    "more.share_app_message",
+    "nav.customers",
+    "nav.home",
+    "nav.inventory",
+    "nav.more",
+    "nav.services",
+    "nav.system_status",
+    "nav.transactions",
+    "origin",
+    "payment.days",
+    "payment.due_date",
+    "payment.for_customer",
+    "payment.mark_as_paid",
+    "payment.max_payment",
+    "payment.original_amount",
+    "payment.overdue_by",
+    "payment.paid_so_far",
+    "payment.payment_amount",
+    "payment.payment_recorded",
+    "payment.payment_success_message",
+    "payment.record_partial_payment",
+    "payment.record_payment",
+    "payment.record_payment_made",
+    "payment.remaining_balance",
+    "payment.total_you_owe",
+    "paymentMethod",
+    "payment_method.title",
+    "pwa.add_to_home",
+    "pwa.install_description",
+    "pwa.install_title",
+    "quantity",
+    "receipt.amount",
+    "receipt.copied",
+    "receipt.copy",
+    "receipt.customer",
+    "receipt.date",
+    "receipt.description",
+    "receipt.enter_phone",
+    "receipt.error_phone_invalid",
+    "receipt.error_phone_required",
+    "receipt.payment_method",
+    "receipt.phone_hint",
+    "receipt.phone_label",
+    "receipt.receipt_from",
+    "receipt.share_receipt",
+    "receipt.share_whatsapp",
+    "receipt.thank_you",
+    "receipt.title",
+    "receipt.transaction_id",
+    "receipt.view_details",
+    "redirect",
+    "reference",
+    "refresh.data_refreshed",
+    "refresh.refresh_failed",
+    "repairs.try_adjusting",
+    "reports.achievement",
+    "reports.active_services",
+    "reports.average_credit",
+    "reports.avg_per_customer",
+    "reports.avg_purchases",
+    "reports.avg_revenue_per_service",
+    "reports.best_day",
+    "reports.customer_frequency",
+    "reports.customer_summary",
+    "reports.customers",
+    "reports.daily_history_info",
+    "reports.daily_performance",
+    "reports.date",
+    "reports.days",
+    "reports.days_target_met",
+    "reports.expense_categories",
+    "reports.expenses",
+    "reports.expenses_breakdown",
+    "reports.export",
+    "reports.inventory",
+    "reports.inventory_summary",
+    "reports.inventory_value",
+    "reports.last_30_days",
+    "reports.low_stock",
+    "reports.met",
+    "reports.net_profit",
+    "reports.no_daily_history",
+    "reports.not_met",
+    "reports.out_of",
+    "reports.outstanding",
+    "reports.outstanding_balance",
+    "reports.overall_achievement",
+    "reports.overview",
+    "reports.payment_methods",
+    "reports.peak_times",
+    "reports.period_sales",
+    "reports.profit_margin",
+    "reports.repeat_rate",
+    "reports.sales",
+    "reports.sales_performance",
+    "reports.service_performance",
+    "reports.services",
+    "reports.services_summary",
+    "reports.sold",
+    "reports.status",
+    "reports.stock_turnover",
+    "reports.success_rate",
+    "reports.target",
+    "reports.title",
+    "reports.top_categories",
+    "reports.top_sellers",
+    "reports.top_services",
+    "reports.total_customers",
+    "reports.total_expenses",
+    "reports.total_expenses_period",
+    "reports.total_items",
+    "reports.total_owed",
+    "reports.total_revenue",
+    "reports.total_services",
+    "reports.total_transactions",
+    "reports.total_value",
+    "reports.transactions",
+    "reports.turnover_rate",
+    "reports.unique_customers",
+    "response_data",
+    "retail.inventory.min_stock",
+    "select_category",
+    "sell",
+    "selling_price",
+    "services",
+    "services.active",
+    "services.add_error",
+    "services.add_first",
+    "services.add_inventory_item",
+    "services.add_service",
+    "services.available",
+    "services.base_km_pricing",
+    "services.business_load_error",
+    "services.category",
+    "services.confirm_delete_inventory",
+    "services.confirm_delete_permanently",
+    "services.confirm_delete_service",
+    "services.delete_error",
+    "services.delete_service",
+    "services.describe_service",
+    "services.description",
+    "services.duration_minutes",
+    "services.edit_service",
+    "services.enter_category",
+    "services.enter_service_name",
+    "services.inventory_tab",
+    "services.low_stock",
+    "services.no_inventory_found",
+    "services.no_services",
+    "services.no_services_found",
+    "services.price",
+    "services.products_need_restock",
+    "services.running_low",
+    "services.sale_failed",
+    "services.search_services",
+    "services.service",
+    "services.service_name",
+    "services.services_tab",
+    "services.start_by_adding_first_item",
+    "services.start_by_adding_first_service",
+    "services.total_services",
+    "services.transport_offline_mode",
+    "services.trip_failed",
+    "services.update_error",
+    "services.update_service",
+    "services.update_success",
+    "settings.2fa_desc",
+    "settings.account_info",
+    "settings.appearance",
+    "settings.auto_backup",
+    "settings.backup_desc",
+    "settings.business",
+    "settings.cache_desc",
+    "settings.cancel",
+    "settings.change_password",
+    "settings.clear",
+    "settings.clear_cache",
+    "settings.compact_desc",
+    "settings.compact_view",
+    "settings.confirm_password",
+    "settings.country",
+    "settings.currency",
+    "settings.currency_desc",
+    "settings.current_password",
+    "settings.dark_desc",
+    "settings.dark_mode",
+    "settings.data_storage",
+    "settings.edit_profile",
+    "settings.email",
+    "settings.export",
+    "settings.export_data",
+    "settings.export_desc",
+    "settings.general",
+    "settings.industry",
+    "settings.language",
+    "settings.language_desc",
+    "settings.low_stock_alerts",
+    "settings.new_password",
+    "settings.notifications",
+    "settings.password_desc",
+    "settings.phone",
+    "settings.privacy",
+    "settings.privacy_desc",
+    "settings.profile",
+    "settings.profile_desc",
+    "settings.push_desc",
+    "settings.push_notifications",
+    "settings.reset_account",
+    "settings.reset_desc",
+    "settings.security",
+    "settings.sound_desc",
+    "settings.sound_effects",
+    "settings.stock_desc",
+    "settings.sync_data",
+    "settings.sync_desc",
+    "settings.title",
+    "settings.two_factor",
+    "settings.update_password",
+    "severity",
+    "staff_performance.target_met",
+    "stock",
+    "style",
+    "textarea",
+    "time.d",
+    "time.h",
+    "time.just_now",
+    "time.m",
+    "timeWindow",
+    "to",
+    "tour.add_appointment",
+    "tour.add_appointment_description",
+    "tour.add_ingredient",
+    "tour.add_ingredient_description",
+    "tour.add_product",
+    "tour.add_product_description",
+    "tour.add_service",
+    "tour.add_service_description",
+    "tour.add_transactions",
+    "tour.beehive_community",
+    "tour.beehive_description",
+    "tour.business_reports",
+    "tour.business_settings",
+    "tour.buzz_description",
+    "tour.buzz_insights",
+    "tour.calendar_description",
+    "tour.cash_flow_description",
+    "tour.cash_management",
+    "tour.complete_tour",
+    "tour.completed",
+    "tour.credit_description",
+    "tour.credit_management",
+    "tour.credit_preview",
+    "tour.credit_preview_description",
+    "tour.credit_sales_description",
+    "tour.customers_description",
+    "tour.customers_title",
+    "tour.daily_goal_description",
+    "tour.daily_target",
+    "tour.dashboard_description",
+    "tour.finish",
+    "tour.get_started",
+    "tour.got_it",
+    "tour.history_description",
+    "tour.home_dashboard",
+    "tour.ingredients_description",
+    "tour.inventory_description",
+    "tour.inventory_management",
+    "tour.inventory_preview",
+    "tour.inventory_preview_description",
+    "tour.inventory_title",
+    "tour.jobs_description",
+    "tour.join_community",
+    "tour.manage_calendar",
+    "tour.manage_customer_credit",
+    "tour.manage_ingredients",
+    "tour.manage_inventory",
+    "tour.manage_jobs",
+    "tour.manage_projects",
+    "tour.manage_services",
+    "tour.manage_trips",
+    "tour.modal_title",
+    "tour.money_buttons",
+    "tour.money_description",
+    "tour.more_business_tools",
+    "tour.more_options",
+    "tour.more_tools_description",
+    "tour.navigation_description",
+    "tour.navigation_guide",
+    "tour.next",
+    "tour.of",
+    "tour.page",
+    "tour.pause",
+    "tour.payments_description",
+    "tour.play",
+    "tour.previous",
+    "tour.projects_description",
+    "tour.quick_add_money",
+    "tour.quick_links",
+    "tour.record_credit_sales",
+    "tour.reports_description",
+    "tour.reports_title",
+    "tour.sales_analytics",
+    "tour.sales_description",
+    "tour.services_description",
+    "tour.services_management",
+    "tour.set_daily_goal",
+    "tour.settings_description",
+    "tour.settings_title",
+    "tour.share_description",
+    "tour.share_insights",
+    "tour.skip",
+    "tour.step",
+    "tour.stock_alerts",
+    "tour.stock_alerts_description",
+    "tour.target_description",
+    "tour.track_cash_flow",
+    "tour.track_payments",
+    "tour.transaction_history",
+    "tour.transactions_description",
+    "tour.transactions_title",
+    "tour.trips_description",
+    "tour.view_reports",
+    "tour.welcome_dashboard",
+    "tour.welcome_title",
+    "transaction.save",
+    "transactions.no_found",
+    "transactions.search_placeholder",
+    "transactions.start_first",
+    "transport.base_amount_only",
+    "transport.calculated_fare",
+    "transport.distance",
+    "transport.distance_km",
+    "transport.rate",
+    "transport.select_service",
+    "transport.tips",
+    "transport.tips_optional",
+    "transport.use_base_amount",
+    "type",
+    "upvotes_count, downvotes_count",
+    "usd_price",
+    "usd_price, created_at",
+    "usd_price, created_at, cancelled_at",
+    "usd_price, created_at, status",
+    "usd_price, updated_at",
+    "user_id, business_name, country, industry",
+    "x-forwarded-for",
+    "x-kyshi-signature",
+    "x-real-ip",
+    "x-startbutton-signature",
+    "x-user-id",
+    "xss"
+  ]
+}

@@ -27,8 +27,8 @@ import { useToast } from '@/hooks/useToast';
 import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import { getStableDateString, getStableDisplayDate, isClient, getStableId } from '@/utils/stableDates';
-import Header from './Header';
-import BottomNav from './BottomNav';
+import Header from '../../Header';
+import BottomNav from '../../BottomNav';
 import AddAppointmentModal from './AddAppointmentModal';
 import { HydrationErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -609,7 +609,7 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
         {/* Header - Mobile Responsive */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('appointments.title', 'Appointments')}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('common.appointments', 'Appointments')}</h1>
             <button
               onClick={navigateToToday}
               className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full sm:w-auto"
@@ -706,12 +706,12 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
               {filteredAppointments.filter(apt => apt.status === 'pending').length === 0 ? (
                 <div className="text-center py-6 bg-gray-50 rounded-lg">
                   <CalendarIcon size={32} className="text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">No upcoming appointments</p>
+                  <p className="text-gray-500 text-sm">{t('common.no_upcoming_appointments', 'No upcoming appointments')}</p>
                   <button
                     onClick={() => setShowAddModal(true)}
                     className="mt-2 text-sm text-blue-600 hover:text-blue-800"
                   >
-                    + Add Appointment
+                    {t('common.schedule_first_appointment', 'Schedule your first appointment')}
                   </button>
                 </div>
               ) : (

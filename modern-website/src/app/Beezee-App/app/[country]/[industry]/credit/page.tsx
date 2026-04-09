@@ -118,7 +118,7 @@ export default function CreditPage() {
 
   const handleAddCredit = async (newCredit: any) => {
     if (!business?.id) {
-      showError('No business ID found');
+      showError(t('credit.business_id_not_found'));
       return;
     }
     
@@ -148,15 +148,15 @@ export default function CreditPage() {
       // Show appropriate success message based on type
       if (result.isNew) {
         if (creditType === 'payable') {
-          showSuccess(`New vendor "${newCredit.customer_name}" added - you owe ${formatCurrency(parseFloat(newCredit.amount), country)}`);
+          showSuccess(t('credit.new_vendor_created').replace('{name}', newCredit.customer_name).replace('{currency}', getCurrency(business.country || country)).replace('{amount}', parseFloat(newCredit.amount).toString()));
         } else {
-          showSuccess(`New customer "${newCredit.customer_name}" created with ${formatCurrency(parseFloat(newCredit.amount), country)} credit`);
+          showSuccess(t('credit.new_customer_created').replace('{name}', newCredit.customer_name).replace('{currency}', getCurrency(business.country || country)).replace('{amount}', parseFloat(newCredit.amount).toString()));
         }
       } else {
         if (creditType === 'payable') {
-          showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} added to ${newCredit.customer_name} (you owe them). Total: ${formatCurrency(result.customer.amount, country)}`);
+          showSuccess(t('credit.added_to_vendor').replace('{name}', newCredit.customer_name).replace('{currency}', getCurrency(business.country || country)).replace('{amount}', parseFloat(newCredit.amount).toString()).replace('{total}', result.customer.amount.toString()));
         } else {
-          showSuccess(`${formatCurrency(parseFloat(newCredit.amount), country)} credit added to ${newCredit.customer_name}. Total owed: ${formatCurrency(result.customer.amount, country)}`);
+          showSuccess(t('credit.added_to_customer').replace('{name}', newCredit.customer_name).replace('{currency}', getCurrency(business.country || country)).replace('{amount}', parseFloat(newCredit.amount).toString()).replace('{total}', result.customer.amount.toString()));
         }
       }
       
@@ -166,7 +166,7 @@ export default function CreditPage() {
       
     } catch (error: any) {
       console.error(' Failed to add credit:', error);
-      showError(error.message || 'Failed to add credit. Please try again.');
+      showError(error.message || t('credit.failed_to_add') + ' ' + newCredit.customer_name);
     } finally {
       setIsSubmitting(false);
     }
@@ -175,12 +175,12 @@ export default function CreditPage() {
   const handleUpdateCredit = async (id: string, updates: any) => {
     try {
       updateCredit({ id, data: updates });
-      showSuccess('Credit updated successfully');
+      showSuccess(t('credit.updated_successfully', 'Credit updated successfully'));
       // ✅ Force refresh after update
       await refetch();
     } catch (error) {
       console.error('Failed to update credit:', error);
-      showError('Failed to update credit');
+      showError(t('credit.failed_to_update', 'Failed to update credit'));
     }
   };
 
@@ -192,13 +192,13 @@ export default function CreditPage() {
 
   const handlePayment = async (creditId: string, paymentAmount: number) => {
     if (!business?.id) {
-      showError('No business ID found');
+      showError(t('credit.business_id_not_found'));
       return;
     }
     
     const creditRecord = creditData.find((c: any) => c.id === creditId);
     if (!creditRecord) {
-      showError('Credit record not found');
+      showError(t('credit.record_not_found', 'Credit record not found'));
       return;
     }
     
@@ -246,11 +246,11 @@ export default function CreditPage() {
       await refetch();
       
       console.log(`Payment completed successfully for ${creditRecord.customer_name}`);
-      showSuccess('Payment recorded successfully');
+      showSuccess(t('credit.payment_recorded'));
       setShowPaymentModal(false);
     } catch (error) {
       console.error('Failed to record payment:', error);
-      showError('Failed to record payment. Please try again.');
+      showError(t('credit.payment_failed', 'Failed to record payment. Please try again.'));
     }
   };
 
@@ -386,7 +386,7 @@ export default function CreditPage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <Users size={18} />
-                {t('credit.customers_tab', 'Customers')}
+                {t('credit.customers_tab')}
               </div>
             </button>
             <button
@@ -415,8 +415,8 @@ export default function CreditPage() {
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
               {activeTab === 'customers' ? <Users size={16} /> : <Wallet size={16} />}
               {activeTab === 'customers' 
-                ? t('credit.total_owed_to_you', 'Total Owed to You')
-                : t('credit.total_you_owe', 'Total You Owe')}
+                ? t('credit.total_owed_to_you')
+                : t('credit.total_you_owe')}
             </div>
             <div className={`text-2xl font-bold ${
               activeTab === 'customers' ? 'text-green-600' : 'text-orange-600'
@@ -425,8 +425,8 @@ export default function CreditPage() {
             </div>
             <div className="text-xs text-gray-500">
               {tabFilteredData.length} {activeTab === 'customers' 
-                ? t('credit.customers', 'Customers') 
-                : t('credit.suppliers', 'Suppliers')}
+                ? t('credit.customers_tab') 
+                : t('common.suppliers')}
             </div>
           </div>
 
@@ -450,8 +450,8 @@ export default function CreditPage() {
           >
             <Plus size={20} />
             {activeTab === 'customers' 
-              ? t('credit.add_credit_customer', 'Add Credit Customer')
-              : t('credit.add_personal_credit', 'Add Personal Credit')}
+              ? t('credit.add_credit_customer')
+              : t('credit.add_personal_credit')}
           </button>
         </div>
 
@@ -734,7 +734,7 @@ function AddCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
           disabled={isSubmitting}
           className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? t('credit.adding', 'Adding...') : t('credit.add_customer')}
+          {isSubmitting ? t('credit.processing') : t('credit.add_customer')}
         </button>
       </div>
     </form>
@@ -800,7 +800,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
     const finalCustomerName = showNewCustomerInput ? newCustomerName : selectedCustomer;
     
     if (!finalCustomerName) {
-      alert(t('credit.select_vendor_error', 'Please select or enter a vendor name'));
+      alert(t('credit.select_vendor_required'));
       return;
     }
     
@@ -817,20 +817,20 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {/* Who do you owe? - Same as Money Out */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          {t('credit.who_do_you_owe', 'Who do you owe?')} <span className="text-red-500">*</span>
+          {t('credit.who_do_you_owe')} <span className="text-red-500">*</span>
         </label>
         <select
           value={showNewCustomerInput ? 'new' : selectedCustomer}
           onChange={handleCustomerSelect}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">{t('credit.select_vendor_placeholder', 'Select a vendor or person...')}</option>
+          <option value="">{t('credit.select_vendor_person')}</option>
           {creditCustomers.map((customer) => (
             <option key={customer.id} value={customer.customer_name}>
               {customer.customer_name} - Owed: ${customer.amount}
             </option>
           ))}
-          <option value="new">{t('credit.add_new_vendor', '+ Add new vendor/person')}</option>
+          <option value="new">{t('credit.add_new_vendor')}</option>
         </select>
       </div>
       
@@ -838,14 +838,14 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {showNewCustomerInput && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            New vendor name <span className="text-red-500">*</span>
+            t('credit.new_vendor_name') + ' <span className="text-red-500">*</span>'
           </label>
           <input
             type="text"
             value={newCustomerName}
             onChange={(e) => setNewCustomerName(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            placeholder="Enter vendor or person name"
+            placeholder={t('credit.enter_vendor_name', 'Enter vendor or person name')}
           />
         </div>
       )}
@@ -853,21 +853,21 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {/* Description - Changed from "Cost" to "Description" */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Description <span className="text-gray-400 text-xs">(optional)</span>
+          {t('credit.description_optional')}
         </label>
         <input
           type="text"
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-          placeholder="What is this credit for?"
+          placeholder={t('credit.what_is_this_credit_for')}
         />
       </div>
       
       {/* Amount Owed */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Amount Owed ($)
+          {t('credit.amount_owed')} ($)
         </label>
         <input
           type="number"
@@ -883,7 +883,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {/* Due Date */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Due Date <span className="text-red-500">*</span>
+          {t('credit.due_date')} <span className="text-red-500">*</span>
         </label>
         <input
           type="date"
@@ -901,14 +901,14 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
           onClick={onCancel}
           className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
           className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
-          {isSubmitting ? t('credit.adding', 'Adding...') : 'Add Customer'}
+          {isSubmitting ? t('credit.processing') : t('credit.add_customer')}
         </button>
       </div>
     </form>

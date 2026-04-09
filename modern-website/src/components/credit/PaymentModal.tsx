@@ -40,12 +40,12 @@ export default function PaymentModal({
     
     const amount = parseFloat(paymentAmount);
     if (isNaN(amount) || amount <= 0) {
-      showError('Please enter a valid payment amount');
+      showError(t('credit.invalid_payment_amount', 'Please enter a valid payment amount'));
       return;
     }
     
     if (amount > remainingAmount) {
-      showError(`Payment amount cannot exceed remaining balance of ${formatCurrency(remainingAmount, country)}`);
+      showError(t('credit.payment_exceeds_balance').replace('{amount}', formatCurrency(remainingAmount, country)));
       return;
     }
     
@@ -56,10 +56,10 @@ export default function PaymentModal({
       const result = await makePaymentOnLineItem(lineItem.id, amount);
       
       if (!result) {
-        throw new Error('Failed to process payment');
+        throw new Error(t('credit.payment_failed', 'Failed to process payment'));
       }
       
-      showSuccess(`Payment of ${formatCurrency(amount, country)} applied successfully`);
+      showSuccess(t('credit.payment_success_message', 'Payment has been successfully recorded'));
       
       if (onSuccess) {
         onSuccess();
@@ -68,7 +68,7 @@ export default function PaymentModal({
       onClose();
     } catch (error: any) {
       console.error('Payment failed:', error);
-      showError(error.message || 'Payment failed. Please try again.');
+      showError(error.message || t('credit.payment_failed', 'Payment failed. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -88,7 +88,7 @@ export default function PaymentModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Make Payment</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('credit.make_payment')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -104,17 +104,17 @@ export default function PaymentModal({
           <div className="flex justify-between items-start mb-2">
             <div>
               <p className="font-medium text-gray-900">{credit.customer_name}</p>
-              <p className="text-sm text-gray-600">{lineItem.description || 'Credit Purchase'}</p>
+              <p className="text-sm text-gray-600">{lineItem.description || t('credit.credit_purchase')}</p>
               <p className="text-xs text-gray-500 mt-1">
                 Due: {new Date(lineItem.due_date).toLocaleDateString()}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Original:</p>
+              <p className="text-sm text-gray-600">{t('credit.original')}</p>
               <p className="font-bold text-gray-900">{formatCurrency(lineItem.amount, country)}</p>
               {lineItem.paid_amount > 0 && (
                 <p className="text-xs text-green-600">
-                  Paid: {formatCurrency(lineItem.paid_amount, country)}
+                  {t('credit.paid')}: {formatCurrency(lineItem.paid_amount, country)}
                 </p>
               )}
             </div>
@@ -122,7 +122,7 @@ export default function PaymentModal({
           
           <div className="border-t pt-2 mt-2">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-gray-900">Remaining:</span>
+              <span className="font-medium text-gray-900">{t('credit.remaining')}</span>
               <span className="font-bold text-lg text-orange-600">
                 {formatCurrency(remainingAmount, country)}
               </span>
@@ -134,7 +134,7 @@ export default function PaymentModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Payment Amount ({formatCurrency(remainingAmount, country)} max)
+              {t('credit.payment_amount_max').replace('{amount}', formatCurrency(remainingAmount, country))}
             </label>
             <div className="relative">
               <input
@@ -145,7 +145,7 @@ export default function PaymentModal({
                 value={paymentAmount}
                 onChange={(e) => setPaymentAmount(e.target.value)}
                 className="w-full px-3 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter amount"
+                placeholder={t('credit.enter_amount')}
                 required
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
@@ -168,7 +168,7 @@ export default function PaymentModal({
               onClick={handleFullPayment}
               className="flex-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium"
             >
-              Full Payment
+              {t('credit.mark_as_paid', 'Full Payment')}
             </button>
           </div>
           
@@ -179,14 +179,14 @@ export default function PaymentModal({
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !paymentAmount || parseFloat(paymentAmount) <= 0}
               className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Processing...' : `Pay ${paymentAmount ? formatCurrency(parseFloat(paymentAmount), country) : ''}`}
+              {isSubmitting ? t('credit.processing') : t('credit.pay_amount', 'Pay {amount}').replace('{amount}', paymentAmount ? formatCurrency(parseFloat(paymentAmount), country) : '')}
             </button>
           </div>
         </form>

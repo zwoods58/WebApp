@@ -92,13 +92,13 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
 
   const handleCreditPayment = async () => {
     if (!business?.id) {
-      alert('Business ID not found');
+      alert(t('credit.business_id_not_found'));
       return;
     }
 
     const customerName = selectedCustomer || newCustomerName;
     if (!customerName || customerName.trim() === '') {
-      alert('Please select who you owe money to or enter a new name');
+      alert(t('credit.select_vendor_required'));
       return;
     }
 
@@ -117,13 +117,13 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
       );
 
       if (!result) {
-        throw new Error('Failed to add credit payment');
+        throw new Error(t('credit.payment_failed'));
       }
 
       if (result.isNew) {
-        alert(`New vendor "${customerName}" created. You owe them ${getCurrency(country)} ${formData.amount}`);
+        alert(t('credit.new_vendor_created').replace('{name}', customerName).replace('{currency}', getCurrency(country)).replace('{amount}', formData.amount));
       } else {
-        alert(`${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}`);
+        alert(t('credit.added_to_vendor').replace('{name}', customerName).replace('{currency}', getCurrency(country)).replace('{amount}', formData.amount).replace('{total}', result.customer.amount.toString()));
       }
 
       // Create expense record as well
@@ -145,7 +145,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
 
     } catch (error: any) {
       console.error('[MoneyOutButton] Credit payment failed:', error);
-      alert(error.message || 'Failed to process credit payment');
+      alert(error.message || t('credit.payment_failed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -266,14 +266,14 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    Description <span className="text-gray-400 text-xs">(optional)</span>
+                    {t('common.description_optional', 'Description (optional)')}
                   </label>
                   <input
                     type="text"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                    placeholder="What is this credit for?"
+                    placeholder={t('credit.description_placeholder', 'What is this credit for?')}
                   />
                 </div>
 
@@ -297,23 +297,23 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     {/* Customer/Vendor Selection */}
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        Who do you owe? <span className="text-red-500">*</span>
+                        {t('credit.who_do_you_owe')} <span className="text-red-500">*</span>
                       </label>
                       <select
                         value={selectedCustomer}
                         onChange={(e) => setSelectedCustomer(e.target.value)}
                         className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)]"
                       >
-                        <option value="">Select a vendor or person...</option>
+                        <option value="">{t('credit.select_vendor_person')}</option>
                         {creditCustomers.map((customer) => (
                           <option key={customer.id} value={customer.customer_name}>
-                            {customer.customer_name} - Owed: {getCurrency(country)} {customer.amount}
+                            {customer.customer_name} - {t('credit.owed_label')} {getCurrency(country)} {customer.amount}
                           </option>
                         ))}
                       </select>
                       {creditCustomers.length === 0 && (
                         <p className="text-xs text-gray-500 mt-1">
-                          No vendors found. Enter a new vendor name below.
+                          {t('credit.no_vendors_found')}
                         </p>
                       )}
                     </div>
@@ -321,21 +321,21 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     {/* New Customer Name */}
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        New vendor name <span className="text-gray-400 text-xs">(if not listed above)</span>
+                        {t('credit.new_vendor_name')} <span className="text-gray-400 text-xs">{t('credit.if_not_listed')}</span>
                       </label>
                       <input
                         type="text"
                         value={newCustomerName}
                         onChange={(e) => setNewCustomerName(e.target.value)}
                         className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        placeholder="Enter vendor or person name"
+                        placeholder={t('credit.enter_vendor_person_name')}
                       />
                     </div>
 
                     {/* Due Date */}
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        Due Date <span className="text-red-500">*</span>
+                        {t('credit.due_date')} <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
@@ -351,7 +351,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                 {/* Payment Method */}
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    {t('payment_method', 'Payment Method')}
+                    {t('payment_method.title', 'Payment Method')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {['cash', 'mobile_money', 'credit'].map((method) => (
@@ -387,7 +387,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   onClick={closeModal}
                   className="w-full py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
 
                 <button

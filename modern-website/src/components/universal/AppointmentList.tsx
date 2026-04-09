@@ -100,7 +100,7 @@ export default function AppointmentList({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('appointments.appointments', 'Appointments')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('common.appointments', 'Appointments')}</h3>
           <p className="text-sm text-gray-500">{t('appointments.today_count', `${todayAppointments.length} today`)}</p>
         </div>
         <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -206,8 +206,8 @@ export default function AppointmentList({
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
             <Calendar className="text-gray-400" size={24} />
           </div>
-          <p className="text-gray-500 text-sm">{t('appointments.no_appointments', 'No upcoming appointments')}</p>
-          <p className="text-gray-400 text-xs">{t('appointments.schedule_first', 'Schedule your first appointment')}</p>
+          <p className="text-gray-500 text-sm">{t('common.no_upcoming_appointments', 'No upcoming appointments')}</p>
+          <p className="text-gray-400 text-xs">{t('common.schedule_first_appointment', 'Schedule your first appointment')}</p>
         </div>
       )}
 

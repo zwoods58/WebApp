@@ -12,10 +12,10 @@ async function getCurrentVersion() {
   try {
     const response = await fetch('/api/version-check');
     const data = await response.json();
-    return data.version || 'v108';
+    return data.version || 'v110';
   } catch (error) {
     console.warn('[SW] Failed to fetch current version, using fallback:', error);
-    return 'v109';
+    return 'v110';
   }
 }
 

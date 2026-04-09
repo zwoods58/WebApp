@@ -1,0 +1,916 @@
+Translation Key Analysis Report
+=====================================
+Total Unique Keys: 893
+Total Files Scanned: 330
+Keys with Defaults: 687
+Keys without Defaults: 206
+
+All Translation Keys:
+====================
+
+redirect - Used in: page.tsx, page.tsx
+a - Used in: page.tsx, page.tsx
+T - Used in: page.tsx, database.ts, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, page.tsx, creditService.ts, creditService.ts, creditService.ts, AddCreditLineItemModal.tsx, AddCreditLineItemModal.tsx, OptimisticTransactionList.tsx, HomepageCalendar.tsx, MoneyInButton.tsx, MoneyInButton.tsx, MoneyInButton.tsx, MoneyOutButton.tsx, MoneyOutButton.tsx, MoneyOutButton.tsx, creditService.ts, creditService.ts, dailyTargetHelpers.ts, dailyTargetHelpers.ts
+business_id - Used in: database.ts
+country - Used in: database.ts, route.ts, route.ts, page.tsx
+usd_price - Used in: database.ts, subscriptions.ts, subscriptions.ts
+id, country, created_at - Used in: database.ts
+business_id, transaction_date - Used in: database.ts
+id, country, updated_at - Used in: database.ts
+id, country - Used in: database.ts
+id, created_at - Used in: metrics.ts
+business_id, created_at - Used in: metrics.ts
+id, status, updated_at - Used in: metrics.ts, metrics.ts
+usd_price, created_at, cancelled_at - Used in: metrics.ts
+usd_price, created_at, status - Used in: metrics.ts, metrics.ts
+usd_price, created_at - Used in: metrics.ts
+usd_price, updated_at - Used in: metrics.ts
+* - Used in: subscriptions.ts, subscriptions.ts, useAdminData.ts, useAdminData.ts, route.ts, route.ts, route.ts, route.ts, route.ts, route.ts, page.tsx, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, creditService.ts, BeehiveComments.tsx, BeehiveComments.tsx, BusinessContext.tsx, useIndustryData.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useIndustryDataNew.ts, useNotifications.ts, useOfflineData.ts, data-manager.ts, data-manager.ts, expenses.ts, expenses.ts, expenses.ts, supabase-adapter.ts, supabase-adapter.ts, creditService.ts, dailyTargetHelpers.ts
+country, is_active - Used in: subscriptions.ts
+limit - Used in: route.ts, route.ts
+id - Used in: route.ts, route.ts, route.ts, route.ts, route.ts, route.ts
+timeWindow - Used in: route.ts
+severity - Used in: route.ts
+type - Used in: route.ts
+id, business_name, phone_number - Used in: route.ts
+
+        id,
+        phone_number,
+        recovery_locked_until,
+        recovery_attempts,
+        security_question_1_id,
+        security_answer_1_hash
+       - Used in: route.ts
+
+        id,
+        phone_number,
+        recovery_locked_until,
+        recovery_attempts,
+        security_question_1_id
+       - Used in: route.ts
+id, question_text, category - Used in: route.ts, route.ts
+id, phone_number - Used in: route.ts
+id, phone_number, business_name - Used in: route.ts
+id, business_id, expires_at, used_at - Used in: route.ts
+upvotes_count, downvotes_count - Used in: route.ts, route.ts, route.ts
+comments_count - Used in: route.ts, route.ts
+Cache-Control (default: "public, max-age=3600") - Used in: route.ts
+Content-Type (default: "application/manifest+json") - Used in: route.ts
+id, owner_id - Used in: route.ts
+currency - Used in: route.ts
+from - Used in: route.ts, page.tsx
+to - Used in: route.ts
+reference - Used in: route.ts
+Authorization - Used in: route.ts
+x-kyshi-signature - Used in: route.ts
+x-startbutton-signature - Used in: route.ts
+xss - Used in: auth.test.ts, auth.test.ts, auth.test.ts, transactions.test.ts, transactions.test.ts, transactions.test.ts, transactions.test.ts, transactions.test.ts, transactions.test.ts, transactions.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts
+bcrypt - Used in: auth.test.ts
+. - Used in: transactions.test.ts, transactions.test.ts
+beehive.title (default: "BeeHive Community") - Used in: page.tsx, BeehiveRequestModal.tsx
+beehive.description (default: "Share ideas and help improve BeeZee for everyone") - Used in: page.tsx, BeehiveRequestModal.tsx
+beehive.search_placeholder (default: "Search requests...") - Used in: page.tsx
+beehive.all (default: "All") - Used in: page.tsx
+beehive.new_features (default: "New Features") - Used in: page.tsx
+beehive.improvements (default: "Improvements") - Used in: page.tsx
+beehive.bug_fixes (default: "Bug Fixes") - Used in: page.tsx
+beehive.integrations (default: "Integrations") - Used in: page.tsx
+beehive.add_request (default: "Add New Request") - Used in: page.tsx
+beehive.total_requests (default: "Total") - Used in: page.tsx
+beehive.completed (default: "Done") - Used in: page.tsx
+beehive.in_progress (default: "In Progress") - Used in: page.tsx
+beehive.community_member (default: "Community Member") - Used in: page.tsx, BeehiveComments.tsx
+common.edit (default: "Edit") - Used in: page.tsx
+beehive.no_requests (default: "No requests found") - Used in: page.tsx
+beehive.no_requests_description (default: "Be the first to share an idea!") - Used in: page.tsx
+beehive.add_first_request (default: "Add First Request") - Used in: page.tsx
+receipt.receipt_from (default: "Receipt from") - Used in: page.tsx, page.tsx
+business.default_name (default: "My Business") - Used in: page.tsx, page.tsx, page.tsx, page.tsx
+receipt.description (default: "Description") - Used in: page.tsx, page.tsx
+receipt.amount (default: "Amount") - Used in: page.tsx, page.tsx
+receipt.date (default: "Date") - Used in: page.tsx, page.tsx
+receipt.customer (default: "Customer") - Used in: page.tsx, page.tsx
+business.suppliers (default: "Supplier") - Used in: page.tsx, page.tsx, page.tsx
+receipt.payment_method (default: "Payment Method") - Used in: page.tsx, page.tsx
+receipt.thank_you (default: "Thank you for your business!") - Used in: page.tsx, page.tsx
+common.copied (default: "Copied!") - Used in: page.tsx, page.tsx, page.tsx
+common.copy (default: "Copy Details") - Used in: page.tsx, page.tsx, page.tsx
+credit.share_via_whatsapp (default: "Share via WhatsApp") - Used in: page.tsx, page.tsx, page.tsx
+receipt.share_receipt (default: "Share Receipt") - Used in: page.tsx, page.tsx
+common.copy_to_clipboard (default: "Copy to Clipboard") - Used in: page.tsx, page.tsx, page.tsx
+receipt.share_whatsapp (default: "Share via WhatsApp") - Used in: page.tsx, page.tsx, page.tsx, ReceiptGenerator.tsx, WhatsAppShare.tsx
+common.cancel (default: "Cancel") - Used in: page.tsx, page.tsx, page.tsx, page.tsx, AddCustomerModal.tsx, AddInventoryForm.tsx, AppointmentList.tsx, BeehiveRequestModal.tsx, BeehiveRequestModal.tsx, EditServiceModal.tsx, InventoryList.tsx, MoneyInButton.tsx, MoneyOutButton.tsx, ServiceList.tsx, WhatsAppShare.tsx, AddAppointmentModal.tsx
+textarea - Used in: page.tsx, page.tsx, page.tsx
+cash.in - Used in: page.tsx
+cash.out - Used in: page.tsx
+cash.profit - Used in: page.tsx
+cash.search_cash_flow - Used in: page.tsx
+cash.all - Used in: page.tsx
+cash.money_in - Used in: page.tsx
+cash.money_out - Used in: page.tsx
+cash.recent_activity - Used in: page.tsx, page.tsx
+cash.no_cash_activity_found - Used in: page.tsx
+cash.start_by_recording_first_transaction - Used in: page.tsx
+credit.reminder_from (default: "Credit Reminder from") - Used in: page.tsx
+common.customer (default: "Customer") - Used in: page.tsx, page.tsx
+credit.amount_owed (default: "Amount Owed") - Used in: page.tsx, page.tsx, page.tsx
+credit.original_amount (default: "Original Amount") - Used in: page.tsx
+credit.amount_paid (default: "Amount Paid") - Used in: page.tsx
+credit.date_given (default: "Date Given") - Used in: page.tsx, CreditCustomerCard.tsx, PayableCreditCard.tsx
+credit.due_date (default: "Due Date") - Used in: page.tsx, page.tsx, AddCreditLineItemModal.tsx, AddCustomerModal.tsx
+credit.days_overdue (default: "Days Overdue") - Used in: page.tsx, CreditCustomerCard.tsx, CreditCustomerCard.tsx, PayableCreditCard.tsx, PayableCreditCard.tsx
+credit.payment_request (default: "Please arrange payment as soon as possible. Thank you!") - Used in: page.tsx
+credit.customers_tab (default: "Customers") - Used in: page.tsx
+credit.personal_tab (default: "Personal") - Used in: page.tsx
+credit.total_owed_to_you (default: "Total Owed to You") - Used in: page.tsx
+credit.total_you_owe (default: "Total You Owe") - Used in: page.tsx
+credit.customers (default: "Customers") - Used in: page.tsx
+credit.suppliers (default: "Suppliers") - Used in: page.tsx
+credit.add_credit_customer (default: "Add Credit Customer") - Used in: page.tsx, page.tsx
+credit.add_personal_credit (default: "Add Personal Credit") - Used in: page.tsx, page.tsx
+credit.credit_added_successfully (default: "Credit added successfully") - Used in: page.tsx
+credit.share_credit_details (default: "Share Credit Details") - Used in: page.tsx
+common.optional (default: "Optional") - Used in: page.tsx, page.tsx, page.tsx, page.tsx, MoneyInButton.tsx
+credit.description_placeholder (default: "What was this credit for?") - Used in: page.tsx, AddCreditLineItemModal.tsx, MoneyOutButton.tsx
+credit.adding (default: "Adding...") - Used in: page.tsx, page.tsx
+credit.select_vendor_error (default: "Please select or enter a vendor name") - Used in: page.tsx
+credit.who_do_you_owe (default: "Who do you owe?") - Used in: page.tsx
+credit.select_vendor_placeholder (default: "Select a vendor or person...") - Used in: page.tsx
+credit.add_new_vendor (default: "+ Add new vendor/person") - Used in: page.tsx
+credit - Used in: page.tsx
+credit.overdue - Used in: page.tsx, page.tsx, PaymentModal.tsx
+credit.search_customers - Used in: page.tsx
+credit.all - Used in: page.tsx
+credit.outstanding - Used in: page.tsx
+credit.paid - Used in: page.tsx, CreditCustomerCard.tsx, PayableCreditCard.tsx, CreditList.tsx, PaymentModal.tsx, PaymentModal.tsx
+credit.all_customers - Used in: page.tsx
+credit.no_credit_customers_found - Used in: page.tsx
+credit.start_by_adding_first_customer - Used in: page.tsx
+credit.customer_name - Used in: page.tsx, page.tsx
+common.description - Used in: page.tsx, MoneyInButton.tsx
+credit.cancel - Used in: page.tsx
+credit.add_customer - Used in: page.tsx, AddCustomerModal.tsx, AddCustomerModal.tsx
+help.getting_started (default: "Getting Started") - Used in: page.tsx
+help.features (default: "Features") - Used in: page.tsx
+help.troubleshooting (default: "Troubleshooting") - Used in: page.tsx
+help.tutorials (default: "Video Tutorials") - Used in: page.tsx
+help.faq1_question (default: "How do I add a new transaction?") - Used in: page.tsx
+help.faq2_question (default: "Can I export my data?") - Used in: page.tsx
+help.faq3_question (default: "How do I manage customer credit?") - Used in: page.tsx
+help.faq3_answer (default: "Navigate to the Customers tab, where you can add new credit entries, track payments, and manage outstanding balances.") - Used in: page.tsx
+help.faq4_question (default: "Is my data secure?") - Used in: page.tsx
+help.faq4_answer (default: "Absolutely! We use bank-level encryption and secure servers to protect your business data. Your information is never shared with third parties.") - Used in: page.tsx
+help.title (default: "Help & Support") - Used in: page.tsx
+help.description (default: "Find answers and get help when you need it") - Used in: page.tsx
+help.search_placeholder (default: "Search for help...") - Used in: page.tsx
+help.start_tour (default: "Start Tour") - Used in: page.tsx
+help.call_support (default: "Call Support") - Used in: page.tsx
+help.all_categories (default: "All") - Used in: page.tsx
+help.frequently_asked (default: "Frequently Asked Questions") - Used in: page.tsx
+help.contact_support (default: "Contact Support") - Used in: page.tsx
+help.your_name (default: "Your Name") - Used in: page.tsx
+help.your_email (default: "Your Email") - Used in: page.tsx
+help.subject (default: "Subject") - Used in: page.tsx
+help.message (default: "Message") - Used in: page.tsx
+help.send_message (default: "Send Message") - Used in: page.tsx
+help.resources (default: "Resources") - Used in: page.tsx
+help.user_guide (default: "User Guide PDF") - Used in: page.tsx
+help.comprehensive_guide (default: "Comprehensive guide to all features") - Used in: page.tsx
+help.backup_data (default: "Backup Your Data") - Used in: page.tsx
+help.download_backup (default: "Download a backup of your business data") - Used in: page.tsx
+more.share_app_message (default: "🐝 Check out BeeZee - The amazing business management app!\n\n📊 Track sales & inventory\n📅 Manage appointments\n💰 Monitor finances\n📈 Business analytics\n\n👉 Download here: {url}\n\nTransform your business today! 🚀") - Used in: page.tsx
+more.business_tools (default: "Business Tools") - Used in: page.tsx
+more.reports (default: "Reports") - Used in: page.tsx
+more.reports_description (default: "View business reports and analytics") - Used in: page.tsx
+more.settings (default: "Settings") - Used in: page.tsx
+more.settings_description (default: "Manage your business settings") - Used in: page.tsx
+more.community_support (default: "Community & Support") - Used in: page.tsx
+more.beehive_community (default: "BeeHive Community") - Used in: page.tsx
+more.beehive_description (default: "Connect with other business owners") - Used in: page.tsx
+nav.more (default: "More") - Used in: page.tsx
+more.share_app (default: "Share App") - Used in: page.tsx
+app.name (default: "BeeZee App") - Used in: page.tsx, page.tsx, page.tsx
+common.industry (default: "Industry") - Used in: page.tsx, page.tsx
+common.country (default: "Country") - Used in: page.tsx, page.tsx
+more.member_since (default: "Member since") - Used in: page.tsx, page.tsx
+auth.sign_out (default: "Sign Out") - Used in: page.tsx
+footer.privacy (default: "Privacy") - Used in: page.tsx, page.tsx
+footer.terms (default: "Terms") - Used in: page.tsx, page.tsx
+footer.help (default: "Help") - Used in: page.tsx, page.tsx
+refresh.data_refreshed (default: "Data refreshed successfully!") - Used in: page.tsx
+refresh.refresh_failed (default: "Failed to refresh some data. Please try again.") - Used in: page.tsx
+alert.setup_profile_first (default: "Please set up your business profile first before adding transactions.") - Used in: page.tsx
+alert.failed_transaction (default: "Failed to add transaction. Please try again.") - Used in: page.tsx
+alert.setup_profile_first_expenses (default: "Please set up your business profile first before adding expenses.") - Used in: page.tsx
+alert.failed_expense (default: "Failed to add expense. Please try again.") - Used in: page.tsx
+business.setup_required (default: "Business Setup Required") - Used in: page.tsx, page.tsx
+business.setup_message (default: "Please complete your business profile to start adding transactions and expenses.") - Used in: page.tsx
+business.auth_user (default: "Auth User") - Used in: page.tsx
+business.not_authenticated (default: "Not authenticated") - Used in: page.tsx
+business.business_status (default: "Tenant Status") - Used in: page.tsx
+@/components/universal/BuzzInsights - Used in: page.tsx
+@/components/universal/EditServiceModal - Used in: page.tsx
+@/components/universal/AddCustomerModal - Used in: page.tsx
+@/components/universal/AddInventoryForm - Used in: page.tsx
+@/components/universal/AppointmentList - Used in: page.tsx
+@/components/universal/ServiceList - Used in: page.tsx
+@/components/universal/CustomerList - Used in: page.tsx
+reports.title (default: "Reports") - Used in: page.tsx, page.tsx
+reports.overview (default: "Overview") - Used in: page.tsx
+reports.sales (default: "Sales") - Used in: page.tsx, page.tsx
+reports.expenses (default: "Expenses") - Used in: page.tsx
+reports.inventory (default: "Inventory") - Used in: page.tsx
+reports.services (default: "Services") - Used in: page.tsx
+reports.customers (default: "Customers") - Used in: page.tsx
+reports.daily_performance (default: "Daily Performance") - Used in: page.tsx, page.tsx
+reports.export (default: "Export Report") - Used in: page.tsx
+reports.total_revenue (default: "Total Revenue") - Used in: page.tsx, page.tsx
+reports.transactions (default: "transactions") - Used in: page.tsx
+reports.total_expenses (default: "Total Expenses") - Used in: page.tsx
+reports.net_profit (default: "Net Profit") - Used in: page.tsx
+reports.profit_margin (default: "Profit margin") - Used in: page.tsx
+reports.sales_performance (default: "Sales Performance") - Used in: page.tsx
+reports.period_sales (default: "Sales this period") - Used in: page.tsx
+reports.top_categories (default: "Top Categories") - Used in: page.tsx
+reports.payment_methods (default: "Payment Methods") - Used in: page.tsx
+reports.top_sellers (default: "Top Selling Items") - Used in: page.tsx
+reports.sold (default: "sold") - Used in: page.tsx
+reports.customer_frequency (default: "Customer Frequency") - Used in: page.tsx
+reports.unique_customers (default: "Unique Customers") - Used in: page.tsx
+reports.repeat_rate (default: "Repeat Rate") - Used in: page.tsx
+reports.avg_purchases (default: "Avg Purchases") - Used in: page.tsx
+reports.peak_times (default: "Peak Sales Times") - Used in: page.tsx
+reports.best_day (default: "Best Day") - Used in: page.tsx
+reports.services_summary (default: "Services Summary") - Used in: page.tsx
+reports.total_services (default: "Total Services") - Used in: page.tsx
+reports.active_services (default: "Active Services") - Used in: page.tsx
+reports.service_performance (default: "Service Performance") - Used in: page.tsx
+reports.total_transactions (default: "Total Transactions") - Used in: page.tsx
+reports.avg_revenue_per_service (default: "Average Revenue per Service") - Used in: page.tsx
+reports.top_services (default: "Top Services") - Used in: page.tsx
+reports.inventory_summary (default: "Inventory Summary") - Used in: page.tsx
+reports.total_items (default: "Total Items") - Used in: page.tsx
+reports.low_stock (default: "Low Stock") - Used in: page.tsx
+reports.inventory_value (default: "Inventory Value") - Used in: page.tsx
+reports.total_value (default: "Total inventory value") - Used in: page.tsx
+reports.stock_turnover (default: "Stock Turnover") - Used in: page.tsx
+reports.turnover_rate (default: "Items sold / Total items") - Used in: page.tsx
+reports.customer_summary (default: "Customer Summary") - Used in: page.tsx
+reports.total_customers (default: "Total Customers") - Used in: page.tsx
+reports.outstanding (default: "Outstanding") - Used in: page.tsx
+reports.total_owed (default: "Total Owed") - Used in: page.tsx
+reports.outstanding_balance (default: "Outstanding balance") - Used in: page.tsx
+reports.average_credit (default: "Average Credit Value") - Used in: page.tsx
+reports.avg_per_customer (default: "Average per customer") - Used in: page.tsx
+reports.expenses_breakdown (default: "Expenses Breakdown") - Used in: page.tsx
+reports.total_expenses_period (default: "Total expenses this period") - Used in: page.tsx
+reports.expense_categories (default: "Expense Categories") - Used in: page.tsx
+reports.last_30_days (default: "Last 30 days of daily sales performance") - Used in: page.tsx
+reports.no_daily_history (default: "No daily history available yet") - Used in: page.tsx
+reports.daily_history_info (default: "History is recorded automatically at midnight each day") - Used in: page.tsx
+reports.date (default: "Date") - Used in: page.tsx
+reports.target (default: "Target") - Used in: page.tsx
+reports.achievement (default: "Achievement") - Used in: page.tsx
+reports.status (default: "Status") - Used in: page.tsx
+reports.met (default: "Met") - Used in: page.tsx
+reports.not_met (default: "Not Met") - Used in: page.tsx
+reports.days_target_met (default: "Days Target Met") - Used in: page.tsx
+reports.out_of (default: "out of") - Used in: page.tsx
+reports.days (default: "days") - Used in: page.tsx
+reports.success_rate (default: "Success Rate") - Used in: page.tsx
+reports.overall_achievement (default: "Overall achievement") - Used in: page.tsx
+canvas - Used in: page.tsx
+2d - Used in: page.tsx, HeroSequence.tsx
+services.inventory_tab (default: "Inventory") - Used in: page.tsx, page.tsx
+services.add_error (default: "Failed to add service. Please try again.") - Used in: page.tsx
+services.business_load_error (default: "Please wait for business data to load or refresh the page to log in properly.") - Used in: page.tsx
+inventory.add_error (default: "Failed to add item. Please try again.") - Used in: page.tsx, page.tsx
+services.update_success (default: "Service updated successfully") - Used in: page.tsx
+services.update_error (default: "Failed to update service") - Used in: page.tsx
+services.confirm_delete_service (default: "Permanently Delete Service?") - Used in: page.tsx
+services.confirm_delete_permanently (default: "Yes, Delete Permanently") - Used in: page.tsx, page.tsx
+services.delete_error (default: "Failed to delete service. Please try again.") - Used in: page.tsx
+services.sale_failed (default: "Failed to complete sale. Please try again.") - Used in: page.tsx
+services.confirm_delete_inventory (default: "Permanently Delete Inventory Item?") - Used in: page.tsx
+services.transport_offline_mode (default: "Offline mode: Transport trip queued for sync") - Used in: page.tsx
+services.trip_failed (default: "Failed to complete trip. Please try again.") - Used in: page.tsx
+services.services_tab (default: "Services") - Used in: page.tsx
+common.total_service_value (default: "Total Service Value") - Used in: page.tsx
+common.avg_price (default: "Avg Price") - Used in: page.tsx
+inventory.left (default: "in stock") - Used in: page.tsx, page.tsx
+inventory.reorder_soon (default: "items need restock") - Used in: page.tsx
+services.no_inventory_found (default: "No inventory items found") - Used in: page.tsx, page.tsx
+services.start_by_adding_first_item (default: "Start by adding your first inventory item") - Used in: page.tsx
+services.add_inventory_item (default: "Add Item") - Used in: page.tsx
+enter_category (default: "Enter category") - Used in: page.tsx, page.tsx, page.tsx
+stock (default: "Stock") - Used in: page.tsx
+@/lib/sync-manager - Used in: page.tsx, Appointments.tsx
+services - Used in: page.tsx
+Failed to update item. Please try again. - Used in: page.tsx
+services.total_services - Used in: page.tsx
+services.available - Used in: page.tsx
+services.low_stock - Used in: page.tsx
+services.products_need_restock - Used in: page.tsx
+services.add_service - Used in: page.tsx, page.tsx, EditServiceModal.tsx, EditServiceModal.tsx
+services.search_services - Used in: page.tsx
+filter.all - Used in: page.tsx
+_ - Used in: page.tsx
+services.no_services_found - Used in: page.tsx
+services.start_by_adding_first_service - Used in: page.tsx
+inventory.total_items - Used in: page.tsx, page.tsx, InventoryList.tsx
+inventory.low_stock - Used in: page.tsx, page.tsx, InventoryList.tsx
+inventory.total_stock_value - Used in: page.tsx, page.tsx
+inventory.add_new_item - Used in: page.tsx, page.tsx, page.tsx, page.tsx
+inventory.search_items - Used in: page.tsx, page.tsx
+inventory.min - Used in: page.tsx, page.tsx, page.tsx, InventoryList.tsx
+inventory.running_low - Used in: page.tsx, page.tsx, InventoryList.tsx
+item_name - Used in: page.tsx, page.tsx, page.tsx
+category - Used in: page.tsx, page.tsx, page.tsx
+quantity - Used in: page.tsx, page.tsx, page.tsx, page.tsx
+inventory.units - Used in: page.tsx, AddInventoryForm.tsx
+select_category - Used in: page.tsx
+inventory.pieces - Used in: page.tsx, AddInventoryForm.tsx
+common.suppliers - Used in: page.tsx
+settings.general (default: "General") - Used in: page.tsx
+settings.profile (default: "Profile Information") - Used in: page.tsx, page.tsx
+settings.profile_desc (default: "Update your business details") - Used in: page.tsx
+settings.language (default: "Language") - Used in: page.tsx
+settings.language_desc (default: "Choose your preferred language") - Used in: page.tsx
+settings.currency (default: "Currency") - Used in: page.tsx
+settings.currency_desc (default: "Set your local currency") - Used in: page.tsx
+settings.notifications (default: "Notifications") - Used in: page.tsx
+settings.push_notifications (default: "Push Notifications") - Used in: page.tsx
+settings.push_desc (default: "Receive alerts on your device") - Used in: page.tsx
+settings.sound_effects (default: "Sound Effects") - Used in: page.tsx
+settings.sound_desc (default: "Play sounds for actions") - Used in: page.tsx
+settings.low_stock_alerts (default: "Low Stock Alerts") - Used in: page.tsx
+settings.stock_desc (default: "Get notified when items are low") - Used in: page.tsx
+settings.appearance (default: "Appearance") - Used in: page.tsx
+settings.dark_mode (default: "Dark Mode") - Used in: page.tsx
+settings.dark_desc (default: "Easier on the eyes at night") - Used in: page.tsx
+settings.compact_view (default: "Compact View") - Used in: page.tsx
+settings.compact_desc (default: "Show more content on screen") - Used in: page.tsx
+settings.data_storage (default: "Data & Storage") - Used in: page.tsx
+settings.auto_backup (default: "Auto Backup") - Used in: page.tsx
+settings.backup_desc (default: "Automatically backup your data") - Used in: page.tsx
+settings.sync_data (default: "Sync Data") - Used in: page.tsx
+settings.sync_desc (default: "Keep data synced across devices") - Used in: page.tsx
+settings.export_data (default: "Export Data") - Used in: page.tsx
+settings.export_desc (default: "Download your business data") - Used in: page.tsx
+settings.clear_cache (default: "Clear Cache") - Used in: page.tsx
+settings.cache_desc (default: "Free up storage space") - Used in: page.tsx
+settings.reset_account (default: "Reset Account Data") - Used in: page.tsx
+settings.reset_desc (default: "Delete all your data (appointments, inventory, etc.)") - Used in: page.tsx
+settings.security (default: "Security") - Used in: page.tsx
+settings.change_password (default: "Change Password") - Used in: page.tsx, page.tsx
+settings.password_desc (default: "Update your account password") - Used in: page.tsx
+settings.two_factor (default: "Two-Factor Auth") - Used in: page.tsx
+settings.2fa_desc (default: "Add an extra layer of security") - Used in: page.tsx
+settings.privacy (default: "Privacy Settings") - Used in: page.tsx
+settings.privacy_desc (default: "Control your data privacy") - Used in: page.tsx
+common.back (default: "Back to More") - Used in: page.tsx
+common.save (default: "Save") - Used in: page.tsx, MoneyOutButton.tsx
+settings.edit_profile (default: "Edit Profile") - Used in: page.tsx
+settings.title (default: "Settings") - Used in: page.tsx
+settings.current_password (default: "Current Password") - Used in: page.tsx
+settings.new_password (default: "New Password") - Used in: page.tsx
+settings.confirm_password (default: "Confirm New Password") - Used in: page.tsx
+settings.cancel (default: "Cancel") - Used in: page.tsx
+settings.update_password (default: "Update Password") - Used in: page.tsx
+settings.export (default: "Export") - Used in: page.tsx
+settings.clear (default: "Clear") - Used in: page.tsx
+settings.account_info (default: "Account Information") - Used in: page.tsx
+settings.email (default: "Email") - Used in: page.tsx
+settings.phone (default: "Phone") - Used in: page.tsx
+settings.business (default: "Business") - Used in: page.tsx
+settings.industry (default: "Industry") - Used in: page.tsx
+settings.country (default: "Country") - Used in: page.tsx
+Profile updated successfully! - Used in: page.tsx
+Error updating profile. Please try again. - Used in: page.tsx
+Account has been reset successfully. All data cleared. - Used in: page.tsx
+Failed to reset account. Please try again. - Used in: page.tsx
+Passwords do not match - Used in: page.tsx
+inventory.delete_offline_item (default: "This item was created offline and will be removed from your local view.") - Used in: page.tsx
+inventory.delete_error (default: "Failed to delete item. Please try again.") - Used in: page.tsx
+inventory.edit_error (default: "Failed to update item. Please try again.") - Used in: page.tsx
+inventory.sell_error (default: "Failed to process sale. Please try again.") - Used in: page.tsx
+inventory.total_qty (default: "Total Qty") - Used in: page.tsx
+common.all (default: "All") - Used in: page.tsx, page.tsx, page.tsx, Appointments.tsx
+inventory.items (default: "Items") - Used in: page.tsx, page.tsx
+repairs.try_adjusting (default: "Try adjusting your search or filters") - Used in: page.tsx
+services.running_low (default: "Stock running low - reorder soon") - Used in: page.tsx
+sell (default: "Sell") - Used in: page.tsx, page.tsx
+inventory.edit_item (default: "Edit Item") - Used in: page.tsx, InventoryList.tsx
+retail.inventory.min_stock (default: "Min Stock") - Used in: page.tsx, page.tsx
+inventory.unit (default: "Unit") - Used in: page.tsx, page.tsx
+cost_price (default: "Cost Price") - Used in: page.tsx, page.tsx
+selling_price (default: "Selling Price") - Used in: page.tsx, page.tsx
+customerName (default: "Customer Name") - Used in: page.tsx, MoneyInButton.tsx, MoneyInButton.tsx
+paymentMethod (default: "Payment Method") - Used in: page.tsx
+common.total_amount (default: "Total Amount") - Used in: page.tsx
+tour.welcome_title (default: "Welcome to BeeZee!") - Used in: page.tsx
+tour.transactions_title (default: "Track Your Money") - Used in: page.tsx
+tour.transactions_description (default: "Monitor your income and expenses in real-time") - Used in: page.tsx, IndustryTour.tsx, MultiPageTour.tsx
+tour.inventory_title (default: "Manage Your Inventory") - Used in: page.tsx
+tour.inventory_description (default: "Keep track of your stock and products") - Used in: page.tsx, IndustryTour.tsx, MultiPageTour.tsx
+tour.customers_title (default: "Customer Management") - Used in: page.tsx
+tour.customers_description (default: "Manage credit and track customer payments") - Used in: page.tsx
+tour.reports_title (default: "Business Reports") - Used in: page.tsx
+tour.reports_description (default: "Get insights into your business performance") - Used in: page.tsx, IndustryTour.tsx, MultiPageTour.tsx
+tour.settings_title (default: "Settings") - Used in: page.tsx
+tour.settings_description (default: "Customize your app preferences") - Used in: page.tsx, MultiPageTour.tsx
+tour.step (default: "Step") - Used in: page.tsx, IndustryTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+tour.of (default: "of") - Used in: page.tsx, IndustryTour.tsx, MultiPageTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+tour.completed (default: "Completed") - Used in: page.tsx
+tour.got_it (default: "Got it!") - Used in: page.tsx
+tour.next (default: "Next") - Used in: page.tsx, page.tsx
+tour.previous (default: "Previous") - Used in: page.tsx
+tour.pause (default: "Pause") - Used in: page.tsx
+tour.play (default: "Play") - Used in: page.tsx
+tour.skip (default: "Skip") - Used in: page.tsx
+tour.finish (default: "Finish") - Used in: page.tsx
+tour.quick_links (default: "Quick Links") - Used in: page.tsx
+nav.home (default: "Home") - Used in: page.tsx
+nav.transactions (default: "Transactions") - Used in: page.tsx
+nav.inventory (default: "Inventory") - Used in: page.tsx
+receipt.transaction_id (default: "Transaction ID") - Used in: page.tsx
+common.today (default: "Today") - Used in: page.tsx, page.tsx
+common.total (default: "Total") - Used in: page.tsx
+transactions.no_found (default: "No transactions found") - Used in: page.tsx, page.tsx
+transactions.start_first (default: "Start by adding your first sale") - Used in: page.tsx, page.tsx
+transactions.search_placeholder (default: "Search transactions...") - Used in: page.tsx
+common.yesterday (default: "Yesterday") - Used in: page.tsx
+receipt.view_details (default: "View Receipt Details") - Used in: page.tsx
+auth.welcome_back (default: "Welcome Back") - Used in: page.tsx
+@/components/universal/BottomNav - Used in: layout-client.tsx
+@/components/universal/ScrollToTop - Used in: layout-client.tsx
+@/components/PWAInstallPrompt - Used in: layout-client.tsx
+@/components/universal/ConnectionToast - Used in: layout-client.tsx
+style - Used in: layout-client.tsx, Navigation.tsx, DotScrollIndicator.tsx
+@/lib/cleanup-bad-operations - Used in: layout-client.tsx
+X-Offline - Used in: layout-client.tsx
+industry - Used in: page.tsx
+appointments.pending_sync (default: "Pending") - Used in: AppointmentCard.tsx
+appointments.sync_error (default: "Error") - Used in: AppointmentCard.tsx
+appointments.synced (default: "Synced") - Used in: AppointmentCard.tsx
+appointments.scheduled (default: "Scheduled") - Used in: AppointmentCard.tsx, Appointments.tsx
+appointments.confirmed (default: "Confirmed") - Used in: AppointmentCard.tsx
+appointments.completed (default: "Completed") - Used in: AppointmentCard.tsx, AppointmentsNew.tsx, AppointmentsNew.tsx, Appointments.tsx
+appointments.cancelled (default: "Cancelled") - Used in: AppointmentCard.tsx, AppointmentsNew.tsx, AppointmentsNew.tsx, Appointments.tsx
+appointments.no_show (default: "No Show") - Used in: AppointmentCard.tsx
+appointments.all_day (default: "All day") - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx
+appointments.am (default: "AM") - Used in: AppointmentCard.tsx
+appointments.pm (default: "PM") - Used in: AppointmentCard.tsx
+appointments.no_customer (default: "No customer") - Used in: AppointmentCard.tsx
+appointments.service (default: "Service") - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx, AppointmentDetailsSheet.tsx, Appointments.tsx
+appointments.at_time (default: "at") - Used in: AppointmentCard.tsx
+appointments.duration (default: "Duration") - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx
+appointments.minutes (default: "min") - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx
+appointments.complete (default: "Complete") - Used in: AppointmentCard.tsx
+appointments.cancel (default: "Cancel") - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx, CreateAppointmentSheet.tsx
+appointments.view_details (default: "View Details") - Used in: AppointmentCard.tsx
+: - Used in: AppointmentCard.tsx, AppointmentDetailsSheet.tsx, CreateAppointmentSheet.tsx, CreateAppointmentSheet.tsx, CreateAppointmentSheet.tsx, AppointmentList.tsx, HomepageCalendar.tsx, AddAppointmentModal.tsx, AddAppointmentModal.tsx, AddAppointmentModal.tsx
+appointments.provide_cancel_reason (default: "Please provide a cancellation reason") - Used in: AppointmentDetailsSheet.tsx
+appointments.details_title (default: "Appointment Details") - Used in: AppointmentDetailsSheet.tsx
+appointments.customer (default: "Customer") - Used in: AppointmentDetailsSheet.tsx, Appointments.tsx
+appointments.date_time (default: "Date & Time") - Used in: AppointmentDetailsSheet.tsx, Appointments.tsx
+appointments.notes (default: "Notes") - Used in: AppointmentDetailsSheet.tsx, Appointments.tsx
+appointments.sync_status (default: "Sync Status") - Used in: AppointmentDetailsSheet.tsx
+appointments.delete_confirm (default: "Are you sure you want to delete this appointment?") - Used in: AppointmentDetailsSheet.tsx
+appointments.delete (default: "Delete") - Used in: AppointmentDetailsSheet.tsx
+appointments.cancel_confirm (default: "Cancel this appointment?") - Used in: AppointmentDetailsSheet.tsx
+appointments.cancel_reason (default: "Reason for cancellation (optional)") - Used in: AppointmentDetailsSheet.tsx
+appointments.back (default: "Back") - Used in: AppointmentDetailsSheet.tsx
+appointments.confirm_cancel (default: "Confirm Cancel") - Used in: AppointmentDetailsSheet.tsx
+appointments.mark_completed (default: "Mark as Completed") - Used in: AppointmentDetailsSheet.tsx
+appointments.cancel_appointment (default: "Cancel Appointment") - Used in: AppointmentDetailsSheet.tsx
+appointments.delete_appointment (default: "Delete Appointment") - Used in: AppointmentDetailsSheet.tsx, AppointmentDetailsSheet.tsx
+appointments.create_success (default: "Appointment created successfully") - Used in: AppointmentsNew.tsx
+appointments.create_error (default: "Failed to create appointment. Please try again.") - Used in: AppointmentsNew.tsx, CreateAppointmentSheet.tsx
+appointments.complete_success (default: "Appointment completed successfully") - Used in: AppointmentsNew.tsx, Appointments.tsx
+appointments.complete_error (default: "Failed to complete appointment") - Used in: AppointmentsNew.tsx, Appointments.tsx
+appointments.cancel_success (default: "Appointment cancelled successfully") - Used in: AppointmentsNew.tsx
+appointments.cancel_error (default: "Failed to cancel appointment") - Used in: AppointmentsNew.tsx
+appointments.delete_success (default: "Appointment deleted successfully") - Used in: AppointmentsNew.tsx
+appointments.delete_error (default: "Failed to delete appointment") - Used in: AppointmentsNew.tsx
+appointments.loading (default: "Loading appointments...") - Used in: AppointmentsNew.tsx
+appointments.title (default: "Appointments") - Used in: AppointmentsNew.tsx
+appointments.add_appointment (default: "Add Appointment") - Used in: AppointmentsNew.tsx, AppointmentsNew.tsx, CreateAppointmentSheet.tsx, AppointmentList.tsx, Appointments.tsx
+appointments.list_view (default: "List") - Used in: AppointmentsNew.tsx
+appointments.calendar_view (default: "Calendar") - Used in: AppointmentsNew.tsx
+appointments.search_placeholder (default: "Search appointments...") - Used in: AppointmentsNew.tsx, Appointments.tsx
+appointments.all_statuses (default: "All Status") - Used in: AppointmentsNew.tsx
+appointments.pending (default: "Pending") - Used in: AppointmentsNew.tsx
+appointments.upcoming (default: "Upcoming") - Used in: AppointmentsNew.tsx, AppointmentList.tsx
+appointments.no_appointments_found (default: "No appointments found") - Used in: AppointmentsNew.tsx
+appointments.adjust_filters (default: "Try adjusting your filters") - Used in: AppointmentsNew.tsx
+appointments.get_started (default: "Get started by creating your first appointment") - Used in: AppointmentsNew.tsx
+appointments.previous_month (default: "Previous month") - Used in: CalendarView.tsx
+appointments.locale (default: "en-US") - Used in: CalendarView.tsx
+appointments.today_button (default: "Today") - Used in: CalendarView.tsx
+appointments.next_month (default: "Next month") - Used in: CalendarView.tsx
+appointments.sun (default: "Sun") - Used in: CalendarView.tsx
+appointments.mon (default: "Mon") - Used in: CalendarView.tsx
+appointments.tue (default: "Tue") - Used in: CalendarView.tsx
+appointments.wed (default: "Wed") - Used in: CalendarView.tsx
+appointments.thu (default: "Thu") - Used in: CalendarView.tsx
+appointments.fri (default: "Fri") - Used in: CalendarView.tsx
+appointments.sat (default: "Sat") - Used in: CalendarView.tsx
+appointments.today (default: "Today") - Used in: CalendarView.tsx, AppointmentList.tsx
+appointments.has_appointments (default: "Has appointments") - Used in: CalendarView.tsx
+appointments.customer_name_required (default: "Customer name is required") - Used in: CreateAppointmentSheet.tsx
+appointments.customer_name_min_length (default: "Customer name must be at least 2 characters") - Used in: CreateAppointmentSheet.tsx
+appointments.date_required (default: "Date is required") - Used in: CreateAppointmentSheet.tsx
+appointments.date_past (default: "Date cannot be in the past") - Used in: CreateAppointmentSheet.tsx
+appointments.start_time_required (default: "Start time is required") - Used in: CreateAppointmentSheet.tsx
+appointments.end_time_required (default: "End time is required") - Used in: CreateAppointmentSheet.tsx
+appointments.end_time_after_start (default: "End time must be after start time") - Used in: CreateAppointmentSheet.tsx
+appointments.service_required (default: "Please select a service") - Used in: CreateAppointmentSheet.tsx
+appointments.fix_form_errors (default: "Please fix the errors in the form") - Used in: CreateAppointmentSheet.tsx
+appointments.no_business_info (default: "No business information available") - Used in: CreateAppointmentSheet.tsx
+calendar.add_appointment (default: "Add Appointment") - Used in: CreateAppointmentSheet.tsx, AddAppointmentModal.tsx
+appointments.customer_name (default: "Customer Name") - Used in: CreateAppointmentSheet.tsx, AddCustomerModal.tsx, AddCustomerModal.tsx
+appointments.enter_customer_name (default: "Enter customer name") - Used in: CreateAppointmentSheet.tsx
+appointments.customer_contact (default: "Customer Contact") - Used in: CreateAppointmentSheet.tsx, AddCustomerModal.tsx, AddCustomerModal.tsx
+appointments.phone_number_optional (default: "Phone number (optional)") - Used in: CreateAppointmentSheet.tsx
+appointments.date (default: "Date") - Used in: CreateAppointmentSheet.tsx
+appointments.start_time_label (default: "Start Time") - Used in: CreateAppointmentSheet.tsx
+appointments.end_time_label (default: "End Time") - Used in: CreateAppointmentSheet.tsx
+appointments.service_label (default: "Service") - Used in: CreateAppointmentSheet.tsx
+appointments.select_service (default: "Select a service") - Used in: CreateAppointmentSheet.tsx
+appointments.no_services (default: "No services available. Please add services first.") - Used in: CreateAppointmentSheet.tsx
+appointments.notes_label (default: "Notes") - Used in: CreateAppointmentSheet.tsx
+appointments.notes_placeholder (default: "Additional notes or special requests...") - Used in: CreateAppointmentSheet.tsx
+appointments.creating (default: "Creating...") - Used in: CreateAppointmentSheet.tsx
+appointments.offline_mode (default: "Offline Mode") - Used in: SyncStatusIndicator.tsx
+appointments.syncing (default: "Syncing...") - Used in: SyncStatusIndicator.tsx
+appointments.changes_remaining (default: "changes remaining") - Used in: SyncStatusIndicator.tsx
+appointments.updating_data (default: "Updating data") - Used in: SyncStatusIndicator.tsx
+appointments.pending_changes (default: "Pending Changes") - Used in: SyncStatusIndicator.tsx
+appointments.waiting_to_sync (default: "changes waiting to sync") - Used in: SyncStatusIndicator.tsx
+appointments.sync_now (default: "Sync Now") - Used in: SyncStatusIndicator.tsx
+appointments.all_changes_saved (default: "All Changes Saved") - Used in: SyncStatusIndicator.tsx
+appointments.data_up_to_date (default: "Your data is up to date") - Used in: SyncStatusIndicator.tsx
+app.greeting (default: "GOOD AFTERNOON, FRIEND") - Used in: BeezeeAppHero.tsx
+app.balance (default: "Balance") - Used in: BeezeeAppHero.tsx
+app.demo (default: "Demo") - Used in: BeezeeAppHero.tsx
+app.executive_tools (default: "Executive Tools") - Used in: BeezeeAppHero.tsx
+app.voice (default: "Voice") - Used in: BeezeeAppHero.tsx
+app.scan (default: "Scan") - Used in: BeezeeAppHero.tsx
+app.book (default: "Book") - Used in: BeezeeAppHero.tsx
+app.stock (default: "Stock") - Used in: BeezeeAppHero.tsx
+app.coach_analysis (default: "Coach Analysis") - Used in: BeezeeAppHero.tsx
+hero.get_started (default: "Get Started") - Used in: BeezeeHero.tsx
+modal.request_access (default: "Request Access.") - Used in: ComingSoonModal.tsx
+modal.early_access_description (default: "Get early access to the BeeZee financial operating system.") - Used in: ComingSoonModal.tsx
+modal.join_waitlist (default: "Join the waitlist for exclusive access.") - Used in: ComingSoonModal.tsx
+modal.gain_access (default: "GAIN ACCESS") - Used in: ComingSoonModal.tsx
+modal.maybe_later (default: "MAYBE LATER") - Used in: ComingSoonModal.tsx
+modal.system_status (default: "System Status: Accepting Requests") - Used in: ComingSoonModal.tsx
+error.no_business_id (default: "No business ID found") - Used in: AddCreditLineItemModal.tsx
+credit.failed_to_add_item (default: "Failed to add credit item. Please try again.") - Used in: AddCreditLineItemModal.tsx
+credit.add_new_credit (default: "Add New Credit") - Used in: AddCreditLineItemModal.tsx, PaymentModal.tsx, PaymentModal.tsx
+credit.for_customer (default: "For") - Used in: AddCreditLineItemModal.tsx
+credit.description (default: "Description") - Used in: AddCreditLineItemModal.tsx
+credit.amount (default: "Amount") - Used in: AddCreditLineItemModal.tsx
+modal.cancel (default: "Cancel") - Used in: AddCreditLineItemModal.tsx, ConfirmModal.tsx, PaymentModal.tsx
+modal.processing (default: "Processing...") - Used in: AddCreditLineItemModal.tsx, ConfirmModal.tsx, PaymentModal.tsx, PaymentModal.tsx
+credit.add_credit (default: "Add Credit") - Used in: AddCreditLineItemModal.tsx
+credit.total_amount (default: "Total Amount") - Used in: CreditCustomerCard.tsx, PayableCreditCard.tsx
+credit.paid_amount (default: "Paid Amount") - Used in: CreditCustomerCard.tsx, PayableCreditCard.tsx
+credit.outstanding_amount (default: "Outstanding") - Used in: CreditCustomerCard.tsx, PayableCreditCard.tsx
+common.loading (default: "Loading...") - Used in: CreditCustomerCard.tsx, PayableCreditCard.tsx, BeehiveComments.tsx
+credit.credit_purchases (default: "Credit Purchases") - Used in: CreditCustomerCard.tsx
+credit.credit_purchase (default: "Credit Purchase") - Used in: CreditCustomerCard.tsx, PaymentModal.tsx, PaymentModal.tsx, PaymentModal.tsx
+credit.remaining (default: "Remaining") - Used in: CreditCustomerCard.tsx, PayableCreditCard.tsx
+credit.no_line_items (default: "No individual credit purchases found") - Used in: CreditCustomerCard.tsx
+credit.costs (default: "Costs") - Used in: PayableCreditCard.tsx
+credit.no_costs_found (default: "No individual costs found") - Used in: PayableCreditCard.tsx
+nav.system_status (default: "SYSTEM STATUS: OPTIMAL") - Used in: GlobalNavigation.tsx
+div - Used in: BeeZeeConfirmDialog.tsx
+modal.confirm - Used in: ConfirmModal.tsx
+common.email_address - Used in: AddCustomerModal.tsx, AddCustomerModal.tsx
+credit.initial_credit - Used in: AddCustomerModal.tsx
+inventory.example_vegetables (default: "e.g., Fresh Vegetables") - Used in: AddInventoryForm.tsx
+inventory.example_headphones (default: "e.g., Premium Headphones") - Used in: AddInventoryForm.tsx
+inventory.example_fuel (default: "e.g., Fuel Can") - Used in: AddInventoryForm.tsx
+inventory.example_software (default: "e.g., Software License") - Used in: AddInventoryForm.tsx
+inventory.example_item (default: "e.g., Item Name") - Used in: AddInventoryForm.tsx
+inventory.example_quantity (default: "10") - Used in: AddInventoryForm.tsx
+inventory.example_threshold (default: "5") - Used in: AddInventoryForm.tsx
+inventory.example_price (default: "0.00") - Used in: AddInventoryForm.tsx, AddInventoryForm.tsx
+inventory.add_item - Used in: AddInventoryForm.tsx, AddInventoryForm.tsx
+inventory.item_name - Used in: AddInventoryForm.tsx
+inventory.category - Used in: AddInventoryForm.tsx
+inventory.enter_category - Used in: AddInventoryForm.tsx
+inventory.quantity - Used in: AddInventoryForm.tsx
+inventory.min_stock - Used in: AddInventoryForm.tsx
+inventory.select_unit - Used in: AddInventoryForm.tsx
+inventory.kg - Used in: AddInventoryForm.tsx
+inventory.liters - Used in: AddInventoryForm.tsx
+inventory.meters - Used in: AddInventoryForm.tsx
+inventory.boxes - Used in: AddInventoryForm.tsx
+inventory.supplier - Used in: AddInventoryForm.tsx
+inventory.supplier_name - Used in: AddInventoryForm.tsx
+inventory.cost_price - Used in: AddInventoryForm.tsx
+inventory.selling_price - Used in: AddInventoryForm.tsx
+common.appointments (default: "Appointments") - Used in: AppointmentList.tsx, Appointments.tsx
+appointments.today_count (default: "${todayAppointments.length} today") - Used in: AppointmentList.tsx
+appointments.untitled (default: "Appointment") - Used in: AppointmentList.tsx, AppointmentList.tsx
+common.no_upcoming_appointments (default: "No upcoming appointments") - Used in: AppointmentList.tsx, Appointments.tsx
+common.schedule_first_appointment (default: "Schedule your first appointment") - Used in: AppointmentList.tsx, Appointments.tsx
+appointments.manage_appointments (default: "Manage Appointments") - Used in: AppointmentList.tsx, HomepageCalendar.tsx
+common.delete_appointment (default: "Delete Appointment") - Used in: AppointmentList.tsx
+common.delete_confirm (default: "Are you sure you want to delete this appointment? This action cannot be undone.") - Used in: AppointmentList.tsx, InventoryList.tsx, ServiceList.tsx
+common.delete (default: "Delete") - Used in: AppointmentList.tsx, BeehiveComments.tsx, BeehiveRequestModal.tsx, BeehiveRequestModal.tsx, InventoryList.tsx, ServiceList.tsx
+time.just_now (default: "Just now") - Used in: BeehiveComments.tsx
+time.m (default: "m") - Used in: BeehiveComments.tsx
+time.h (default: "h") - Used in: BeehiveComments.tsx
+time.d (default: "d") - Used in: BeehiveComments.tsx
+beehive.comments (default: "Comments") - Used in: BeehiveComments.tsx
+beehive.no_comments (default: "No comments yet. Be the first to comment!") - Used in: BeehiveComments.tsx
+beehive.add_comment (default: "Add a comment...") - Used in: BeehiveComments.tsx
+beehive.error_title_required (default: "Title is required") - Used in: BeehiveRequestModal.tsx
+beehive.error_title_min (default: "Title must be at least 5 characters") - Used in: BeehiveRequestModal.tsx
+beehive.error_description_required (default: "Description is required") - Used in: BeehiveRequestModal.tsx
+beehive.error_description_min (default: "Description must be at least 10 characters") - Used in: BeehiveRequestModal.tsx
+beehive.edit_modal_title (default: "Edit Request") - Used in: BeehiveRequestModal.tsx
+beehive.add_modal_title (default: "New Feature Request") - Used in: BeehiveRequestModal.tsx
+beehive.title_placeholder (default: "Brief title for your request") - Used in: BeehiveRequestModal.tsx
+beehive.description_placeholder (default: "Describe your request in detail") - Used in: BeehiveRequestModal.tsx
+beehive.category (default: "Category") - Used in: BeehiveRequestModal.tsx
+beehive.new_feature (default: "New Feature") - Used in: BeehiveRequestModal.tsx
+beehive.improvement (default: "Improvement") - Used in: BeehiveRequestModal.tsx
+beehive.bug_fix (default: "Bug Fix") - Used in: BeehiveRequestModal.tsx
+beehive.integration (default: "Integration") - Used in: BeehiveRequestModal.tsx
+beehive.priority (default: "Priority") - Used in: BeehiveRequestModal.tsx
+common.submitting (default: "Submitting...") - Used in: BeehiveRequestModal.tsx
+common.submit (default: "Submit") - Used in: BeehiveRequestModal.tsx
+beehive.delete_confirm (default: "Delete this request?") - Used in: BeehiveRequestModal.tsx
+beehive.delete_confirm_message (default: "This action cannot be undone.") - Used in: BeehiveRequestModal.tsx
+buzz.low_stock_alert (default: "Low Stock Alert") - Used in: BuzzInsights.tsx
+buzz.overdue_payments (default: "Overdue Payments") - Used in: BuzzInsights.tsx
+buzz.top_seller (default: "Top Seller") - Used in: BuzzInsights.tsx
+buzz.daily_cash_summary (default: "Daily Cash Summary") - Used in: BuzzInsights.tsx
+buzz.inventory_summary (default: "Inventory Summary") - Used in: BuzzInsights.tsx
+buzz.credit_summary (default: "Credit Summary") - Used in: BuzzInsights.tsx
+buzz.popular_service (default: "Most Popular Service") - Used in: BuzzInsights.tsx
+buzz.profitable_area (default: "Most Profitable Area") - Used in: BuzzInsights.tsx
+buzz.transport_performance (default: "Transport Performance") - Used in: BuzzInsights.tsx
+buzz.great_momentum (default: "Great Momentum!") - Used in: BuzzInsights.tsx
+buzz.restock_reminder (default: "Restock Reminder") - Used in: BuzzInsights.tsx
+buzz.follow_up_needed (default: "Follow-up Needed") - Used in: BuzzInsights.tsx
+buzz.title (default: "Buzz") - Used in: BuzzInsights.tsx
+buzz.money_in (default: "Money In") - Used in: BuzzInsights.tsx
+buzz.money_out (default: "Money Out") - Used in: BuzzInsights.tsx
+buzz.profit (default: "Profit") - Used in: BuzzInsights.tsx
+buzz.total_value (default: "Total Value") - Used in: BuzzInsights.tsx
+buzz.low_stock (default: "low stock") - Used in: BuzzInsights.tsx
+buzz.view_details (default: "Tap to view details") - Used in: BuzzInsights.tsx, BuzzInsights.tsx
+buzz.total_owed (default: "Total Owed") - Used in: BuzzInsights.tsx
+buzz.overdue (default: "Overdue") - Used in: BuzzInsights.tsx
+buzz.left (default: "left") - Used in: BuzzInsights.tsx
+buzz.avg_overdue (default: "Avg") - Used in: BuzzInsights.tsx
+buzz.days (default: "days") - Used in: BuzzInsights.tsx
+buzz.sold (default: "sold") - Used in: BuzzInsights.tsx
+credit.no_outstanding (default: "No outstanding credit") - Used in: CreditList.tsx
+credit.total_owed (default: "Total Owed") - Used in: CreditList.tsx
+credit.due (default: "Due:") - Used in: CreditList.tsx, PaymentModal.tsx
+credit.view_all_history (default: "View All Credit History") - Used in: CreditList.tsx
+nav.customers - Used in: CustomerList.tsx
+credit.no_customers - Used in: CustomerList.tsx
+credit.add_first - Used in: CustomerList.tsx
+common.view_all - Used in: CustomerList.tsx, HomepageCalendar.tsx
+common.add - Used in: CustomerList.tsx, MoneyInButton.tsx, MoneyOutButton.tsx, ServiceList.tsx
+common.to_go (default: "to go") - Used in: DailyTarget.tsx
+staff_performance.target_met (default: "Target met!") - Used in: DailyTarget.tsx
+common.success (default: "Great job!") - Used in: DailyTarget.tsx
+${industry}.daily_target - Used in: DailyTarget.tsx
+country.current - Used in: DailyTarget.tsx
+services.duration_minutes (default: "Duration (minutes)") - Used in: EditServiceModal.tsx
+services.edit_service - Used in: EditServiceModal.tsx, ServiceList.tsx
+services.service_name - Used in: EditServiceModal.tsx
+services.enter_service_name - Used in: EditServiceModal.tsx
+services.price - Used in: EditServiceModal.tsx
+services.category - Used in: EditServiceModal.tsx
+services.enter_category - Used in: EditServiceModal.tsx
+services.description - Used in: EditServiceModal.tsx
+services.describe_service - Used in: EditServiceModal.tsx
+services.update_service - Used in: EditServiceModal.tsx
+language.select - Used in: Header.tsx
+appointments.upcoming_appointments (default: "Upcoming Appointments") - Used in: HomepageCalendar.tsx
+appointments.manage_schedule (default: "Manage your schedule") - Used in: HomepageCalendar.tsx
+appointments.no_appointments (default: "No appointments yet") - Used in: HomepageCalendar.tsx
+appointments.book_first (default: "Book your first appointment to get started") - Used in: HomepageCalendar.tsx
+tour.welcome_dashboard (default: "Welcome to Your Dashboard!") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.dashboard_description (default: "This is your business command center. Track everything that matters in one place.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.set_daily_goal (default: "Set Your Daily Goal") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.daily_goal_description (default: "Aim high! Set a daily sales target to keep yourself motivated and track your progress.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.buzz_insights (default: "Buzz Insights") - Used in: IndustryTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+tour.buzz_description (default: "Get smart insights about your business - low stock alerts, overdue payments, and quick summaries.") - Used in: IndustryTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+tour.quick_add_money (default: "Quick Add Money") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.track_cash_flow (default: "Track Your Cash Flow") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.cash_flow_description (default: "See all your money coming in and going out. Know your financial health at a glance.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_transactions (default: "Add Transactions") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.manage_customer_credit (default: "Manage Customer Credit") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.credit_description (default: "Keep track of customers who owe you money. Never forget a payment again!") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.record_credit_sales (default: "Record Credit Sales") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.credit_sales_description (default: "When a customer buys on credit, record it here to stay organized.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.manage_inventory (default: "Manage Your Inventory") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_product (default: "Add New Product") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_product_description (default: "Click here to add new products to your inventory.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.manage_services (default: "Manage Your Services") - Used in: IndustryTour.tsx, IndustryTour.tsx, MultiPageTour.tsx
+tour.services_description (default: "List all the services you offer. Help customers know what you provide.") - Used in: IndustryTour.tsx, IndustryTour.tsx, MultiPageTour.tsx
+tour.add_service (default: "Add New Service") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_service_description (default: "Click here to add a new service to your business offerings.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.manage_ingredients (default: "Manage Your Ingredients") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.ingredients_description (default: "Track your ingredients and supplies. Never run out of what you need.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_ingredient (default: "Add New Ingredient") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.add_ingredient_description (default: "Add ingredients to your kitchen inventory.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.manage_calendar (default: "Manage Your Calendar") - Used in: IndustryTour.tsx
+tour.calendar_description (default: "View and manage all your appointments in one place.") - Used in: IndustryTour.tsx
+tour.add_appointment (default: "Add New Appointment") - Used in: IndustryTour.tsx
+tour.add_appointment_description (default: "Schedule new appointments and manage your bookings.") - Used in: IndustryTour.tsx
+tour.manage_trips (default: "Manage Your Trips") - Used in: IndustryTour.tsx
+tour.trips_description (default: "List all your transport routes and services.") - Used in: IndustryTour.tsx
+tour.manage_jobs (default: "Manage Your Jobs") - Used in: IndustryTour.tsx
+tour.jobs_description (default: "Track all your tailoring jobs and measurements.") - Used in: IndustryTour.tsx
+tour.manage_projects (default: "Manage Your Projects") - Used in: IndustryTour.tsx
+tour.projects_description (default: "Track all your freelance projects and deliverables.") - Used in: IndustryTour.tsx
+tour.join_community (default: "Join the Beehive") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.beehive_description (default: "Connect with other business owners, share experiences, and get helpful tips.") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.view_reports (default: "View Business Reports") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.more_business_tools (default: "More Business Tools") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+tour.more_tools_description (default: "Additional features to help you run your business like a pro!") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+common.previous (default: "Previous") - Used in: IndustryTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+tour.complete_tour (default: "Complete Tour") - Used in: IndustryTour.tsx, MultiPageTour.tsx
+common.next (default: "Next") - Used in: IndustryTour.tsx, MultiPageTour.tsx, WelcomeTour.tsx
+inventory.no_items (default: "No items in inventory") - Used in: InventoryList.tsx
+inventory.delete_item (default: "Delete item") - Used in: InventoryList.tsx
+inventory.manage (default: "Manage Inventory") - Used in: InventoryList.tsx, ServiceList.tsx
+inventory.quick_add (default: "Quick Add +") - Used in: InventoryList.tsx
+common.delete_inventory (default: "Delete Item") - Used in: InventoryList.tsx
+common.transaction (default: "Transaction") - Used in: MoneyInButton.tsx, MoneyOutButton.tsx, MoneyOutButton.tsx
+services.service (default: "Service") - Used in: MoneyInButton.tsx, ServiceList.tsx
+transport.select_service (default: "Select service") - Used in: MoneyInButton.tsx
+transport.distance_km (default: "Distance (km)") - Used in: MoneyInButton.tsx
+transport.use_base_amount (default: "Use base amount only") - Used in: MoneyInButton.tsx
+transport.tips_optional (default: "Tips (optional)") - Used in: MoneyInButton.tsx
+transport.calculated_fare (default: "Calculated Fare:") - Used in: MoneyInButton.tsx
+transport.base_amount_only (default: "Base amount only") - Used in: MoneyInButton.tsx
+transport.tips (default: "tips") - Used in: MoneyInButton.tsx, MoneyInButton.tsx
+transport.rate (default: "rate") - Used in: MoneyInButton.tsx
+common.description_placeholder_money_in (default: "What was this for?") - Used in: MoneyInButton.tsx
+payment_method.title (default: "Payment Method") - Used in: MoneyInButton.tsx, MoneyOutButton.tsx
+common.due_date (default: "Due Date") - Used in: MoneyInButton.tsx
+common.payment_due_note (default: "Payment due date (default: 30 days from today)") - Used in: MoneyInButton.tsx
+common.processing (default: "Processing...") - Used in: MoneyInButton.tsx
+transaction.save (default: "Save Transaction") - Used in: MoneyInButton.tsx
+Customer name is required for credit payment - Used in: MoneyInButton.tsx
+ ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount} - Used in: MoneyInButton.tsx
+common.money_in - Used in: MoneyInButton.tsx
+transport.distance (default: "Distance (km)") - Used in: MoneyOutButton.tsx
+common.description_optional (default: "Description (optional)") - Used in: MoneyOutButton.tsx
+common.category (default: "Category") - Used in: MoneyOutButton.tsx
+expense_tracker.other (default: "e.g., Supplies, Utilities, Rent") - Used in: MoneyOutButton.tsx
+Business ID not found - Used in: MoneyOutButton.tsx
+Please select who you owe money to or enter a new name - Used in: MoneyOutButton.tsx
+${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount} - Used in: MoneyOutButton.tsx
+common.money_out - Used in: MoneyOutButton.tsx
+tour.home_dashboard (default: "Home Dashboard") - Used in: MultiPageTour.tsx
+tour.cash_management (default: "Cash Management") - Used in: MultiPageTour.tsx
+tour.transaction_history (default: "Transaction History") - Used in: MultiPageTour.tsx
+tour.history_description (default: "Review past transactions to make smarter business decisions.") - Used in: MultiPageTour.tsx
+tour.inventory_management (default: "Inventory Management") - Used in: MultiPageTour.tsx, MultiPageTour.tsx
+tour.stock_alerts (default: "Stock Alerts") - Used in: MultiPageTour.tsx
+tour.stock_alerts_description (default: "Get notified when items are running low so you can restock on time.") - Used in: MultiPageTour.tsx
+tour.services_management (default: "Services Management") - Used in: MultiPageTour.tsx
+tour.credit_management (default: "Credit Management") - Used in: MultiPageTour.tsx
+tour.track_payments (default: "Track Payments") - Used in: MultiPageTour.tsx
+tour.payments_description (default: "Mark when customers pay you back. Keep your cash flow healthy!") - Used in: MultiPageTour.tsx
+tour.beehive_community (default: "Beehive Community") - Used in: MultiPageTour.tsx
+tour.share_insights (default: "Share Your Insights") - Used in: MultiPageTour.tsx
+tour.share_description (default: "Help others by sharing your business experiences and learn from the community.") - Used in: MultiPageTour.tsx
+tour.business_reports (default: "Business Reports") - Used in: MultiPageTour.tsx
+tour.sales_analytics (default: "Sales Analytics") - Used in: MultiPageTour.tsx
+tour.sales_description (default: "Analyze your sales patterns and make data-driven decisions.") - Used in: MultiPageTour.tsx
+tour.more_options (default: "More Options") - Used in: MultiPageTour.tsx
+tour.business_settings (default: "Business Settings") - Used in: MultiPageTour.tsx
+tour.page (default: "Page") - Used in: MultiPageTour.tsx
+credit.invalid_payment_amount (default: "Invalid payment amount") - Used in: PaymentModal.tsx
+credit.payment_failed (default: "Payment failed. Please try again.") - Used in: PaymentModal.tsx, PaymentModal.tsx
+credit.account_paid_in_full (default: "Account Paid in Full") - Used in: PaymentModal.tsx
+credit.no_outstanding_balance (default: "This customer has no outstanding balance") - Used in: PaymentModal.tsx
+credit.payment_history (default: "Payment History") - Used in: PaymentModal.tsx
+credit.items (default: "items") - Used in: PaymentModal.tsx
+modal.close (default: "Close") - Used in: PaymentModal.tsx
+credit.active_credits (default: "Active Credits") - Used in: PaymentModal.tsx
+credit.hide_history (default: "Hide History") - Used in: PaymentModal.tsx
+credit.show_history (default: "Show History") - Used in: PaymentModal.tsx
+payment.total_you_owe (default: "Total You Owe") - Used in: PaymentModal.tsx
+payment.remaining_balance (default: "Remaining Balance") - Used in: PaymentModal.tsx
+credit.fifo_payment_note (default: "Payments are applied to oldest debts first (FIFO)") - Used in: PaymentModal.tsx
+payment.record_payment_made (default: "Record Payment Made") - Used in: PaymentModal.tsx
+payment.record_partial_payment (default: "Record Payment Received") - Used in: PaymentModal.tsx
+payment.mark_as_paid (default: "Mark as Paid in Full") - Used in: PaymentModal.tsx
+payment.record_payment - Used in: PaymentModal.tsx
+payment.payment_recorded - Used in: PaymentModal.tsx
+payment.payment_success_message - Used in: PaymentModal.tsx
+payment.for_customer - Used in: PaymentModal.tsx, PaymentModal.tsx
+payment.original_amount - Used in: PaymentModal.tsx
+payment.paid_so_far - Used in: PaymentModal.tsx
+payment.due_date - Used in: PaymentModal.tsx
+payment.overdue_by - Used in: PaymentModal.tsx
+payment.days - Used in: PaymentModal.tsx
+payment.payment_amount - Used in: PaymentModal.tsx
+payment.max_payment - Used in: PaymentModal.tsx
+pwa.install_title (default: "Install Beezee App") - Used in: PWAPrompts.tsx
+pwa.install_description (default: "Add to home screen for quick access and offline use.") - Used in: PWAPrompts.tsx
+pwa.add_to_home (default: "Add to Home Screen") - Used in: PWAPrompts.tsx
+receipt.title (default: "Receipt") - Used in: ReceiptGenerator.tsx
+receipt.copied (default: "Copied!") - Used in: ReceiptGenerator.tsx
+receipt.copy (default: "Copy to Clipboard") - Used in: ReceiptGenerator.tsx
+services.active (default: "active") - Used in: ServiceList.tsx
+services.base_km_pricing (default: "Base + KM pricing") - Used in: ServiceList.tsx
+services.delete_service (default: "Delete service") - Used in: ServiceList.tsx
+common.delete_service (default: "Delete Service") - Used in: ServiceList.tsx
+nav.services - Used in: ServiceList.tsx
+services.no_services - Used in: ServiceList.tsx
+services.add_first - Used in: ServiceList.tsx
+tour.modal_title (default: "Welcome to Beezee!") - Used in: WelcomeTour.tsx
+tour.daily_target (default: "Daily Target") - Used in: WelcomeTour.tsx
+tour.target_description (default: "Set and track your daily sales goals right here. The progress bar shows how close you are to hitting your target!") - Used in: WelcomeTour.tsx
+tour.money_buttons (default: "Money In & Out") - Used in: WelcomeTour.tsx
+tour.money_description (default: "Quickly record sales (Money In) and expenses (Money Out) with these convenient buttons.") - Used in: WelcomeTour.tsx
+tour.credit_preview (default: "Credit Overview") - Used in: WelcomeTour.tsx
+tour.credit_preview_description (default: "See customers who owe you money at a glance. Tap to view full details and manage payments.") - Used in: WelcomeTour.tsx
+tour.inventory_preview (default: "Inventory Preview") - Used in: WelcomeTour.tsx
+tour.inventory_preview_description (default: "Quick view of your stock levels. Get alerts when items are running low.") - Used in: WelcomeTour.tsx
+tour.navigation_guide (default: "Navigation Guide") - Used in: WelcomeTour.tsx
+tour.navigation_description (default: "The bottom bar gives you access to all features:\n\n📊 Cash - Full transaction history\n📦 Stock - Complete inventory management\n💳 Credit - Customer credit tracking\n📈 Reports - Business analytics\n🐝 Beehive - Feature requests & community\n⚙️ More - Settings and additional tools") - Used in: WelcomeTour.tsx
+tour.get_started (default: "Get Started") - Used in: WelcomeTour.tsx
+receipt.error_phone_required (default: "Phone number is required") - Used in: WhatsAppShare.tsx
+receipt.error_phone_invalid (default: "Please enter a valid phone number with country code") - Used in: WhatsAppShare.tsx
+receipt.enter_phone (default: "Enter customer phone number") - Used in: WhatsAppShare.tsx
+receipt.phone_label (default: "Phone Number") - Used in: WhatsAppShare.tsx
+receipt.phone_hint (default: "Include country code (e.g., +254 for Kenya)") - Used in: WhatsAppShare.tsx
+common.send (default: "Send") - Used in: WhatsAppShare.tsx
+appointments.error.customer_name (default: "Customer name is required") - Used in: AddAppointmentModal.tsx
+appointments.error.date_required (default: "Date is required") - Used in: AddAppointmentModal.tsx
+calendar.error.start_time_required (default: "Start time is required") - Used in: AddAppointmentModal.tsx
+calendar.error.end_time_required (default: "End time is required") - Used in: AddAppointmentModal.tsx
+calendar.error.service_required (default: "Please select a service") - Used in: AddAppointmentModal.tsx
+calendar.error.no_business (default: "No business information available") - Used in: AddAppointmentModal.tsx
+calendar.complete_success (default: "Appointment created successfully") - Used in: AddAppointmentModal.tsx
+calendar.create_error (default: "Failed to create appointment. Please try again.") - Used in: AddAppointmentModal.tsx
+calendar.customer_name (default: "Customer Name") - Used in: AddAppointmentModal.tsx
+calendar.customer_name_placeholder (default: "Enter customer name") - Used in: AddAppointmentModal.tsx
+calendar.customer_contact (default: "Customer Contact") - Used in: AddAppointmentModal.tsx
+calendar.customer_contact_placeholder (default: "Phone number (optional)") - Used in: AddAppointmentModal.tsx
+calendar.date (default: "Date") - Used in: AddAppointmentModal.tsx
+calendar.start_time (default: "Start Time") - Used in: AddAppointmentModal.tsx
+calendar.select_time (default: "Select time") - Used in: AddAppointmentModal.tsx, AddAppointmentModal.tsx
+calendar.end_time (default: "End Time") - Used in: AddAppointmentModal.tsx
+calendar.select_service (default: "Service") - Used in: AddAppointmentModal.tsx, AddAppointmentModal.tsx
+calendar.notes (default: "Notes") - Used in: AddAppointmentModal.tsx
+calendar.notes_placeholder (default: "Additional notes or special requests...") - Used in: AddAppointmentModal.tsx
+common.saving (default: "Saving...") - Used in: AddAppointmentModal.tsx
+calendar.book_appointment (default: "Add Appointment") - Used in: AddAppointmentModal.tsx
+appointments.add_appointment_short (default: "Add appointment") - Used in: Appointments.tsx
+appointments.details (default: "Appointment Details") - Used in: Appointments.tsx
+appointments.status (default: "Status") - Used in: Appointments.tsx
+appointments.price (default: "Price") - Used in: Appointments.tsx
+appointments.close (default: "Close") - Used in: Appointments.tsx
+beezee_unified_auth - Used in: UnifiedAuthContext.tsx
+id, country, industry - Used in: UnifiedAuthContext.tsx
+, - Used in: useIndustryDataNew.ts, cors.ts, rateLimit.ts
+amount, category, created_at - Used in: expenses.ts
+limit_multiplier - Used in: supabase-adapter.ts
+message_path, user_id, sent_at, read_at, message_length - Used in: chat-storage.ts
+message_path - Used in: chat-storage.ts
++ - Used in: sanitizer.ts
+100 - Used in: sanitizer.test.ts
+100.50 - Used in: sanitizer.test.ts
+abc - Used in: sanitizer.test.ts
+XSS - Used in: sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts, sanitizer.test.ts
+Access-Control-Allow-Credentials (default: "true") - Used in: cors.ts, cors.test.ts, cors.test.ts
+Access-Control-Max-Age (default: "86400") - Used in: cors.ts, cors.test.ts, cors.test.ts, cors.test.ts
+origin - Used in: cors.ts, cors.ts, cors.ts
+x-user-id - Used in: rateLimit.ts
+x-forwarded-for - Used in: rateLimit.ts
+x-real-ip - Used in: rateLimit.ts
+Access-Control-Allow-Origin - Used in: cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts
+Access-Control-Allow-Methods - Used in: cors.test.ts, cors.test.ts, cors.test.ts, cors.test.ts
+Access-Control-Allow-Headers - Used in: cors.test.ts, cors.test.ts
+Content-Length - Used in: cors.test.ts
+http://localhost:3000/api/test - Used in: rateLimit.test.ts
+X-RateLimit-Limit - Used in: rateLimit.test.ts, rateLimit.test.ts, rateLimit.test.ts
+X-RateLimit-Remaining - Used in: rateLimit.test.ts, rateLimit.test.ts, rateLimit.test.ts
+X-RateLimit-Reset - Used in: rateLimit.test.ts, rateLimit.test.ts
+Retry-After - Used in: rateLimit.test.ts, rateLimit.test.ts
+admin_session - Used in: middleware.ts
+- - Used in: businessId.ts
+amount - Used in: dailyTargetHelpers.ts, dailyTargetHelpers.ts
+daily_target - Used in: dailyTargetHelpers.ts
+user_id, business_name, country, industry - Used in: dataIntegrityMonitor.ts
+response_data - Used in: idempotency.ts

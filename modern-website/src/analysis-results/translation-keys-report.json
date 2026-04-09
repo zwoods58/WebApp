@@ -1,0 +1,7301 @@
+{
+  "summary": {
+    "totalKeys": 893,
+    "totalFiles": 330,
+    "keysWithDefaults": 687,
+    "keysWithoutDefaults": 206
+  },
+  "allKeys": {
+    "100": {
+      "defaultValue": null,
+      "files": [
+        "sanitizer.test.ts"
+      ]
+    },
+    "redirect": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "a": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "T": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "database.ts",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "AddCreditLineItemModal.tsx",
+        "AddCreditLineItemModal.tsx",
+        "OptimisticTransactionList.tsx",
+        "HomepageCalendar.tsx",
+        "MoneyInButton.tsx",
+        "MoneyInButton.tsx",
+        "MoneyInButton.tsx",
+        "MoneyOutButton.tsx",
+        "MoneyOutButton.tsx",
+        "MoneyOutButton.tsx",
+        "creditService.ts",
+        "creditService.ts",
+        "dailyTargetHelpers.ts",
+        "dailyTargetHelpers.ts"
+      ]
+    },
+    "business_id": {
+      "defaultValue": null,
+      "files": [
+        "database.ts"
+      ]
+    },
+    "country": {
+      "defaultValue": null,
+      "files": [
+        "database.ts",
+        "route.ts",
+        "route.ts",
+        "page.tsx"
+      ]
+    },
+    "usd_price": {
+      "defaultValue": null,
+      "files": [
+        "database.ts",
+        "subscriptions.ts",
+        "subscriptions.ts"
+      ]
+    },
+    "id, country, created_at": {
+      "defaultValue": null,
+      "files": [
+        "database.ts"
+      ]
+    },
+    "business_id, transaction_date": {
+      "defaultValue": null,
+      "files": [
+        "database.ts"
+      ]
+    },
+    "id, country, updated_at": {
+      "defaultValue": null,
+      "files": [
+        "database.ts"
+      ]
+    },
+    "id, country": {
+      "defaultValue": null,
+      "files": [
+        "database.ts"
+      ]
+    },
+    "id, created_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts"
+      ]
+    },
+    "business_id, created_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts"
+      ]
+    },
+    "id, status, updated_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts",
+        "metrics.ts"
+      ]
+    },
+    "usd_price, created_at, cancelled_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts"
+      ]
+    },
+    "usd_price, created_at, status": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts",
+        "metrics.ts"
+      ]
+    },
+    "usd_price, created_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts"
+      ]
+    },
+    "usd_price, updated_at": {
+      "defaultValue": null,
+      "files": [
+        "metrics.ts"
+      ]
+    },
+    "*": {
+      "defaultValue": null,
+      "files": [
+        "subscriptions.ts",
+        "subscriptions.ts",
+        "useAdminData.ts",
+        "useAdminData.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "page.tsx",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "creditService.ts",
+        "BeehiveComments.tsx",
+        "BeehiveComments.tsx",
+        "BusinessContext.tsx",
+        "useIndustryData.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useIndustryDataNew.ts",
+        "useNotifications.ts",
+        "useOfflineData.ts",
+        "data-manager.ts",
+        "data-manager.ts",
+        "expenses.ts",
+        "expenses.ts",
+        "expenses.ts",
+        "supabase-adapter.ts",
+        "supabase-adapter.ts",
+        "creditService.ts",
+        "dailyTargetHelpers.ts"
+      ]
+    },
+    "country, is_active": {
+      "defaultValue": null,
+      "files": [
+        "subscriptions.ts"
+      ]
+    },
+    "limit": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "route.ts"
+      ]
+    },
+    "id": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts",
+        "route.ts"
+      ]
+    },
+    "timeWindow": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "severity": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "type": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "id, business_name, phone_number": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id,\n        security_answer_1_hash\n      ": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id\n      ": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "id, question_text, category": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "route.ts"
+      ]
+    },
+    "id, phone_number": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "id, phone_number, business_name": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "id, business_id, expires_at, used_at": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "upvotes_count, downvotes_count": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "route.ts",
+        "route.ts"
+      ]
+    },
+    "comments_count": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "route.ts"
+      ]
+    },
+    "Cache-Control": {
+      "defaultValue": "public, max-age=3600",
+      "files": [
+        "route.ts"
+      ]
+    },
+    "Content-Type": {
+      "defaultValue": "application/manifest+json",
+      "files": [
+        "route.ts"
+      ]
+    },
+    "id, owner_id": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "currency": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "from": {
+      "defaultValue": null,
+      "files": [
+        "route.ts",
+        "page.tsx"
+      ]
+    },
+    "to": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "reference": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "Authorization": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "x-kyshi-signature": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "x-startbutton-signature": {
+      "defaultValue": null,
+      "files": [
+        "route.ts"
+      ]
+    },
+    "xss": {
+      "defaultValue": null,
+      "files": [
+        "auth.test.ts",
+        "auth.test.ts",
+        "auth.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "transactions.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts"
+      ]
+    },
+    "bcrypt": {
+      "defaultValue": null,
+      "files": [
+        "auth.test.ts"
+      ]
+    },
+    ".": {
+      "defaultValue": null,
+      "files": [
+        "transactions.test.ts",
+        "transactions.test.ts"
+      ]
+    },
+    "beehive.title": {
+      "defaultValue": "BeeHive Community",
+      "files": [
+        "page.tsx",
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.description": {
+      "defaultValue": "Share ideas and help improve BeeZee for everyone",
+      "files": [
+        "page.tsx",
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.search_placeholder": {
+      "defaultValue": "Search requests...",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.all": {
+      "defaultValue": "All",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.new_features": {
+      "defaultValue": "New Features",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.improvements": {
+      "defaultValue": "Improvements",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.bug_fixes": {
+      "defaultValue": "Bug Fixes",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.integrations": {
+      "defaultValue": "Integrations",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.add_request": {
+      "defaultValue": "Add New Request",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.total_requests": {
+      "defaultValue": "Total",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.completed": {
+      "defaultValue": "Done",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.in_progress": {
+      "defaultValue": "In Progress",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.community_member": {
+      "defaultValue": "Community Member",
+      "files": [
+        "page.tsx",
+        "BeehiveComments.tsx"
+      ]
+    },
+    "common.edit": {
+      "defaultValue": "Edit",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.no_requests": {
+      "defaultValue": "No requests found",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.no_requests_description": {
+      "defaultValue": "Be the first to share an idea!",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "beehive.add_first_request": {
+      "defaultValue": "Add First Request",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "receipt.receipt_from": {
+      "defaultValue": "Receipt from",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "business.default_name": {
+      "defaultValue": "My Business",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.description": {
+      "defaultValue": "Description",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.amount": {
+      "defaultValue": "Amount",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.date": {
+      "defaultValue": "Date",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.customer": {
+      "defaultValue": "Customer",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "business.suppliers": {
+      "defaultValue": "Supplier",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.payment_method": {
+      "defaultValue": "Payment Method",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.thank_you": {
+      "defaultValue": "Thank you for your business!",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.copied": {
+      "defaultValue": "Copied!",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.copy": {
+      "defaultValue": "Copy Details",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.share_via_whatsapp": {
+      "defaultValue": "Share via WhatsApp",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.share_receipt": {
+      "defaultValue": "Share Receipt",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.copy_to_clipboard": {
+      "defaultValue": "Copy to Clipboard",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "receipt.share_whatsapp": {
+      "defaultValue": "Share via WhatsApp",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "ReceiptGenerator.tsx",
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "common.cancel": {
+      "defaultValue": "Cancel",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "AddCustomerModal.tsx",
+        "AddInventoryForm.tsx",
+        "AppointmentList.tsx",
+        "BeehiveRequestModal.tsx",
+        "BeehiveRequestModal.tsx",
+        "EditServiceModal.tsx",
+        "InventoryList.tsx",
+        "MoneyInButton.tsx",
+        "MoneyOutButton.tsx",
+        "ServiceList.tsx",
+        "WhatsAppShare.tsx",
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "textarea": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "cash.in": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.out": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.profit": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.search_cash_flow": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.all": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.money_in": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.money_out": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.recent_activity": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "cash.no_cash_activity_found": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "cash.start_by_recording_first_transaction": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.reminder_from": {
+      "defaultValue": "Credit Reminder from",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.customer": {
+      "defaultValue": "Customer",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.amount_owed": {
+      "defaultValue": "Amount Owed",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.original_amount": {
+      "defaultValue": "Original Amount",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.amount_paid": {
+      "defaultValue": "Amount Paid",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.date_given": {
+      "defaultValue": "Date Given",
+      "files": [
+        "page.tsx",
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.due_date": {
+      "defaultValue": "Due Date",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "AddCreditLineItemModal.tsx",
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "credit.days_overdue": {
+      "defaultValue": "Days Overdue",
+      "files": [
+        "page.tsx",
+        "CreditCustomerCard.tsx",
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.payment_request": {
+      "defaultValue": "Please arrange payment as soon as possible. Thank you!",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.customers_tab": {
+      "defaultValue": "Customers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.personal_tab": {
+      "defaultValue": "Personal",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.total_owed_to_you": {
+      "defaultValue": "Total Owed to You",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.total_you_owe": {
+      "defaultValue": "Total You Owe",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.customers": {
+      "defaultValue": "Customers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.suppliers": {
+      "defaultValue": "Suppliers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.add_credit_customer": {
+      "defaultValue": "Add Credit Customer",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.add_personal_credit": {
+      "defaultValue": "Add Personal Credit",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.credit_added_successfully": {
+      "defaultValue": "Credit added successfully",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.share_credit_details": {
+      "defaultValue": "Share Credit Details",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.optional": {
+      "defaultValue": "Optional",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "MoneyInButton.tsx"
+      ]
+    },
+    "credit.description_placeholder": {
+      "defaultValue": "What was this credit for?",
+      "files": [
+        "page.tsx",
+        "AddCreditLineItemModal.tsx",
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "credit.adding": {
+      "defaultValue": "Adding...",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "credit.select_vendor_error": {
+      "defaultValue": "Please select or enter a vendor name",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.who_do_you_owe": {
+      "defaultValue": "Who do you owe?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.select_vendor_placeholder": {
+      "defaultValue": "Select a vendor or person...",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.add_new_vendor": {
+      "defaultValue": "+ Add new vendor/person",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.overdue": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.search_customers": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.all": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.outstanding": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.paid": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx",
+        "CreditList.tsx",
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.all_customers": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.no_credit_customers_found": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.start_by_adding_first_customer": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.customer_name": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.description": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "MoneyInButton.tsx"
+      ]
+    },
+    "credit.cancel": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "credit.add_customer": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "AddCustomerModal.tsx",
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "help.getting_started": {
+      "defaultValue": "Getting Started",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.features": {
+      "defaultValue": "Features",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.troubleshooting": {
+      "defaultValue": "Troubleshooting",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.tutorials": {
+      "defaultValue": "Video Tutorials",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq1_question": {
+      "defaultValue": "How do I add a new transaction?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq2_question": {
+      "defaultValue": "Can I export my data?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq3_question": {
+      "defaultValue": "How do I manage customer credit?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq3_answer": {
+      "defaultValue": "Navigate to the Customers tab, where you can add new credit entries, track payments, and manage outstanding balances.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq4_question": {
+      "defaultValue": "Is my data secure?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.faq4_answer": {
+      "defaultValue": "Absolutely! We use bank-level encryption and secure servers to protect your business data. Your information is never shared with third parties.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.title": {
+      "defaultValue": "Help & Support",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.description": {
+      "defaultValue": "Find answers and get help when you need it",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.search_placeholder": {
+      "defaultValue": "Search for help...",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.start_tour": {
+      "defaultValue": "Start Tour",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.call_support": {
+      "defaultValue": "Call Support",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.all_categories": {
+      "defaultValue": "All",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.frequently_asked": {
+      "defaultValue": "Frequently Asked Questions",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.contact_support": {
+      "defaultValue": "Contact Support",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.your_name": {
+      "defaultValue": "Your Name",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.your_email": {
+      "defaultValue": "Your Email",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.subject": {
+      "defaultValue": "Subject",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.message": {
+      "defaultValue": "Message",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.send_message": {
+      "defaultValue": "Send Message",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.resources": {
+      "defaultValue": "Resources",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.user_guide": {
+      "defaultValue": "User Guide PDF",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.comprehensive_guide": {
+      "defaultValue": "Comprehensive guide to all features",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.backup_data": {
+      "defaultValue": "Backup Your Data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "help.download_backup": {
+      "defaultValue": "Download a backup of your business data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.share_app_message": {
+      "defaultValue": "🐝 Check out BeeZee - The amazing business management app!\\n\\n📊 Track sales & inventory\\n📅 Manage appointments\\n💰 Monitor finances\\n📈 Business analytics\\n\\n👉 Download here: {url}\\n\\nTransform your business today! 🚀",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.business_tools": {
+      "defaultValue": "Business Tools",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.reports": {
+      "defaultValue": "Reports",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.reports_description": {
+      "defaultValue": "View business reports and analytics",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.settings": {
+      "defaultValue": "Settings",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.settings_description": {
+      "defaultValue": "Manage your business settings",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.community_support": {
+      "defaultValue": "Community & Support",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.beehive_community": {
+      "defaultValue": "BeeHive Community",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.beehive_description": {
+      "defaultValue": "Connect with other business owners",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "nav.more": {
+      "defaultValue": "More",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "more.share_app": {
+      "defaultValue": "Share App",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "app.name": {
+      "defaultValue": "BeeZee App",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.industry": {
+      "defaultValue": "Industry",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.country": {
+      "defaultValue": "Country",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "more.member_since": {
+      "defaultValue": "Member since",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "auth.sign_out": {
+      "defaultValue": "Sign Out",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "footer.privacy": {
+      "defaultValue": "Privacy",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "footer.terms": {
+      "defaultValue": "Terms",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "footer.help": {
+      "defaultValue": "Help",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "refresh.data_refreshed": {
+      "defaultValue": "Data refreshed successfully!",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "refresh.refresh_failed": {
+      "defaultValue": "Failed to refresh some data. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "alert.setup_profile_first": {
+      "defaultValue": "Please set up your business profile first before adding transactions.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "alert.failed_transaction": {
+      "defaultValue": "Failed to add transaction. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "alert.setup_profile_first_expenses": {
+      "defaultValue": "Please set up your business profile first before adding expenses.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "alert.failed_expense": {
+      "defaultValue": "Failed to add expense. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "business.setup_required": {
+      "defaultValue": "Business Setup Required",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "business.setup_message": {
+      "defaultValue": "Please complete your business profile to start adding transactions and expenses.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "business.auth_user": {
+      "defaultValue": "Auth User",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "business.not_authenticated": {
+      "defaultValue": "Not authenticated",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "business.business_status": {
+      "defaultValue": "Tenant Status",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/BuzzInsights": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/EditServiceModal": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/AddCustomerModal": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/AddInventoryForm": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/AppointmentList": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/ServiceList": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/CustomerList": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.title": {
+      "defaultValue": "Reports",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "reports.overview": {
+      "defaultValue": "Overview",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.sales": {
+      "defaultValue": "Sales",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "reports.expenses": {
+      "defaultValue": "Expenses",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.inventory": {
+      "defaultValue": "Inventory",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.services": {
+      "defaultValue": "Services",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.customers": {
+      "defaultValue": "Customers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.daily_performance": {
+      "defaultValue": "Daily Performance",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "reports.export": {
+      "defaultValue": "Export Report",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_revenue": {
+      "defaultValue": "Total Revenue",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "reports.transactions": {
+      "defaultValue": "transactions",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_expenses": {
+      "defaultValue": "Total Expenses",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.net_profit": {
+      "defaultValue": "Net Profit",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.profit_margin": {
+      "defaultValue": "Profit margin",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.sales_performance": {
+      "defaultValue": "Sales Performance",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.period_sales": {
+      "defaultValue": "Sales this period",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.top_categories": {
+      "defaultValue": "Top Categories",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.payment_methods": {
+      "defaultValue": "Payment Methods",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.top_sellers": {
+      "defaultValue": "Top Selling Items",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.sold": {
+      "defaultValue": "sold",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.customer_frequency": {
+      "defaultValue": "Customer Frequency",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.unique_customers": {
+      "defaultValue": "Unique Customers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.repeat_rate": {
+      "defaultValue": "Repeat Rate",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.avg_purchases": {
+      "defaultValue": "Avg Purchases",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.peak_times": {
+      "defaultValue": "Peak Sales Times",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.best_day": {
+      "defaultValue": "Best Day",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.services_summary": {
+      "defaultValue": "Services Summary",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_services": {
+      "defaultValue": "Total Services",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.active_services": {
+      "defaultValue": "Active Services",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.service_performance": {
+      "defaultValue": "Service Performance",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_transactions": {
+      "defaultValue": "Total Transactions",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.avg_revenue_per_service": {
+      "defaultValue": "Average Revenue per Service",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.top_services": {
+      "defaultValue": "Top Services",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.inventory_summary": {
+      "defaultValue": "Inventory Summary",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_items": {
+      "defaultValue": "Total Items",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.low_stock": {
+      "defaultValue": "Low Stock",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.inventory_value": {
+      "defaultValue": "Inventory Value",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_value": {
+      "defaultValue": "Total inventory value",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.stock_turnover": {
+      "defaultValue": "Stock Turnover",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.turnover_rate": {
+      "defaultValue": "Items sold / Total items",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.customer_summary": {
+      "defaultValue": "Customer Summary",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_customers": {
+      "defaultValue": "Total Customers",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.outstanding": {
+      "defaultValue": "Outstanding",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_owed": {
+      "defaultValue": "Total Owed",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.outstanding_balance": {
+      "defaultValue": "Outstanding balance",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.average_credit": {
+      "defaultValue": "Average Credit Value",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.avg_per_customer": {
+      "defaultValue": "Average per customer",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.expenses_breakdown": {
+      "defaultValue": "Expenses Breakdown",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.total_expenses_period": {
+      "defaultValue": "Total expenses this period",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.expense_categories": {
+      "defaultValue": "Expense Categories",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.last_30_days": {
+      "defaultValue": "Last 30 days of daily sales performance",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.no_daily_history": {
+      "defaultValue": "No daily history available yet",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.daily_history_info": {
+      "defaultValue": "History is recorded automatically at midnight each day",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.date": {
+      "defaultValue": "Date",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.target": {
+      "defaultValue": "Target",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.achievement": {
+      "defaultValue": "Achievement",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.status": {
+      "defaultValue": "Status",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.met": {
+      "defaultValue": "Met",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.not_met": {
+      "defaultValue": "Not Met",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.days_target_met": {
+      "defaultValue": "Days Target Met",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.out_of": {
+      "defaultValue": "out of",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.days": {
+      "defaultValue": "days",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.success_rate": {
+      "defaultValue": "Success Rate",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "reports.overall_achievement": {
+      "defaultValue": "Overall achievement",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "canvas": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "2d": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "HeroSequence.tsx"
+      ]
+    },
+    "services.inventory_tab": {
+      "defaultValue": "Inventory",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "services.add_error": {
+      "defaultValue": "Failed to add service. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.business_load_error": {
+      "defaultValue": "Please wait for business data to load or refresh the page to log in properly.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.add_error": {
+      "defaultValue": "Failed to add item. Please try again.",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "services.update_success": {
+      "defaultValue": "Service updated successfully",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.update_error": {
+      "defaultValue": "Failed to update service",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.confirm_delete_service": {
+      "defaultValue": "Permanently Delete Service?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.confirm_delete_permanently": {
+      "defaultValue": "Yes, Delete Permanently",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "services.delete_error": {
+      "defaultValue": "Failed to delete service. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.sale_failed": {
+      "defaultValue": "Failed to complete sale. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.confirm_delete_inventory": {
+      "defaultValue": "Permanently Delete Inventory Item?",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.transport_offline_mode": {
+      "defaultValue": "Offline mode: Transport trip queued for sync",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.trip_failed": {
+      "defaultValue": "Failed to complete trip. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.services_tab": {
+      "defaultValue": "Services",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.total_service_value": {
+      "defaultValue": "Total Service Value",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.avg_price": {
+      "defaultValue": "Avg Price",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.left": {
+      "defaultValue": "in stock",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.reorder_soon": {
+      "defaultValue": "items need restock",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.no_inventory_found": {
+      "defaultValue": "No inventory items found",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "services.start_by_adding_first_item": {
+      "defaultValue": "Start by adding your first inventory item",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.add_inventory_item": {
+      "defaultValue": "Add Item",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "enter_category": {
+      "defaultValue": "Enter category",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "stock": {
+      "defaultValue": "Stock",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/lib/sync-manager": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "services": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Failed to update item. Please try again.": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.total_services": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.available": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.low_stock": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.products_need_restock": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.add_service": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "EditServiceModal.tsx",
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.search_services": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "filter.all": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "_": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.no_services_found": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.start_by_adding_first_service": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.total_items": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "InventoryList.tsx"
+      ]
+    },
+    "inventory.low_stock": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "InventoryList.tsx"
+      ]
+    },
+    "inventory.total_stock_value": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.add_new_item": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.search_items": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.min": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "InventoryList.tsx"
+      ]
+    },
+    "inventory.running_low": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "InventoryList.tsx"
+      ]
+    },
+    "item_name": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "category": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "quantity": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.units": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "select_category": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.pieces": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx",
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "common.suppliers": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.general": {
+      "defaultValue": "General",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.profile": {
+      "defaultValue": "Profile Information",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "settings.profile_desc": {
+      "defaultValue": "Update your business details",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.language": {
+      "defaultValue": "Language",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.language_desc": {
+      "defaultValue": "Choose your preferred language",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.currency": {
+      "defaultValue": "Currency",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.currency_desc": {
+      "defaultValue": "Set your local currency",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.notifications": {
+      "defaultValue": "Notifications",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.push_notifications": {
+      "defaultValue": "Push Notifications",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.push_desc": {
+      "defaultValue": "Receive alerts on your device",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.sound_effects": {
+      "defaultValue": "Sound Effects",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.sound_desc": {
+      "defaultValue": "Play sounds for actions",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.low_stock_alerts": {
+      "defaultValue": "Low Stock Alerts",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.stock_desc": {
+      "defaultValue": "Get notified when items are low",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.appearance": {
+      "defaultValue": "Appearance",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.dark_mode": {
+      "defaultValue": "Dark Mode",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.dark_desc": {
+      "defaultValue": "Easier on the eyes at night",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.compact_view": {
+      "defaultValue": "Compact View",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.compact_desc": {
+      "defaultValue": "Show more content on screen",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.data_storage": {
+      "defaultValue": "Data & Storage",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.auto_backup": {
+      "defaultValue": "Auto Backup",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.backup_desc": {
+      "defaultValue": "Automatically backup your data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.sync_data": {
+      "defaultValue": "Sync Data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.sync_desc": {
+      "defaultValue": "Keep data synced across devices",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.export_data": {
+      "defaultValue": "Export Data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.export_desc": {
+      "defaultValue": "Download your business data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.clear_cache": {
+      "defaultValue": "Clear Cache",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.cache_desc": {
+      "defaultValue": "Free up storage space",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.reset_account": {
+      "defaultValue": "Reset Account Data",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.reset_desc": {
+      "defaultValue": "Delete all your data (appointments, inventory, etc.)",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.security": {
+      "defaultValue": "Security",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.change_password": {
+      "defaultValue": "Change Password",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "settings.password_desc": {
+      "defaultValue": "Update your account password",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.two_factor": {
+      "defaultValue": "Two-Factor Auth",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.2fa_desc": {
+      "defaultValue": "Add an extra layer of security",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.privacy": {
+      "defaultValue": "Privacy Settings",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.privacy_desc": {
+      "defaultValue": "Control your data privacy",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.back": {
+      "defaultValue": "Back to More",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.save": {
+      "defaultValue": "Save",
+      "files": [
+        "page.tsx",
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "settings.edit_profile": {
+      "defaultValue": "Edit Profile",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.title": {
+      "defaultValue": "Settings",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.current_password": {
+      "defaultValue": "Current Password",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.new_password": {
+      "defaultValue": "New Password",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.confirm_password": {
+      "defaultValue": "Confirm New Password",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.cancel": {
+      "defaultValue": "Cancel",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.update_password": {
+      "defaultValue": "Update Password",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.export": {
+      "defaultValue": "Export",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.clear": {
+      "defaultValue": "Clear",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.account_info": {
+      "defaultValue": "Account Information",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.email": {
+      "defaultValue": "Email",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.phone": {
+      "defaultValue": "Phone",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.business": {
+      "defaultValue": "Business",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.industry": {
+      "defaultValue": "Industry",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "settings.country": {
+      "defaultValue": "Country",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Profile updated successfully!": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Error updating profile. Please try again.": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Account has been reset successfully. All data cleared.": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Failed to reset account. Please try again.": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "Passwords do not match": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.delete_offline_item": {
+      "defaultValue": "This item was created offline and will be removed from your local view.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.delete_error": {
+      "defaultValue": "Failed to delete item. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.edit_error": {
+      "defaultValue": "Failed to update item. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.sell_error": {
+      "defaultValue": "Failed to process sale. Please try again.",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "inventory.total_qty": {
+      "defaultValue": "Total Qty",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.all": {
+      "defaultValue": "All",
+      "files": [
+        "page.tsx",
+        "page.tsx",
+        "page.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "inventory.items": {
+      "defaultValue": "Items",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "repairs.try_adjusting": {
+      "defaultValue": "Try adjusting your search or filters",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "services.running_low": {
+      "defaultValue": "Stock running low - reorder soon",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "sell": {
+      "defaultValue": "Sell",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.edit_item": {
+      "defaultValue": "Edit Item",
+      "files": [
+        "page.tsx",
+        "InventoryList.tsx"
+      ]
+    },
+    "retail.inventory.min_stock": {
+      "defaultValue": "Min Stock",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "inventory.unit": {
+      "defaultValue": "Unit",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "cost_price": {
+      "defaultValue": "Cost Price",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "selling_price": {
+      "defaultValue": "Selling Price",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "customerName": {
+      "defaultValue": "Customer Name",
+      "files": [
+        "page.tsx",
+        "MoneyInButton.tsx",
+        "MoneyInButton.tsx"
+      ]
+    },
+    "paymentMethod": {
+      "defaultValue": "Payment Method",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.total_amount": {
+      "defaultValue": "Total Amount",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.welcome_title": {
+      "defaultValue": "Welcome to BeeZee!",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.transactions_title": {
+      "defaultValue": "Track Your Money",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.transactions_description": {
+      "defaultValue": "Monitor your income and expenses in real-time",
+      "files": [
+        "page.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.inventory_title": {
+      "defaultValue": "Manage Your Inventory",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.inventory_description": {
+      "defaultValue": "Keep track of your stock and products",
+      "files": [
+        "page.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.customers_title": {
+      "defaultValue": "Customer Management",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.customers_description": {
+      "defaultValue": "Manage credit and track customer payments",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.reports_title": {
+      "defaultValue": "Business Reports",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.reports_description": {
+      "defaultValue": "Get insights into your business performance",
+      "files": [
+        "page.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.settings_title": {
+      "defaultValue": "Settings",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.settings_description": {
+      "defaultValue": "Customize your app preferences",
+      "files": [
+        "page.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.step": {
+      "defaultValue": "Step",
+      "files": [
+        "page.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.of": {
+      "defaultValue": "of",
+      "files": [
+        "page.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.completed": {
+      "defaultValue": "Completed",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.got_it": {
+      "defaultValue": "Got it!",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.next": {
+      "defaultValue": "Next",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "tour.previous": {
+      "defaultValue": "Previous",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.pause": {
+      "defaultValue": "Pause",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.play": {
+      "defaultValue": "Play",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.skip": {
+      "defaultValue": "Skip",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.finish": {
+      "defaultValue": "Finish",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "tour.quick_links": {
+      "defaultValue": "Quick Links",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "nav.home": {
+      "defaultValue": "Home",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "nav.transactions": {
+      "defaultValue": "Transactions",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "nav.inventory": {
+      "defaultValue": "Inventory",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "receipt.transaction_id": {
+      "defaultValue": "Transaction ID",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.today": {
+      "defaultValue": "Today",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "common.total": {
+      "defaultValue": "Total",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "transactions.no_found": {
+      "defaultValue": "No transactions found",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "transactions.start_first": {
+      "defaultValue": "Start by adding your first sale",
+      "files": [
+        "page.tsx",
+        "page.tsx"
+      ]
+    },
+    "transactions.search_placeholder": {
+      "defaultValue": "Search transactions...",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "common.yesterday": {
+      "defaultValue": "Yesterday",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "receipt.view_details": {
+      "defaultValue": "View Receipt Details",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "auth.welcome_back": {
+      "defaultValue": "Welcome Back",
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "@/components/universal/BottomNav": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "@/components/universal/ScrollToTop": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "@/components/PWAInstallPrompt": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "@/components/universal/ConnectionToast": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "style": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx",
+        "Navigation.tsx",
+        "DotScrollIndicator.tsx"
+      ]
+    },
+    "@/lib/cleanup-bad-operations": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "X-Offline": {
+      "defaultValue": null,
+      "files": [
+        "layout-client.tsx"
+      ]
+    },
+    "industry": {
+      "defaultValue": null,
+      "files": [
+        "page.tsx"
+      ]
+    },
+    "appointments.pending_sync": {
+      "defaultValue": "Pending",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.sync_error": {
+      "defaultValue": "Error",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.synced": {
+      "defaultValue": "Synced",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.scheduled": {
+      "defaultValue": "Scheduled",
+      "files": [
+        "AppointmentCard.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.confirmed": {
+      "defaultValue": "Confirmed",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.completed": {
+      "defaultValue": "Completed",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentsNew.tsx",
+        "AppointmentsNew.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.cancelled": {
+      "defaultValue": "Cancelled",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentsNew.tsx",
+        "AppointmentsNew.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.no_show": {
+      "defaultValue": "No Show",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.all_day": {
+      "defaultValue": "All day",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.am": {
+      "defaultValue": "AM",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.pm": {
+      "defaultValue": "PM",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.no_customer": {
+      "defaultValue": "No customer",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.service": {
+      "defaultValue": "Service",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx",
+        "AppointmentDetailsSheet.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.at_time": {
+      "defaultValue": "at",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.duration": {
+      "defaultValue": "Duration",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.minutes": {
+      "defaultValue": "min",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.complete": {
+      "defaultValue": "Complete",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    "appointments.cancel": {
+      "defaultValue": "Cancel",
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx",
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.view_details": {
+      "defaultValue": "View Details",
+      "files": [
+        "AppointmentCard.tsx"
+      ]
+    },
+    ":": {
+      "defaultValue": null,
+      "files": [
+        "AppointmentCard.tsx",
+        "AppointmentDetailsSheet.tsx",
+        "CreateAppointmentSheet.tsx",
+        "CreateAppointmentSheet.tsx",
+        "CreateAppointmentSheet.tsx",
+        "AppointmentList.tsx",
+        "HomepageCalendar.tsx",
+        "AddAppointmentModal.tsx",
+        "AddAppointmentModal.tsx",
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "appointments.provide_cancel_reason": {
+      "defaultValue": "Please provide a cancellation reason",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.details_title": {
+      "defaultValue": "Appointment Details",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.customer": {
+      "defaultValue": "Customer",
+      "files": [
+        "AppointmentDetailsSheet.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.date_time": {
+      "defaultValue": "Date & Time",
+      "files": [
+        "AppointmentDetailsSheet.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.notes": {
+      "defaultValue": "Notes",
+      "files": [
+        "AppointmentDetailsSheet.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.sync_status": {
+      "defaultValue": "Sync Status",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.delete_confirm": {
+      "defaultValue": "Are you sure you want to delete this appointment?",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.delete": {
+      "defaultValue": "Delete",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.cancel_confirm": {
+      "defaultValue": "Cancel this appointment?",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.cancel_reason": {
+      "defaultValue": "Reason for cancellation (optional)",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.back": {
+      "defaultValue": "Back",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.confirm_cancel": {
+      "defaultValue": "Confirm Cancel",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.mark_completed": {
+      "defaultValue": "Mark as Completed",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.cancel_appointment": {
+      "defaultValue": "Cancel Appointment",
+      "files": [
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.delete_appointment": {
+      "defaultValue": "Delete Appointment",
+      "files": [
+        "AppointmentDetailsSheet.tsx",
+        "AppointmentDetailsSheet.tsx"
+      ]
+    },
+    "appointments.create_success": {
+      "defaultValue": "Appointment created successfully",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.create_error": {
+      "defaultValue": "Failed to create appointment. Please try again.",
+      "files": [
+        "AppointmentsNew.tsx",
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.complete_success": {
+      "defaultValue": "Appointment completed successfully",
+      "files": [
+        "AppointmentsNew.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.complete_error": {
+      "defaultValue": "Failed to complete appointment",
+      "files": [
+        "AppointmentsNew.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.cancel_success": {
+      "defaultValue": "Appointment cancelled successfully",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.cancel_error": {
+      "defaultValue": "Failed to cancel appointment",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.delete_success": {
+      "defaultValue": "Appointment deleted successfully",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.delete_error": {
+      "defaultValue": "Failed to delete appointment",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.loading": {
+      "defaultValue": "Loading appointments...",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.title": {
+      "defaultValue": "Appointments",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.add_appointment": {
+      "defaultValue": "Add Appointment",
+      "files": [
+        "AppointmentsNew.tsx",
+        "AppointmentsNew.tsx",
+        "CreateAppointmentSheet.tsx",
+        "AppointmentList.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.list_view": {
+      "defaultValue": "List",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.calendar_view": {
+      "defaultValue": "Calendar",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.search_placeholder": {
+      "defaultValue": "Search appointments...",
+      "files": [
+        "AppointmentsNew.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.all_statuses": {
+      "defaultValue": "All Status",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.pending": {
+      "defaultValue": "Pending",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.upcoming": {
+      "defaultValue": "Upcoming",
+      "files": [
+        "AppointmentsNew.tsx",
+        "AppointmentList.tsx"
+      ]
+    },
+    "appointments.no_appointments_found": {
+      "defaultValue": "No appointments found",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.adjust_filters": {
+      "defaultValue": "Try adjusting your filters",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.get_started": {
+      "defaultValue": "Get started by creating your first appointment",
+      "files": [
+        "AppointmentsNew.tsx"
+      ]
+    },
+    "appointments.previous_month": {
+      "defaultValue": "Previous month",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.locale": {
+      "defaultValue": "en-US",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.today_button": {
+      "defaultValue": "Today",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.next_month": {
+      "defaultValue": "Next month",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.sun": {
+      "defaultValue": "Sun",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.mon": {
+      "defaultValue": "Mon",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.tue": {
+      "defaultValue": "Tue",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.wed": {
+      "defaultValue": "Wed",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.thu": {
+      "defaultValue": "Thu",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.fri": {
+      "defaultValue": "Fri",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.sat": {
+      "defaultValue": "Sat",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.today": {
+      "defaultValue": "Today",
+      "files": [
+        "CalendarView.tsx",
+        "AppointmentList.tsx"
+      ]
+    },
+    "appointments.has_appointments": {
+      "defaultValue": "Has appointments",
+      "files": [
+        "CalendarView.tsx"
+      ]
+    },
+    "appointments.customer_name_required": {
+      "defaultValue": "Customer name is required",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.customer_name_min_length": {
+      "defaultValue": "Customer name must be at least 2 characters",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.date_required": {
+      "defaultValue": "Date is required",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.date_past": {
+      "defaultValue": "Date cannot be in the past",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.start_time_required": {
+      "defaultValue": "Start time is required",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.end_time_required": {
+      "defaultValue": "End time is required",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.end_time_after_start": {
+      "defaultValue": "End time must be after start time",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.service_required": {
+      "defaultValue": "Please select a service",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.fix_form_errors": {
+      "defaultValue": "Please fix the errors in the form",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.no_business_info": {
+      "defaultValue": "No business information available",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "calendar.add_appointment": {
+      "defaultValue": "Add Appointment",
+      "files": [
+        "CreateAppointmentSheet.tsx",
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "appointments.customer_name": {
+      "defaultValue": "Customer Name",
+      "files": [
+        "CreateAppointmentSheet.tsx",
+        "AddCustomerModal.tsx",
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "appointments.enter_customer_name": {
+      "defaultValue": "Enter customer name",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.customer_contact": {
+      "defaultValue": "Customer Contact",
+      "files": [
+        "CreateAppointmentSheet.tsx",
+        "AddCustomerModal.tsx",
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "appointments.phone_number_optional": {
+      "defaultValue": "Phone number (optional)",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.date": {
+      "defaultValue": "Date",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.start_time_label": {
+      "defaultValue": "Start Time",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.end_time_label": {
+      "defaultValue": "End Time",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.service_label": {
+      "defaultValue": "Service",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.select_service": {
+      "defaultValue": "Select a service",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.no_services": {
+      "defaultValue": "No services available. Please add services first.",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.notes_label": {
+      "defaultValue": "Notes",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.notes_placeholder": {
+      "defaultValue": "Additional notes or special requests...",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.creating": {
+      "defaultValue": "Creating...",
+      "files": [
+        "CreateAppointmentSheet.tsx"
+      ]
+    },
+    "appointments.offline_mode": {
+      "defaultValue": "Offline Mode",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.syncing": {
+      "defaultValue": "Syncing...",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.changes_remaining": {
+      "defaultValue": "changes remaining",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.updating_data": {
+      "defaultValue": "Updating data",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.pending_changes": {
+      "defaultValue": "Pending Changes",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.waiting_to_sync": {
+      "defaultValue": "changes waiting to sync",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.sync_now": {
+      "defaultValue": "Sync Now",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.all_changes_saved": {
+      "defaultValue": "All Changes Saved",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "appointments.data_up_to_date": {
+      "defaultValue": "Your data is up to date",
+      "files": [
+        "SyncStatusIndicator.tsx"
+      ]
+    },
+    "app.greeting": {
+      "defaultValue": "GOOD AFTERNOON, FRIEND",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.balance": {
+      "defaultValue": "Balance",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.demo": {
+      "defaultValue": "Demo",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.executive_tools": {
+      "defaultValue": "Executive Tools",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.voice": {
+      "defaultValue": "Voice",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.scan": {
+      "defaultValue": "Scan",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.book": {
+      "defaultValue": "Book",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.stock": {
+      "defaultValue": "Stock",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "app.coach_analysis": {
+      "defaultValue": "Coach Analysis",
+      "files": [
+        "BeezeeAppHero.tsx"
+      ]
+    },
+    "hero.get_started": {
+      "defaultValue": "Get Started",
+      "files": [
+        "BeezeeHero.tsx"
+      ]
+    },
+    "modal.request_access": {
+      "defaultValue": "Request Access.",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "modal.early_access_description": {
+      "defaultValue": "Get early access to the BeeZee financial operating system.",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "modal.join_waitlist": {
+      "defaultValue": "Join the waitlist for exclusive access.",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "modal.gain_access": {
+      "defaultValue": "GAIN ACCESS",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "modal.maybe_later": {
+      "defaultValue": "MAYBE LATER",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "modal.system_status": {
+      "defaultValue": "System Status: Accepting Requests",
+      "files": [
+        "ComingSoonModal.tsx"
+      ]
+    },
+    "error.no_business_id": {
+      "defaultValue": "No business ID found",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "credit.failed_to_add_item": {
+      "defaultValue": "Failed to add credit item. Please try again.",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "credit.add_new_credit": {
+      "defaultValue": "Add New Credit",
+      "files": [
+        "AddCreditLineItemModal.tsx",
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.for_customer": {
+      "defaultValue": "For",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "credit.description": {
+      "defaultValue": "Description",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "credit.amount": {
+      "defaultValue": "Amount",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "modal.cancel": {
+      "defaultValue": "Cancel",
+      "files": [
+        "AddCreditLineItemModal.tsx",
+        "ConfirmModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "modal.processing": {
+      "defaultValue": "Processing...",
+      "files": [
+        "AddCreditLineItemModal.tsx",
+        "ConfirmModal.tsx",
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.add_credit": {
+      "defaultValue": "Add Credit",
+      "files": [
+        "AddCreditLineItemModal.tsx"
+      ]
+    },
+    "credit.total_amount": {
+      "defaultValue": "Total Amount",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.paid_amount": {
+      "defaultValue": "Paid Amount",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.outstanding_amount": {
+      "defaultValue": "Outstanding",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "common.loading": {
+      "defaultValue": "Loading...",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx",
+        "BeehiveComments.tsx"
+      ]
+    },
+    "credit.credit_purchases": {
+      "defaultValue": "Credit Purchases",
+      "files": [
+        "CreditCustomerCard.tsx"
+      ]
+    },
+    "credit.credit_purchase": {
+      "defaultValue": "Credit Purchase",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PaymentModal.tsx",
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.remaining": {
+      "defaultValue": "Remaining",
+      "files": [
+        "CreditCustomerCard.tsx",
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.no_line_items": {
+      "defaultValue": "No individual credit purchases found",
+      "files": [
+        "CreditCustomerCard.tsx"
+      ]
+    },
+    "credit.costs": {
+      "defaultValue": "Costs",
+      "files": [
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "credit.no_costs_found": {
+      "defaultValue": "No individual costs found",
+      "files": [
+        "PayableCreditCard.tsx"
+      ]
+    },
+    "nav.system_status": {
+      "defaultValue": "SYSTEM STATUS: OPTIMAL",
+      "files": [
+        "GlobalNavigation.tsx"
+      ]
+    },
+    "div": {
+      "defaultValue": null,
+      "files": [
+        "BeeZeeConfirmDialog.tsx"
+      ]
+    },
+    "modal.confirm": {
+      "defaultValue": null,
+      "files": [
+        "ConfirmModal.tsx"
+      ]
+    },
+    "common.email_address": {
+      "defaultValue": null,
+      "files": [
+        "AddCustomerModal.tsx",
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "credit.initial_credit": {
+      "defaultValue": null,
+      "files": [
+        "AddCustomerModal.tsx"
+      ]
+    },
+    "inventory.example_vegetables": {
+      "defaultValue": "e.g., Fresh Vegetables",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_headphones": {
+      "defaultValue": "e.g., Premium Headphones",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_fuel": {
+      "defaultValue": "e.g., Fuel Can",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_software": {
+      "defaultValue": "e.g., Software License",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_item": {
+      "defaultValue": "e.g., Item Name",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_quantity": {
+      "defaultValue": "10",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_threshold": {
+      "defaultValue": "5",
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.example_price": {
+      "defaultValue": "0.00",
+      "files": [
+        "AddInventoryForm.tsx",
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.add_item": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx",
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.item_name": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.category": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.enter_category": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.quantity": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.min_stock": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.select_unit": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.kg": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.liters": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.meters": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.boxes": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.supplier": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.supplier_name": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.cost_price": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "inventory.selling_price": {
+      "defaultValue": null,
+      "files": [
+        "AddInventoryForm.tsx"
+      ]
+    },
+    "common.appointments": {
+      "defaultValue": "Appointments",
+      "files": [
+        "AppointmentList.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.today_count": {
+      "defaultValue": "${todayAppointments.length} today",
+      "files": [
+        "AppointmentList.tsx"
+      ]
+    },
+    "appointments.untitled": {
+      "defaultValue": "Appointment",
+      "files": [
+        "AppointmentList.tsx",
+        "AppointmentList.tsx"
+      ]
+    },
+    "common.no_upcoming_appointments": {
+      "defaultValue": "No upcoming appointments",
+      "files": [
+        "AppointmentList.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "common.schedule_first_appointment": {
+      "defaultValue": "Schedule your first appointment",
+      "files": [
+        "AppointmentList.tsx",
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.manage_appointments": {
+      "defaultValue": "Manage Appointments",
+      "files": [
+        "AppointmentList.tsx",
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "common.delete_appointment": {
+      "defaultValue": "Delete Appointment",
+      "files": [
+        "AppointmentList.tsx"
+      ]
+    },
+    "common.delete_confirm": {
+      "defaultValue": "Are you sure you want to delete this appointment? This action cannot be undone.",
+      "files": [
+        "AppointmentList.tsx",
+        "InventoryList.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "common.delete": {
+      "defaultValue": "Delete",
+      "files": [
+        "AppointmentList.tsx",
+        "BeehiveComments.tsx",
+        "BeehiveRequestModal.tsx",
+        "BeehiveRequestModal.tsx",
+        "InventoryList.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "time.just_now": {
+      "defaultValue": "Just now",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "time.m": {
+      "defaultValue": "m",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "time.h": {
+      "defaultValue": "h",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "time.d": {
+      "defaultValue": "d",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "beehive.comments": {
+      "defaultValue": "Comments",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "beehive.no_comments": {
+      "defaultValue": "No comments yet. Be the first to comment!",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "beehive.add_comment": {
+      "defaultValue": "Add a comment...",
+      "files": [
+        "BeehiveComments.tsx"
+      ]
+    },
+    "beehive.error_title_required": {
+      "defaultValue": "Title is required",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.error_title_min": {
+      "defaultValue": "Title must be at least 5 characters",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.error_description_required": {
+      "defaultValue": "Description is required",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.error_description_min": {
+      "defaultValue": "Description must be at least 10 characters",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.edit_modal_title": {
+      "defaultValue": "Edit Request",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.add_modal_title": {
+      "defaultValue": "New Feature Request",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.title_placeholder": {
+      "defaultValue": "Brief title for your request",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.description_placeholder": {
+      "defaultValue": "Describe your request in detail",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.category": {
+      "defaultValue": "Category",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.new_feature": {
+      "defaultValue": "New Feature",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.improvement": {
+      "defaultValue": "Improvement",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.bug_fix": {
+      "defaultValue": "Bug Fix",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.integration": {
+      "defaultValue": "Integration",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.priority": {
+      "defaultValue": "Priority",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "common.submitting": {
+      "defaultValue": "Submitting...",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "common.submit": {
+      "defaultValue": "Submit",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.delete_confirm": {
+      "defaultValue": "Delete this request?",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "beehive.delete_confirm_message": {
+      "defaultValue": "This action cannot be undone.",
+      "files": [
+        "BeehiveRequestModal.tsx"
+      ]
+    },
+    "buzz.low_stock_alert": {
+      "defaultValue": "Low Stock Alert",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.overdue_payments": {
+      "defaultValue": "Overdue Payments",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.top_seller": {
+      "defaultValue": "Top Seller",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.daily_cash_summary": {
+      "defaultValue": "Daily Cash Summary",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.inventory_summary": {
+      "defaultValue": "Inventory Summary",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.credit_summary": {
+      "defaultValue": "Credit Summary",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.popular_service": {
+      "defaultValue": "Most Popular Service",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.profitable_area": {
+      "defaultValue": "Most Profitable Area",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.transport_performance": {
+      "defaultValue": "Transport Performance",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.great_momentum": {
+      "defaultValue": "Great Momentum!",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.restock_reminder": {
+      "defaultValue": "Restock Reminder",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.follow_up_needed": {
+      "defaultValue": "Follow-up Needed",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.title": {
+      "defaultValue": "Buzz",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.money_in": {
+      "defaultValue": "Money In",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.money_out": {
+      "defaultValue": "Money Out",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.profit": {
+      "defaultValue": "Profit",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.total_value": {
+      "defaultValue": "Total Value",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.low_stock": {
+      "defaultValue": "low stock",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.view_details": {
+      "defaultValue": "Tap to view details",
+      "files": [
+        "BuzzInsights.tsx",
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.total_owed": {
+      "defaultValue": "Total Owed",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.overdue": {
+      "defaultValue": "Overdue",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.left": {
+      "defaultValue": "left",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.avg_overdue": {
+      "defaultValue": "Avg",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.days": {
+      "defaultValue": "days",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "buzz.sold": {
+      "defaultValue": "sold",
+      "files": [
+        "BuzzInsights.tsx"
+      ]
+    },
+    "credit.no_outstanding": {
+      "defaultValue": "No outstanding credit",
+      "files": [
+        "CreditList.tsx"
+      ]
+    },
+    "credit.total_owed": {
+      "defaultValue": "Total Owed",
+      "files": [
+        "CreditList.tsx"
+      ]
+    },
+    "credit.due": {
+      "defaultValue": "Due:",
+      "files": [
+        "CreditList.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.view_all_history": {
+      "defaultValue": "View All Credit History",
+      "files": [
+        "CreditList.tsx"
+      ]
+    },
+    "nav.customers": {
+      "defaultValue": null,
+      "files": [
+        "CustomerList.tsx"
+      ]
+    },
+    "credit.no_customers": {
+      "defaultValue": null,
+      "files": [
+        "CustomerList.tsx"
+      ]
+    },
+    "credit.add_first": {
+      "defaultValue": null,
+      "files": [
+        "CustomerList.tsx"
+      ]
+    },
+    "common.view_all": {
+      "defaultValue": null,
+      "files": [
+        "CustomerList.tsx",
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "common.add": {
+      "defaultValue": null,
+      "files": [
+        "CustomerList.tsx",
+        "MoneyInButton.tsx",
+        "MoneyOutButton.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "common.to_go": {
+      "defaultValue": "to go",
+      "files": [
+        "DailyTarget.tsx"
+      ]
+    },
+    "staff_performance.target_met": {
+      "defaultValue": "Target met!",
+      "files": [
+        "DailyTarget.tsx"
+      ]
+    },
+    "common.success": {
+      "defaultValue": "Great job!",
+      "files": [
+        "DailyTarget.tsx"
+      ]
+    },
+    "${industry}.daily_target": {
+      "defaultValue": null,
+      "files": [
+        "DailyTarget.tsx"
+      ]
+    },
+    "country.current": {
+      "defaultValue": null,
+      "files": [
+        "DailyTarget.tsx"
+      ]
+    },
+    "services.duration_minutes": {
+      "defaultValue": "Duration (minutes)",
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.edit_service": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "services.service_name": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.enter_service_name": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.price": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.category": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.enter_category": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.description": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.describe_service": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "services.update_service": {
+      "defaultValue": null,
+      "files": [
+        "EditServiceModal.tsx"
+      ]
+    },
+    "language.select": {
+      "defaultValue": null,
+      "files": [
+        "Header.tsx"
+      ]
+    },
+    "appointments.upcoming_appointments": {
+      "defaultValue": "Upcoming Appointments",
+      "files": [
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "appointments.manage_schedule": {
+      "defaultValue": "Manage your schedule",
+      "files": [
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "appointments.no_appointments": {
+      "defaultValue": "No appointments yet",
+      "files": [
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "appointments.book_first": {
+      "defaultValue": "Book your first appointment to get started",
+      "files": [
+        "HomepageCalendar.tsx"
+      ]
+    },
+    "tour.welcome_dashboard": {
+      "defaultValue": "Welcome to Your Dashboard!",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.dashboard_description": {
+      "defaultValue": "This is your business command center. Track everything that matters in one place.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.set_daily_goal": {
+      "defaultValue": "Set Your Daily Goal",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.daily_goal_description": {
+      "defaultValue": "Aim high! Set a daily sales target to keep yourself motivated and track your progress.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.buzz_insights": {
+      "defaultValue": "Buzz Insights",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.buzz_description": {
+      "defaultValue": "Get smart insights about your business - low stock alerts, overdue payments, and quick summaries.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.quick_add_money": {
+      "defaultValue": "Quick Add Money",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.track_cash_flow": {
+      "defaultValue": "Track Your Cash Flow",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.cash_flow_description": {
+      "defaultValue": "See all your money coming in and going out. Know your financial health at a glance.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_transactions": {
+      "defaultValue": "Add Transactions",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.manage_customer_credit": {
+      "defaultValue": "Manage Customer Credit",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.credit_description": {
+      "defaultValue": "Keep track of customers who owe you money. Never forget a payment again!",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.record_credit_sales": {
+      "defaultValue": "Record Credit Sales",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.credit_sales_description": {
+      "defaultValue": "When a customer buys on credit, record it here to stay organized.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.manage_inventory": {
+      "defaultValue": "Manage Your Inventory",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_product": {
+      "defaultValue": "Add New Product",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_product_description": {
+      "defaultValue": "Click here to add new products to your inventory.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.manage_services": {
+      "defaultValue": "Manage Your Services",
+      "files": [
+        "IndustryTour.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.services_description": {
+      "defaultValue": "List all the services you offer. Help customers know what you provide.",
+      "files": [
+        "IndustryTour.tsx",
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_service": {
+      "defaultValue": "Add New Service",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_service_description": {
+      "defaultValue": "Click here to add a new service to your business offerings.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.manage_ingredients": {
+      "defaultValue": "Manage Your Ingredients",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.ingredients_description": {
+      "defaultValue": "Track your ingredients and supplies. Never run out of what you need.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_ingredient": {
+      "defaultValue": "Add New Ingredient",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.add_ingredient_description": {
+      "defaultValue": "Add ingredients to your kitchen inventory.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.manage_calendar": {
+      "defaultValue": "Manage Your Calendar",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.calendar_description": {
+      "defaultValue": "View and manage all your appointments in one place.",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.add_appointment": {
+      "defaultValue": "Add New Appointment",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.add_appointment_description": {
+      "defaultValue": "Schedule new appointments and manage your bookings.",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.manage_trips": {
+      "defaultValue": "Manage Your Trips",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.trips_description": {
+      "defaultValue": "List all your transport routes and services.",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.manage_jobs": {
+      "defaultValue": "Manage Your Jobs",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.jobs_description": {
+      "defaultValue": "Track all your tailoring jobs and measurements.",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.manage_projects": {
+      "defaultValue": "Manage Your Projects",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.projects_description": {
+      "defaultValue": "Track all your freelance projects and deliverables.",
+      "files": [
+        "IndustryTour.tsx"
+      ]
+    },
+    "tour.join_community": {
+      "defaultValue": "Join the Beehive",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.beehive_description": {
+      "defaultValue": "Connect with other business owners, share experiences, and get helpful tips.",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.view_reports": {
+      "defaultValue": "View Business Reports",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.more_business_tools": {
+      "defaultValue": "More Business Tools",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.more_tools_description": {
+      "defaultValue": "Additional features to help you run your business like a pro!",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "common.previous": {
+      "defaultValue": "Previous",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.complete_tour": {
+      "defaultValue": "Complete Tour",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "common.next": {
+      "defaultValue": "Next",
+      "files": [
+        "IndustryTour.tsx",
+        "MultiPageTour.tsx",
+        "WelcomeTour.tsx"
+      ]
+    },
+    "inventory.no_items": {
+      "defaultValue": "No items in inventory",
+      "files": [
+        "InventoryList.tsx"
+      ]
+    },
+    "inventory.delete_item": {
+      "defaultValue": "Delete item",
+      "files": [
+        "InventoryList.tsx"
+      ]
+    },
+    "inventory.manage": {
+      "defaultValue": "Manage Inventory",
+      "files": [
+        "InventoryList.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "inventory.quick_add": {
+      "defaultValue": "Quick Add +",
+      "files": [
+        "InventoryList.tsx"
+      ]
+    },
+    "common.delete_inventory": {
+      "defaultValue": "Delete Item",
+      "files": [
+        "InventoryList.tsx"
+      ]
+    },
+    "common.transaction": {
+      "defaultValue": "Transaction",
+      "files": [
+        "MoneyInButton.tsx",
+        "MoneyOutButton.tsx",
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "services.service": {
+      "defaultValue": "Service",
+      "files": [
+        "MoneyInButton.tsx",
+        "ServiceList.tsx"
+      ]
+    },
+    "transport.select_service": {
+      "defaultValue": "Select service",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.distance_km": {
+      "defaultValue": "Distance (km)",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.use_base_amount": {
+      "defaultValue": "Use base amount only",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.tips_optional": {
+      "defaultValue": "Tips (optional)",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.calculated_fare": {
+      "defaultValue": "Calculated Fare:",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.base_amount_only": {
+      "defaultValue": "Base amount only",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.tips": {
+      "defaultValue": "tips",
+      "files": [
+        "MoneyInButton.tsx",
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.rate": {
+      "defaultValue": "rate",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "common.description_placeholder_money_in": {
+      "defaultValue": "What was this for?",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "payment_method.title": {
+      "defaultValue": "Payment Method",
+      "files": [
+        "MoneyInButton.tsx",
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "common.due_date": {
+      "defaultValue": "Due Date",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "common.payment_due_note": {
+      "defaultValue": "Payment due date (default: 30 days from today)",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "common.processing": {
+      "defaultValue": "Processing...",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transaction.save": {
+      "defaultValue": "Save Transaction",
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "Customer name is required for credit payment": {
+      "defaultValue": null,
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    " ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}": {
+      "defaultValue": null,
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "common.money_in": {
+      "defaultValue": null,
+      "files": [
+        "MoneyInButton.tsx"
+      ]
+    },
+    "transport.distance": {
+      "defaultValue": "Distance (km)",
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "common.description_optional": {
+      "defaultValue": "Description (optional)",
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "common.category": {
+      "defaultValue": "Category",
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "expense_tracker.other": {
+      "defaultValue": "e.g., Supplies, Utilities, Rent",
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "Business ID not found": {
+      "defaultValue": null,
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "Please select who you owe money to or enter a new name": {
+      "defaultValue": null,
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}": {
+      "defaultValue": null,
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "common.money_out": {
+      "defaultValue": null,
+      "files": [
+        "MoneyOutButton.tsx"
+      ]
+    },
+    "tour.home_dashboard": {
+      "defaultValue": "Home Dashboard",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.cash_management": {
+      "defaultValue": "Cash Management",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.transaction_history": {
+      "defaultValue": "Transaction History",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.history_description": {
+      "defaultValue": "Review past transactions to make smarter business decisions.",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.inventory_management": {
+      "defaultValue": "Inventory Management",
+      "files": [
+        "MultiPageTour.tsx",
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.stock_alerts": {
+      "defaultValue": "Stock Alerts",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.stock_alerts_description": {
+      "defaultValue": "Get notified when items are running low so you can restock on time.",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.services_management": {
+      "defaultValue": "Services Management",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.credit_management": {
+      "defaultValue": "Credit Management",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.track_payments": {
+      "defaultValue": "Track Payments",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.payments_description": {
+      "defaultValue": "Mark when customers pay you back. Keep your cash flow healthy!",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.beehive_community": {
+      "defaultValue": "Beehive Community",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.share_insights": {
+      "defaultValue": "Share Your Insights",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.share_description": {
+      "defaultValue": "Help others by sharing your business experiences and learn from the community.",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.business_reports": {
+      "defaultValue": "Business Reports",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.sales_analytics": {
+      "defaultValue": "Sales Analytics",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.sales_description": {
+      "defaultValue": "Analyze your sales patterns and make data-driven decisions.",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.more_options": {
+      "defaultValue": "More Options",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.business_settings": {
+      "defaultValue": "Business Settings",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "tour.page": {
+      "defaultValue": "Page",
+      "files": [
+        "MultiPageTour.tsx"
+      ]
+    },
+    "credit.invalid_payment_amount": {
+      "defaultValue": "Invalid payment amount",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.payment_failed": {
+      "defaultValue": "Payment failed. Please try again.",
+      "files": [
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.account_paid_in_full": {
+      "defaultValue": "Account Paid in Full",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.no_outstanding_balance": {
+      "defaultValue": "This customer has no outstanding balance",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.payment_history": {
+      "defaultValue": "Payment History",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.items": {
+      "defaultValue": "items",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "modal.close": {
+      "defaultValue": "Close",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.active_credits": {
+      "defaultValue": "Active Credits",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.hide_history": {
+      "defaultValue": "Hide History",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.show_history": {
+      "defaultValue": "Show History",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.total_you_owe": {
+      "defaultValue": "Total You Owe",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.remaining_balance": {
+      "defaultValue": "Remaining Balance",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "credit.fifo_payment_note": {
+      "defaultValue": "Payments are applied to oldest debts first (FIFO)",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.record_payment_made": {
+      "defaultValue": "Record Payment Made",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.record_partial_payment": {
+      "defaultValue": "Record Payment Received",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.mark_as_paid": {
+      "defaultValue": "Mark as Paid in Full",
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.record_payment": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.payment_recorded": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.payment_success_message": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.for_customer": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx",
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.original_amount": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.paid_so_far": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.due_date": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.overdue_by": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.days": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.payment_amount": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "payment.max_payment": {
+      "defaultValue": null,
+      "files": [
+        "PaymentModal.tsx"
+      ]
+    },
+    "pwa.install_title": {
+      "defaultValue": "Install Beezee App",
+      "files": [
+        "PWAPrompts.tsx"
+      ]
+    },
+    "pwa.install_description": {
+      "defaultValue": "Add to home screen for quick access and offline use.",
+      "files": [
+        "PWAPrompts.tsx"
+      ]
+    },
+    "pwa.add_to_home": {
+      "defaultValue": "Add to Home Screen",
+      "files": [
+        "PWAPrompts.tsx"
+      ]
+    },
+    "receipt.title": {
+      "defaultValue": "Receipt",
+      "files": [
+        "ReceiptGenerator.tsx"
+      ]
+    },
+    "receipt.copied": {
+      "defaultValue": "Copied!",
+      "files": [
+        "ReceiptGenerator.tsx"
+      ]
+    },
+    "receipt.copy": {
+      "defaultValue": "Copy to Clipboard",
+      "files": [
+        "ReceiptGenerator.tsx"
+      ]
+    },
+    "services.active": {
+      "defaultValue": "active",
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "services.base_km_pricing": {
+      "defaultValue": "Base + KM pricing",
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "services.delete_service": {
+      "defaultValue": "Delete service",
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "common.delete_service": {
+      "defaultValue": "Delete Service",
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "nav.services": {
+      "defaultValue": null,
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "services.no_services": {
+      "defaultValue": null,
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "services.add_first": {
+      "defaultValue": null,
+      "files": [
+        "ServiceList.tsx"
+      ]
+    },
+    "tour.modal_title": {
+      "defaultValue": "Welcome to Beezee!",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.daily_target": {
+      "defaultValue": "Daily Target",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.target_description": {
+      "defaultValue": "Set and track your daily sales goals right here. The progress bar shows how close you are to hitting your target!",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.money_buttons": {
+      "defaultValue": "Money In & Out",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.money_description": {
+      "defaultValue": "Quickly record sales (Money In) and expenses (Money Out) with these convenient buttons.",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.credit_preview": {
+      "defaultValue": "Credit Overview",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.credit_preview_description": {
+      "defaultValue": "See customers who owe you money at a glance. Tap to view full details and manage payments.",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.inventory_preview": {
+      "defaultValue": "Inventory Preview",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.inventory_preview_description": {
+      "defaultValue": "Quick view of your stock levels. Get alerts when items are running low.",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.navigation_guide": {
+      "defaultValue": "Navigation Guide",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.navigation_description": {
+      "defaultValue": "The bottom bar gives you access to all features:\\n\\n📊 Cash - Full transaction history\\n📦 Stock - Complete inventory management\\n💳 Credit - Customer credit tracking\\n📈 Reports - Business analytics\\n🐝 Beehive - Feature requests & community\\n⚙️ More - Settings and additional tools",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "tour.get_started": {
+      "defaultValue": "Get Started",
+      "files": [
+        "WelcomeTour.tsx"
+      ]
+    },
+    "receipt.error_phone_required": {
+      "defaultValue": "Phone number is required",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "receipt.error_phone_invalid": {
+      "defaultValue": "Please enter a valid phone number with country code",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "receipt.enter_phone": {
+      "defaultValue": "Enter customer phone number",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "receipt.phone_label": {
+      "defaultValue": "Phone Number",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "receipt.phone_hint": {
+      "defaultValue": "Include country code (e.g., +254 for Kenya)",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "common.send": {
+      "defaultValue": "Send",
+      "files": [
+        "WhatsAppShare.tsx"
+      ]
+    },
+    "appointments.error.customer_name": {
+      "defaultValue": "Customer name is required",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "appointments.error.date_required": {
+      "defaultValue": "Date is required",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.error.start_time_required": {
+      "defaultValue": "Start time is required",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.error.end_time_required": {
+      "defaultValue": "End time is required",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.error.service_required": {
+      "defaultValue": "Please select a service",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.error.no_business": {
+      "defaultValue": "No business information available",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.complete_success": {
+      "defaultValue": "Appointment created successfully",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.create_error": {
+      "defaultValue": "Failed to create appointment. Please try again.",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.customer_name": {
+      "defaultValue": "Customer Name",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.customer_name_placeholder": {
+      "defaultValue": "Enter customer name",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.customer_contact": {
+      "defaultValue": "Customer Contact",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.customer_contact_placeholder": {
+      "defaultValue": "Phone number (optional)",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.date": {
+      "defaultValue": "Date",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.start_time": {
+      "defaultValue": "Start Time",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.select_time": {
+      "defaultValue": "Select time",
+      "files": [
+        "AddAppointmentModal.tsx",
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.end_time": {
+      "defaultValue": "End Time",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.select_service": {
+      "defaultValue": "Service",
+      "files": [
+        "AddAppointmentModal.tsx",
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.notes": {
+      "defaultValue": "Notes",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.notes_placeholder": {
+      "defaultValue": "Additional notes or special requests...",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "common.saving": {
+      "defaultValue": "Saving...",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "calendar.book_appointment": {
+      "defaultValue": "Add Appointment",
+      "files": [
+        "AddAppointmentModal.tsx"
+      ]
+    },
+    "appointments.add_appointment_short": {
+      "defaultValue": "Add appointment",
+      "files": [
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.details": {
+      "defaultValue": "Appointment Details",
+      "files": [
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.status": {
+      "defaultValue": "Status",
+      "files": [
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.price": {
+      "defaultValue": "Price",
+      "files": [
+        "Appointments.tsx"
+      ]
+    },
+    "appointments.close": {
+      "defaultValue": "Close",
+      "files": [
+        "Appointments.tsx"
+      ]
+    },
+    "beezee_unified_auth": {
+      "defaultValue": null,
+      "files": [
+        "UnifiedAuthContext.tsx"
+      ]
+    },
+    "id, country, industry": {
+      "defaultValue": null,
+      "files": [
+        "UnifiedAuthContext.tsx"
+      ]
+    },
+    ",": {
+      "defaultValue": null,
+      "files": [
+        "useIndustryDataNew.ts",
+        "cors.ts",
+        "rateLimit.ts"
+      ]
+    },
+    "amount, category, created_at": {
+      "defaultValue": null,
+      "files": [
+        "expenses.ts"
+      ]
+    },
+    "limit_multiplier": {
+      "defaultValue": null,
+      "files": [
+        "supabase-adapter.ts"
+      ]
+    },
+    "message_path, user_id, sent_at, read_at, message_length": {
+      "defaultValue": null,
+      "files": [
+        "chat-storage.ts"
+      ]
+    },
+    "message_path": {
+      "defaultValue": null,
+      "files": [
+        "chat-storage.ts"
+      ]
+    },
+    "+": {
+      "defaultValue": null,
+      "files": [
+        "sanitizer.ts"
+      ]
+    },
+    "100.50": {
+      "defaultValue": null,
+      "files": [
+        "sanitizer.test.ts"
+      ]
+    },
+    "abc": {
+      "defaultValue": null,
+      "files": [
+        "sanitizer.test.ts"
+      ]
+    },
+    "XSS": {
+      "defaultValue": null,
+      "files": [
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts",
+        "sanitizer.test.ts"
+      ]
+    },
+    "Access-Control-Allow-Credentials": {
+      "defaultValue": "true",
+      "files": [
+        "cors.ts",
+        "cors.test.ts",
+        "cors.test.ts"
+      ]
+    },
+    "Access-Control-Max-Age": {
+      "defaultValue": "86400",
+      "files": [
+        "cors.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts"
+      ]
+    },
+    "origin": {
+      "defaultValue": null,
+      "files": [
+        "cors.ts",
+        "cors.ts",
+        "cors.ts"
+      ]
+    },
+    "x-user-id": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.ts"
+      ]
+    },
+    "x-forwarded-for": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.ts"
+      ]
+    },
+    "x-real-ip": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.ts"
+      ]
+    },
+    "Access-Control-Allow-Origin": {
+      "defaultValue": null,
+      "files": [
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts"
+      ]
+    },
+    "Access-Control-Allow-Methods": {
+      "defaultValue": null,
+      "files": [
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts",
+        "cors.test.ts"
+      ]
+    },
+    "Access-Control-Allow-Headers": {
+      "defaultValue": null,
+      "files": [
+        "cors.test.ts",
+        "cors.test.ts"
+      ]
+    },
+    "Content-Length": {
+      "defaultValue": null,
+      "files": [
+        "cors.test.ts"
+      ]
+    },
+    "http://localhost:3000/api/test": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.test.ts"
+      ]
+    },
+    "X-RateLimit-Limit": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.test.ts",
+        "rateLimit.test.ts",
+        "rateLimit.test.ts"
+      ]
+    },
+    "X-RateLimit-Remaining": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.test.ts",
+        "rateLimit.test.ts",
+        "rateLimit.test.ts"
+      ]
+    },
+    "X-RateLimit-Reset": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.test.ts",
+        "rateLimit.test.ts"
+      ]
+    },
+    "Retry-After": {
+      "defaultValue": null,
+      "files": [
+        "rateLimit.test.ts",
+        "rateLimit.test.ts"
+      ]
+    },
+    "admin_session": {
+      "defaultValue": null,
+      "files": [
+        "middleware.ts"
+      ]
+    },
+    "-": {
+      "defaultValue": null,
+      "files": [
+        "businessId.ts"
+      ]
+    },
+    "amount": {
+      "defaultValue": null,
+      "files": [
+        "dailyTargetHelpers.ts",
+        "dailyTargetHelpers.ts"
+      ]
+    },
+    "daily_target": {
+      "defaultValue": null,
+      "files": [
+        "dailyTargetHelpers.ts"
+      ]
+    },
+    "user_id, business_name, country, industry": {
+      "defaultValue": null,
+      "files": [
+        "dataIntegrityMonitor.ts"
+      ]
+    },
+    "response_data": {
+      "defaultValue": null,
+      "files": [
+        "idempotency.ts"
+      ]
+    }
+  },
+  "usageByFile": {
+    "page.tsx": [
+      "redirect",
+      "a",
+      "T",
+      "a",
+      "T",
+      "redirect",
+      "beehive.title",
+      "beehive.description",
+      "beehive.search_placeholder",
+      "beehive.all",
+      "beehive.new_features",
+      "beehive.improvements",
+      "beehive.bug_fixes",
+      "beehive.integrations",
+      "beehive.add_request",
+      "beehive.total_requests",
+      "beehive.completed",
+      "beehive.in_progress",
+      "beehive.community_member",
+      "common.edit",
+      "beehive.no_requests",
+      "beehive.no_requests_description",
+      "beehive.add_first_request",
+      "receipt.receipt_from",
+      "business.default_name",
+      "receipt.description",
+      "receipt.amount",
+      "receipt.date",
+      "receipt.customer",
+      "business.suppliers",
+      "receipt.payment_method",
+      "receipt.thank_you",
+      "common.copied",
+      "common.copy",
+      "credit.share_via_whatsapp",
+      "receipt.share_receipt",
+      "common.copy_to_clipboard",
+      "receipt.share_whatsapp",
+      "common.cancel",
+      "T",
+      "T",
+      "textarea",
+      "T",
+      "cash.in",
+      "cash.out",
+      "cash.profit",
+      "cash.search_cash_flow",
+      "cash.all",
+      "cash.money_in",
+      "cash.money_out",
+      "cash.recent_activity",
+      "cash.no_cash_activity_found",
+      "cash.start_by_recording_first_transaction",
+      "credit.reminder_from",
+      "business.default_name",
+      "common.customer",
+      "credit.amount_owed",
+      "credit.original_amount",
+      "credit.amount_paid",
+      "credit.date_given",
+      "credit.due_date",
+      "credit.days_overdue",
+      "credit.payment_request",
+      "credit.customers_tab",
+      "credit.personal_tab",
+      "credit.total_owed_to_you",
+      "credit.total_you_owe",
+      "credit.customers",
+      "credit.suppliers",
+      "credit.add_credit_customer",
+      "credit.add_personal_credit",
+      "credit.credit_added_successfully",
+      "credit.share_credit_details",
+      "credit.amount_owed",
+      "common.copy",
+      "credit.share_via_whatsapp",
+      "common.cancel",
+      "common.optional",
+      "credit.description_placeholder",
+      "credit.adding",
+      "credit.select_vendor_error",
+      "credit.who_do_you_owe",
+      "credit.select_vendor_placeholder",
+      "credit.add_new_vendor",
+      "credit.adding",
+      "T",
+      "textarea",
+      "credit",
+      "credit.overdue",
+      "credit.overdue",
+      "credit.search_customers",
+      "credit.all",
+      "credit.outstanding",
+      "credit.paid",
+      "credit.all_customers",
+      "credit.no_credit_customers_found",
+      "credit.start_by_adding_first_customer",
+      "credit.add_credit_customer",
+      "credit.add_personal_credit",
+      "credit.customer_name",
+      "credit.customer_name",
+      "common.description",
+      "credit.amount_owed",
+      "credit.due_date",
+      "credit.cancel",
+      "credit.add_customer",
+      "*",
+      "help.getting_started",
+      "help.features",
+      "help.troubleshooting",
+      "help.tutorials",
+      "help.faq1_question",
+      "help.faq2_question",
+      "help.faq3_question",
+      "help.faq3_answer",
+      "help.faq4_question",
+      "help.faq4_answer",
+      "help.title",
+      "help.description",
+      "help.search_placeholder",
+      "help.start_tour",
+      "help.call_support",
+      "help.all_categories",
+      "help.frequently_asked",
+      "help.contact_support",
+      "help.your_name",
+      "help.your_email",
+      "help.subject",
+      "help.message",
+      "help.send_message",
+      "help.resources",
+      "help.user_guide",
+      "help.comprehensive_guide",
+      "help.backup_data",
+      "help.download_backup",
+      "more.share_app_message",
+      "more.business_tools",
+      "more.reports",
+      "more.reports_description",
+      "more.settings",
+      "more.settings_description",
+      "more.community_support",
+      "more.beehive_community",
+      "more.beehive_description",
+      "nav.more",
+      "more.share_app",
+      "app.name",
+      "common.industry",
+      "common.country",
+      "more.member_since",
+      "auth.sign_out",
+      "app.name",
+      "footer.privacy",
+      "footer.terms",
+      "footer.help",
+      "refresh.data_refreshed",
+      "refresh.refresh_failed",
+      "alert.setup_profile_first",
+      "alert.failed_transaction",
+      "alert.setup_profile_first_expenses",
+      "alert.failed_expense",
+      "business.setup_required",
+      "business.setup_message",
+      "business.auth_user",
+      "business.not_authenticated",
+      "business.business_status",
+      "@/components/universal/BuzzInsights",
+      "@/components/universal/EditServiceModal",
+      "@/components/universal/AddCustomerModal",
+      "@/components/universal/AddInventoryForm",
+      "@/components/universal/AppointmentList",
+      "@/components/universal/ServiceList",
+      "@/components/universal/CustomerList",
+      "T",
+      "T",
+      "T",
+      "reports.title",
+      "reports.overview",
+      "reports.sales",
+      "reports.expenses",
+      "reports.inventory",
+      "reports.services",
+      "reports.customers",
+      "reports.daily_performance",
+      "reports.export",
+      "reports.total_revenue",
+      "reports.transactions",
+      "reports.total_expenses",
+      "reports.net_profit",
+      "reports.profit_margin",
+      "reports.sales_performance",
+      "reports.period_sales",
+      "reports.top_categories",
+      "reports.payment_methods",
+      "reports.top_sellers",
+      "reports.sold",
+      "reports.customer_frequency",
+      "reports.unique_customers",
+      "reports.repeat_rate",
+      "reports.avg_purchases",
+      "reports.peak_times",
+      "reports.best_day",
+      "reports.services_summary",
+      "reports.total_services",
+      "reports.active_services",
+      "reports.service_performance",
+      "reports.total_transactions",
+      "reports.total_revenue",
+      "reports.avg_revenue_per_service",
+      "reports.top_services",
+      "reports.inventory_summary",
+      "reports.total_items",
+      "reports.low_stock",
+      "reports.inventory_value",
+      "reports.total_value",
+      "reports.stock_turnover",
+      "reports.turnover_rate",
+      "reports.customer_summary",
+      "reports.total_customers",
+      "reports.outstanding",
+      "reports.total_owed",
+      "reports.outstanding_balance",
+      "reports.average_credit",
+      "reports.avg_per_customer",
+      "reports.expenses_breakdown",
+      "reports.total_expenses_period",
+      "reports.expense_categories",
+      "reports.daily_performance",
+      "reports.last_30_days",
+      "reports.no_daily_history",
+      "reports.daily_history_info",
+      "reports.date",
+      "reports.sales",
+      "reports.target",
+      "reports.achievement",
+      "reports.status",
+      "reports.met",
+      "reports.not_met",
+      "reports.days_target_met",
+      "reports.out_of",
+      "reports.days",
+      "reports.success_rate",
+      "reports.overall_achievement",
+      "T",
+      "canvas",
+      "2d",
+      "T",
+      "services.inventory_tab",
+      "services.add_error",
+      "services.business_load_error",
+      "inventory.add_error",
+      "services.update_success",
+      "services.update_error",
+      "services.confirm_delete_service",
+      "services.confirm_delete_permanently",
+      "services.delete_error",
+      "services.sale_failed",
+      "services.confirm_delete_inventory",
+      "services.confirm_delete_permanently",
+      "services.transport_offline_mode",
+      "services.trip_failed",
+      "services.services_tab",
+      "services.inventory_tab",
+      "common.total_service_value",
+      "common.avg_price",
+      "inventory.left",
+      "inventory.reorder_soon",
+      "services.no_inventory_found",
+      "services.start_by_adding_first_item",
+      "services.add_inventory_item",
+      "enter_category",
+      "stock",
+      "@/lib/sync-manager",
+      "services",
+      "T",
+      "Failed to update item. Please try again.",
+      "T",
+      "services.total_services",
+      "services.available",
+      "services.low_stock",
+      "services.products_need_restock",
+      "services.add_service",
+      "services.search_services",
+      "filter.all",
+      "_",
+      "services.no_services_found",
+      "services.start_by_adding_first_service",
+      "inventory.total_items",
+      "inventory.low_stock",
+      "inventory.total_stock_value",
+      "inventory.add_new_item",
+      "inventory.search_items",
+      "inventory.min",
+      "inventory.running_low",
+      "services.add_service",
+      "item_name",
+      "category",
+      "quantity",
+      "inventory.min",
+      "inventory.units",
+      "select_category",
+      "inventory.pieces",
+      "common.suppliers",
+      "inventory.add_new_item",
+      "settings.general",
+      "settings.profile",
+      "settings.profile_desc",
+      "settings.language",
+      "settings.language_desc",
+      "settings.currency",
+      "settings.currency_desc",
+      "settings.notifications",
+      "settings.push_notifications",
+      "settings.push_desc",
+      "settings.sound_effects",
+      "settings.sound_desc",
+      "settings.low_stock_alerts",
+      "settings.stock_desc",
+      "settings.appearance",
+      "settings.dark_mode",
+      "settings.dark_desc",
+      "settings.compact_view",
+      "settings.compact_desc",
+      "settings.data_storage",
+      "settings.auto_backup",
+      "settings.backup_desc",
+      "settings.sync_data",
+      "settings.sync_desc",
+      "settings.export_data",
+      "settings.export_desc",
+      "settings.clear_cache",
+      "settings.cache_desc",
+      "settings.reset_account",
+      "settings.reset_desc",
+      "settings.security",
+      "settings.change_password",
+      "settings.password_desc",
+      "settings.two_factor",
+      "settings.2fa_desc",
+      "settings.privacy",
+      "settings.privacy_desc",
+      "common.back",
+      "settings.profile",
+      "common.industry",
+      "common.country",
+      "more.member_since",
+      "common.save",
+      "common.cancel",
+      "settings.edit_profile",
+      "settings.title",
+      "settings.change_password",
+      "settings.current_password",
+      "settings.new_password",
+      "settings.confirm_password",
+      "settings.cancel",
+      "settings.update_password",
+      "settings.export",
+      "settings.clear",
+      "settings.account_info",
+      "settings.email",
+      "settings.phone",
+      "settings.business",
+      "settings.industry",
+      "settings.country",
+      "app.name",
+      "footer.privacy",
+      "footer.terms",
+      "footer.help",
+      "from",
+      "Profile updated successfully!",
+      "Error updating profile. Please try again.",
+      "Account has been reset successfully. All data cleared.",
+      "Failed to reset account. Please try again.",
+      "Passwords do not match",
+      "inventory.add_error",
+      "business.setup_required",
+      "inventory.delete_offline_item",
+      "inventory.delete_error",
+      "inventory.edit_error",
+      "inventory.sell_error",
+      "inventory.total_items",
+      "inventory.total_qty",
+      "inventory.low_stock",
+      "inventory.total_stock_value",
+      "inventory.add_new_item",
+      "inventory.search_items",
+      "common.all",
+      "inventory.running_low",
+      "inventory.left",
+      "common.all",
+      "inventory.items",
+      "services.no_inventory_found",
+      "repairs.try_adjusting",
+      "inventory.min",
+      "services.running_low",
+      "inventory.add_new_item",
+      "sell",
+      "inventory.items",
+      "inventory.edit_item",
+      "item_name",
+      "quantity",
+      "retail.inventory.min_stock",
+      "inventory.unit",
+      "category",
+      "enter_category",
+      "cost_price",
+      "selling_price",
+      "business.suppliers",
+      "common.optional",
+      "quantity",
+      "customerName",
+      "common.optional",
+      "paymentMethod",
+      "common.total_amount",
+      "sell",
+      "item_name",
+      "quantity",
+      "retail.inventory.min_stock",
+      "inventory.unit",
+      "category",
+      "enter_category",
+      "cost_price",
+      "selling_price",
+      "business.suppliers",
+      "common.optional",
+      "T",
+      "T",
+      "tour.welcome_title",
+      "tour.transactions_title",
+      "tour.transactions_description",
+      "tour.inventory_title",
+      "tour.inventory_description",
+      "tour.customers_title",
+      "tour.customers_description",
+      "tour.reports_title",
+      "tour.reports_description",
+      "tour.settings_title",
+      "tour.settings_description",
+      "tour.step",
+      "tour.of",
+      "tour.completed",
+      "tour.got_it",
+      "tour.next",
+      "tour.previous",
+      "tour.pause",
+      "tour.play",
+      "tour.skip",
+      "tour.finish",
+      "tour.next",
+      "tour.quick_links",
+      "nav.home",
+      "nav.transactions",
+      "nav.inventory",
+      "reports.title",
+      "receipt.receipt_from",
+      "business.default_name",
+      "receipt.transaction_id",
+      "receipt.date",
+      "receipt.description",
+      "receipt.customer",
+      "receipt.amount",
+      "receipt.payment_method",
+      "receipt.thank_you",
+      "common.today",
+      "common.total",
+      "cash.recent_activity",
+      "transactions.no_found",
+      "transactions.start_first",
+      "common.copied",
+      "common.copy",
+      "credit.share_via_whatsapp",
+      "transactions.search_placeholder",
+      "common.all",
+      "common.today",
+      "common.yesterday",
+      "transactions.no_found",
+      "transactions.start_first",
+      "common.customer",
+      "common.copied",
+      "common.copy_to_clipboard",
+      "receipt.share_whatsapp",
+      "receipt.view_details",
+      "business.default_name",
+      "receipt.share_receipt",
+      "common.copy_to_clipboard",
+      "receipt.share_whatsapp",
+      "common.cancel",
+      "T",
+      "textarea",
+      "T",
+      "T",
+      "T",
+      "auth.welcome_back",
+      "country",
+      "industry"
+    ],
+    "database.ts": [
+      "business_id",
+      "T",
+      "country",
+      "usd_price",
+      "id, country, created_at",
+      "business_id, transaction_date",
+      "id, country, updated_at",
+      "id, country"
+    ],
+    "metrics.ts": [
+      "id, created_at",
+      "business_id, created_at",
+      "id, status, updated_at",
+      "id, status, updated_at",
+      "usd_price, created_at, cancelled_at",
+      "usd_price, created_at, status",
+      "usd_price, created_at, status",
+      "usd_price, created_at",
+      "usd_price, updated_at"
+    ],
+    "subscriptions.ts": [
+      "*",
+      "country, is_active",
+      "*",
+      "usd_price",
+      "usd_price"
+    ],
+    "useAdminData.ts": [
+      "*",
+      "*"
+    ],
+    "route.ts": [
+      "limit",
+      "id",
+      "timeWindow",
+      "limit",
+      "severity",
+      "type",
+      "id, business_name, phone_number",
+      "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id,\n        security_answer_1_hash\n      ",
+      "\n        id,\n        phone_number,\n        recovery_locked_until,\n        recovery_attempts,\n        security_question_1_id\n      ",
+      "id, question_text, category",
+      "*",
+      "id, phone_number",
+      "id, phone_number, business_name",
+      "id, business_id, expires_at, used_at",
+      "id, question_text, category",
+      "*",
+      "id",
+      "id",
+      "*",
+      "id",
+      "*",
+      "upvotes_count, downvotes_count",
+      "upvotes_count, downvotes_count",
+      "upvotes_count, downvotes_count",
+      "id",
+      "comments_count",
+      "*",
+      "id",
+      "comments_count",
+      "*",
+      "country",
+      "Cache-Control",
+      "Content-Type",
+      "id, owner_id",
+      "currency",
+      "from",
+      "to",
+      "reference",
+      "country",
+      "Authorization",
+      "x-kyshi-signature",
+      "x-startbutton-signature"
+    ],
+    "auth.test.ts": [
+      "xss",
+      "bcrypt",
+      "xss",
+      "xss"
+    ],
+    "transactions.test.ts": [
+      ".",
+      ".",
+      "xss",
+      "xss",
+      "xss",
+      "xss",
+      "xss",
+      "xss",
+      "xss"
+    ],
+    "layout-client.tsx": [
+      "@/components/universal/BottomNav",
+      "@/components/universal/ScrollToTop",
+      "@/components/PWAInstallPrompt",
+      "@/components/universal/ConnectionToast",
+      "style",
+      "@/lib/cleanup-bad-operations",
+      "X-Offline"
+    ],
+    "creditService.ts": [
+      "*",
+      "T",
+      "T",
+      "*",
+      "T",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "T",
+      "T"
+    ],
+    "AppointmentCard.tsx": [
+      "appointments.pending_sync",
+      "appointments.sync_error",
+      "appointments.synced",
+      "appointments.scheduled",
+      "appointments.confirmed",
+      "appointments.completed",
+      "appointments.cancelled",
+      "appointments.no_show",
+      "appointments.all_day",
+      "appointments.am",
+      "appointments.pm",
+      "appointments.no_customer",
+      "appointments.service",
+      "appointments.at_time",
+      "appointments.duration",
+      "appointments.minutes",
+      "appointments.complete",
+      "appointments.cancel",
+      "appointments.view_details",
+      ":"
+    ],
+    "AppointmentDetailsSheet.tsx": [
+      "appointments.all_day",
+      "appointments.provide_cancel_reason",
+      "appointments.details_title",
+      "appointments.customer",
+      "appointments.date_time",
+      "appointments.duration",
+      "appointments.minutes",
+      "appointments.service",
+      "appointments.service",
+      "appointments.notes",
+      "appointments.sync_status",
+      "appointments.delete_confirm",
+      "appointments.cancel",
+      "appointments.delete",
+      "appointments.cancel_confirm",
+      "appointments.cancel_reason",
+      "appointments.back",
+      "appointments.confirm_cancel",
+      "appointments.mark_completed",
+      "appointments.cancel_appointment",
+      "appointments.delete_appointment",
+      "appointments.delete_appointment",
+      ":"
+    ],
+    "AppointmentsNew.tsx": [
+      "appointments.create_success",
+      "appointments.create_error",
+      "appointments.complete_success",
+      "appointments.complete_error",
+      "appointments.cancel_success",
+      "appointments.cancel_error",
+      "appointments.delete_success",
+      "appointments.delete_error",
+      "appointments.loading",
+      "appointments.title",
+      "appointments.add_appointment",
+      "appointments.list_view",
+      "appointments.calendar_view",
+      "appointments.search_placeholder",
+      "appointments.all_statuses",
+      "appointments.pending",
+      "appointments.completed",
+      "appointments.cancelled",
+      "appointments.upcoming",
+      "appointments.completed",
+      "appointments.cancelled",
+      "appointments.no_appointments_found",
+      "appointments.adjust_filters",
+      "appointments.get_started",
+      "appointments.add_appointment"
+    ],
+    "CalendarView.tsx": [
+      "appointments.previous_month",
+      "appointments.locale",
+      "appointments.today_button",
+      "appointments.next_month",
+      "appointments.sun",
+      "appointments.mon",
+      "appointments.tue",
+      "appointments.wed",
+      "appointments.thu",
+      "appointments.fri",
+      "appointments.sat",
+      "appointments.today",
+      "appointments.has_appointments"
+    ],
+    "CreateAppointmentSheet.tsx": [
+      "appointments.customer_name_required",
+      "appointments.customer_name_min_length",
+      "appointments.date_required",
+      "appointments.date_past",
+      "appointments.start_time_required",
+      "appointments.end_time_required",
+      "appointments.end_time_after_start",
+      "appointments.service_required",
+      "appointments.fix_form_errors",
+      "appointments.no_business_info",
+      "appointments.create_error",
+      "calendar.add_appointment",
+      "appointments.customer_name",
+      "appointments.enter_customer_name",
+      "appointments.customer_contact",
+      "appointments.phone_number_optional",
+      "appointments.date",
+      "appointments.start_time_label",
+      "appointments.end_time_label",
+      "appointments.service_label",
+      "appointments.select_service",
+      "appointments.no_services",
+      "appointments.notes_label",
+      "appointments.notes_placeholder",
+      "appointments.cancel",
+      "appointments.creating",
+      "appointments.add_appointment",
+      ":",
+      ":",
+      ":"
+    ],
+    "SyncStatusIndicator.tsx": [
+      "appointments.offline_mode",
+      "appointments.syncing",
+      "appointments.changes_remaining",
+      "appointments.updating_data",
+      "appointments.pending_changes",
+      "appointments.waiting_to_sync",
+      "appointments.sync_now",
+      "appointments.all_changes_saved",
+      "appointments.data_up_to_date"
+    ],
+    "HeroSequence.tsx": [
+      "2d"
+    ],
+    "Navigation.tsx": [
+      "style"
+    ],
+    "BeezeeAppHero.tsx": [
+      "app.greeting",
+      "app.balance",
+      "app.demo",
+      "app.executive_tools",
+      "app.voice",
+      "app.scan",
+      "app.book",
+      "app.stock",
+      "app.coach_analysis"
+    ],
+    "BeezeeHero.tsx": [
+      "hero.get_started"
+    ],
+    "ComingSoonModal.tsx": [
+      "modal.request_access",
+      "modal.early_access_description",
+      "modal.join_waitlist",
+      "modal.gain_access",
+      "modal.maybe_later",
+      "modal.system_status"
+    ],
+    "AddCreditLineItemModal.tsx": [
+      "error.no_business_id",
+      "credit.failed_to_add_item",
+      "credit.add_new_credit",
+      "credit.for_customer",
+      "credit.description",
+      "credit.description_placeholder",
+      "credit.amount",
+      "credit.due_date",
+      "modal.cancel",
+      "modal.processing",
+      "credit.add_credit",
+      "T",
+      "T"
+    ],
+    "CreditCustomerCard.tsx": [
+      "credit.total_amount",
+      "credit.paid_amount",
+      "credit.outstanding_amount",
+      "common.loading",
+      "credit.credit_purchases",
+      "credit.credit_purchase",
+      "credit.date_given",
+      "credit.paid",
+      "credit.remaining",
+      "credit.no_line_items",
+      "credit.days_overdue",
+      "credit.days_overdue"
+    ],
+    "PayableCreditCard.tsx": [
+      "credit.total_amount",
+      "credit.paid_amount",
+      "credit.outstanding_amount",
+      "common.loading",
+      "credit.costs",
+      "credit.date_given",
+      "credit.paid",
+      "credit.remaining",
+      "credit.no_costs_found",
+      "credit.days_overdue",
+      "credit.days_overdue"
+    ],
+    "OptimisticTransactionList.tsx": [
+      "T"
+    ],
+    "GlobalNavigation.tsx": [
+      "nav.system_status"
+    ],
+    "BeeZeeConfirmDialog.tsx": [
+      "div"
+    ],
+    "ConfirmModal.tsx": [
+      "modal.cancel",
+      "modal.processing",
+      "modal.confirm"
+    ],
+    "AddCustomerModal.tsx": [
+      "credit.add_customer",
+      "appointments.customer_name",
+      "appointments.customer_name",
+      "appointments.customer_contact",
+      "appointments.customer_contact",
+      "common.email_address",
+      "common.email_address",
+      "credit.initial_credit",
+      "credit.due_date",
+      "common.cancel",
+      "credit.add_customer"
+    ],
+    "AddInventoryForm.tsx": [
+      "inventory.example_vegetables",
+      "inventory.example_headphones",
+      "inventory.example_fuel",
+      "inventory.example_software",
+      "inventory.example_item",
+      "inventory.example_quantity",
+      "inventory.example_threshold",
+      "inventory.example_price",
+      "inventory.example_price",
+      "inventory.add_item",
+      "inventory.item_name",
+      "inventory.category",
+      "inventory.enter_category",
+      "inventory.quantity",
+      "inventory.min_stock",
+      "inventory.units",
+      "inventory.select_unit",
+      "inventory.pieces",
+      "inventory.kg",
+      "inventory.liters",
+      "inventory.meters",
+      "inventory.boxes",
+      "inventory.supplier",
+      "inventory.supplier_name",
+      "inventory.cost_price",
+      "inventory.selling_price",
+      "common.cancel",
+      "inventory.add_item"
+    ],
+    "AppointmentList.tsx": [
+      "common.appointments",
+      "appointments.today_count",
+      "appointments.today",
+      "appointments.untitled",
+      "appointments.upcoming",
+      "appointments.untitled",
+      "common.no_upcoming_appointments",
+      "common.schedule_first_appointment",
+      "appointments.manage_appointments",
+      "appointments.add_appointment",
+      "common.delete_appointment",
+      "common.delete_confirm",
+      "common.cancel",
+      "common.delete",
+      ":"
+    ],
+    "BeehiveComments.tsx": [
+      "time.just_now",
+      "time.m",
+      "time.h",
+      "time.d",
+      "beehive.comments",
+      "common.loading",
+      "beehive.no_comments",
+      "beehive.community_member",
+      "common.delete",
+      "beehive.add_comment",
+      "*",
+      "*"
+    ],
+    "BeehiveRequestModal.tsx": [
+      "beehive.error_title_required",
+      "beehive.error_title_min",
+      "beehive.error_description_required",
+      "beehive.error_description_min",
+      "beehive.edit_modal_title",
+      "beehive.add_modal_title",
+      "beehive.title",
+      "beehive.title_placeholder",
+      "beehive.description",
+      "beehive.description_placeholder",
+      "beehive.category",
+      "beehive.new_feature",
+      "beehive.improvement",
+      "beehive.bug_fix",
+      "beehive.integration",
+      "beehive.priority",
+      "common.delete",
+      "common.cancel",
+      "common.submitting",
+      "common.submit",
+      "beehive.delete_confirm",
+      "beehive.delete_confirm_message",
+      "common.cancel",
+      "common.delete"
+    ],
+    "BuzzInsights.tsx": [
+      "buzz.low_stock_alert",
+      "buzz.overdue_payments",
+      "buzz.top_seller",
+      "buzz.daily_cash_summary",
+      "buzz.inventory_summary",
+      "buzz.credit_summary",
+      "buzz.popular_service",
+      "buzz.profitable_area",
+      "buzz.transport_performance",
+      "buzz.great_momentum",
+      "buzz.restock_reminder",
+      "buzz.follow_up_needed",
+      "buzz.title",
+      "buzz.money_in",
+      "buzz.money_out",
+      "buzz.profit",
+      "buzz.total_value",
+      "buzz.low_stock",
+      "buzz.view_details",
+      "buzz.total_owed",
+      "buzz.overdue",
+      "buzz.view_details",
+      "buzz.left",
+      "buzz.avg_overdue",
+      "buzz.days",
+      "buzz.sold"
+    ],
+    "CreditList.tsx": [
+      "credit.no_outstanding",
+      "credit.total_owed",
+      "credit.due",
+      "credit.paid",
+      "credit.view_all_history"
+    ],
+    "CustomerList.tsx": [
+      "nav.customers",
+      "credit.no_customers",
+      "credit.add_first",
+      "common.view_all",
+      "common.add"
+    ],
+    "DailyTarget.tsx": [
+      "common.to_go",
+      "staff_performance.target_met",
+      "common.success",
+      "${industry}.daily_target",
+      "country.current"
+    ],
+    "DotScrollIndicator.tsx": [
+      "style"
+    ],
+    "EditServiceModal.tsx": [
+      "services.duration_minutes",
+      "services.add_service",
+      "services.edit_service",
+      "services.service_name",
+      "services.enter_service_name",
+      "services.price",
+      "services.category",
+      "services.enter_category",
+      "services.description",
+      "services.describe_service",
+      "common.cancel",
+      "services.add_service",
+      "services.update_service"
+    ],
+    "Header.tsx": [
+      "language.select"
+    ],
+    "HomepageCalendar.tsx": [
+      "appointments.upcoming_appointments",
+      "appointments.manage_schedule",
+      "common.view_all",
+      "appointments.no_appointments",
+      "appointments.book_first",
+      "appointments.manage_appointments",
+      ":",
+      "T"
+    ],
+    "IndustryTour.tsx": [
+      "tour.welcome_dashboard",
+      "tour.dashboard_description",
+      "tour.set_daily_goal",
+      "tour.daily_goal_description",
+      "tour.buzz_insights",
+      "tour.buzz_description",
+      "tour.quick_add_money",
+      "tour.track_cash_flow",
+      "tour.cash_flow_description",
+      "tour.add_transactions",
+      "tour.transactions_description",
+      "tour.manage_customer_credit",
+      "tour.credit_description",
+      "tour.record_credit_sales",
+      "tour.credit_sales_description",
+      "tour.manage_inventory",
+      "tour.inventory_description",
+      "tour.add_product",
+      "tour.add_product_description",
+      "tour.manage_services",
+      "tour.services_description",
+      "tour.add_service",
+      "tour.add_service_description",
+      "tour.manage_ingredients",
+      "tour.ingredients_description",
+      "tour.add_ingredient",
+      "tour.add_ingredient_description",
+      "tour.manage_calendar",
+      "tour.calendar_description",
+      "tour.add_appointment",
+      "tour.add_appointment_description",
+      "tour.manage_services",
+      "tour.services_description",
+      "tour.manage_trips",
+      "tour.trips_description",
+      "tour.manage_jobs",
+      "tour.jobs_description",
+      "tour.manage_projects",
+      "tour.projects_description",
+      "tour.join_community",
+      "tour.beehive_description",
+      "tour.view_reports",
+      "tour.reports_description",
+      "tour.more_business_tools",
+      "tour.more_tools_description",
+      "tour.step",
+      "tour.of",
+      "common.previous",
+      "tour.complete_tour",
+      "common.next"
+    ],
+    "InventoryList.tsx": [
+      "inventory.no_items",
+      "inventory.low_stock",
+      "inventory.total_items",
+      "inventory.min",
+      "inventory.edit_item",
+      "inventory.delete_item",
+      "inventory.running_low",
+      "inventory.manage",
+      "inventory.quick_add",
+      "common.delete_inventory",
+      "common.delete_confirm",
+      "common.cancel",
+      "common.delete"
+    ],
+    "MoneyInButton.tsx": [
+      "common.transaction",
+      "services.service",
+      "transport.select_service",
+      "transport.distance_km",
+      "transport.use_base_amount",
+      "transport.tips_optional",
+      "transport.calculated_fare",
+      "transport.base_amount_only",
+      "transport.tips",
+      "transport.rate",
+      "transport.tips",
+      "common.description_placeholder_money_in",
+      "common.optional",
+      "payment_method.title",
+      "common.due_date",
+      "common.payment_due_note",
+      "common.cancel",
+      "common.processing",
+      "transaction.save",
+      "T",
+      "Customer name is required for credit payment",
+      " ${currency} ${amount} credit added to ${formData.customer_name}. New total: ${currency} ${result.customer.amount}",
+      "T",
+      "T",
+      "common.money_in",
+      "common.add",
+      "common.description",
+      "customerName",
+      "customerName"
+    ],
+    "MoneyOutButton.tsx": [
+      "common.transaction",
+      "transport.distance",
+      "common.description_optional",
+      "credit.description_placeholder",
+      "common.category",
+      "expense_tracker.other",
+      "payment_method.title",
+      "common.cancel",
+      "common.transaction",
+      "T",
+      "Business ID not found",
+      "Please select who you owe money to or enter a new name",
+      "T",
+      "${getCurrency(country)} ${formData.amount} added to ${customerName}. Total owed: ${getCurrency(country)} ${result.customer.amount}",
+      "T",
+      "common.money_out",
+      "common.add",
+      "common.save"
+    ],
+    "MultiPageTour.tsx": [
+      "tour.home_dashboard",
+      "tour.welcome_dashboard",
+      "tour.dashboard_description",
+      "tour.set_daily_goal",
+      "tour.daily_goal_description",
+      "tour.buzz_insights",
+      "tour.buzz_description",
+      "tour.quick_add_money",
+      "tour.cash_management",
+      "tour.track_cash_flow",
+      "tour.cash_flow_description",
+      "tour.add_transactions",
+      "tour.transactions_description",
+      "tour.transaction_history",
+      "tour.history_description",
+      "tour.inventory_management",
+      "tour.manage_inventory",
+      "tour.inventory_description",
+      "tour.add_product",
+      "tour.add_product_description",
+      "tour.stock_alerts",
+      "tour.stock_alerts_description",
+      "tour.services_management",
+      "tour.manage_services",
+      "tour.services_description",
+      "tour.add_service",
+      "tour.add_service_description",
+      "tour.inventory_management",
+      "tour.manage_ingredients",
+      "tour.ingredients_description",
+      "tour.add_ingredient",
+      "tour.add_ingredient_description",
+      "tour.credit_management",
+      "tour.manage_customer_credit",
+      "tour.credit_description",
+      "tour.record_credit_sales",
+      "tour.credit_sales_description",
+      "tour.track_payments",
+      "tour.payments_description",
+      "tour.beehive_community",
+      "tour.join_community",
+      "tour.beehive_description",
+      "tour.share_insights",
+      "tour.share_description",
+      "tour.business_reports",
+      "tour.view_reports",
+      "tour.reports_description",
+      "tour.sales_analytics",
+      "tour.sales_description",
+      "tour.more_options",
+      "tour.more_business_tools",
+      "tour.more_tools_description",
+      "tour.business_settings",
+      "tour.settings_description",
+      "tour.page",
+      "tour.of",
+      "common.previous",
+      "tour.complete_tour",
+      "common.next",
+      "tour.step",
+      "tour.of"
+    ],
+    "PaymentModal.tsx": [
+      "credit.invalid_payment_amount",
+      "credit.payment_failed",
+      "credit.payment_failed",
+      "credit.account_paid_in_full",
+      "credit.no_outstanding_balance",
+      "credit.payment_history",
+      "credit.items",
+      "credit.credit_purchase",
+      "credit.paid",
+      "credit.add_new_credit",
+      "modal.close",
+      "credit.active_credits",
+      "credit.credit_purchase",
+      "credit.due",
+      "credit.overdue",
+      "credit.paid",
+      "credit.hide_history",
+      "credit.show_history",
+      "credit.credit_purchase",
+      "payment.total_you_owe",
+      "payment.remaining_balance",
+      "credit.fifo_payment_note",
+      "payment.record_payment_made",
+      "payment.record_partial_payment",
+      "payment.mark_as_paid",
+      "credit.add_new_credit",
+      "payment.record_payment",
+      "payment.payment_recorded",
+      "payment.payment_success_message",
+      "payment.for_customer",
+      "payment.for_customer",
+      "payment.original_amount",
+      "payment.paid_so_far",
+      "payment.due_date",
+      "payment.overdue_by",
+      "payment.days",
+      "payment.payment_amount",
+      "payment.max_payment",
+      "modal.processing",
+      "modal.processing",
+      "modal.cancel"
+    ],
+    "PWAPrompts.tsx": [
+      "pwa.install_title",
+      "pwa.install_description",
+      "pwa.add_to_home"
+    ],
+    "ReceiptGenerator.tsx": [
+      "receipt.title",
+      "receipt.copied",
+      "receipt.copy",
+      "receipt.share_whatsapp"
+    ],
+    "ServiceList.tsx": [
+      "services.active",
+      "services.base_km_pricing",
+      "services.service",
+      "services.edit_service",
+      "services.delete_service",
+      "common.delete_service",
+      "common.delete_confirm",
+      "common.cancel",
+      "common.delete",
+      "nav.services",
+      "services.no_services",
+      "services.add_first",
+      "inventory.manage",
+      "common.add"
+    ],
+    "WelcomeTour.tsx": [
+      "tour.modal_title",
+      "tour.daily_target",
+      "tour.target_description",
+      "tour.buzz_insights",
+      "tour.buzz_description",
+      "tour.money_buttons",
+      "tour.money_description",
+      "tour.credit_preview",
+      "tour.credit_preview_description",
+      "tour.inventory_preview",
+      "tour.inventory_preview_description",
+      "tour.navigation_guide",
+      "tour.navigation_description",
+      "common.previous",
+      "tour.get_started",
+      "common.next",
+      "tour.step",
+      "tour.of"
+    ],
+    "WhatsAppShare.tsx": [
+      "receipt.error_phone_required",
+      "receipt.error_phone_invalid",
+      "receipt.share_whatsapp",
+      "receipt.enter_phone",
+      "receipt.phone_label",
+      "receipt.phone_hint",
+      "common.cancel",
+      "common.send"
+    ],
+    "AddAppointmentModal.tsx": [
+      "appointments.error.customer_name",
+      "appointments.error.date_required",
+      "calendar.error.start_time_required",
+      "calendar.error.end_time_required",
+      "calendar.error.service_required",
+      "calendar.error.no_business",
+      "calendar.complete_success",
+      "calendar.create_error",
+      "calendar.add_appointment",
+      "calendar.customer_name",
+      "calendar.customer_name_placeholder",
+      "calendar.customer_contact",
+      "calendar.customer_contact_placeholder",
+      "calendar.date",
+      "calendar.start_time",
+      "calendar.select_time",
+      "calendar.end_time",
+      "calendar.select_time",
+      "calendar.select_service",
+      "calendar.select_service",
+      "calendar.notes",
+      "calendar.notes_placeholder",
+      "common.cancel",
+      "common.saving",
+      "calendar.book_appointment",
+      ":",
+      ":",
+      ":"
+    ],
+    "Appointments.tsx": [
+      "appointments.complete_success",
+      "appointments.complete_error",
+      "appointments.add_appointment_short",
+      "common.appointments",
+      "appointments.add_appointment",
+      "common.all",
+      "appointments.scheduled",
+      "appointments.completed",
+      "appointments.cancelled",
+      "appointments.search_placeholder",
+      "common.no_upcoming_appointments",
+      "common.schedule_first_appointment",
+      "appointments.details",
+      "appointments.customer",
+      "appointments.date_time",
+      "appointments.status",
+      "appointments.service",
+      "appointments.notes",
+      "appointments.price",
+      "appointments.close",
+      "@/lib/sync-manager"
+    ],
+    "BusinessContext.tsx": [
+      "*"
+    ],
+    "UnifiedAuthContext.tsx": [
+      "beezee_unified_auth",
+      "id, country, industry"
+    ],
+    "useIndustryData.ts": [
+      "*"
+    ],
+    "useIndustryDataNew.ts": [
+      ",",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*",
+      "*"
+    ],
+    "useNotifications.ts": [
+      "*"
+    ],
+    "useOfflineData.ts": [
+      "*"
+    ],
+    "data-manager.ts": [
+      "*",
+      "*"
+    ],
+    "expenses.ts": [
+      "*",
+      "*",
+      "*",
+      "amount, category, created_at"
+    ],
+    "supabase-adapter.ts": [
+      "*",
+      "*",
+      "limit_multiplier"
+    ],
+    "chat-storage.ts": [
+      "message_path, user_id, sent_at, read_at, message_length",
+      "message_path"
+    ],
+    "sanitizer.ts": [
+      "+"
+    ],
+    "sanitizer.test.ts": [
+      "xss",
+      "xss",
+      "xss",
+      "xss",
+      "xss",
+      "100",
+      "100.50",
+      "abc",
+      "xss",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS",
+      "XSS"
+    ],
+    "cors.ts": [
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Max-Age",
+      ",",
+      "origin",
+      "origin",
+      "origin"
+    ],
+    "rateLimit.ts": [
+      "x-user-id",
+      "x-forwarded-for",
+      ",",
+      "x-real-ip"
+    ],
+    "cors.test.ts": [
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Max-Age",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Methods",
+      "Content-Length",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Max-Age",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Methods",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Max-Age",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Origin"
+    ],
+    "rateLimit.test.ts": [
+      "http://localhost:3000/api/test",
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "X-RateLimit-Reset",
+      "Retry-After",
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "Retry-After",
+      "X-RateLimit-Limit",
+      "X-RateLimit-Remaining",
+      "X-RateLimit-Reset"
+    ],
+    "middleware.ts": [
+      "admin_session"
+    ],
+    "businessId.ts": [
+      "-"
+    ],
+    "dailyTargetHelpers.ts": [
+      "T",
+      "T",
+      "amount",
+      "amount",
+      "*",
+      "daily_target"
+    ],
+    "dataIntegrityMonitor.ts": [
+      "user_id, business_name, country, industry"
+    ],
+    "idempotency.ts": [
+      "response_data"
+    ]
+  }
+}

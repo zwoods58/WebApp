@@ -1,0 +1,6 @@
+Duplicate Translation Keys Analysis
+=========================================
+Total Duplicate Groups: 0
+
+Duplicate Key Groups:
+===================

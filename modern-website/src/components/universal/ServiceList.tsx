@@ -53,14 +53,7 @@ export default function ServiceList({
   };
 
   const getIndustryLabel = () => {
-    switch (industry) {
-      case 'transport': return 'SERVICES';
-      case 'salon': return 'SERVICES';
-      case 'tailor': return 'SERVICES';
-      case 'freelance': return 'SERVICES';
-      case 'repairs': return 'SERVICES';
-      default: return 'SERVICES';
-    }
+    return t('services.title');
   };
 
   const getServicePricing = (service: any) => {
@@ -68,7 +61,7 @@ export default function ServiceList({
       const base = service.metadata.base_amount || 0;
       const pricePerKm = service.metadata.price_per_km || 0;
       if (pricePerKm > 0) {
-        return `${formatCurrency(base, country)} + KM`;
+        return `${formatCurrency(base, country)} + ${t('services.base_km_pricing').split(' ')[2]}`;
       }
       return formatCurrency(base, country);
     }
@@ -82,8 +75,8 @@ export default function ServiceList({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('nav.services')}</h3>
-          <p className="text-sm text-gray-500">{activeServices.length} active</p>
+          <h3 className="text-lg font-semibold text-gray-900">{t('common.services')}</h3>
+          <p className="text-sm text-gray-500">{activeServices.length} {t('common.active', 'active')}</p>
         </div>
         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
           <Icon className="text-green-600" size={20} />
@@ -104,10 +97,10 @@ export default function ServiceList({
                     {service.service_name}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {industry === 'transport' ? 'Base + KM pricing' : 
+                    {industry === 'transport' ? t('services.base_km_pricing', 'Base + KM pricing') : 
                      (industry === 'salon' || industry === 'freelance') ? 
-                     `${service.duration || 30} ${industry === 'salon' ? 'minutes' : 'days'}` :
-                     service.category || 'Service'}
+                     `${service.duration || 30} ${t(`services.${industry === 'salon' ? 'minutes' : 'days'}`, industry === 'salon' ? 'minutes' : 'days')}` :
+                     service.category || t('services.service', 'Service')}
                   </p>
                 </div>
               </div>
@@ -126,14 +119,14 @@ export default function ServiceList({
                   <button
                     onClick={() => handleEditService(service.id)}
                     className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                    title="Edit service"
+                    title={t('services.edit_service', 'Edit service')}
                   >
                     <Edit2 size={14} />
                   </button>
                   <button
                     onClick={() => setConfirmDelete(service.id)}
                     className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                    title="Delete service"
+                    title={t('services.delete_service', 'Delete service')}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -147,8 +140,8 @@ export default function ServiceList({
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
             <Icon className="text-gray-400" size={24} />
           </div>
-          <p className="text-gray-500 text-sm">{t('services.no_services')}</p>
-          <p className="text-gray-400 text-xs">{t('services.add_first')}</p>
+          <p className="text-gray-500 text-sm">{t('common.no_services', 'No services available')}</p>
+          <p className="text-gray-400 text-xs">{t('common.add_first_service', 'Add your first service to get started')}</p>
         </div>
       )}
 
