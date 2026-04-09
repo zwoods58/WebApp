@@ -19,6 +19,29 @@ async function getCurrentVersion() {
   }
 }
 
+// Helper function to get dynamic manifest from API
+async function getDynamicManifest() {
+  try {
+    const response = await fetch('/api/manifest');
+    const manifest = await response.json();
+    console.log('[SW] Fetched dynamic manifest:', {
+      version: manifest.version,
+      deploymentId: manifest.version_metadata?.deploymentId
+    });
+    return manifest;
+  } catch (error) {
+    console.warn('[SW] Failed to fetch dynamic manifest, using fallback:', error);
+    // Fallback to static manifest
+    try {
+      const staticResponse = await fetch('/manifest.json');
+      return await staticResponse.json();
+    } catch (staticError) {
+      console.error('[SW] Failed to fetch static manifest too:', staticError);
+      return null;
+    }
+  }
+}
+
 // Update cache names dynamically
 function updateCacheNames(version) {
   CACHE_VERSION = version;
@@ -1076,7 +1099,51 @@ self.addEventListener('fetch', (event) => {
   }
   
   // ============================================================
-  // Static Assets (JS, CSS, Images) - Cache-only when offline
+  // Special handling for manifest.json - Always serve dynamic version
+  // ============================================================
+  if (url.pathname === '/manifest.json') {
+    event.respondWith(
+      (async () => {
+        console.log('[SW] Serving dynamic manifest from /api/manifest');
+        
+        try {
+          // Always fetch fresh manifest from API
+          const dynamicManifest = await getDynamicManifest();
+          if (dynamicManifest) {
+            return new Response(JSON.stringify(dynamicManifest), {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/manifest+json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('[SW] Failed to get dynamic manifest, trying fallback:', error);
+        }
+        
+        // Fallback to cached static manifest
+        const cached = await fetchFromCacheOnly(request);
+        if (cached) {
+          console.log('[SW] Serving cached static manifest as fallback');
+          return cached;
+        }
+        
+        // Last resort - fetch static manifest
+        try {
+          const staticResponse = await fetch('/manifest.json');
+          return staticResponse;
+        } catch (staticError) {
+          console.error('[SW] Failed to fetch static manifest:', staticError);
+          return new Response('Manifest not available', { status: 503 });
+        }
+      })()
+    );
+    return;
+  }
+  
+  // ============================================================
+  // Static Assets (JS, CSS, Images) - Cache-only when offline (excluding manifest.json)
   // ============================================================
   if (url.pathname.match(/\.(js|css|json|png|jpg|jpeg|svg|ico|woff|woff2)$/) ||
       url.pathname.includes('/_next/static/')) {
@@ -1084,11 +1151,11 @@ self.addEventListener('fetch', (event) => {
       (async () => {
         // OFFLINE: Cache-only mode (instant!)
         if (isOffline || !navigator.onLine) {
-          console.log('[SW] 📵 Offline mode - serving static asset:', url.pathname);
+          console.log('[SW] Offline mode - serving static asset:', url.pathname);
           
           const cached = await fetchFromCacheOnly(request);
           if (cached) {
-            console.log('[SW] ✅ Serving static from cache (offline):', url.pathname);
+            console.log('[SW] Serving static from cache (offline):', url.pathname);
             return cached;
           }
           
@@ -1100,20 +1167,20 @@ self.addEventListener('fetch', (event) => {
             );
           }
           
-          console.log('[SW] ❌ Missing static asset offline:', url.pathname);
+          console.log('[SW] Missing static asset offline:', url.pathname);
           return new Response('Offline', { status: 503 });
         }
         
         // ONLINE: Try cache first, then network WITH TIMEOUT
         const cached = await caches.match(request);
         if (cached) {
-          console.log('[SW] ✅ Serving static from cache:', url.pathname);
+          console.log('[SW] Serving static from cache:', url.pathname);
           return cached;
         }
         
         try {
           // Use fetchWithTimeout as fallback for unreliable navigator.onLine
-          console.log('[SW] 📡 Fetching static asset:', url.pathname);
+          console.log('[SW] Fetching static asset:', url.pathname);
           const response = await fetchWithTimeout(request, 3000); // 3s timeout for assets
           if (response.ok) {
             const cache = await caches.open(STATIC_CACHE);
@@ -1122,7 +1189,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         } catch (error) {
           // Network failed or timed out - return empty module for JS, 503 for others
-          console.log('[SW] ❌ Network failed/timeout for asset:', url.pathname);
+          console.log('[SW] Network failed/timeout for asset:', url.pathname);
           if (url.pathname.endsWith('.js')) {
             return new Response(
               `console.warn("Offline: Chunk not available - ${url.pathname}");`,

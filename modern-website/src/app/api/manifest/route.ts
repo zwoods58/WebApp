@@ -1,5 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Try to import build version if available (same as version-check)
+interface BuildVersion {
+  version: string;
+  cleanVersion: string;
+  manifestVersion: string;
+  gitCommitSha: string;
+  buildTime: string;
+  timestamp: string;
+}
+
+let buildVersion: BuildVersion | null = null;
+try {
+  buildVersion = require('@/lib/build-version.json') as BuildVersion;
+} catch (error) {
+  // Build version file not available, use runtime generation
+}
+
+// Get version using same logic as /api/version-check
+function getVersion() {
+  try {
+    // Use Vercel deployment info for version tracking
+    const deploymentId = process.env.VERCEL_DEPLOYMENT_ID || 'local-dev';
+    const gitCommitSha = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown';
+    const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
+    
+    let manifestVersion = '111'; // Updated to match current manifest version
+    let shortCommitSha;
+    let timestamp;
+    
+    // Use build-generated version if available, otherwise generate at runtime
+    if (buildVersion) {
+      manifestVersion = buildVersion.manifestVersion;
+      shortCommitSha = buildVersion.gitCommitSha;
+      timestamp = buildVersion.timestamp;
+      console.log('[Manifest API] Using build-generated version:', buildVersion);
+    } else {
+      // Fallback to runtime generation
+      manifestVersion = '111'; // Match current manifest version
+      shortCommitSha = gitCommitSha.substring(0, 7);
+      timestamp = Date.now().toString();
+      console.log('[Manifest API] Using runtime-generated version');
+    }
+    
+    // Create unique version per deployment
+    const version = `v${manifestVersion}-${shortCommitSha}-${timestamp}`;
+    const cleanVersion = `v${manifestVersion}`; // For comparison
+    
+    console.log('[Manifest API] Returning dynamic version:', {
+      version,
+      cleanVersion,
+      deploymentId,
+      environment,
+      timestamp: new Date().toISOString()
+    });
+    
+    return {
+      version,
+      cleanVersion,
+      manifestVersion,
+      deploymentId,
+      gitCommitSha,
+      environment,
+      buildTime: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('[Manifest API] Error:', error);
+    return {
+      version: 'v111-error',
+      cleanVersion: 'v111',
+      manifestVersion: '111',
+      deploymentId: 'error',
+      gitCommitSha: 'unknown',
+      environment: 'error',
+      buildTime: new Date().toISOString()
+    };
+  }
+}
+
 // Country-specific PWA configurations
 const COUNTRY_CONFIGS = {
   ke: {
@@ -125,12 +203,34 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Generate manifest with country-specific icons
-  const manifest = generateManifestWithCountry(config, countryCode);
+  // Get dynamic version using same logic as /api/version-check
+  const versionInfo = getVersion();
+
+  // Generate manifest with country-specific icons and dynamic version
+  const manifest = {
+    ...generateManifestWithCountry(config, countryCode),
+    version: versionInfo.version, // Dynamic version from Vercel environment
+    // Add version metadata for debugging
+    version_metadata: {
+      cleanVersion: versionInfo.cleanVersion,
+      deploymentId: versionInfo.deploymentId,
+      gitCommitSha: versionInfo.gitCommitSha,
+      environment: versionInfo.environment,
+      buildTime: versionInfo.buildTime
+    }
+  };
   
-  // Set appropriate headers
+  console.log('[Manifest API] Serving manifest with dynamic version:', {
+    version: manifest.version,
+    country: countryCode,
+    deploymentId: versionInfo.deploymentId
+  });
+  
+  // Set appropriate headers with no-cache to ensure fresh versions
   const response = NextResponse.json(manifest);
-  response.headers.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+  response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
   response.headers.set('Content-Type', 'application/manifest+json');
   
   return response;
