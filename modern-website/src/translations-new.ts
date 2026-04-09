@@ -2120,6 +2120,45 @@ const translations = {
       rw: "Ntibyashobotse kongeraho ibyiringize",
       lg: "Tekyasobodde kwongera omulimo"
     },
+    "appointments.phone_number": {
+      en: "Phone number (optional)",
+      sw: "Namba ya simu (si lazima)",
+      ha: "Lambar waya (za son iya)",
+      yo: "Ìbánisòrò",
+      ig: "N\u1ee5mb\u1ee5r\u1ecb ekwent\u1ecdr\u1ecda (\u1ecb\u1ecd d\u1ecb mkpa)",
+      zu: "Inombolo yefoni (okungadingekile)",
+      xh: "Inombolo yefoni (ayidingekanga)",
+      af: "Foonnommer (opsioneel)",
+      tw: "N\u0254ma \u0254di (anhy\u025b da)",
+      rw: "Nimero ya telefoni (ntibikwiye)",
+      lg: "Namba ya ssimu (terina kyeta)"
+    },
+    "appointments.service_placeholder": {
+      en: "Service",
+      sw: "Huduma",
+      ha: "Sabis",
+      yo: "Yan I\u1e63\u1eb9\u0301",
+      ig: "\u1eccr\u1ee5\u0300",
+      zu: "Inkonzo",
+      xh: "Inkonzo",
+      af: "Diens",
+      tw: "Adwuma",
+      rw: "Serivisi",
+      lg: "Mulimu"
+    },
+    "appointments.add_to_list": {
+      en: "Add to List",
+      sw: "Ongeza kwenye orodha",
+      ha: "\u0196ara zuwa jeri",
+      yo: "Fi Àkój\u1ecd Kún",
+      ig: "Tinye na nd\u1ecdr\u1ecda",
+      zu: "Yongeza kuhlu",
+      xh: "Yongeza kuhlu",
+      af: "Voeg by lys",
+      tw: "Ka ho ka ab\u0254din",
+      rw: "Ongeraha ku lisi",
+      lg: "Yongeza ku lukalala"
+    },
     "appointments.title": {
       en: "Appointments",
       sw: "Miadi",

@@ -33,7 +33,7 @@ export default function CashPage() {
   const businessId = business?.id;
   const queryClient = useQueryClient();
   const creditHook = useCreditTanStack({ businessId: businessId, industry: business?.industry || industry, country: country });
-  const creditItemsHook = useCreditItems({ businessId: businessId, industry: business?.industry || industry, country: country });
+  const creditItemsHook = useCreditItems({ businessId: businessId, industry: business?.industry || industry });
   
   // ✅ STEP 2: Network status detection (for UI indicator only, NOT to block)
   const [isNetworkOffline, setIsNetworkOffline] = useState(false);
