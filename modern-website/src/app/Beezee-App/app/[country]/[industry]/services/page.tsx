@@ -38,6 +38,22 @@ export default function ServicesPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
+  
+  // Safe translation function with fallback
+  const safeT = (key: string, fallback?: string) => {
+    try {
+      const result = t(key, fallback);
+      // Check if result is a function call string (production issue)
+      if (typeof result === 'string' && result.startsWith('t(')) {
+        return fallback || key;
+      }
+      return result;
+    } catch (error) {
+      console.warn('Translation error:', error);
+      return fallback || key;
+    }
+  };
+  
   const { confirm, DialogComponent } = useBeeZeeConfirm();
   
   // Loading states for delete operations
@@ -233,7 +249,7 @@ export default function ServicesPage() {
   // Check if industry should show services tab (food and retail should not, transport only services)
   const shouldShowServicesTab = !['food', 'retail'].includes(industry);
   const shouldShowInventoryTab = !['transport'].includes(industry); // Transport doesn't show inventory
-  const pageTitle = shouldShowServicesTab ? t('services') : t('services.inventory_tab', 'Inventory');
+  const pageTitle = shouldShowServicesTab ? safeT('services.title', 'Services') : safeT('services.inventory_tab', 'Inventory');
   
   // Force inventory tab for food and retail industries
   useEffect(() => {
@@ -375,17 +391,17 @@ export default function ServicesPage() {
       // Automatic sync will be handled by useIndustryDataNew hook
       
       setShowAddModal(false);
-      showSuccess(t('services.add_success', `Successfully added "${newService.service_name}"`));
+      showSuccess(safeT('services.add_success', `Successfully added "${newService.service_name}"`));
     } catch (error) {
       console.error('Failed to add service:', error);
-      showError(t('services.add_error', 'Failed to add service. Please try again.'));
+      showError(safeT('services.add_error', 'Failed to add service. Please try again.'));
     }
   };
 
   const handleAddInventoryItem = async (newItem: any) => {
     try {
       if (!business?.id) {
-        alert(t('services.business_load_error', 'Please wait for business data to load or refresh the page to log in properly.'));
+        alert(safeT('services.business_load_error', 'Please wait for business data to load or refresh the page to log in properly.'));
         return;
       }
       
@@ -728,7 +744,7 @@ export default function ServicesPage() {
               >
                 <div className="flex items-center justify-center gap-2">
                   <Package size={18} />
-                  {t('services.services_tab', 'Services')}
+                  {t('services.services_tab')}
                 </div>
               </button>
               {shouldShowInventoryTab && (
@@ -742,7 +758,7 @@ export default function ServicesPage() {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Box size={18} />
-                    {t('services.inventory_tab', 'Inventory')}
+                    {t('services.inventory_tab')}
                   </div>
                 </button>
               )}
@@ -779,7 +795,7 @@ export default function ServicesPage() {
               <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                 <div className="flex items-center gap-2 text-sm text-green-700 mb-1">
                   <DollarSign size={16} />
-      t('services.total_service_value', 'Total Service Value')
+      {safeT('services.total_service_value', 'Total Service Value')}
                 </div>
                 <div className="text-xl font-bold text-green-600">
                   {formatCurrency(totalRevenue, country)}
@@ -789,7 +805,7 @@ export default function ServicesPage() {
               <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 mt-4">
                 <div className="flex items-center gap-2 text-sm text-purple-700 mb-1">
                   <TrendingUp size={16} />
-      t('services.avg_price', 'Avg Price')
+      {safeT('services.avg_price', 'Avg Price')}
                 </div>
                 <div className="text-xl font-bold text-purple-600">
                   {formatCurrency(Math.round(averageServicePrice * 100) / 100, country)}
@@ -832,7 +848,7 @@ export default function ServicesPage() {
                         : 'bg-white text-gray-700 border border-gray-200'
                     }`}
                   >
-                    {category === 'all' ? t('services.all') : category.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    {category === 'all' ? t('filter.all') : t(`filter.${category}`, category.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))}
                   </button>
                 ))}
               </div>
@@ -862,7 +878,7 @@ export default function ServicesPage() {
                             <h3 className="font-semibold text-gray-900">{service.service_name}</h3>
                             {!service.is_active && (
                               <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
-                                Unavailable
+                                {t('services.unavailable', 'Unavailable')}
                               </span>
                             )}
                           </div>
@@ -1040,8 +1056,8 @@ export default function ServicesPage() {
                   <div className="text-gray-400 mb-2">
                     <Box size={48} className="mx-auto" />
                   </div>
-                  <p className="text-gray-600">{t('services.no_inventory_found', 'No inventory items found')}</p>
-                  <p className="text-sm text-gray-500 mt-1">{t('services.start_by_adding_first_item', 'Start by adding your first inventory item')}</p>
+                  <p className="text-gray-600">{t('services.no_inventory_found')}</p>
+                  <p className="text-sm text-gray-500 mt-1">{t('services.start_by_adding_first_item')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -1760,6 +1776,7 @@ function AddInventoryForm({ onSubmit, onCancel, country, industry, config, t }: 
 }
 
 function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onSubmit: (data: any) => void, onCancel: () => void, country: string, industry: string, config: any }) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -1817,21 +1834,21 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
 
   // Industry-specific placeholders
   const placeholders = {
-    retail: 'e.g., Premium Headphones',
-    food: 'e.g., Special Pasta Dish',
-    transport: 'e.g., Airport Transfer',
-    salon: 'e.g., Haircut & Styling',
-    tailor: 'e.g., Custom Suit Alteration',
-    repairs: 'e.g., Phone Screen Repair',
-    freelance: 'e.g., Website Design Project'
+    retail: t('services.example_premium_headphones'),
+    food: t('services.example_special_pasta'),
+    transport: t('services.example_airport_transfer'),
+    salon: t('services.example_haircut_styling'),
+    tailor: t('services.example_custom_suit'),
+    repairs: t('services.example_phone_repair'),
+    freelance: t('services.example_website_design')
   };
 
-  const placeholder = placeholders[industry as keyof typeof placeholders] || 'e.g., Service Name';
+  const placeholder = placeholders[industry as keyof typeof placeholders] || t('services.example_service_name');
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.service_name')}</label>
         <input
           type="text"
           required
@@ -1843,14 +1860,14 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.category')}</label>
         <input
           type="text"
           required
           value={formData.category}
           onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter category"
+          placeholder={t('services.enter_category')}
         />
       </div>
 
@@ -1859,7 +1876,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price per km ({getCurrency(country)})</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.price_per_km')} ({getCurrency(country)})</label>
               <input
                 type="number"
                 required
@@ -1871,7 +1888,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Base Amount ({getCurrency(country)})</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.base_amount')} ({getCurrency(country)})</label>
               <input
                 type="number"
                 value={formData.baseAmount}
@@ -1886,13 +1903,13 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
           {/* Total Fare Display */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-900">Total Fare:</span>
+              <span className="text-sm font-medium text-blue-900">{t('services.total_fare')}:</span>
               <span className="text-lg font-bold text-blue-900">
                 {getCurrency(country)} {calculateTotalFare().toFixed(2)}
               </span>
             </div>
             <div className="text-xs text-blue-600 mt-1">
-              {getCurrency(country)} {formData.pricePerKm || '0'} (per km) + {getCurrency(country)} {formData.baseAmount || '0'} (base amount)
+              {t('services.fare_calculation').replace('{currency}', getCurrency(country)).replace('{pricePerKm}', formData.pricePerKm || '0').replace('{baseAmount}', formData.baseAmount || '0')}
             </div>
           </div>
         </div>
@@ -1900,7 +1917,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
         // Original fields for other industries
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price ({getCurrency(country)})</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.price')} ({getCurrency(country)})</label>
             <input
               type="number"
               required
@@ -1913,9 +1930,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
           
           {(industry === 'salon' || industry === 'freelance') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Duration (minutes)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.duration_minutes')}</label>
               <input
                 type="number"
                 value={formData.duration || ''}
@@ -1932,14 +1947,14 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.description')}</label>
         <textarea
           required
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           rows={3}
-          placeholder="Describe your service..."
+          placeholder={t('services.describe_service_placeholder')}
         />
       </div>
 
@@ -1949,13 +1964,13 @@ function AddServiceForm({ onSubmit, onCancel, country, industry, config }: { onS
           onClick={onCancel}
           className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="submit"
           className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
-          Add Service
+          {t('services.add_service')}
         </button>
       </div>
     </form>
