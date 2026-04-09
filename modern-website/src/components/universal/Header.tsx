@@ -14,16 +14,6 @@ interface HeaderProps {
   country: string;
 }
 
-const industryLabels = {
-  retail: { name: 'Retail', icon: Store },
-  food: { name: 'Restaurant', icon: Utensils },
-  transport: { name: 'Transport', icon: Car },
-  salon: { name: 'Salon', icon: Scissors },
-  tailor: { name: 'Tailor', icon: Ruler },
-  repairs: { name: 'Repairs', icon: Wrench },
-  freelance: { name: 'Freelance', icon: Laptop }
-};
-
 export default function Header({ industry, country }: HeaderProps) {
   const router = useRouter();
   const { currentLanguage, setLanguage, t } = useLanguage();
@@ -33,8 +23,32 @@ export default function Header({ industry, country }: HeaderProps) {
   const { profile } = useBusinessProfile();
   const { showInfo } = useToastContext();
   
-  const industryInfo = industryLabels[industry as keyof typeof industryLabels] || { name: 'Business', icon: Store };
-  const Icon = industryInfo.icon;
+  // Get industry labels using translation keys
+  const getIndustryLabel = (industryKey: string) => {
+    const translations = {
+      retail: t('retail.title'),
+      food: t('food.title'), 
+      transport: t('transport.title'),
+      salon: t('salon.title'),
+      tailor: t('tailor.title'),
+      repairs: t('repairs.title'),
+      freelance: t('freelance.title')
+    };
+    return translations[industryKey as keyof typeof translations] || 'Business';
+  };
+
+  const industryIcons = {
+    retail: Store,
+    food: Utensils,
+    transport: Car,
+    salon: Scissors,
+    tailor: Ruler,
+    repairs: Wrench,
+    freelance: Laptop
+  };
+  
+  const IndustryIcon = industryIcons[industry as keyof typeof industryIcons] || Store;
+  const industryName = getIndustryLabel(industry);
 
   // Get business name from signup data or fallback
   const businessName = profile?.businessName || business?.business_name || 'My Business';
@@ -141,7 +155,7 @@ export default function Header({ industry, country }: HeaderProps) {
 
           {/* Title Area */}
           <div className={`flex items-center justify-center pointer-events-none ${!isHomeDashboard ? 'flex-1' : ''}`}>
-            <Icon size={20} className="text-[var(--text-1)] mr-2" strokeWidth={2.5} />
+            <IndustryIcon size={20} className="text-[var(--text-1)] mr-2" strokeWidth={2.5} />
             {isHomeDashboard && (
               <span className="text-[var(--text-1)] font-medium text-sm">
                 {businessName}

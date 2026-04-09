@@ -4,8 +4,8 @@
  */
 
 // Dynamic version that will be fetched from API
-let CACHE_VERSION = 'v109';
-let CURRENT_VERSION = 'v109';
+let CACHE_VERSION = 'v110';
+let CURRENT_VERSION = 'v110';
 
 // Helper function to get current version from API
 async function getCurrentVersion() {
