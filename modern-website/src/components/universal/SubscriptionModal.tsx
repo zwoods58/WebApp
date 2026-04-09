@@ -129,21 +129,37 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
   const [success, setSuccess] = useState(false);
   const [mpesaNumber, setMpesaNumber] = useState('');
   const [paymentState, setPaymentState] = useState<'initial' | 'initiating' | 'stk_sent' | 'complete'>('initial');
-const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [referenceNumber, setReferenceNumber] = useState('');
-  const [pin, setPin] = useState('');
   
   const plan = SUBSCRIPTION_PLANS[country as keyof typeof SUBSCRIPTION_PLANS] || SUBSCRIPTION_PLANS.ke;
 
+  const formatPhoneNumber = (input: string): string => {
+    // Remove non-digits
+    const cleaned = input.replace(/\D/g, '');
+    
+    // Add 254 if user entered 07 format
+    if (cleaned.startsWith('7') && cleaned.length === 9) {
+      return '254' + cleaned;
+    }
+    
+    // Validate 2547 format
+    if (cleaned.startsWith('2547') && cleaned.length === 12) {
+      return cleaned;
+    }
+    
+    return input;
+  };
+
   const handleNextStep = () => {
-    if (currentStep < 5) {
-      setCurrentStep((currentStep + 1) as 1 | 2 | 3 | 4 | 5);
+    if (currentStep < 3) {
+      setCurrentStep((currentStep + 1) as 1 | 2 | 3);
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((currentStep - 1) as 1 | 2 | 3 | 4 | 5);
+      setCurrentStep((currentStep - 1) as 1 | 2 | 3);
     }
   };
 
@@ -151,29 +167,23 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
     if (currentStep === 1) {
       handleNextStep();
     } else if (currentStep === 2) {
-      handleNextStep();
-    } else if (currentStep === 3) {
-      handleNextStep();
-    } else if (currentStep === 4) {
       handleSubscribe();
     }
   };
 
   const handleSubscribe = async () => {
-    // Validate M-Pesa number
-    if (!mpesaNumber || mpesaNumber.length < 10) {
-      alert('Please enter a valid M-Pesa number');
+    // Validate M-Pesa number (must be 2547XXXXXXXX format)
+    const formattedNumber = formatPhoneNumber(mpesaNumber);
+    if (!formattedNumber || !formattedNumber.startsWith('2547') || formattedNumber.length !== 12) {
+      alert('Please enter a valid M-Pesa number (2547XXXXXXXX)');
       return;
     }
-
-    // Validate PIN
-    if (!pin || pin.length !== 4) {
-      alert('Please enter a 4-digit PIN');
-      return;
-    }
+    
+    // Update with formatted number
+    setMpesaNumber(formattedNumber);
 
     setLoading(true);
-    setCurrentStep(4); // Move to STK Push status step
+    setCurrentStep(3); // Move to STK Push status step
     setPaymentState('initiating');
     
     try {
@@ -191,7 +201,6 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
       setTimeout(() => {
         setPaymentState('complete');
         setSuccess(true);
-        setCurrentStep(5); // Move to success step
         
         // Close modal after showing success
         setTimeout(() => {
@@ -199,7 +208,6 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
           setPaymentState('initial');
           setCurrentStep(1);
           setMpesaNumber('');
-          setPin('');
           onClose();
         }, 3000);
       }, 5000);
@@ -234,10 +242,10 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
               </div>
               <div>
                 <h3 className="font-bold text-[var(--text-1)] text-lg">
-                  {currentStep === 1 ? 'Select Plan' : currentStep === 2 ? 'M-Pesa Payment' : currentStep === 3 ? 'Enter PIN' : currentStep === 4 ? 'STK Push' : 'Complete!'}
+                  {currentStep === 1 ? 'Select Plan' : currentStep === 2 ? 'M-Pesa Payment' : 'STK Push Status'}
                 </h3>
                 <p className="text-xs text-[var(--text-3)]">
-                  Step {currentStep}/5
+                  Step {currentStep}/3
                 </p>
               </div>
             </div>
@@ -293,10 +301,13 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
                   <input
                     type="tel"
                     value={mpesaNumber}
-                    onChange={(e) => setMpesaNumber(e.target.value)}
+                    onChange={(e) => setMpesaNumber(formatPhoneNumber(e.target.value))}
                     placeholder="254712345678"
                     className="w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder)] focus:border-transparent text-sm"
                   />
+                  <p className="text-xs text-[var(--text-3)] mt-2">
+                    Enter your M-Pesa registered number
+                  </p>
                 </div>
                 <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-4">
                   <div className="grid grid-cols-3 gap-2 text-center">
@@ -338,67 +349,8 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
               </div>
             )}
 
-            {/* Step 3: PIN Entry */}
+            {/* Step 3: STK Push Status */}
             {currentStep === 3 && (
-              <div className="py-4">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-[var(--text-1)] mb-2">
-                    Security PIN
-                  </label>
-                  <input
-                    type="password"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    placeholder="1234"
-                    maxLength={4}
-                    className="w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder)] focus:border-transparent text-sm text-center text-lg font-mono"
-                  />
-                  <p className="text-xs text-[var(--text-3)] mt-2 text-center">
-                    Enter your 4-digit security PIN
-                  </p>
-                </div>
-                <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-4">
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div>
-                      <Shield size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">Secure</p>
-                    </div>
-                    <div>
-                      <Calendar size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">Weekly</p>
-                    </div>
-                    <div>
-                      <Star size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
-                      <p className="text-xs text-[var(--text-3)]">Premium</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handlePrevStep}
-                    className="flex-1 py-2 bg-gray-200 text-[var(--text-1)] rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={handleStepSubmit}
-                    disabled={loading || !pin || pin.length !== 4}
-                    className="flex-1 py-2 bg-[var(--powder-dark)] text-white rounded-lg font-medium hover:bg-[var(--powder-darker)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
-                      </>
-                    ) : (
-                      'Pay Now'
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 4: STK Push Status */}
-            {currentStep === 4 && (
               <div className="text-center py-4">
                 {paymentState === 'initiating' ? (
                   <>
@@ -409,11 +361,11 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
                       Initiating STK Push...
                     </h4>
                     <p className="text-sm text-[var(--text-2)] mb-4">
-                      Sending payment request to your phone
+                      Sending payment request to {mpesaNumber.slice(0, 6)}******{mpesaNumber.slice(-2)}
                     </p>
                     <button
                       onClick={() => {
-                        setCurrentStep(3);
+                        setCurrentStep(2);
                         setPaymentState('initial');
                       }}
                       className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)]"
@@ -421,47 +373,47 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
                       Cancel
                     </button>
                   </>
-                ) : (
+                ) : paymentState === 'stk_sent' ? (
                   <>
                     <div className="w-12 h-12 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Phone size={24} className="text-[var(--powder-dark)]" />
                     </div>
                     <h4 className="font-semibold text-[var(--text-1)] mb-2">
-                      STK Push Sent!
+                      Check Your Phone!
                     </h4>
                     <p className="text-sm text-[var(--text-2)] mb-2">
-                      Check your phone and enter your PIN
+                      M-Pesa prompt sent to your phone
+                    </p>
+                    <p className="text-sm text-[var(--text-2)] mb-4">
+                      Enter your M-Pesa PIN to complete payment
                     </p>
                     <div className="bg-[var(--powder)]/10 rounded-lg p-2 mb-4">
                       <p className="text-xs text-[var(--text-2)]">
-                        Ref: {referenceNumber}
+                        Reference: {referenceNumber}
                       </p>
                     </div>
                     <div className="text-sm text-[var(--text-3)] animate-pulse">
-                      Waiting for payment...
+                      Waiting for PIN entry...
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Check size={24} className="text-[var(--color-success)]" />
+                    </div>
+                    <h4 className="font-semibold text-[var(--text-1)] mb-2">
+                      Payment Complete!
+                    </h4>
+                    <p className="text-sm text-[var(--text-2)] mb-4">
+                      Subscription activated successfully
+                    </p>
+                    <div className="bg-[var(--powder)]/10 rounded-lg p-2">
+                      <p className="text-xs text-[var(--text-2)]">
+                        Next billing: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                      </p>
                     </div>
                   </>
                 )}
-              </div>
-            )}
-
-            {/* Step 5: Success */}
-            {currentStep === 5 && (
-              <div className="text-center py-4">
-                <div className="w-12 h-12 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check size={24} className="text-[var(--color-success)]" />
-                </div>
-                <h4 className="font-semibold text-[var(--text-1)] mb-2">
-                  Payment Complete!
-                </h4>
-                <p className="text-sm text-[var(--text-2)] mb-4">
-                  Subscription activated
-                </p>
-                <div className="bg-[var(--powder)]/10 rounded-lg p-2">
-                  <p className="text-xs text-[var(--text-2)]">
-                    Next billing: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                  </p>
-                </div>
               </div>
             )}
           </div>
