@@ -5,7 +5,7 @@ const path = require('path');
 
 // Generate version info for build-time injection
 const generateVersion = () => {
-  const manifestVersion = '108'; // Base version
+  const manifestVersion = '110'; // Base version
   const timestamp = Date.now().toString();
   
   // Get git commit hash if available
