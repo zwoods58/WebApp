@@ -4,13 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from '@/lib/supabase';
 
 // GET endpoint for monitoring data
 export async function GET(req: NextRequest) {
@@ -108,14 +102,14 @@ async function verifyAdminPermissions(req: NextRequest): Promise<boolean> {
     }
 
     const token = authHeader.substring(7);
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
     
     if (error || !user) {
       return false;
     }
 
     // Check if user is admin
-    const { data: member } = await supabase
+    const { data: member } = await supabaseAdmin
       .from('business_members')
       .select('role')
       .eq('user_id', user.id)
@@ -133,21 +127,21 @@ async function verifyAdminPermissions(req: NextRequest): Promise<boolean> {
 async function getMonitoringOverview(hours: number): Promise<NextResponse> {
   try {
     // Get system health score
-    const { data: healthScore } = await supabase.rpc('get_system_health_score');
+    const { data: healthScore } = await supabaseAdmin.rpc('get_system_health_score');
     
     // Get performance summary
-    const { data: performanceSummary } = await supabase
+    const { data: performanceSummary } = await supabaseAdmin
       .from('database_performance_summary')
       .select('*')
       .single();
 
     // Get system performance overview
-    const { data: systemOverview } = await supabase
+    const { data: systemOverview } = await supabaseAdmin
       .from('system_performance_overview')
       .select('*');
 
     // Get active alerts
-    const { data: alerts } = await supabase
+    const { data: alerts } = await supabaseAdmin
       .from('performance_alerts')
       .select('*')
       .eq('severity', 'critical');
@@ -177,7 +171,7 @@ async function getMonitoringOverview(hours: number): Promise<NextResponse> {
 // Get performance alerts
 async function getPerformanceAlerts(): Promise<NextResponse> {
   try {
-    const { data: alerts, error } = await supabase.rpc('check_performance_alerts');
+    const { data: alerts, error } = await supabaseAdmin.rpc('check_performance_alerts');
 
     if (error) {
       console.error('Error getting performance alerts:', error);
@@ -205,16 +199,16 @@ async function getPerformanceAlerts(): Promise<NextResponse> {
 async function getSystemHealth(): Promise<NextResponse> {
   try {
     // Get health score
-    const { data: healthScore } = await supabase.rpc('get_system_health_score');
+    const { data: healthScore } = await supabaseAdmin.rpc('get_system_health_score');
     
     // Get performance summary
-    const { data: performanceSummary } = await supabase
+    const { data: performanceSummary } = await supabaseAdmin
       .from('database_performance_summary')
       .select('*')
       .single();
 
     // Get system overview
-    const { data: systemOverview } = await supabase
+    const { data: systemOverview } = await supabaseAdmin
       .from('system_performance_overview')
       .select('*');
 
@@ -244,7 +238,7 @@ async function getSystemHealth(): Promise<NextResponse> {
 async function getCacheMetrics(hours: number): Promise<NextResponse> {
   try {
     // Get cache efficiency monitoring
-    const { data: cacheEfficiency } = await supabase
+    const { data: cacheEfficiency } = await supabaseAdmin
       .from('cache_efficiency_monitoring')
       .select('*')
       .gte('time_bucket', new Date(Date.now() - hours * 3600000).toISOString())
@@ -252,7 +246,7 @@ async function getCacheMetrics(hours: number): Promise<NextResponse> {
       .limit(24);
 
     // Get cache performance summary
-    const { data: cacheSummary } = await supabase
+    const { data: cacheSummary } = await supabaseAdmin
       .from('cache_performance_summary')
       .select('*')
       .eq('category', 'cache_performance')
@@ -282,7 +276,7 @@ async function getCacheMetrics(hours: number): Promise<NextResponse> {
 async function getRateLimitingMetrics(hours: number): Promise<NextResponse> {
   try {
     // Get rate limiting monitoring
-    const { data: rateLimitingData } = await supabase
+    const { data: rateLimitingData } = await supabaseAdmin
       .from('rate_limiting_monitoring')
       .select('*')
       .gte('time_bucket', new Date(Date.now() - hours * 3600000).toISOString())
@@ -290,14 +284,14 @@ async function getRateLimitingMetrics(hours: number): Promise<NextResponse> {
       .limit(24);
 
     // Get rate limiting summary
-    const { data: rateLimitingSummary } = await supabase
+    const { data: rateLimitingSummary } = await supabaseAdmin
       .from('rate_limiting_summary')
       .select('*')
       .eq('category', 'rate_limiting')
       .single();
 
     // Get active blocks
-    const { data: activeBlocks } = await supabase
+    const { data: activeBlocks } = await supabaseAdmin
       .from('rate_limit_active_blocks')
       .select('*')
       .order('remaining_seconds', { ascending: true })
@@ -327,7 +321,7 @@ async function getRateLimitingMetrics(hours: number): Promise<NextResponse> {
 // Get cleanup statistics
 async function getCleanupStatistics(): Promise<NextResponse> {
   try {
-    const { data: stats, error } = await supabase.rpc('get_cleanup_statistics');
+    const { data: stats, error } = await supabaseAdmin.rpc('get_cleanup_statistics');
 
     if (error) {
       console.error('Error getting cleanup statistics:', error);
@@ -373,7 +367,7 @@ async function getPerformanceRecommendations(): Promise<NextResponse> {
 // Helper to get performance recommendations
 async function getPerformanceRecommendationsData(): Promise<any[]> {
   try {
-    const { data: recommendations } = await supabase.rpc('get_performance_recommendations');
+    const { data: recommendations } = await supabaseAdmin.rpc('get_performance_recommendations');
     return recommendations || [];
   } catch (error) {
     console.error('Error getting performance recommendations data:', error);
@@ -389,13 +383,13 @@ async function triggerCleanup(params: any): Promise<NextResponse> {
     let result;
     if (tables && Array.isArray(tables)) {
       // Manual cleanup for specific tables
-      const { data } = await supabase.rpc('trigger_manual_cleanup', {
+      const { data } = await supabaseAdmin.rpc('trigger_manual_cleanup', {
         p_table_names: tables,
       });
       result = data;
     } else {
       // General cleanup with default parameters
-      const { data } = await supabase.rpc('schedule_cleanup');
+      const { data } = await supabaseAdmin.rpc('schedule_cleanup');
       result = data;
     }
 
@@ -416,7 +410,7 @@ async function triggerCleanup(params: any): Promise<NextResponse> {
 // Schedule cleanup
 async function scheduleCleanup(): Promise<NextResponse> {
   try {
-    const { data: result, error } = await supabase.rpc('schedule_cleanup');
+    const { data: result, error } = await supabaseAdmin.rpc('schedule_cleanup');
 
     if (error) {
       console.error('Error scheduling cleanup:', error);
@@ -447,13 +441,13 @@ async function resetCache(params: any): Promise<NextResponse> {
     
     if (identifier) {
       // Reset specific identifier
-      await supabase
+      await supabaseAdmin
         .from('cache_store')
         .delete()
         .like('cache_key', `${identifier}%`);
     } else {
       // Reset all cache
-      await supabase
+      await supabaseAdmin
         .from('cache_store')
         .delete();
     }
@@ -478,13 +472,13 @@ async function clearBlocks(params: any): Promise<NextResponse> {
     
     if (identifier) {
       // Clear specific identifier blocks
-      await supabase
+      await supabaseAdmin
         .from('rate_limit_blocks')
         .update({ is_active: false })
         .eq('identifier', identifier);
     } else {
       // Clear all blocks
-      await supabase
+      await supabaseAdmin
         .from('rate_limit_blocks')
         .update({ is_active: false })
         .eq('is_active', true);
