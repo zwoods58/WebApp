@@ -185,7 +185,7 @@ export default function BeehiveRequestModal({
               <div className="py-4">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    {t('beehive.title', 'Title')} <span className="text-red-500">*</span>
+                    {t('beehive.title_label', 'Title')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -203,7 +203,7 @@ export default function BeehiveRequestModal({
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-6">
                   <button
                     type="button"
                     onClick={onClose}
@@ -226,7 +226,7 @@ export default function BeehiveRequestModal({
               <div className="py-4">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    {t('beehive.description', 'Description')} <span className="text-red-500">*</span>
+                    {t('beehive.description_label', 'Description')} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={formData.description}
@@ -244,7 +244,7 @@ export default function BeehiveRequestModal({
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-6">
                   <button
                     type="button"
                     onClick={handlePrevStep}
@@ -268,7 +268,7 @@ export default function BeehiveRequestModal({
                 {/* Category */}
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    {t('beehive.category', 'Category')}
+                    {t('beehive.category_label', 'Category')}
                   </label>
                   <select
                     value={formData.category}
@@ -285,7 +285,7 @@ export default function BeehiveRequestModal({
                 {/* Priority */}
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    {t('beehive.priority', 'Priority')}
+                    {t('beehive.priority_label', 'Priority')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['low', 'medium', 'high'] as const).map((priority) => (
@@ -305,7 +305,7 @@ export default function BeehiveRequestModal({
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-6">
                   <button
                     type="button"
                     onClick={handlePrevStep}
@@ -345,7 +345,7 @@ export default function BeehiveRequestModal({
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-6">
                   <button
                     type="button"
                     onClick={handlePrevStep}
@@ -366,41 +366,43 @@ export default function BeehiveRequestModal({
             )}
           </form>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between p-4 border-t border-white/20 bg-gray-200/30">
-            {editMode && onDelete ? (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50/50 rounded-lg transition-colors"
-                disabled={isSubmitting}
-              >
-                <Trash2 size={18} />
-                <span className="font-medium">{t('common.delete', 'Delete')}</span>
-              </button>
-            ) : (
-              <div />
-            )}
-            
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-200/50 rounded-lg font-medium text-black hover:bg-gray-300/50 transition-colors"
-                disabled={isSubmitting}
-              >
-                {t('common.cancel', 'Cancel')}
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send size={18} />
-                <span>{isSubmitting ? t('common.submitting', 'Submitting...') : t('common.submit', 'Submit')}</span>
-              </button>
+          {/* Footer - Only show on last step */}
+          {currentStep === 4 && (
+            <div className="flex items-center justify-between p-4 border-t border-white/20 bg-gray-200/30">
+              {editMode && onDelete ? (
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50/50 rounded-lg transition-colors"
+                  disabled={isSubmitting}
+                >
+                  <Trash2 size={18} />
+                  <span className="font-medium">{t('common.delete', 'Delete')}</span>
+                </button>
+              ) : (
+                <div />
+              )}
+              
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 bg-gray-200/50 rounded-lg font-medium text-black hover:bg-gray-300/50 transition-colors"
+                  disabled={isSubmitting}
+                >
+                  {t('common.cancel', 'Cancel')}
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send size={18} />
+                  <span>{isSubmitting ? t('common.submitting', 'Submitting...') : t('common.submit', 'Submit')}</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
       {/* Delete Confirmation Dialog */}
