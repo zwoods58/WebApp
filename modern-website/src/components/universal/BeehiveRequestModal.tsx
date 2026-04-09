@@ -111,9 +111,9 @@ export default function BeehiveRequestModal({
       <div className="absolute inset-0 bg-white animate-fade-in" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md h-full min-h-0 overflow-y-auto animate-scale-in bg-[var(--color-background-primary)] rounded-2xl p-6">
+      <div className="relative w-full max-w-sm overflow-y-auto animate-scale-in bg-[var(--color-background-primary)] rounded-2xl p-4">
           {/* Apple-style Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/20">
             <div className="w-16" />
             <h2 className="text-lg font-semibold text-black">
               {editMode 
@@ -130,7 +130,7 @@ export default function BeehiveRequestModal({
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-140px)]">
+          <form onSubmit={handleSubmit} className="p-4 space-y-3 overflow-y-auto max-h-[calc(85vh-120px)]">
             {/* Title */}
             <div>
               <label className="block text-sm font-medium text-black mb-2">
@@ -140,7 +140,7 @@ export default function BeehiveRequestModal({
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className={`w-full px-4 py-3 bg-white/50 backdrop-blur-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 bg-white/50 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder={t('beehive.title_placeholder', 'Brief title for your request')}
@@ -162,7 +162,7 @@ export default function BeehiveRequestModal({
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                className={`w-full px-4 py-3 bg-white/50 backdrop-blur-sm border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                className={`w-full px-3 py-2 bg-white/50 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder={t('beehive.description_placeholder', 'Describe your request in detail')}
@@ -183,7 +183,7 @@ export default function BeehiveRequestModal({
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white/50 backdrop-blur-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="new_feature">{t('beehive.new_feature', 'New Feature')}</option>
                 <option value="improvement">{t('beehive.improvement', 'Improvement')}</option>
@@ -197,13 +197,13 @@ export default function BeehiveRequestModal({
               <label className="block text-sm font-medium text-black mb-2">
                 {t('beehive.priority', 'Priority')}
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 {(['low', 'medium', 'high'] as const).map((priority) => (
                   <button
                     key={priority}
                     type="button"
                     onClick={() => setFormData({ ...formData, priority })}
-                    className={`px-4 py-3 rounded-xl font-medium transition-colors ${
+                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
                       formData.priority === priority
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200/50 text-black hover:bg-gray-300/50'
@@ -217,7 +217,7 @@ export default function BeehiveRequestModal({
           </form>
 
           {/* Footer */}
-          <div className="flex items-center justify-between p-6 border-t border-white/20 bg-gray-200/30">
+          <div className="flex items-center justify-between p-4 border-t border-white/20 bg-gray-200/30">
             {editMode && onDelete ? (
               <button
                 type="button"
@@ -236,7 +236,7 @@ export default function BeehiveRequestModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-3 bg-gray-200/50 rounded-xl font-medium text-black hover:bg-gray-300/50 transition-colors"
+                className="px-4 py-2 bg-gray-200/50 rounded-lg font-medium text-black hover:bg-gray-300/50 transition-colors"
                 disabled={isSubmitting}
               >
                 {t('common.cancel', 'Cancel')}
@@ -244,7 +244,7 @@ export default function BeehiveRequestModal({
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={18} />
                 <span>{isSubmitting ? t('common.submitting', 'Submitting...') : t('common.submit', 'Submit')}</span>
@@ -266,14 +266,14 @@ export default function BeehiveRequestModal({
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 px-4 py-3 bg-gray-200/50 rounded-xl font-medium text-black hover:bg-gray-300/50 transition-colors"
+                className="flex-1 px-3 py-2 bg-gray-200/50 rounded-lg font-medium text-black hover:bg-gray-300/50 transition-colors"
               >
                 {t('common.cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
               >
                 {t('common.delete', 'Delete')}
               </button>
