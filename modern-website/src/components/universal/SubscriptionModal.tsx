@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation';
 const SUBSCRIPTION_PLANS = {
   ke: { 
     name: 'Kenya', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'KES', 
     price: 200, 
     period: 'week',
@@ -25,7 +25,7 @@ const SUBSCRIPTION_PLANS = {
   },
   ng: { 
     name: 'Nigeria', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'NGN', 
     price: 500, 
     period: 'week',
@@ -40,7 +40,7 @@ const SUBSCRIPTION_PLANS = {
   },
   za: { 
     name: 'South Africa', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'ZAR', 
     price: 30, 
     period: 'week',
@@ -55,7 +55,7 @@ const SUBSCRIPTION_PLANS = {
   },
   gh: { 
     name: 'Ghana', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'GHS', 
     price: 15, 
     period: 'week',
@@ -70,7 +70,7 @@ const SUBSCRIPTION_PLANS = {
   },
   ug: { 
     name: 'Uganda', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'UGX', 
     price: 4000, 
     period: 'week',
@@ -85,7 +85,7 @@ const SUBSCRIPTION_PLANS = {
   },
   rw: { 
     name: 'Rwanda', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'RWF', 
     price: 1500, 
     period: 'week',
@@ -100,7 +100,7 @@ const SUBSCRIPTION_PLANS = {
   },
   tz: { 
     name: 'Tanzania', 
-    flag: '??', 
+    flag: 'BeeZee', 
     currency: 'TZS', 
     price: 2000, 
     period: 'week',
