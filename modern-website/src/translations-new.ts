@@ -6647,6 +6647,32 @@ const translations = {
       rw: "Abakiriya",
       lg: "Abakyaala"
     },
+    "credit.no_customers": {
+      en: "No customers yet",
+      sw: "Hakuna wateja bado",
+      ha: "Babu mai siyan har yanzu",
+      yo: "Kò sí àjà rà",
+      ig: "Enweghi ndi asha na iberibe",
+      zu: "Akukho abakheni kakade",
+      xh: "Akukho abakheni kakade",
+      af: "Nog geen kliënte nie",
+      tw: "Nnh3 afofra bio",
+      rw: "Nta mukiriya ufite",
+      lg: "Tewali mukyala wali"
+    },
+    "credit.add_first": {
+      en: "Add your first customer",
+      sw: "Ongeza mteja wako wa kwanza",
+      ha: "Sanya mai siyan na farko",
+      yo: "Fi akjlk r ak",
+      ig: "Tinye onye asha gi mb",
+      zu: "Yongeza umthengi wakho wokuqala",
+      xh: "Yongeza umthengi wakho wokuqala",
+      af: "Voeg jou eerste kliënt by",
+      tw: "Dim afofra a edi kan",
+      rw: "ongera umukiriya wa mbere",
+      lg: "ongera omukyala wo ku busooka"
+    },
     "credit.personal_tab": {
       en: "Personal",
       sw: "Binafsi",
