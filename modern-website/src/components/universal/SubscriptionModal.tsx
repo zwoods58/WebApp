@@ -129,20 +129,21 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
   const [success, setSuccess] = useState(false);
   const [mpesaNumber, setMpesaNumber] = useState('');
   const [paymentState, setPaymentState] = useState<'initial' | 'initiating' | 'stk_sent' | 'complete'>('initial');
-const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [referenceNumber, setReferenceNumber] = useState('');
+  const [pin, setPin] = useState('');
   
   const plan = SUBSCRIPTION_PLANS[country as keyof typeof SUBSCRIPTION_PLANS] || SUBSCRIPTION_PLANS.ke;
 
   const handleNextStep = () => {
-    if (currentStep < 4) {
-      setCurrentStep((currentStep + 1) as 1 | 2 | 3 | 4);
+    if (currentStep < 5) {
+      setCurrentStep((currentStep + 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
   const handlePrevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep((currentStep - 1) as 1 | 2 | 3 | 4);
+      setCurrentStep((currentStep - 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
@@ -150,6 +151,10 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
     if (currentStep === 1) {
       handleNextStep();
     } else if (currentStep === 2) {
+      handleNextStep();
+    } else if (currentStep === 3) {
+      handleNextStep();
+    } else if (currentStep === 4) {
       handleSubscribe();
     }
   };
@@ -161,8 +166,14 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
       return;
     }
 
+    // Validate PIN
+    if (!pin || pin.length !== 4) {
+      alert('Please enter a 4-digit PIN');
+      return;
+    }
+
     setLoading(true);
-    setCurrentStep(3); // Move to STK Push status step
+    setCurrentStep(4); // Move to STK Push status step
     setPaymentState('initiating');
     
     try {
@@ -180,7 +191,7 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
       setTimeout(() => {
         setPaymentState('complete');
         setSuccess(true);
-        setCurrentStep(4); // Move to success step
+        setCurrentStep(5); // Move to success step
         
         // Close modal after showing success
         setTimeout(() => {
@@ -188,6 +199,7 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
           setPaymentState('initial');
           setCurrentStep(1);
           setMpesaNumber('');
+          setPin('');
           onClose();
         }, 3000);
       }, 5000);
@@ -222,10 +234,10 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
               </div>
               <div>
                 <h3 className="font-bold text-[var(--text-1)] text-lg">
-                  {currentStep === 1 ? 'Select Plan' : currentStep === 2 ? 'M-Pesa Payment' : currentStep === 3 ? 'STK Push' : 'Complete!'}
+                  {currentStep === 1 ? 'Select Plan' : currentStep === 2 ? 'M-Pesa Payment' : currentStep === 3 ? 'Enter PIN' : currentStep === 4 ? 'STK Push' : 'Complete!'}
                 </h3>
                 <p className="text-xs text-[var(--text-3)]">
-                  Step {currentStep}/4
+                  Step {currentStep}/5
                 </p>
               </div>
             </div>
@@ -326,8 +338,67 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
               </div>
             )}
 
-            {/* Step 3: STK Push Status */}
+            {/* Step 3: PIN Entry */}
             {currentStep === 3 && (
+              <div className="py-4">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-[var(--text-1)] mb-2">
+                    Security PIN
+                  </label>
+                  <input
+                    type="password"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="1234"
+                    maxLength={4}
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder)] focus:border-transparent text-sm text-center text-lg font-mono"
+                  />
+                  <p className="text-xs text-[var(--text-3)] mt-2 text-center">
+                    Enter your 4-digit security PIN
+                  </p>
+                </div>
+                <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-4">
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div>
+                      <Shield size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Secure</p>
+                    </div>
+                    <div>
+                      <Calendar size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Weekly</p>
+                    </div>
+                    <div>
+                      <Star size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <p className="text-xs text-[var(--text-3)]">Premium</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrevStep}
+                    className="flex-1 py-2 bg-gray-200 text-[var(--text-1)] rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleStepSubmit}
+                    disabled={loading || !pin || pin.length !== 4}
+                    className="flex-1 py-2 bg-[var(--powder-dark)] text-white rounded-lg font-medium hover:bg-[var(--powder-darker)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                      </>
+                    ) : (
+                      'Pay Now'
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: STK Push Status */}
+            {currentStep === 4 && (
               <div className="text-center py-4">
                 {paymentState === 'initiating' ? (
                   <>
@@ -342,7 +413,7 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
                     </p>
                     <button
                       onClick={() => {
-                        setCurrentStep(2);
+                        setCurrentStep(3);
                         setPaymentState('initial');
                       }}
                       className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)]"
@@ -374,8 +445,8 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
               </div>
             )}
 
-            {/* Step 4: Success */}
-            {currentStep === 4 && (
+            {/* Step 5: Success */}
+            {currentStep === 5 && (
               <div className="text-center py-4">
                 <div className="w-12 h-12 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check size={24} className="text-[var(--color-success)]" />

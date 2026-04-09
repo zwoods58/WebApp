@@ -159,19 +159,23 @@ export default function BeehiveRequestModal({
       <div className="relative w-full max-w-sm overflow-y-auto animate-scale-in bg-[var(--color-background-primary)] rounded-2xl p-4">
           {/* Apple-style Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/20">
-            <div className="w-16" />
-            <h2 className="text-lg font-semibold text-black">
-              {currentStep === 1 ? 'Title' : currentStep === 2 ? 'Details' : currentStep === 3 ? 'Category & Priority' : 'Review'}
-            </h2>
-            <p className="text-xs text-gray-500">
-              Step {currentStep}/4
-            </p>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-200/50 hover:bg-gray-300/50 flex items-center justify-center transition-colors"
-            >
-              <X size={16} className="text-black" />
-            </button>
+            <div className="flex-1" />
+            <div className="text-center flex-1">
+              <h2 className="text-lg font-semibold text-black">
+                {currentStep === 1 ? 'Title' : currentStep === 2 ? 'Details' : currentStep === 3 ? 'Category & Priority' : 'Review'}
+              </h2>
+              <p className="text-xs text-gray-500">
+                Step {currentStep}/4
+              </p>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-gray-200/50 hover:bg-gray-300/50 flex items-center justify-center transition-colors"
+              >
+                <X size={16} className="text-black" />
+              </button>
+            </div>
           </div>
 
           {/* Form */}
