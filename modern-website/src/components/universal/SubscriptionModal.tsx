@@ -129,9 +129,30 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
   const [success, setSuccess] = useState(false);
   const [mpesaNumber, setMpesaNumber] = useState('');
   const [paymentState, setPaymentState] = useState<'initial' | 'initiating' | 'stk_sent' | 'complete'>('initial');
+const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [referenceNumber, setReferenceNumber] = useState('');
   
   const plan = SUBSCRIPTION_PLANS[country as keyof typeof SUBSCRIPTION_PLANS] || SUBSCRIPTION_PLANS.ke;
+
+  const handleNextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep((currentStep + 1) as 1 | 2 | 3 | 4);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep((currentStep - 1) as 1 | 2 | 3 | 4);
+    }
+  };
+
+  const handleStepSubmit = () => {
+    if (currentStep === 1) {
+      handleNextStep();
+    } else if (currentStep === 2) {
+      handleSubscribe();
+    }
+  };
 
   const handleSubscribe = async () => {
     // Validate M-Pesa number
@@ -141,6 +162,7 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
     }
 
     setLoading(true);
+    setCurrentStep(3); // Move to STK Push status step
     setPaymentState('initiating');
     
     try {
@@ -158,11 +180,13 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
       setTimeout(() => {
         setPaymentState('complete');
         setSuccess(true);
+        setCurrentStep(4); // Move to success step
         
         // Close modal after showing success
         setTimeout(() => {
           setSuccess(false);
           setPaymentState('initial');
+          setCurrentStep(1);
           setMpesaNumber('');
           onClose();
         }, 3000);
@@ -171,6 +195,7 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
     } catch (error) {
       console.error('STK Push failed:', error);
       setPaymentState('initial');
+      setCurrentStep(2); // Go back to M-Pesa entry
     } finally {
       setLoading(false);
     }
@@ -197,10 +222,10 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
               </div>
               <div>
                 <h3 className="font-bold text-[var(--text-1)] text-lg">
-                  {t('subscription.upgrade_to_premium', 'Upgrade to Premium')}
+                  {currentStep === 1 ? 'Select Plan' : currentStep === 2 ? 'M-Pesa Payment' : currentStep === 3 ? 'STK Push' : 'Complete!'}
                 </h3>
-                <p className="text-sm text-[var(--text-3)]">
-                  {plan.name} Plan
+                <p className="text-xs text-[var(--text-3)]">
+                  Step {currentStep}/4
                 </p>
               </div>
             </div>
@@ -213,102 +238,43 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
           </div>
           
           {/* Content */}
-          <div className="p-6">
-            {/* Success/Complete State */}
-            {success && paymentState === 'complete' ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check size={32} className="text-[var(--color-success)]" />
+          <div className="p-4">
+            {/* Step 1: Plan Selection */}
+            {currentStep === 1 && (
+              <div className="text-center py-4">
+                <div className="mb-4">
+                  <span className="text-3xl">{plan.flag}</span>
                 </div>
-                <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
-                  Payment Complete!
-                </h3>
-                <p className="text-[var(--text-2)] mb-4">
-                  Your subscription is now active. Enjoy all premium features!
-                </p>
-                <div className="bg-[var(--powder)]/10 rounded-lg p-3">
-                  <p className="text-sm text-[var(--text-2)]">
-                    Next billing: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                  </p>
+                <h4 className="font-semibold text-[var(--text-1)] mb-2">
+                  {plan.name} Plan
+                </h4>
+                <div className="text-2xl font-black text-[var(--text-1)] mb-4">
+                  {formatCurrency(plan.price, country)}
+                  <span className="text-sm text-[var(--text-3)]">/week</span>
                 </div>
-              </div>
-            ) : paymentState === 'initiating' ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-8 h-8 border-3 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
-                </div>
-                <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
-                  Initiating M-Pesa STK Push...
-                </h3>
-                <p className="text-[var(--text-2)] mb-4">
-                  Please wait while we send the payment request to your phone.
-                </p>
+                <ul className="space-y-2 mb-6">
+                  {plan.features.slice(0, 3).map((feature, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm">
+                      <div className="w-3 h-3 rounded-full bg-[var(--color-success-light)]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check size={8} className="text-[var(--color-success)]" />
+                      </div>
+                      <span className="text-[var(--text-2)]">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
                 <button
-                  onClick={() => setPaymentState('initial')}
-                  className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)]"
+                  onClick={handleStepSubmit}
+                  className="w-full py-2 bg-[var(--powder-dark)] text-white rounded-lg font-medium hover:bg-[var(--powder-darker)] transition-colors"
                 >
-                  Cancel
+                  Continue
                 </button>
               </div>
-            ) : paymentState === 'stk_sent' ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Phone size={32} className="text-[var(--powder-dark)]" />
-                </div>
-                <h3 className="text-xl font-bold text-[var(--text-1)] mb-2">
-                  STK Push Sent!
-                </h3>
-                <p className="text-[var(--text-2)] mb-2">
-                  Check your phone for M-Pesa prompt and enter your PIN to complete.
-                </p>
-                <div className="bg-[var(--powder)]/10 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-[var(--text-2)]">
-                    Reference: {referenceNumber}
-                  </p>
-                </div>
-                <div className="text-sm text-[var(--text-3)] animate-pulse">
-                  Waiting for payment...
-                </div>
-              </div>
-            ) : (
-              <>
-                {/* Plan Display */}
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{plan.flag}</span>
-                      <span className="text-sm font-medium text-[var(--text-2)]">{plan.name}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-black text-[var(--text-1)]">
-                        {formatCurrency(plan.price, country)}
-                      </div>
-                      <div className="text-sm text-[var(--text-3)]">
-                        /week
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            )}
 
-                {/* Features */}
-                <div className="mb-6">
-                  <h4 className="font-semibold text-[var(--text-1)] mb-3">
-                    What you get:
-                  </h4>
-                  <ul className="space-y-2">
-                    {plan.features.slice(0, 3).map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <div className="w-4 h-4 rounded-full bg-[var(--color-success-light)]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Check size={10} className="text-[var(--color-success)]" />
-                        </div>
-                        <span className="text-xs text-[var(--text-2)]">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* M-Pesa Input */}
-                <div className="mb-6">
+            {/* Step 2: M-Pesa Number Entry */}
+            {currentStep === 2 && (
+              <div className="py-4">
+                <div className="mb-4">
                   <label className="block text-sm font-medium text-[var(--text-1)] mb-2">
                     M-Pesa Number
                   </label>
@@ -320,54 +286,112 @@ export default function SubscriptionModal({ isOpen, onClose, businessEmail }: Su
                     className="w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder)] focus:border-transparent text-sm"
                   />
                 </div>
-
-                {/* Benefits */}
-                <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-6">
+                <div className="bg-[var(--powder)]/5 rounded-lg p-3 mb-4">
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div>
-                      <Shield size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <Shield size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
                       <p className="text-xs text-[var(--text-3)]">Secure</p>
                     </div>
                     <div>
-                      <Calendar size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <Calendar size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
                       <p className="text-xs text-[var(--text-3)]">Weekly</p>
                     </div>
                     <div>
-                      <Star size={16} className="text-[var(--powder-dark)] mx-auto mb-1" />
+                      <Star size={14} className="text-[var(--powder-dark)] mx-auto mb-1" />
                       <p className="text-xs text-[var(--text-3)]">Premium</p>
                     </div>
                   </div>
                 </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrevStep}
+                    className="flex-1 py-2 bg-gray-200 text-[var(--text-1)] rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleStepSubmit}
+                    disabled={loading || !mpesaNumber}
+                    className="flex-1 py-2 bg-[var(--powder-dark)] text-white rounded-lg font-medium hover:bg-[var(--powder-darker)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                      </>
+                    ) : (
+                      'Pay Now'
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
 
-                {/* Payment Info */}
-                <div className="bg-[var(--bg2)] rounded-lg p-3 mb-6">
-                  <p className="text-xs text-[var(--text-3)]">
-                    Payment via M-Pesa STK Push
-                  </p>
-                  <p className="text-xs text-[var(--text-3)]">
-                    Enter your number to continue
+            {/* Step 3: STK Push Status */}
+            {currentStep === 3 && (
+              <div className="text-center py-4">
+                {paymentState === 'initiating' ? (
+                  <>
+                    <div className="w-12 h-12 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-6 h-6 border-3 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
+                    </div>
+                    <h4 className="font-semibold text-[var(--text-1)] mb-2">
+                      Initiating STK Push...
+                    </h4>
+                    <p className="text-sm text-[var(--text-2)] mb-4">
+                      Sending payment request to your phone
+                    </p>
+                    <button
+                      onClick={() => {
+                        setCurrentStep(2);
+                        setPaymentState('initial');
+                      }}
+                      className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)]"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 bg-[var(--powder)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Phone size={24} className="text-[var(--powder-dark)]" />
+                    </div>
+                    <h4 className="font-semibold text-[var(--text-1)] mb-2">
+                      STK Push Sent!
+                    </h4>
+                    <p className="text-sm text-[var(--text-2)] mb-2">
+                      Check your phone and enter your PIN
+                    </p>
+                    <div className="bg-[var(--powder)]/10 rounded-lg p-2 mb-4">
+                      <p className="text-xs text-[var(--text-2)]">
+                        Ref: {referenceNumber}
+                      </p>
+                    </div>
+                    <div className="text-sm text-[var(--text-3)] animate-pulse">
+                      Waiting for payment...
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Step 4: Success */}
+            {currentStep === 4 && (
+              <div className="text-center py-4">
+                <div className="w-12 h-12 bg-[var(--color-success-light)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check size={24} className="text-[var(--color-success)]" />
+                </div>
+                <h4 className="font-semibold text-[var(--text-1)] mb-2">
+                  Payment Complete!
+                </h4>
+                <p className="text-sm text-[var(--text-2)] mb-4">
+                  Subscription activated
+                </p>
+                <div className="bg-[var(--powder)]/10 rounded-lg p-2">
+                  <p className="text-xs text-[var(--text-2)]">
+                    Next billing: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                   </p>
                 </div>
-
-                {/* Action Button */}
-                <button
-                  onClick={handleSubscribe}
-                  disabled={loading || !mpesaNumber}
-                  className="w-full py-3 bg-[var(--powder-dark)] text-white rounded-xl font-semibold hover:bg-[var(--powder-darker)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Crown size={20} />
-                      Subscribe Now
-                    </>
-                  )}
-                </button>
-              </>
+              </div>
             )}
           </div>
         </div>
