@@ -12,5 +12,47 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
         persistSession: true,
-    }
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: {
+            getItem: (key) => {
+                if (typeof window === 'undefined') return null;
+                try {
+                    return window.localStorage.getItem(key);
+                } catch {
+                    return null;
+                }
+            },
+            setItem: (key, value) => {
+                if (typeof window === 'undefined') return;
+                try {
+                    window.localStorage.setItem(key, value);
+                } catch {
+                    // Silently fail if localStorage is full or disabled
+                }
+            },
+            removeItem: (key) => {
+                if (typeof window === 'undefined') return;
+                try {
+                    window.localStorage.removeItem(key);
+                } catch {
+                    // Silently fail if localStorage is disabled
+                }
+            },
+        },
+    },
+    realtime: {
+        params: {
+            eventsPerSecond: 10, // Limit realtime events to reduce load
+        },
+    },
+    db: {
+        schema: 'public',
+    },
+    global: {
+        headers: {
+            'x-application-name': 'beezee-web',
+            'x-client-version': '1.0.0',
+        },
+    },
 });
