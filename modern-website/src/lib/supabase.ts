@@ -5,7 +5,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('Missing Supabase environment variables');
+    console.error('Missing Supabase environment variables:', {
+        url: !!supabaseUrl,
+        key: !!supabaseAnonKey
+    });
+    throw new Error('Supabase environment variables are required. Please check your production environment variables.');
 }
 
 // =====================================================
