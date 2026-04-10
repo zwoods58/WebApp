@@ -61,7 +61,6 @@ export function useSignup(): SignupState & SignupActions {
       phoneNumber: '',
       dailyTarget: 0,
       currency: 'KES',
-      inviteCode: '',
       pin: '',
       securityQuestions: undefined,
     },
@@ -93,7 +92,7 @@ export function useSignup(): SignupState & SignupActions {
   }, [getFieldError, clearFieldError]);
 
   const nextStep = useCallback(() => {
-    if (signupState.currentStep < 9) {
+    if (signupState.currentStep < 7) {
       setSignupState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
     }
   }, [signupState.currentStep]);
@@ -110,7 +109,7 @@ export function useSignup(): SignupState & SignupActions {
   }, [signupState.currentStep, signupState.pinSetupStep]);
 
   const goToStep = useCallback((step: number) => {
-    if (step >= 1 && step <= 9) {
+    if (step >= 1 && step <= 7) {
       setSignupState(prev => ({ ...prev, currentStep: step }));
     }
   }, []);
@@ -166,9 +165,9 @@ export function useSignup(): SignupState & SignupActions {
 
   const handleComplete = useCallback(async () => {
     // Validate final step
-    const validation = validateStep(9, signupState.formData);
+    const validation = validateStep(6, signupState.formData);
     if (!validation.isValid) {
-      console.error('❌ Final validation failed:', validation.errors);
+      console.error('Final validation failed:', validation.errors);
       return;
     }
 
@@ -182,7 +181,6 @@ export function useSignup(): SignupState & SignupActions {
       phoneNumber: signupState.formData.phoneNumber || '',
       dailyTarget: Number(signupState.formData.dailyTarget) || 0,
       currency: getCurrency(signupState.formData.country || ''),
-      inviteCode: signupState.formData.inviteCode,
       pin: signupState.formData.pin || '',
       securityQuestions: signupState.formData.securityQuestions,
     };
@@ -264,7 +262,6 @@ export function useSignup(): SignupState & SignupActions {
         phoneNumber: '',
         dailyTarget: 0,
         currency: 'KES',
-        inviteCode: '',
         pin: '',
         securityQuestions: undefined,
       },

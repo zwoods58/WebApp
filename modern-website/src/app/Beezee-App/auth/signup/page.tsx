@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Check, Globe, User, Phone, DollarSign, Building, Mail, LogIn } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Globe, User, Phone, DollarSign, Building, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SignupData } from '@/types/signup';
 import { BusinessProfileProvider, useBusinessProfile } from '@/contexts/BusinessProfileContext';
-import { IndustrySectorStep } from '@/components/signup/IndustrySectorStep';
+import { CombinedSelectionsStep } from '@/components/signup/CombinedSelectionsStep';
+import { CombinedSecurityStep } from '@/components/signup/CombinedSecurityStep';
 import { LiveAccountSummary } from '@/components/signup/LiveAccountSummary';
 import { HybridDailyTarget } from '@/components/signup/HybridDailyTarget';
 import { AccountSummaryPreview } from '@/components/signup/AccountSummaryPreview';
@@ -112,55 +113,41 @@ function BeezeeSignupContent() {
       case 1:
         return <WelcomeStep onNext={handleNextStep} />;
       case 2:
-        return <CountrySelection 
-          selected={formData.country || ''}
-          onSelect={(country) => updateFormData('country', country)}
+        return <CombinedSelectionsStep 
+          selectedCountry={formData.country || ''}
+          selectedIndustry={formData.industry || ''}
+          selectedSector={formData.industrySector || ''}
+          onCountrySelect={(country) => updateFormData('country', country)}
+          onIndustrySelect={(industry) => updateFormData('industry', industry)}
+          onSectorSelect={(sector: string) => updateFormData('industrySector', sector)}
           onNext={nextStep}
           onPrev={prevStep}
         />;
       case 3:
-        return <IndustrySelection 
-          selected={formData.industry || ''}
-          onSelect={(industry) => updateFormData('industry', industry)}
-          onNext={nextStep}
-          onPrev={prevStep}
-        />;
-      case 4:
-        return <IndustrySectorStep 
-          industry={formData.industry || ''}
-          selectedSector={formData.industrySector || ''}
-          onSelect={(sector) => updateFormData('industrySector', sector)}
-          onNext={nextStep}
-          onPrev={prevStep}
-        />;
-      case 5:
         return <BasicInfo 
           formData={formData}
           onChange={updateFormData}
           onNext={nextStep}
           onPrev={prevStep}
         />;
-      case 6:
+      case 4:
         return (
           <div className="py-12">
-            <PINSetup
+            <CombinedSecurityStep
               onPINComplete={handlePINSetup}
-              onCancel={prevStep}
-              isLoading={signup.creationState.loading}
-              error={signup.creationState.error || undefined}
-            />
-          </div>
-        );
-      case 7:
-        return (
-          <div className="py-12">
-            <SecurityQuestionsSetup
-              onComplete={(data) => {
-                // Store security questions data
-                console.log('📝 [SignupPage] Security question data received:', data);
+              onSecurityQuestionsComplete={(data) => {
+                console.log('Security question data received:', data);
                 signup.updateSecurityQuestions(data);
-                console.log('📝 [SignupPage] Moving to next step');
-                nextStep();
+              }}
+              onCombinedComplete={(pin: string, securityData: any) => {
+                // Handle PIN setup
+                handlePINSetup(pin);
+                // Store security questions data
+                signup.updateSecurityQuestions(securityData);
+                // Move to next step
+                setTimeout(() => {
+                  nextStep();
+                }, 500);
               }}
               onCancel={prevStep}
               isLoading={signup.creationState.loading}
@@ -168,7 +155,7 @@ function BeezeeSignupContent() {
             />
           </div>
         );
-      case 8:
+      case 5:
         return <HybridDailyTarget 
           country={formData.country || ''}
           selectedTarget={formData.dailyTarget?.toString() || ''}
@@ -176,7 +163,7 @@ function BeezeeSignupContent() {
           onNext={nextStep}
           onPrev={prevStep}
         />;
-      case 9:
+      case 6:
         return <AccountSummaryPreview 
           formData={formData}
           onComplete={handleComplete}
@@ -453,19 +440,6 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
           />
         </div>
 
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-            <Mail size={16} />
-            Invite code (optional)
-          </label>
-          <input
-            type="text"
-            value={formData.inviteCode || ''}
-            onChange={(e) => onChange('inviteCode', e.target.value)}
-            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
-            placeholder="Enter invite code if you have one"
-          />
-        </div>
       </div>
 
       <div className="flex gap-4">
