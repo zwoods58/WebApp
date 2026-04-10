@@ -157,23 +157,26 @@ export function CombinedSecurityStep({
   const pinsMatch = isPinFilled && isConfirmPinFilled && pin.join('') === confirmPin.join('');
 
   return (
-    <div className="py-6 sm:py-8 max-w-2xl mx-auto max-h-screen overflow-y-auto">
+    <>
       {/* Progress Indicator */}
-      <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold transition-colors ${
           pinComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
         }`}>
-          {pinComplete ? <Check size={16} className="sm:size-20" /> : '1'}
+          {pinComplete ? <Check size={16} /> : '1'}
         </div>
-        <div className="w-16 sm:w-20 h-1 bg-gray-200"></div>
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+        <div className="w-16 h-1 bg-gray-200"></div>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold transition-colors ${
           securityComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
         }`}>
-          {securityComplete ? <Check size={16} className="sm:size-20" /> : '2'}
+          {securityComplete ? <Check size={16} /> : '2'}
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
+        style={{ animationDelay: '0.1s' }}
+      >
         {/* PIN Setup Section */}
         <div className="animate-fade-in">
           <div className="text-center mb-4 sm:mb-6">
@@ -346,33 +349,32 @@ export function CombinedSecurityStep({
         </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 mt-8">
+      {/* Navigation */}
+      <div className="flex gap-3 pt-4">
         {onCancel && (
           <button
             onClick={onCancel}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-[var(--text-1)] font-medium rounded-xl hover:bg-[var(--border)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+            className="flex-1 px-4 py-2.5 bg-[var(--glass-bg)] text-black font-medium rounded-lg hover:bg-[var(--glass-bg)] transition-all disabled:opacity-50 text-sm"
           >
-            <ArrowLeft size={20} className="mr-2" />
             Back
           </button>
         )}
         <button
           onClick={handleCombinedComplete}
           disabled={!allComplete || isLoading || questionsLoading}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.98]"
+          className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-lg hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
         >
           {isLoading ? (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
-              Complete Security Setup
-              <ArrowRight size={20} />
+              Complete Setup
+              <Check size={16} />
             </>
           )}
         </button>
       </div>
-    </div>
+    </>
   );
 }

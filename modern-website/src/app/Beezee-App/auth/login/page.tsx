@@ -276,69 +276,70 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
-      {/* Logo centered at top - mobile app friendly */}
-      <div className="flex justify-center items-center pt-16 pb-6 flex-shrink-0">
+    <div className="h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
+      {/* Compact logo at top */}
+      <div className="flex justify-center items-center pt-8 pb-2 flex-shrink-0">
         <div className="relative">
           <Image
             src="/beezee-icon-192x192.png"
             alt="BeeZee Icon"
-            width={96}
-            height={96}
-            className="rounded-2xl shadow-xl"
+            width={64}
+            height={64}
+            className="rounded-xl shadow-lg"
             priority
           />
         </div>
       </div>
 
-      <div className="flex-1 container mx-auto px-6 py-4">
-        <div className="max-w-md mx-auto">
+      {/* Main content - no scrolling */}
+      <div className="flex-1 container mx-auto px-6 pb-6 flex items-center">
+        <div className="max-w-md mx-auto w-full">
           {/* Phone Step */}
           {loginStep === 'phone' && (
             <>
               <div
-                className="text-center mb-12 fade-in"
+                className="text-center mb-6 fade-in"
               >
-                <h1 className="text-3xl font-bold text-[var(--text-1)] mb-4">
+                <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
                   {t('auth.welcome_back', 'Welcome Back')}
                 </h1>
-                <p className="text-[var(--text-3)] text-sm mt-2">
+                <p className="text-[var(--text-3)] text-xs">
                   Just like mobile banking - secure and simple
                 </p>
               </div>
 
               <div
-                className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8"
+                className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
                 style={{ animationDelay: '0.1s' }}
               >
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4">
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-xs mb-4">
                     {error}
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Phone size={16} />
+                    <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+                      <Phone size={14} />
                       Phone Number
                     </label>
                     <input
                       type="tel"
-                      placeholder="Enter phone number (e.g., +254712345678, +234567123321, +22507778899, 0712345678)"
+                      placeholder="Enter phone number (e.g., +254712345678)"
                       value={formData.phone}
                       onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all"
+                      className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
                       disabled={isLoading}
                     />
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Lock size={16} />
+                    <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+                      <Lock size={14} />
                       Enter Your PIN
                     </label>
-                    <div className="flex justify-center gap-2 mb-4">
+                    <div className="flex justify-center gap-2 mb-3">
                       {[0, 1, 2, 3, 4, 5].map((index) => (
                         <input
                           key={index}
@@ -347,7 +348,7 @@ export default function Login() {
                           value={formData.pin[index] || ''}
                           onChange={(e) => handlePinChange(e, index)}
                           onKeyDown={(e) => handlePinKeyDown(e, index)}
-                          className="w-12 h-12 text-center text-lg font-semibold bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] transition-all"
+                          className="w-10 h-10 text-center text-base font-semibold bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] transition-all"
                           disabled={isLoading}
                           ref={(input) => {
                             if (input) pinRefs.current[index] = input;
@@ -358,7 +359,7 @@ export default function Login() {
                     <button
                       type="button"
                       onClick={() => setShowPin(!showPin)}
-                      className="text-sm text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
+                      className="text-xs text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
                     >
                       {showPin ? 'Hide' : 'Show'} PIN
                     </button>
@@ -367,18 +368,18 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={isLoading || !formData.phone}
-                    className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                   >
                     {isLoading ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
                     ) : (
                       'Access Business'
                     )}
                   </button>
                 </form>
 
-                <div className="mt-6 text-center space-y-3">
-                  <p className="text-[var(--text-3)] text-sm">
+                <div className="mt-4 text-center space-y-2">
+                  <p className="text-[var(--text-3)] text-xs">
                     Don't have an account?{' '}
                     <button
                       onClick={() => window.location.href = '/Beezee-App/auth/signup'}
@@ -391,7 +392,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowForgotPIN(true)}
-                    className="text-sm text-[var(--powder-dark)] hover:underline font-medium"
+                    className="text-xs text-[var(--powder-dark)] hover:underline font-medium"
                   >
                     Forgot PIN?
                   </button>
@@ -426,7 +427,7 @@ export default function Login() {
       {/* Forgot PIN Modal/Flow */}
       {showForgotPIN && (
         <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-4">
-          <div className="bg-[var(--bg)] rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-[var(--bg)] rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
             <ForgotPINFlow
               onSuccess={() => {
                 setShowForgotPIN(false);

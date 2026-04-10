@@ -175,20 +175,48 @@ function BeezeeSignupContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
-      {/* Header removed - no back navigation */}
+    <div className="h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
+      {/* Compact logo at top */}
+      <div className="flex justify-center items-center pt-8 pb-2 flex-shrink-0">
+        <div className="relative">
+          <Image
+            src="/beezee-icon-192x192.png"
+            alt="BeeZee Icon"
+            width={64}
+            height={64}
+            className="rounded-xl shadow-lg"
+            priority
+          />
+        </div>
+      </div>
 
-      {/* Top progress summary */}
-      <LiveAccountSummary 
-        data={formData} 
-        currentStep={currentStep} 
-        isVisible={currentStep >= 2 && currentStep <= 9} 
-      />
+      {/* Professional progress bar - only show for steps 2-6 */}
+      {currentStep >= 2 && currentStep <= 6 && (
+        <div className="flex-shrink-0 px-6 pb-4">
+          <div className="max-w-md mx-auto">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-medium text-[var(--text-2)]">
+                Step {currentStep - 1} of 5
+              </div>
+              <div className="text-xs font-medium text-[var(--powder-dark)]">
+                {Math.round(((currentStep - 1) / 5) * 100)}%
+              </div>
+            </div>
+            <div className="w-full h-2 bg-[var(--glass-bg)] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] transition-all duration-300 ease-out"
+                style={{ width: `${((currentStep - 1) / 5) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
-      <div className="flex-1 container mx-auto px-6 py-8">
+      {/* Main content - no scrolling */}
+      <div className="flex-1 container mx-auto px-6 pb-6 flex items-center">
         <div
           key={currentStep}
-          className="max-w-4xl mx-auto fade-in"
+          className="max-w-md mx-auto w-full fade-in"
         >
           {renderStep()}
         </div>
@@ -207,54 +235,41 @@ function BeezeeSignupContent() {
 // Welcome Step Component
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="h-screen flex flex-col text-center">
-      {/* Logo at the top */}
-      <div className="pt-8 pb-4">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mx-auto">
-          <Image 
-            src="/beezee-logo.png" 
-            alt="BeeZee Logo" 
-            width={96} 
-            height={96}
-            className="h-full w-auto"
-          />
-        </div>
+    <>
+      <div
+        className="text-center mb-8 fade-in"
+      >
+        <h1 className="text-2xl font-bold text-[var(--text-1)] mb-3">
+          Welcome to BeeZee
+        </h1>
+        <p className="text-[var(--text-3)] text-xs">
+          Join thousands of African entrepreneurs managing their business with ease.
+        </p>
       </div>
 
-      {/* Content centered in the middle */}
-      <div className="flex-1 flex flex-col justify-center px-6">
-        <div
-          className="max-w-2xl mx-auto fade-in-up"
-        >
-          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-1)] mb-4 sm:mb-6 leading-tight">
-            Welcome to BeeZee
-          </h1>
-          <p className="text-lg sm:text-xl text-[var(--text-2)] mb-6 sm:mb-8 leading-relaxed">
-            Join thousands of African entrepreneurs managing their business with ease.
-          </p>
-        </div>
-      </div>
-
-      {/* Buttons at the very bottom */}
-      <div className="pb-6 sm:pb-8 px-6">
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-sm mx-auto sm:max-w-none">
+      <div
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-6"
+        style={{ animationDelay: '0.1s' }}
+      >
+        <div className="flex flex-col gap-3">
           <button
             onClick={onNext}
-            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
+            className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium flex items-center justify-center gap-2"
           >
             Sign Up
-            <ArrowRight size={18} className="sm:size-20" />
+            <ArrowRight size={16} />
           </button>
           
           <Link
             href="/Beezee-App/auth/login"
-            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
+            className="w-full bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-3 px-6 rounded-xl hover:bg-[var(--border)] transition-all font-medium flex items-center justify-center gap-2"
           >
-            <LogIn size={18} className="sm:size-20" />
+            <LogIn size={16} />
+            Login
           </Link>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -268,62 +283,71 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   const selectedCountry = countries.find(c => c.code === selected);
   
   return (
-    <div className="py-6 sm:py-8">
-      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
-        Select Your Country
-      </h2>
-      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
-        Choose where your business operates
-      </p>
+    <>
+      <div
+        className="text-center mb-6 fade-in"
+      >
+        <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">
+          Select Your Country
+        </h2>
+        <p className="text-[var(--text-3)] text-xs">
+          Choose where your business operates
+        </p>
+      </div>
 
-      <div className="max-w-md mx-auto mb-8">
-        <div className="relative">
-          <select
-            value={selected}
-            onChange={(e) => onSelect(e.target.value)}
-            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] appearance-none cursor-pointer"
-          >
-            <option value="" disabled>Select a country...</option>
-            {countries.map((country) => (
-              <option key={country.code} value={country.code}>
-                {country.flag} {country.name}
-              </option>
-            ))}
-          </select>
+      <div
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
+        style={{ animationDelay: '0.1s' }}
+      >
+        <div className="space-y-4">
+          <div className="relative">
+            <select
+              value={selected}
+              onChange={(e) => onSelect(e.target.value)}
+              className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] appearance-none cursor-pointer text-sm"
+            >
+              <option value="" disabled>Select a country...</option>
+              {countries.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.flag} {country.name}
+                </option>
+              ))}
+            </select>
+            
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg className="w-4 h-4 text-[var(--text-2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
           
-          {/* Custom dropdown arrow */}
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <svg className="w-5 h-5 text-[var(--text-2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+          {/* Selected country display */}
+          {selectedCountry && (
+            <div className="flex items-center justify-center p-2 bg-[var(--powder-light)] rounded-lg border border-[var(--powder-dark)]/30">
+              <span className="text-lg mr-2">{selectedCountry.flag}</span>
+              <span className="font-medium text-[var(--text-1)] text-sm">{selectedCountry.name}</span>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={onPrev}
+              className="flex-1 px-4 py-2.5 bg-[var(--glass-bg)] text-black font-medium rounded-lg hover:bg-[var(--glass-bg)] transition-all text-sm"
+            >
+              Back
+            </button>
+            <button
+              onClick={onNext}
+              disabled={!selected}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-lg hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Next
+            </button>
           </div>
         </div>
-        
-        {/* Selected country display */}
-        {selectedCountry && (
-          <div className="mt-4 flex items-center justify-center p-3 bg-[var(--powder-light)] rounded-xl border border-[var(--powder-dark)]/30">
-            <span className="text-2xl mr-3">{selectedCountry.flag}</span>
-            <span className="font-medium text-[var(--text-1)]">{selectedCountry.name}</span>
-          </div>
-        )}
       </div>
-
-      <div className="flex gap-4">
-        <button
-          onClick={onPrev}
-          className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all"
-        >
-          Back
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!selected}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -335,48 +359,63 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-6 sm:py-8">
-      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
-        Choose Your Industry
-      </h2>
-      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
-        Select the category that best describes your business
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {industries.map((industry) => (
-          <button
-            key={industry.id}
-            onClick={() => onSelect(industry.id)}
-            className={`p-6 rounded-xl border-2 transition-all text-left ${
-              selected === industry.id
-                ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
-                : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
-            }`}
-          >
-            <div className="text-2xl mb-2">{industry.icon}</div>
-            <div className="font-semibold text-[var(--text-1)] mb-1">{industry.name}</div>
-            <div className="text-sm text-[var(--text-3)]">Manage your {industry.name.toLowerCase()} business efficiently</div>
-          </button>
-        ))}
+    <>
+      <div
+        className="text-center mb-6 fade-in"
+      >
+        <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">
+          Choose Your Industry
+        </h2>
+        <p className="text-[var(--text-3)] text-xs">
+          Select the category that best describes your business
+        </p>
       </div>
 
-      <div className="flex gap-4">
-        <button
-          onClick={onPrev}
-          className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all"
-        >
-          Back
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!selected}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
+      <div
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
+        style={{ animationDelay: '0.1s' }}
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-2">
+            {industries.map((industry) => (
+              <button
+                key={industry.id}
+                onClick={() => onSelect(industry.id)}
+                className={`p-3 rounded-lg border-2 transition-all text-left ${
+                  selected === industry.id
+                    ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
+                    : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="text-lg">{industry.icon}</div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-[var(--text-1)] text-sm">{industry.name}</div>
+                    <div className="text-xs text-[var(--text-3)]">Manage your {industry.name.toLowerCase()} business</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={onPrev}
+              className="flex-1 px-4 py-2.5 bg-[var(--glass-bg)] text-black font-medium rounded-lg hover:bg-[var(--glass-bg)] transition-all text-sm"
+            >
+              Back
+            </button>
+            <button
+              onClick={onNext}
+              disabled={!selected}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-lg hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -388,75 +427,85 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
-      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
-        Tell us about yourself
-      </h2>
-      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
-        Basic information to set up your account
-      </p>
-
-      <div className="space-y-6 mb-8">
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-            <User size={16} />
-            Your name
-          </label>
-          <input
-            type="text"
-            value={formData.name || ''}
-            onChange={(e) => onChange('name', e.target.value)}
-            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
-            placeholder="John Doe"
-          />
-        </div>
-
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-            <Building size={16} />
-            Business name (optional)
-          </label>
-          <input
-            type="text"
-            value={formData.businessName || ''}
-            onChange={(e) => onChange('businessName', e.target.value)}
-            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
-            placeholder="Acme Corporation"
-          />
-        </div>
-
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-            <Phone size={16} />
-            Phone number
-          </label>
-          <input
-            type="tel"
-            value={formData.phoneNumber || ''}
-            onChange={(e) => onChange('phoneNumber', e.target.value)}
-            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
-            placeholder="+254 700 000 000"
-          />
-        </div>
-
+    <>
+      <div
+        className="text-center mb-6 fade-in"
+      >
+        <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">
+          Tell us about yourself
+        </h2>
+        <p className="text-[var(--text-3)] text-xs">
+          Basic information to set up your account
+        </p>
       </div>
 
-      <div className="flex gap-4">
-        <button
-          onClick={onPrev}
-          className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all"
-        >
-          Back
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!formData.name || !formData.phoneNumber}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
+      <div
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
+        style={{ animationDelay: '0.1s' }}
+      >
+        <form className="space-y-4">
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+              <User size={14} />
+              Your name
+            </label>
+            <input
+              type="text"
+              value={formData.name || ''}
+              onChange={(e) => onChange('name', e.target.value)}
+              className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
+              placeholder="John Doe"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+              <Building size={14} />
+              Business name (optional)
+            </label>
+            <input
+              type="text"
+              value={formData.businessName || ''}
+              onChange={(e) => onChange('businessName', e.target.value)}
+              className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
+              placeholder="Acme Corporation"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+              <Phone size={14} />
+              Phone number
+            </label>
+            <input
+              type="tel"
+              value={formData.phoneNumber || ''}
+              onChange={(e) => onChange('phoneNumber', e.target.value)}
+              className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
+              placeholder="+254 700 000 000"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-3">
+            <button
+              type="button"
+              onClick={onPrev}
+              className="flex-1 px-4 py-2.5 bg-[var(--glass-bg)] text-black font-medium rounded-lg hover:bg-[var(--glass-bg)] transition-all text-sm"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              disabled={!formData.name || !formData.phoneNumber}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-lg hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Next
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </>
   );
 }
 

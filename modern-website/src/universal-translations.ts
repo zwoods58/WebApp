@@ -1,13 +1,4 @@
-﻿// src/translations/universal-translations.ts - Universal Translation System
-// Contains universal translations that work across ALL industries
-// Industry-specific translations have been moved to industry-translations.ts
-//
-// MIGRATION NOTES:
-// - Renamed from translations-new.ts on 2026-04-10
-// - Industry sections removed: retail, food, salon, transport, tailor, repairs, freelance
-// - Only universal terms remain (lines 1-9336 from original file)
-// - No changes to translation content or structure
-const translations = {
+﻿  export const translations = {
   // === UNIVERSAL TERMS (Work across ALL industries) ===
   universal: {
     // Payment Methods
@@ -68,6 +59,7 @@ const translations = {
       tw: "Sika a wode telefon so",
       rw: "Amafaranga ya telefoni",
       lg: "Emmere ya ssimu",
+      fr: "Argent mobile",
       dy: "Wosoro tilama"
     },
     // Navigation
@@ -113,7 +105,8 @@ const translations = {
       tw: "Pepa Manɔmu",
       rw: "Hitamo Igihugu Nawe",
       lg: "Londoo Ekibuga Kyawe",
-      fr: "Sélectionnez votre pays"
+      fr: "Sélectionnez votre pays",
+      dy: "Laminin ka i"
     },
     "country.current": {
       en: "Current",
@@ -127,7 +120,8 @@ const translations = {
       tw: "Mpre",
       rw: "None uyu munsi",
       lg: "Kati Kati",
-      fr: "Actuel"
+      fr: "Actuel",
+      dy: "n'a sira"
     },
     "country.change_note": {
       en: "Note: Changing country will navigate you to the same page in the selected country's context.",
@@ -140,7 +134,9 @@ const translations = {
       af: "Let wel: Wysig van land sal jou na dieselfde bladsy in die gekose land se konteks navigeer.",
       tw: "Nsɛmka: Sesa manɔmu bɛkɔ wo kɔ kratafa koro no wɔ manɔmu a wopɛ no mu.",
       rw: "Ibisobanuro: Guhindura igihugu bizakuguhere ku rubanda rumwe ari muri kontekisi y'igihugu wahisemo.",
-      lg: "Okulabirako: Okukyusa ekibuga kikuwa ku lupapula lwe lumwe mu by'ebibinja by'ekibaga ekyondedde."
+      lg: "Okulabirako: Okukyusa ekibuga kikuwa ku lupapula lwe lumwe mu by'ebibinja by'ekibaga ekyondedde.",
+      fr: "Remarque: Changer de pays vous amènera à la même page dans le contexte du pays sélectionné.",
+      dy: "A ka fo: I ka nogo laminin, a bɛ i weele i ka foro kɛrɛfɛ la min bɛ kɛ i ka jamana fɛ."
     },
     // === DASHBOARD TRANSLATIONS ===
     "daily_profit": {
@@ -154,7 +150,9 @@ const translations = {
       af: "Daaglikse Wins",
       tw: "Nneɛma a Wnya Da",
       rw: "Umusaruro w'Umunsi",
-      lg: "Emmere y'Olunaku"
+      lg: "Emmere y'Olunaku",
+      fr: "Bénéfice quotidien",
+      dy: "N'baan fanga n'ka"
     },
     "language.select": {
       en: "Select Language",
@@ -168,7 +166,8 @@ const translations = {
       tw: "Pepa Kasa",
       rw: "Hitamo Ururimi",
       lg: "Londoo Olulimi",
-      fr: "Sélectionner la langue"
+      fr: "Sélectionner la langue",
+      dy: "Laminin ka kan"
     },
     "lang.english": {
       en: "English",
@@ -197,6 +196,7 @@ const translations = {
       tw: "Kiswahili kasa",
       rw: "Iswahili",
       lg: "Lulimi lwa Swahili",
+      fr: "Swahili",
       dy: "Diouula"
     },
     "lang.hausa": {
@@ -211,6 +211,7 @@ const translations = {
       tw: "Hausa kasa",
       rw: "Igihausa",
       lg: "Lulimi lwa Hausa",
+      fr: "Haoussa",
       dy: "Diouula"
     },
     "lang.yoruba": {
@@ -225,6 +226,7 @@ const translations = {
       tw: "Yoruba kasa",
       rw: "Iyoruba",
       lg: "Lulimi lwa Yoruba",
+      fr: "Yoruba",
       dy: "Diouula"
     },
     "lang.igbo": {
@@ -239,6 +241,7 @@ const translations = {
       tw: "Igbo kasa",
       rw: "Igbo",
       lg: "Lulimi lwa Igbo",
+      fr: "Igbo",
       dy: "Diouula"
     },
     "lang.zulu": {
@@ -253,6 +256,7 @@ const translations = {
       tw: "Zulu kasa",
       rw: "Zulu",
       lg: "Lulimi lwa Zulu",
+      fr: "Zoulou",
       dy: "Diouula"
     },
     "lang.xhosa": {
@@ -267,6 +271,7 @@ const translations = {
       tw: "Xhosa kasa",
       rw: "Xhosa",
       lg: "Lulimi lwa Xhosa",
+      fr: "Xhosa",
       dy: "Diouula"
     },
     "lang.afrikaans": {
@@ -281,6 +286,7 @@ const translations = {
       tw: "Afrikaans kasa",
       rw: "Afrikaans",
       lg: "Lulimi lwa Afrikaans",
+      fr: "Afrikaans",
       dy: "Diouula"
     },
     "lang.twi": {
@@ -295,6 +301,7 @@ const translations = {
       tw: "Twi kasa",
       rw: "Twi",
       lg: "Lulimi lwa Twi",
+      fr: "Twi",
       dy: "Diouula"
     },
     "lang.kinyarwanda": {
@@ -309,6 +316,7 @@ const translations = {
       tw: "Kinyarwanda kasa",
       rw: "Ikinyarwanda",
       lg: "Lulimi lwa Kinyarwanda",
+      fr: "Kinyarwanda",
       dy: "Diouula"
     },
     "lang.luganda": {
@@ -323,6 +331,7 @@ const translations = {
       tw: "Luganda kasa",
       rw: "Luganda",
       lg: "Luganda",
+      fr: "Luganda",
       dy: "Diouula"
     },
     "lang.dioula": {
@@ -351,7 +360,9 @@ const translations = {
       af: "Buzz Gemeenskap",
       tw: "BeeHive kuayɛfoɔ",
       rw: "Itsinda rya Buzz",
-      lg: "Ekitundu kya Buzz"
+      lg: "Ekitundu kya Buzz",
+      fr: "Communauté Buzz",
+      dy: "Kafo sige Buzz"
     },
     "buzz.welcome": {
       en: "Welcome to Buzz",
@@ -364,7 +375,9 @@ const translations = {
       af: "Welkom by Buzz",
       tw: "Akwaaba Buzz",
       rw: "Murakaza neza ku Buzz",
-      lg: "Mukwano gwe Buzz"
+      lg: "Mukwano gwe Buzz",
+      fr: "Bienvenue dans Buzz",
+      dy: "I ni ce Buzz"
     },
     "buzz.description": {
       en: "Connect with fellow business owners, share insights, and grow together in our vibrant community.",
@@ -377,7 +390,9 @@ const translations = {
       af: "Konnek met med mede-eienaars, deel insigte, en groei saam in ons lewendige gemeenskap.",
       tw: "Bɛka w'adwumayɛfoɔ foforo, kyɛ me nsɛm, na wo nkɔsoɔ bomu wɔ kuw a no mu.",
       rw: "Twungiranye nabashakashatsi, dukoranya ibitekerezo, kandi twongere hamwe mu muriyi twize.",
-      lg: "Labaanya abakozesi abalala, wulula ennono, era olulamu lwonna mu kintu kyaawe."
+      lg: "Labaanya abakozesi abalala, wulula ennono, era olulamu lwonna mu kintu kyaawe.",
+      fr: "Connectez-vous avec d'autres chefs d'entreprise, partagez des idées et grandissez ensemble dans notre communauté dynamique.",
+      dy: "Bɛrɛ min sɔrɔ min di sɔrɔ, kassa fɔn, ka sɔrɔ ɛn kafo sige min."
     },
     "buzz.active_members": {
       en: "Active Members",
@@ -390,7 +405,9 @@ const translations = {
       af: "Aktiewe Lede",
       tw: "Nnipa a Wɔde Di Dwuma",
       rw: "Abanyamuryango bakoze",
-      lg: "Aba mmemba Akola"
+      lg: "Aba mmemba Akola",
+      fr: "Membres actifs",
+      dy: "Mɔgɔsɔn sɔrɔ"
     },
     "buzz.daily_tips": {
       en: "Daily Tips",
@@ -403,7 +420,9 @@ const translations = {
       af: "Daaglikse Wenke",
       tw: "Nsɛmpa Bere Bere",
       rw: "Incamaki buri munsi",
-      lg: "Amagezi buli lunaku"
+      lg: "Amagezi buli lunaku",
+      fr: "Conseils quotidiens",
+      dy: "Nɔsɔrɔ n'ka"
     },
     "buzz.community_rating": {
       en: "Community Rating",
@@ -416,7 +435,9 @@ const translations = {
       af: "Gemeenskap Gradering",
       tw: "Nkyekyɛmu Kuw",
       rw: "Icyizere ry'itsinda",
-      lg: "Okulabirirako ku kintu"
+      lg: "Okulabirirako ku kintu",
+      fr: "Évaluation de la communauté",
+      dy: "Kafo sige nɔn"
     },
     "buzz.recent_activity": {
       en: "Recent Activity",
@@ -429,7 +450,9 @@ const translations = {
       af: "Onlangse Aktiwiteite",
       tw: "Nneɛma a Abɛyɛ Foforo",
       rw: "Imyaka ya vuba",
-      lg: "Emirimu empya"
+      lg: "Emirimu empya",
+      fr: "Activité récente",
+      dy: "Sɔrɔn sɔrɔ nɔn"
     },
     "buzz.quick_actions": {
       en: "Quick Actions",
@@ -442,7 +465,9 @@ const translations = {
       af: "Vinnige Aksies",
       tw: "Dwumadi a Ɛho Mfaso",
       rw: "Imikorere myiza",
-      lg: "Emirimu egya mangu"
+      lg: "Emirimu egya mangu",
+      fr: "Actions rapides",
+      dy: "Sɔrɔn ɔn kɔnɔ"
     },
     "buzz.share_story": {
       en: "Share Your Story",
@@ -455,7 +480,9 @@ const translations = {
       af: "Deel Jou Storie",
       tw: "Kyere Amanneɛ Bi",
       rw: "Kurikirana ibyabaye",
-      lg: "Laba enono gyawe"
+      lg: "Laba enono gyawe",
+      fr: "Partagez votre histoire",
+      dy: "Kassa i nɔn min"
     },
     "buzz.view_insights": {
       en: "View Insights",
@@ -468,7 +495,9 @@ const translations = {
       af: "Kyk Insigte",
       tw: "Hwɛ Nsɛm a Wɔhunu",
       rw: "Reba ibitekerezo",
-      lg: "Laba ennono"
+      lg: "Laba ennono",
+      fr: "Voir les aperçus",
+      dy: "Lamina fɔn"
     },
     "nav.sell": {
       en: "Sell",
@@ -481,7 +510,9 @@ const translations = {
       af: "Verkoop",
       tw: "Tɔn",
       rw: "Uze",
-      lg: "Tuula"
+      lg: "Tuula",
+      fr: "Vendre",
+      dy: "Wɛrɛ"
     },
     "nav.transactions": {
       en: "Cash",
@@ -494,7 +525,9 @@ const translations = {
       af: "Kontant",
       tw: "Sika",
       rw: "Amafaranga",
-      lg: "Ssente"
+      lg: "Ssente",
+      fr: "Espèces",
+      dy: "Wosoro"
     },
     "nav.services": {
       en: "Services",
@@ -507,7 +540,9 @@ const translations = {
       af: "Dienste",
       tw: "Sevisi",
       rw: "Serivisi",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Services",
+      dy: "Sɔrɔn"
     },
     "buzz.popular_service": {
       en: "Most Popular Service",
@@ -520,7 +555,9 @@ const translations = {
       af: "Gewildste Diens",
       tw: "Sevisi Aka Wɔ Hyeɛn",
       rw: "Serivisi Yashizwe",
-      lg: "Emirimu Ebyamanyiddwa"
+      lg: "Emirimu Ebyamanyiddwa",
+      fr: "Service le plus populaire",
+      dy: "Sɔrɔn min bɛ di mɔgɔw ye kosɛbɛ"
     },
     "buzz.profitable_area": {
       en: "Most Profitable Area",
@@ -533,7 +570,9 @@ const translations = {
       af: "Winsgewendste Gebied",
       tw: "Beaɛ a Wɔnya Sika Kyɛn",
       rw: "Umwanya W'inguzanyo",
-      lg: "Ekitundu Elya Enkula"
+      lg: "Ekitundu Elya Enkula",
+      fr: "Zone la plus rentable",
+      dy: "Sigiyɔrɔ min bɛ nafa caman"
     },
     "buzz.transport_performance": {
       en: "Transport Performance",
@@ -546,7 +585,9 @@ const translations = {
       af: "Vervoer Werkverrigting",
       tw: "Nkitahadi Akwantuo",
       rw: "Imbaraga zo gutwara",
-      lg: "Okukola ku bbiri"
+      lg: "Okukola ku bbiri",
+      fr: "Performance du transport",
+      dy: "Taa bɛ kɛ cogo min"
     },
     "nav.stock": {
       en: "Stock",
@@ -559,7 +600,9 @@ const translations = {
       af: "Voorraad",
       tw: "Sika",
       rw: "Imiterere",
-      lg: "Emmotoka"
+      lg: "Emmotoka",
+      fr: "Stock",
+      dy: "Bansan"
     },
     "nav.settings": {
       en: "Settings",
@@ -572,7 +615,9 @@ const translations = {
       af: "Verstellings",
       tw: "Nhyehyɛe",
       rw: "Iboneza",
-      lg: "Enteekateeka"
+      lg: "Enteekateeka",
+      fr: "Paramètres",
+      dy: "Laɲini"
     },
     "nav.materials": {
       en: "Materials",
@@ -585,7 +630,9 @@ const translations = {
       af: "Materiale",
       tw: "Nneɛma",
       rw: "Ibiko",
-      lg: "Ebintu bya pulasitiki"
+      lg: "Ebintu bya pulasitiki",
+      fr: "Matériaux",
+      dy: "Fɛnw"
     },
     "nav.reports": {
       en: "Reports",
@@ -598,7 +645,9 @@ const translations = {
       af: "Verslae",
       tw: "Ho aduane",
       rw: "Ibyanditswe",
-      lg: "Ebiwandiiko"
+      lg: "Ebiwandiiko",
+      fr: "Rapports",
+      dy: "Kunnafoniw"
     },
     "nav.customers": {
       en: "Credit",
@@ -611,7 +660,9 @@ const translations = {
       af: "Krediet",
       tw: "Ka",
       rw: "Umwenda",
-      lg: "Bbanja"
+      lg: "Bbanja",
+      fr: "Crédit",
+      dy: "Juguyɔrɔ"
     },
     "nav.inventory": {
       en: "Inventory",
@@ -624,7 +675,9 @@ const translations = {
       af: "Voorraad",
       tw: "Sika",
       rw: "Imiterere",
-      lg: "Emmotoka"
+      lg: "Emmotoka",
+      fr: "Inventaire",
+      dy: "Bansanw"
     },
     "nav.products": {
       en: "Products",
@@ -637,7 +690,9 @@ const translations = {
       af: "Produkte",
       tw: "Nneɛma",
       rw: "Ibicuruzwa",
-      lg: "Ebintu"
+      lg: "Ebintu",
+      fr: "Produits",
+      dy: "Fɛnw"
     },
     "nav.expenses": {
       en: "Expenses",
@@ -650,7 +705,9 @@ const translations = {
       af: "Uitgawes",
       tw: "Sika a wɔde di",
       rw: "Imihango",
-      lg: "Embeera z'obuwangaazi"
+      lg: "Embeera z'obuwangaazi",
+      fr: "Dépenses",
+      dy: "Saraw"
     },
     "nav.orders": {
       en: "Orders",
@@ -663,7 +720,9 @@ const translations = {
       af: "Bestellings",
       tw: "Bɛtɛm",
       rw: "Icyifuzo",
-      lg: "Olulala"
+      lg: "Olulala",
+      fr: "Commandes",
+      dy: "Komandi w"
     },
     "nav.ingredients": {
       en: "Ingredients",
@@ -676,20 +735,24 @@ const translations = {
       af: "Bestanddele",
       tw: "Nne\u025bma a w\u1d4dde di nkurom",
       rw: "Ibiribwa",
-      lg: "Ebyokulya"
+      lg: "Ebyokulya",
+      fr: "Ingrédients",
+      dy: "Fɛnw minnu bɛ kɛ"
     },
     "services.active_count": {
       en: "{count} active",
-      sw: "0 active",
-      ha: "0 aiki",
-      yo: "0 akt\u1eff",
-      ig: "0 na-ar\u1ee5 \u1ecdr\u1ee5",
-      zu: "0 asebenzayo",
-      xh: "0 asebenzayo",
-      af: "0 aktief",
-      tw: "0 a \u0286y\u025b",
-      rw: "0 akoze",
-      lg: "0 akola"
+      sw: "{count} active",
+      ha: "{count} aiki",
+      yo: "{count} akt\u1eff",
+      ig: "{count} na-ar\u1ee5 \u1ecdr\u1ee5",
+      zu: "{count} asebenzayo",
+      xh: "{count} asebenzayo",
+      af: "{count} aktief",
+      tw: "{count} a \u0286y\u025b",
+      rw: "{count} akoze",
+      lg: "{count} akola",
+      fr: "{count} actif",
+      dy: "{count} bɛ baara"
     },
     "services.no_services": {
       en: "No services",
@@ -702,7 +765,9 @@ const translations = {
       af: "Geen dienste nie",
       tw: "Nni h\u1ecdn nnwuma",
       rw: "Nta serivisi",
-      lg: "Tewali mirimu"
+      lg: "Tewali mirimu",
+      fr: "Aucun service",
+      dy: "Sɔrɔn te"
     },
     "services.add_first": {
       en: "Add your first service",
@@ -715,7 +780,9 @@ const translations = {
       af: "Voeg jou eerste diens by",
       tw: "Fa wo nnwuma kan no",
       rw: "Ongeraho serivisi yawe ya mbere",
-      lg: "Gatta omulimo gwo ogusooka"
+      lg: "Gatta omulimo gwo ogusooka",
+      fr: "Ajoutez votre premier service",
+      dy: "I ka sɔrɔn foli fara a kan"
     },
     "nav.appointments": {
       en: "Appointments",
@@ -728,7 +795,9 @@ const translations = {
       af: "Afsprake",
       tw: "Nhyehyɛe",
       rw: "Abyiringize",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Rendez-vous",
+      dy: "Lalɔnw"
     },
     "nav.clients": {
       en: "Clients",
@@ -741,7 +810,9 @@ const translations = {
       af: "Kliënte",
       tw: "Akwadufo",
       rw: "Abakiriya",
-      lg: "Abakyaala"
+      lg: "Abakyaala",
+      fr: "Clients",
+      dy: "Jagokɛlaw"
     },
     "nav.drivers": {
       en: "Drivers",
@@ -754,7 +825,9 @@ const translations = {
       af: "Bestuurders",
       tw: "Kɔforidrɛfo",
       rw: "Abayobozi",
-      lg: "Abakyalabwengula"
+      lg: "Abakyalabwengula",
+      fr: "Chauffeurs",
+      dy: "Tirelaw"
     },
     "nav.vehicles": {
       en: "Vehicles",
@@ -767,7 +840,9 @@ const translations = {
       af: "Voertuie",
       tw: "Kɔkɔ",
       rw: "Amagari",
-      lg: "Emmotoka"
+      lg: "Emmotoka",
+      fr: "Véhicules",
+      dy: "Mobiluw"
     },
     "nav.routes": {
       en: "Routes",
@@ -780,7 +855,9 @@ const translations = {
       af: "Roetes",
       tw: "Kwan",
       rw: "Inzira",
-      lg: "Enziranya"
+      lg: "Enziranya",
+      fr: "Itinéraires",
+      dy: "Silaw"
     },
     "nav.trips": {
       en: "Trips",
@@ -793,7 +870,9 @@ const translations = {
       af: "Tritte",
       tw: "Kɔtɔ",
       rw: "Uruhere",
-      lg: "Oluguuda"
+      lg: "Oluguuda",
+      fr: "Trajets",
+      dy: "Taamaw"
     },
     "nav.jobs": {
       en: "Jobs",
@@ -806,7 +885,9 @@ const translations = {
       af: "Werke",
       tw: "Adwuma",
       rw: "Akazi",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Travaux",
+      dy: "Baaraw"
     },
     "nav.parts": {
       en: "Parts",
@@ -819,7 +900,9 @@ const translations = {
       af: "Dele",
       tw: "Fã",
       rw: "Ubuto",
-      lg: "Ebiri"
+      lg: "Ebiri",
+      fr: "Pièces",
+      dy: "Fɛnw"
     },
     "nav.menus": {
       en: "Menus",
@@ -832,7 +915,9 @@ const translations = {
       af: "Kieslys",
       tw: "Menu",
       rw: "Menyu",
-      lg: "Emenyu"
+      lg: "Emenyu",
+      fr: "Menus",
+      dy: "Menu w"
     },
     "home.low_stock_alert": {
       en: "Low Stock",
@@ -845,7 +930,9 @@ const translations = {
       af: "Lae Voorraad",
       tw: "Ahyɛde Bɛtɛ",
       rw: "Ibicuruzwa Bike",
-      lg: "Emmotoka nga Wansi"
+      lg: "Emmotoka nga Wansi",
+      fr: "Stock faible",
+      dy: "Bansan dɔ"
     },
     "common.items": {
       en: "Items",
@@ -858,9 +945,12 @@ const translations = {
       af: "Items",
       tw: "Nneɛma",
       rw: "Ibintu",
-      lg: "Ebintu"
-    },
-    // Common Actions
+      lg: "Ebintu",
+      fr: "Articles",
+      dy: "Fɛnw"
+    }
+  },
+        // Common Actions
     "common.save": {
       en: "Save",
       sw: "Hifadhi",
@@ -872,7 +962,9 @@ const translations = {
       af: "Stoor",
       tw: "Sie",
       rw: "Bika",
-      lg: "Tereka"
+      lg: "Tereka",
+      fr: "Enregistrer",
+      dy: "Marako"
     },
     "common.cancel": {
       en: "Cancel",
@@ -885,7 +977,9 @@ const translations = {
       af: "Kanselleer",
       tw: "Twa mu",
       rw: "Kuraho",
-      lg: "Sazaamu"
+      lg: "Sazaamu",
+      fr: "Annuler",
+      dy: "Ban"
     },
     "common.optional": {
       en: "Optional",
@@ -898,7 +992,9 @@ const translations = {
       af: "Opsioneel",
       tw: "Yɛnka ho",
       rw: "Bitariho",
-      lg: "Tekyayirirwawo"
+      lg: "Tekyayirirwawo",
+      fr: "Optionnel",
+      dy: "Nka fɛ"
     },
     "common.saving": {
       en: "Saving...",
@@ -911,7 +1007,9 @@ const translations = {
       af: "Stoor tans...",
       tw: "Sɛreyɛ...",
       rw: "Guhindura...",
-      lg: "Kika tega..."
+      lg: "Kika tega...",
+      fr: "Enregistrement...",
+      dy: "Marako bɛ kɛ..."
     },
     "common.copy": {
       en: "Copy",
@@ -924,7 +1022,9 @@ const translations = {
       af: "Kopieer",
       tw: "Twe",
       rw: "Koporora",
-      lg: "Koppa"
+      lg: "Koppa",
+      fr: "Copier",
+      dy: "Ta"
     },
     "common.copied": {
       en: "Copied!",
@@ -937,7 +1037,9 @@ const translations = {
       af: "Gekopieer!",
       tw: "Adwumadwuma!",
       rw: "Bikoporowe!",
-      lg: "Bikoppidwe!"
+      lg: "Bikoppidwe!",
+      fr: "Copié !",
+      dy: "A ta!"
     },
     "common.copy_to_clipboard": {
       en: "Copy to Clipboard",
@@ -950,7 +1052,9 @@ const translations = {
       af: "Kopieer na Klipbord",
       tw: "Twe kɔ bɔdii",
       rw: "Koporora kuri Clipboard",
-      lg: "Koppa ku clipboard"
+      lg: "Koppa ku clipboard",
+      fr: "Copier dans le presse-papier",
+      dy: "Ta ka sɛbɛnw la"
     },
     "common.type": {
       en: "Type",
@@ -963,7 +1067,9 @@ const translations = {
       af: "Tipe",
       tw: "Ahoɔde",
       rw: "Ubwoko",
-      lg: "Lungereza"
+      lg: "Lungereza",
+      fr: "Type",
+      dy: "Gafe"
     },
     "common.please_fill_required": {
       en: "Please fill out all required fields",
@@ -976,7 +1082,9 @@ const translations = {
       af: "Besoek asblik die verlangde velde in",
       tw: "Hyɛ da nsɛm a ɛho hia nyinaa",
       rw: "Nyamunekere uzuzanye amakuru yose akenewe",
-      lg: "Wuliriza ebikwata byona ebirina"
+      lg: "Wuliriza ebikwata byona ebirina",
+      fr: "Veuillez remplir tous les champs obligatoires",
+      dy: "I ni ce, ka fanga bɛɛ la minnu ka kan"
     },
     "common.tomorrow": {
       en: "Tomorrow",
@@ -989,7 +1097,9 @@ const translations = {
       af: "Môre",
       tw: "Kɔ",
       rw: "Ejo",
-      lg: "Kiikya"
+      lg: "Kiikya",
+      fr: "Demain",
+      dy: "Sini"
     },
     "common.this_week": {
       en: "This Week",
@@ -1002,7 +1112,9 @@ const translations = {
       af: "Hierdie Week",
       tw: "Wiki no",
       rw: "Uyu munsi",
-      lg: "Olunaku luno"
+      lg: "Olunaku luno",
+      fr: "Cette semaine",
+      dy: "Do sanbe"
     },
     "common.scheduled": {
       en: "Scheduled",
@@ -1015,7 +1127,9 @@ const translations = {
       af: "Geskeduleer",
       tw: "Wɔahyehyɛ",
       rw: "Byateganyijwe",
-      lg: "Biteekateekwa"
+      lg: "Biteekateekwa",
+      fr: "Planifié",
+      dy: "A laɲinina"
     },
     "common.in_progress": {
       en: "In Progress",
@@ -1028,7 +1142,9 @@ const translations = {
       af: "Besig",
       tw: "Wɔreyɛ",
       rw: "Iri mu bikorwa",
-      lg: "Wakola"
+      lg: "Wakola",
+      fr: "En cours",
+      dy: "Bɛ kɛ"
     },
     "common.duration": {
       en: "Duration",
@@ -1041,7 +1157,9 @@ const translations = {
       af: "Duur",
       tw: "Berɛ",
       rw: "Igihe",
-      lg: "Olwendo"
+      lg: "Olwendo",
+      fr: "Durée",
+      dy: "Tuma"
     },
     "common.phone": {
       en: "Phone",
@@ -1054,7 +1172,9 @@ const translations = {
       af: "Foon",
       tw: "Telefo",
       rw: "Telefoni",
-      lg: "Simu"
+      lg: "Simu",
+      fr: "Téléphone",
+      dy: "Telefoni"
     },
     "common.filter": {
       en: "Filter",
@@ -1067,7 +1187,9 @@ const translations = {
       af: "Filtreer",
       tw: "Sieve",
       rw: "Imisusurusuko",
-      lg: "Londamu"
+      lg: "Londamu",
+      fr: "Filtrer",
+      dy: "Sɛrɛ"
     },
     "common.all": {
       en: "All",
@@ -1080,7 +1202,9 @@ const translations = {
       af: "Almal",
       tw: "Nyinaa",
       rw: "Byose",
-      lg: "Byona"
+      lg: "Byona",
+      fr: "Tous",
+      dy: "Bɛɛ"
     },
     "common.all_jobs": {
       en: "All Jobs",
@@ -1093,7 +1217,9 @@ const translations = {
       af: "Alle Werk",
       tw: "Ndwuma nyinaa",
       rw: "Akazi Zose",
-      lg: "Emirimu Byona"
+      lg: "Emirimu Byona",
+      fr: "Tous les travaux",
+      dy: "Baara bɛɛ"
     },
     "common.add": {
       en: "Add",
@@ -1106,7 +1232,9 @@ const translations = {
       af: "Voeg by",
       tw: "Kae",
       rw: "Ongeraho",
-      lg: "Yongeza"
+      lg: "Yongeza",
+      fr: "Ajouter",
+      dy: "Fara a kan"
     },
     "common.description": {
       en: "Description",
@@ -1119,7 +1247,9 @@ const translations = {
       af: "Beskrywing",
       tw: "Nkyerɛmu",
       rw: "Ubusobanuro",
-      lg: "Okunnyonnyola"
+      lg: "Okunnyonnyola",
+      fr: "Description",
+      dy: "Laɲinibɔ"
     },
     "common.category": {
       en: "Category",
@@ -1132,9 +1262,11 @@ const translations = {
       af: "Kategorie",
       tw: "Klasɛ",
       rw: "Itsinda",
-      lg: "Ekika"
+      lg: "Ekika",
+      fr: "Catégorie",
+      dy: "Bamanan"
     },
-    "error.authentication_required": {
+        "error.authentication_required": {
       en: "Authentication required",
       sw: "Uhakiki unaohitajika",
       ha: "Tabbaci da ake buƙata",
@@ -1145,7 +1277,9 @@ const translations = {
       af: "Outhentisering wordelik",
       tw: "Hwehwɛ ho hwehwɛ ho ho hia",
       rw: "Kumenyesha niba akeneye",
-      lg: "Okukakanya kulina okulabikwa"
+      lg: "Okukakanya kulina okulabikwa",
+      fr: "Authentification requise",
+      dy: "I ka jate don"
     },
     "error.access_denied": {
       en: "Access denied",
@@ -1158,7 +1292,9 @@ const translations = {
       af: "Toeg geweier",
       tw: "Wɔnkan kɔ",
       rw: "Ungirira ibuhamya",
-      lg: "Okuyimiriza okuyingira"
+      lg: "Okuyimiriza okuyingira",
+      fr: "Accès refusé",
+      dy: "Don kɛnɛ ma se"
     },
     "error.business_ownership_failed": {
       en: "Business ownership verification failed",
@@ -1171,7 +1307,9 @@ const translations = {
       af: "Besititenskapverifikasie het misluk",
       tw: "Nhwehwɛmu wɔfa adwuma no asɛe",
       rw: "Kugenzura umutungo w'ubucuruzi byanze",
-      lg: "Okulinda okufuna eby'obulimi byalemedde"
+      lg: "Okulinda okufuna eby'obulimi byalemedde",
+      fr: "La vérification de propriété de l'entreprise a échoué",
+      dy: "Jago la hakili ma tɛmɛ"
     },
     "error.failed_fetch_notifications": {
       en: "Failed to fetch notifications",
@@ -1184,7 +1322,9 @@ const translations = {
       af: "Kry om kennisgewings te kry",
       tw: "Nhwehwɛmu a wɔkae",
       rw: "Kubona ubutumwa byanze",
-      lg: "Okulaba ebikwata byalemedde"
+      lg: "Okulaba ebikwata byalemedde",
+      fr: "Échec de la récupération des notifications",
+      dy: "Kunnafoniw ma se ka fa"
     },
     "error.failed_add_notification": {
       en: "Failed to add notification",
@@ -1197,7 +1337,9 @@ const translations = {
       af: "Misluk om kennisgewing by te voeg",
       tw: "Wɔnka ntɔhɔ ho asɛe",
       rw: "Kongera ubutumwa byanze",
-      lg: "Okugatta ebikwata byalemedde"
+      lg: "Okugatta ebikwata byalemedde",
+      fr: "Échec de l'ajout de la notification",
+      dy: "Kunnafoni ma se ka fara a kan"
     },
     "error.failed_mark_read": {
       en: "Failed to mark notification as read",
@@ -1210,7 +1352,9 @@ const translations = {
       af: "Misluk om kennisgewing as gelees te merk",
       tw: "Kyerɛ ntɔhɔ sɛ w'adum no asɛe",
       rw: "Gushyiraho ubutumwa nk'ibisanzwe byanze",
-      lg: "Okulaga ebikwata nga byadde byawulidwa byalemedde"
+      lg: "Okulaga ebikwata nga byadde byawulidwa byalemedde",
+      fr: "Échec du marquage de la notification comme lue",
+      dy: "Kunnafoni ma se ka don i ye a kalan"
     },
     "error.failed_mark_all_read": {
       en: "Failed to mark all notifications as read",
@@ -1223,7 +1367,9 @@ const translations = {
       af: "Misluk om alle kennisgewings as gelees te merk",
       tw: "Kyere ntɔhɔ biara sɛ w'adum no asɛe",
       rw: "Gushyiraho ubutumwa byose nk'ibisanzwe byanze",
-      lg: "Okulaga ebikwata byonna nga byadde byawulidwa byalemedde"
+      lg: "Okulaga ebikwata byonna nga byadde byawulidwa byalemedde",
+      fr: "Échec du marquage de toutes les notifications comme lues",
+      dy: "Kunnafoni bɛɛ ma se ka don i ye a kalanna"
     },
     "error.failed_delete_notification": {
       en: "Failed to delete notification",
@@ -1236,7 +1382,9 @@ const translations = {
       af: "Misluk om kennisgewing te verwyder",
       tw: "Pee ntɔhɔ ho asɛe",
       rw: "Gusiba ubutumwa byanze",
-      lg: "Okugyawo ebikwata byalemedde"
+      lg: "Okugyawo ebikwata byalemedde",
+      fr: "Échec de la suppression de la notification",
+      dy: "Kunnafoni ma se ka ba"
     },
     "error.notification_not_found": {
       en: "Notification not found",
@@ -1249,9 +1397,11 @@ const translations = {
       af: "Kennisgewing nie gevind nie",
       tw: "Anhunhu ntɔhɔ",
       rw: "Ubutumwa butabonetse",
-      lg: "Tebikka ebikwata tebinnaba"
+      lg: "Tebikka ebikwata tebinnaba",
+      fr: "Notification non trouvée",
+      dy: "Kunnafoni ma sɔrɔ"
     },
-    "notification.failed_mark_read": {
+        "notification.failed_mark_read": {
       en: "Failed to mark as read",
       sw: "Imeshindwa kuweka kama iliyosomwa",
       ha: "An sami koro samun a matsayi",
@@ -1262,7 +1412,9 @@ const translations = {
       af: "Misluk om as gelees te merk",
       tw: "Kyerɛ sɛ w'adum no asɛe",
       rw: "Gushyiraho nk'ibisanzwe byanze",
-      lg: "Okulaga nga byadde byawulidwa byalemedde"
+      lg: "Okulaga nga byadde byawulidwa byalemedde",
+      fr: "Échec du marquage comme lu",
+      dy: "Ma se ka don i ye a kalan"
     },
     "notification.failed_mark_all_read": {
       en: "Failed to mark all as read",
@@ -1275,7 +1427,9 @@ const translations = {
       af: "Misluk om alle as gelees te merk",
       tw: "Kyere biara sɛ w'adum no asɛe",
       rw: "Gushyiraho byose nk'ibisanzwe byanze",
-      lg: "Okulaga byonna nga byadde byawulidwa byalemedde"
+      lg: "Okulaga byonna nga byadde byawulidwa byalemedde",
+      fr: "Échec du marquage de tout comme lu",
+      dy: "Ma se ka don i ye bɛɛ kalan"
     },
     "notification.failed_delete": {
       en: "Failed to delete notification",
@@ -1288,7 +1442,9 @@ const translations = {
       af: "Misluk om kennisgewing te verwyder",
       tw: "Pee ntɔhɔ ho asɛe",
       rw: "Gusiba ubutumwa byanze",
-      lg: "Okugyawo ebikwata byalemedde"
+      lg: "Okugyawo ebikwata byalemedde",
+      fr: "Échec de la suppression de la notification",
+      dy: "Ma se ka kunnafoni ba"
     },
     "notification.loading": {
       en: "Loading notifications...",
@@ -1301,7 +1457,9 @@ const translations = {
       af: "Laai kennisgewings...",
       tw: "Retɔ ntɔhɔ...",
       rw: "Irima ubutumwa...",
-      lg: "Okwanjula ebikwata..."
+      lg: "Okwanjula ebikwata...",
+      fr: "Chargement des notifications...",
+      dy: "Kunnafoniw bɛ fa..."
     },
     "notification.none_yet": {
       en: "No notifications yet",
@@ -1314,7 +1472,9 @@ const translations = {
       af: "Nog kennisgewings nie",
       tw: "Nni hɔ ntɔhɔ biara",
       rw: "Nta na ubutumwa",
-      lg: "Tewali ebikwata byonna"
+      lg: "Tewali ebikwata byonna",
+      fr: "Aucune notification pour le moment",
+      dy: "Kunnafoni si ma sɔrɔ fɔlɔ"
     },
     "notification.deleted": {
       en: "Notification deleted",
@@ -1327,7 +1487,9 @@ const translations = {
       af: "Kennisgewing verwyder",
       tw: "Ntɔhɔ no asaee",
       rw: "Ubutumwa busibwe",
-      lg: "Ebikwata byaggyidwawo"
+      lg: "Ebikwata byaggyidwawo",
+      fr: "Notification supprimée",
+      dy: "Kunnafoni baara"
     },
     "notification.marked_read": {
       en: "Marked {count} notifications as read",
@@ -1340,9 +1502,11 @@ const translations = {
       af: "{count} kennisgewings as gelees",
       tw: "Wɔkyerɛ {count} ntɔhɔ sɛ w'adum",
       rw: "Ubutumwa {count} bushyizwe nk'ibisanzwe",
-      lg: "Byebikwata {count} byalagibwa nga byawulidwa"
+      lg: "Byebikwata {count} byalagibwa nga byawulidwa",
+      fr: "{count} notification(s) marquée(s) comme lue(s)",
+      dy: "Kunnafoni {count} don i ye a kalanna"
     },
-    "common.edit": {
+        "common.edit": {
       en: "Edit",
       sw: "Hariri",
       ha: "Gyara",
@@ -1353,7 +1517,9 @@ const translations = {
       af: "Wysig",
       tw: "Sesa",
       rw: "Hindura",
-      lg: "Kyusa"
+      lg: "Kyusa",
+      fr: "Modifier",
+      dy: "Bato"
     },
     "common.delete": {
       en: "Delete",
@@ -1366,7 +1532,9 @@ const translations = {
       af: "Verwyder",
       tw: "Pepa",
       rw: "Siba",
-      lg: "Gyawo"
+      lg: "Gyawo",
+      fr: "Supprimer",
+      dy: "Ba"
     },
     "common.back": {
       en: "Back",
@@ -1379,7 +1547,9 @@ const translations = {
       af: "Terug",
       tw: "San kɔ",
       rw: "Subira inyuma",
-      lg: "Dda wamu"
+      lg: "Dda wamu",
+      fr: "Retour",
+      dy: "Sɛgin"
     },
     "common.next": {
       en: "Next",
@@ -1392,7 +1562,9 @@ const translations = {
       af: "Volgende",
       tw: "Nea",
       rw: "Urukurikirwe",
-      lg: "Okusimbayo"
+      lg: "Okusimbayo",
+      fr: "Suivant",
+      dy: "Kɔ"
     },
     "common.search": {
       en: "Search",
@@ -1405,7 +1577,9 @@ const translations = {
       af: "Soek",
       tw: "Hwehwɛ",
       rw: "Shakisha",
-      lg: "Noonya"
+      lg: "Noonya",
+      fr: "Rechercher",
+      dy: "Nini"
     },
     "common.remove": {
       en: "Remove",
@@ -1418,7 +1592,9 @@ const translations = {
       af: "Verwyder",
       tw: "Yi",
       rw: "Kuraho",
-      lg: "Gyawo"
+      lg: "Gyawo",
+      fr: "Retirer",
+      dy: "Ba"
     },
     "common.close": {
       en: "Close",
@@ -1431,7 +1607,9 @@ const translations = {
       af: "Maak",
       tw: "To",
       rw: "Funga",
-      lg: "Ggalawo"
+      lg: "Ggalawo",
+      fr: "Fermer",
+      dy: "Da"
     },
     "common.open": {
       en: "Open",
@@ -1444,7 +1622,9 @@ const translations = {
       af: "Maak",
       tw: "Bue",
       rw: "Fungura",
-      lg: "Buddemu"
+      lg: "Buddemu",
+      fr: "Ouvrir",
+      dy: "Yɛlɛ"
     },
     "common.yes": {
       en: "Yes",
@@ -1457,7 +1637,9 @@ const translations = {
       af: "Ja",
       tw: "Yoo",
       rw: "Yego",
-      lg: "Yee"
+      lg: "Yee",
+      fr: "Oui",
+      dy: "Ɔwɔ"
     },
     "common.no": {
       en: "No",
@@ -1470,7 +1652,9 @@ const translations = {
       af: "Nee",
       tw: "Daabi",
       rw: "Oya",
-      lg: "Nedda"
+      lg: "Nedda",
+      fr: "Non",
+      dy: "Ayi"
     },
     "common.ok": {
       en: "OK",
@@ -1483,7 +1667,9 @@ const translations = {
       af: "Goed",
       tw: "Yɛ",
       rw: "Nibyo",
-      lg: "Kale"
+      lg: "Kale",
+      fr: "OK",
+      dy: "Ɛɛ"
     },
     "common.loading": {
       en: "Loading...",
@@ -1496,7 +1682,9 @@ const translations = {
       af: "Laai...",
       tw: "Retre...",
       rw: "Irimo...",
-      lg: "Kirabira..."
+      lg: "Kirabira...",
+      fr: "Chargement...",
+      dy: "Bɛ fa..."
     },
     "common.error": {
       en: "Something went wrong",
@@ -1509,7 +1697,9 @@ const translations = {
       af: "Iets het verkeerd gegaan",
       tw: "Birikoro biara bɛyɛ",
       rw: "Habaye ikibazo",
-      lg: "Waliwo ensobi"
+      lg: "Waliwo ensobi",
+      fr: "Quelque chose s'est mal passé",
+      dy: "Ko dɔ bɛ kɛ"
     },
     "common.success": {
       en: "Success!",
@@ -1522,7 +1712,9 @@ const translations = {
       af: "Suksesvol!",
       tw: "Amanne!",
       rw: "Byashize!",
-      lg: "Kyakula!"
+      lg: "Kyakula!",
+      fr: "Succès !",
+      dy: "A nyɛ!"
     },
     "common.to_go": {
       en: "to go",
@@ -1535,9 +1727,11 @@ const translations = {
       af: "om te gaan",
       tw: "kɔ",
       rw: "kugera",
-      lg: "okugenda"
+      lg: "okugenda",
+      fr: "à aller",
+      dy: "ka taa"
     },
-    "business.setup_required": {
+        "business.setup_required": {
       en: "Business Setup Required",
       sw: "Usanidi wa Biashara Unahitajika",
       ha: "Saitin Kasuwanci Ana Bukata",
@@ -1548,7 +1742,9 @@ const translations = {
       af: "Besigingsopstelling Vereis",
       tw: "Nhyehyeɛ Bɛtɔ Ho Ho Hia",
       rw: "Gushiraho umwuga bikorwa",
-      lg: "Okuteekateeka eby'okulonda kikwata"
+      lg: "Okuteekateeka eby'okulonda kikwata",
+      fr: "Configuration de l'entreprise requise",
+      dy: "Jago la laɲini kan"
     },
     "business.setup_message": {
       en: "Please complete your business profile to start adding transactions and expenses.",
@@ -1561,7 +1757,9 @@ const translations = {
       af: "Voltooi asseblief jou besigingsprofiel om te begin met die byvoeging van transaksies en uitgawes.",
       tw: "Meba dwumadie wo ho na w'ayɛ ho nsɛm mfaso na bɛtumi aba wo dwetɛ mu nsɛm ne ka.",
       rw: "Wuzuye iprofayili yawo y'ubucuruzi kugira ngo utangire kongera imikoranire n'ibiciro.",
-      lg: "Wabulire pulofaayo yo eby'okulonda ekite okwongera ebigulizo ebirala n'okussa ensimbi."
+      lg: "Wabulire pulofaayo yo eby'okulonda ekite okwongera ebigulizo ebirala n'okussa ensimbi.",
+      fr: "Veuillez compléter votre profil d'entreprise pour commencer à ajouter des transactions et des dépenses.",
+      dy: "I ni ce, ka i ka jago laɲini laban ka se ka ta ka sanfɛ ni saraw fara a kan."
     },
     "business.auth_user": {
       en: "Auth User",
@@ -1574,7 +1772,9 @@ const translations = {
       af: "Gemagtigde Gebruiker",
       tw: "Ɔde Dwumadie",
       rw: "Ukoresha Yemejwe",
-      lg: "Omukozesa Ow'ekiragiro"
+      lg: "Omukozesa Ow'ekiragiro",
+      fr: "Utilisateur authentifié",
+      dy: "Jate don kɛla"
     },
     "business.not_authenticated": {
       en: "Not authenticated",
@@ -1587,7 +1787,9 @@ const translations = {
       af: "Nie geauthentiseer",
       tw: "Wɔnnye nnim",
       rw: "Ntiyemejwe",
-      lg: "Takyakyiddwa"
+      lg: "Takyakyiddwa",
+      fr: "Non authentifié",
+      dy: "Jate ma don"
     },
     "business.error": {
       en: "Business Error",
@@ -1600,7 +1802,9 @@ const translations = {
       af: "Besigingsfout",
       tw: "Ɔhaw Bɛtɔ Ho",
       rw: "Ikosa ry'ubucuruzi",
-      lg: "Ensobi y'okulonda"
+      lg: "Ensobi y'okulonda",
+      fr: "Erreur d'entreprise",
+      dy: "Jago la fili"
     },
     "business.none": {
       en: "None",
@@ -1613,7 +1817,9 @@ const translations = {
       af: "Geen",
       tw: "Hwee",
       rw: "Nta na n'umwe",
-      lg: "Tewali"
+      lg: "Tewali",
+      fr: "Aucun",
+      dy: "Si ma"
     },
     "business.loading": {
       en: "Business Loading",
@@ -1626,9 +1832,11 @@ const translations = {
       af: "Besigings Laai",
       tw: "Dwumadie Rehyɛ",
       rw: "Gukora Ubucuruzi",
-      lg: "Okungula eby'okulonda"
+      lg: "Okungula eby'okulonda",
+      fr: "Chargement de l'entreprise",
+      dy: "Jago bɛ fa"
     },
-    // === APPOINTMENTS TRANSLATIONS ===
+        // === APPOINTMENTS TRANSLATIONS ===
     "appointments.today": {
       en: "Today",
       sw: "Leo",
@@ -1640,7 +1848,9 @@ const translations = {
       af: "Vandag",
       tw: "Ɛnnɛ",
       rw: "Uyu munsi",
-      lg: "Leero"
+      lg: "Leero",
+      fr: "Aujourd'hui",
+      dy: "Bi"
     },
     "appointments.appointments": {
       en: "Appointments",
@@ -1653,7 +1863,9 @@ const translations = {
       af: "Afsprake",
       tw: "Nhyira",
       rw: "Abyiringize",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Rendez-vous",
+      dy: "Lalɔnw"
     },
     "appointments.pending": {
       en: "Pending",
@@ -1666,7 +1878,9 @@ const translations = {
       af: "Hangende",
       tw: "Ɛretwɛn",
       rw: "Bitegereje",
-      lg: "Ekirindirira"
+      lg: "Ekirindirira",
+      fr: "En attente",
+      dy: "Bɛ kɔlɔ"
     },
     "appointments.awaiting": {
       en: "Awaiting Confirmation",
@@ -1679,7 +1893,9 @@ const translations = {
       af: "Wag op bevestiging",
       tw: "Ɛretwɛn nkrataa",
       rw: "Bitegereje kwemeza",
-      lg: "Ekirindirira okukakasa"
+      lg: "Ekirindirira okukakasa",
+      fr: "En attente de confirmation",
+      dy: "Bɛ kɔlɔ hakili la"
     },
     "appointments.search_placeholder": {
       en: "Search appointments...",
@@ -1692,7 +1908,9 @@ const translations = {
       af: "Soek afsprake...",
       tw: "Hwehwɛ nhyira...",
       rw: "Shakisha abyiringize...",
-      lg: "Noonya emirimu..."
+      lg: "Noonya emirimu...",
+      fr: "Rechercher des rendez-vous...",
+      dy: "Nini lalɔnw..."
     },
     "appointments.all_statuses": {
       en: "All Statuses",
@@ -1705,7 +1923,9 @@ const translations = {
       af: "Alle Status",
       tw: "Tebea Nyinaa",
       rw: "Imiterere Yose",
-      lg: "Embeera Zonna"
+      lg: "Embeera Zonna",
+      fr: "Tous les statuts",
+      dy: "Bɛɛ la nɔn"
     },
     "appointments.confirmed": {
       en: "Confirmed",
@@ -1718,7 +1938,9 @@ const translations = {
       af: "Bevestig",
       tw: "Wɔasi so dua",
       rw: "Byemejwe",
-      lg: "Kyakakasiddwa"
+      lg: "Kyakakasiddwa",
+      fr: "Confirmé",
+      dy: "A hakilina"
     },
     "appointments.completed": {
       en: "Completed",
@@ -1731,7 +1953,9 @@ const translations = {
       af: "Voltooi",
       tw: "Wɔawie",
       rw: "Byarangiye",
-      lg: "Kyamaliddwa"
+      lg: "Kyamaliddwa",
+      fr: "Terminé",
+      dy: "A ban"
     },
     "appointments.cancelled": {
       en: "Cancelled",
@@ -1744,7 +1968,9 @@ const translations = {
       af: "Gekanselleer",
       tw: "Wɔatwe",
       rw: "Byahagaritswe",
-      lg: "Kyasaziddwawo"
+      lg: "Kyasaziddwawo",
+      fr: "Annulé",
+      dy: "A ban"
     },
     "appointments.upcoming": {
       en: "Upcoming Appointments",
@@ -1757,7 +1983,9 @@ const translations = {
       af: "Komende Afsprake",
       tw: "Nhyira A Ɛreba",
       rw: "Abyiringize Bizaza",
-      lg: "Emirimu Egijja"
+      lg: "Emirimu Egijja",
+      fr: "Rendez-vous à venir",
+      dy: "Lalɔnw minnu bɛ na"
     },
     "calendar.no_appointments": {
       en: "No appointments found",
@@ -1770,7 +1998,9 @@ const translations = {
       af: "Geen afsprake gevind nie",
       tw: "Wɔannya nhyira biara",
       rw: "Nta byiringize",
-      lg: "Tewali mirimu"
+      lg: "Tewali mirimu",
+      fr: "Aucun rendez-vous trouvé",
+      dy: "Lalɔn si ma sɔrɔ"
     },
     "appointments.status.pending": {
       en: "Pending",
@@ -1783,7 +2013,9 @@ const translations = {
       af: "Hangende",
       tw: "Ɛretwɛn",
       rw: "Bitegereje",
-      lg: "Ekirindirira"
+      lg: "Ekirindirira",
+      fr: "En attente",
+      dy: "Bɛ kɔlɔ"
     },
     "appointments.status.confirmed": {
       en: "Confirmed",
@@ -1796,7 +2028,9 @@ const translations = {
       af: "Bevestig",
       tw: "Wɔasi so dua",
       rw: "Byemejwe",
-      lg: "Kyakakasiddwa"
+      lg: "Kyakakasiddwa",
+      fr: "Confirmé",
+      dy: "A hakilina"
     },
     "appointments.status.completed": {
       en: "Completed",
@@ -1809,7 +2043,9 @@ const translations = {
       af: "Voltooi",
       tw: "Wɔawie",
       rw: "Byarangiye",
-      lg: "Kyamaliddwa"
+      lg: "Kyamaliddwa",
+      fr: "Terminé",
+      dy: "A ban"
     },
     "appointments.status.cancelled": {
       en: "Cancelled",
@@ -1822,7 +2058,9 @@ const translations = {
       af: "Gekanselleer",
       tw: "Wɔatwe",
       rw: "Byahagaritswe",
-      lg: "Kyasaziddwawo"
+      lg: "Kyasaziddwawo",
+      fr: "Annulé",
+      dy: "A ban"
     },
     "appointments.days.sun": {
       en: "Sun",
@@ -1835,7 +2073,9 @@ const translations = {
       af: "Son",
       tw: "Kwa",
       rw: "Cyu",
-      lg: "Sab"
+      lg: "Sab",
+      fr: "Dim",
+      dy: "Kari"
     },
     "appointments.days.mon": {
       en: "Mon",
@@ -1848,7 +2088,9 @@ const translations = {
       af: "Maa",
       tw: "Dwo",
       rw: "Mbe",
-      lg: "Bal"
+      lg: "Bal",
+      fr: "Lun",
+      dy: "Ntɛnɛn"
     },
     "appointments.days.tue": {
       en: "Tue",
@@ -1861,7 +2103,9 @@ const translations = {
       af: "Din",
       tw: "Ben",
       rw: "Kab",
-      lg: "Lwo"
+      lg: "Lwo",
+      fr: "Mar",
+      dy: "Tarata"
     },
     "appointments.days.wed": {
       en: "Wed",
@@ -1874,7 +2118,9 @@ const translations = {
       af: "Woe",
       tw: "Wuk",
       rw: "Gtu",
-      lg: "Lws"
+      lg: "Lws",
+      fr: "Mer",
+      dy: "Araba"
     },
     "appointments.days.thu": {
       en: "Thu",
@@ -1887,7 +2133,9 @@ const translations = {
       af: "Don",
       tw: "Yaw",
       rw: "Kan",
-      lg: "Lwa"
+      lg: "Lwa",
+      fr: "Jeu",
+      dy: "Alamisa"
     },
     "appointments.days.fri": {
       en: "Fri",
@@ -1900,7 +2148,9 @@ const translations = {
       af: "Vry",
       tw: "Fia",
       rw: "Gat",
-      lg: "Lkt"
+      lg: "Lkt",
+      fr: "Ven",
+      dy: "Juma"
     },
     "appointments.days.sat": {
       en: "Sat",
@@ -1913,7 +2163,9 @@ const translations = {
       af: "Sat",
       tw: "Mem",
       rw: "Gnd",
-      lg: "Lmu"
+      lg: "Lmu",
+      fr: "Sam",
+      dy: "Sibiri"
     },
     "appointments.setup_required": {
       en: "Business Setup Required",
@@ -1926,7 +2178,9 @@ const translations = {
       af: "Besigingsopstelling Vereis",
       tw: "Nhyehyeɛ Bɛtɔ Ho Ho Hia",
       rw: "Gushiraho umwuga bikorwa",
-      lg: "Okuteekateeka eby'okulonda kikwata"
+      lg: "Okuteekateeka eby'okulonda kikwata",
+      fr: "Configuration de l'entreprise requise",
+      dy: "Jago la laɲini kan"
     },
     "appointments.setup_message": {
       en: "Please set up your business profile first to use the calendar.",
@@ -1939,7 +2193,9 @@ const translations = {
       af: "Stel asseblief jou besigingsprofiel eerste om die kalender te gebruik.",
       tw: "Mfa dwumadie wo ho na w'ayɛ ho nsɛm mfaso ansa na woaba dapɛn no.",
       rw: "Wushyire iprofayili yawo y'ubucuruzi mbere yo gukoresha kalenda.",
-      lg: "Weteke pulofaayo yo eby'okulonda mbawo okukozesa kkalenda."
+      lg: "Weteke pulofaayo yo eby'okulonda mbawo okukozesa kkalenda.",
+      fr: "Veuillez d'abord configurer votre profil d'entreprise pour utiliser le calendrier.",
+      dy: "I ni ce, ka i ka jago laɲini laban foli ka kalandari kɛ"
     },
     "appointments.manage_appointments": {
       en: "Manage Appointments",
@@ -1952,7 +2208,9 @@ const translations = {
       af: "Bestuur Afsprake",
       tw: "Hyehy Nhyira Ho",
       rw: "Gucunga Ibyiringize",
-      lg: "Okulongoosa Emirimu"
+      lg: "Okulongoosa Emirimu",
+      fr: "Gérer les rendez-vous",
+      dy: "Lalɔnw laɲini"
     },
     "appointments.today_count": {
       en: "{count} today",
@@ -1965,7 +2223,9 @@ const translations = {
       af: "{count} vandag",
       tw: "{count} nda",
       rw: "{count} uyu munsi",
-      lg: "{count} leero"
+      lg: "{count} leero",
+      fr: "{count} aujourd'hui",
+      dy: "{count} bi"
     },
     "appointments.upcoming_appointments": {
       en: "Upcoming Appointments",
@@ -1978,7 +2238,9 @@ const translations = {
       af: "Komende Afsprake",
       tw: "Nhyira A  Éreba",
       rw: "Abyiringize Bizaza",
-      lg: "Emirimu Egijja"
+      lg: "Emirimu Egijja",
+      fr: "Rendez-vous à venir",
+      dy: "Lalɔnw minnu bɛ na"
     },
     "appointments.manage_schedule": {
       en: "Manage your schedule",
@@ -1991,7 +2253,9 @@ const translations = {
       af: "Bestuur jou skedule",
       tw: "Hyehy wo nsra w ho",
       rw: "Gucanga gahunda yawe",
-      lg: "Lulonda olukala lwo"
+      lg: "Lulonda olukala lwo",
+      fr: "Gérer votre agenda",
+      dy: "I ka lalɔnw laɲini"
     },
     "appointments.no_appointments": {
       en: "No appointments yet",
@@ -2004,7 +2268,9 @@ const translations = {
       af: "Nog geen afsprake nie",
       tw: "Nnya nhyira biara",
       rw: "Nta byiringize bishize",
-      lg: "Tewali mirimu byonna"
+      lg: "Tewali mirimu byonna",
+      fr: "Aucun rendez-vous pour le moment",
+      dy: "Lalɔn si ma sɔrɔ fɔlɔ"
     },
     "appointments.book_first": {
       en: "Book your first appointment to get started",
@@ -2017,7 +2283,9 @@ const translations = {
       af: "Boek jou eerste afspraak om te begin",
       tw: "Fa wo nhyira kan sika wo b",
       rw: "Shyiraho ibyiringize byawe mbere gutangira",
-      lg: "Teeka omulimo gwo ogusooka okutandika"
+      lg: "Teeka omulimo gwo ogusooka okutandika",
+      fr: "Réservez votre premier rendez-vous pour commencer",
+      dy: "I ka lalɔn foli se ka ta"
     },
     "appointments.add_appointment": {
       en: "Add Appointment",
@@ -2030,7 +2298,9 @@ const translations = {
       af: "Voeg Afspraak By",
       tw: "Fa Nhyira Ka Ho",
       rw: "Ongeraho Ibyiringize",
-      lg: "Yongera Omulimo"
+      lg: "Yongera Omulimo",
+      fr: "Ajouter un rendez-vous",
+      dy: "Lalɔn fara a kan"
     },
     "appointments.customer_name": {
       en: "Customer Name",
@@ -2043,7 +2313,9 @@ const translations = {
       af: "Kliënt Naam",
       tw: "Adetɔnfo Din",
       rw: "Izina ry'umukiriya",
-      lg: "Erinnya ly'omuguzi"
+      lg: "Erinnya ly'omuguzi",
+      fr: "Nom du client",
+      dy: "Jagokɛla tɔgɔ"
     },
     "appointments.customer_contact": {
       en: "Contact",
@@ -2056,7 +2328,9 @@ const translations = {
       af: "Kontak",
       tw: "Nkitahodi",
       rw: "Itumanaho",
-      lg: "Okukwatagana"
+      lg: "Okukwatagana",
+      fr: "Contact",
+      dy: "Sɛbɛn"
     },
     "appointments.select_service": {
       en: "Select Service",
@@ -2069,7 +2343,9 @@ const translations = {
       af: "Kies Diens",
       tw: "Yi Dwumadie",
       rw: "Hitamo Serivisi",
-      lg: "Londa Omulimo"
+      lg: "Londa Omulimo",
+      fr: "Sélectionner un service",
+      dy: "Sɔrɔn laminin"
     },
     "appointments.select_date": {
       en: "Select Date",
@@ -2082,7 +2358,9 @@ const translations = {
       af: "Kies Datum",
       tw: "Yi Da",
       rw: "Hitamo Itariki",
-      lg: "Londa Olunaku"
+      lg: "Londa Olunaku",
+      fr: "Sélectionner une date",
+      dy: "Don laminin"
     },
     "calendar.select_time": {
       en: "Select Time",
@@ -2095,7 +2373,9 @@ const translations = {
       af: "Kies Tyd",
       tw: "Yi Berɛ",
       rw: "Hitamo Igihe",
-      lg: "Londa Obudde"
+      lg: "Londa Obudde",
+      fr: "Sélectionner une heure",
+      dy: "Waati laminin"
     },
     "appointments.duration_minutes": {
       en: "Duration (minutes)",
@@ -2108,7 +2388,9 @@ const translations = {
       af: "Duur (minute)",
       tw: "Berɛ Tenten (simma)",
       rw: "Igihe (iminota)",
-      lg: "Obudde (eddakiika)"
+      lg: "Obudde (eddakiika)",
+      fr: "Durée (minutes)",
+      dy: "Tuma (miniti)"
     },
     "appointments.notes": {
       en: "Notes",
@@ -2121,7 +2403,9 @@ const translations = {
       af: "Notas",
       tw: "Nsɛm",
       rw: "Inyandiko",
-      lg: "Ebiwandiiko"
+      lg: "Ebiwandiiko",
+      fr: "Notes",
+      dy: "Kunnafoniw"
     },
     "appointments.book_appointment": {
       en: "Book Appointment",
@@ -2134,7 +2418,9 @@ const translations = {
       af: "Bespreek Afspraak",
       tw: "Hyɛ Nhyira",
       rw: "Shyiraho Ibyiringize",
-      lg: "Teeka Omulimo"
+      lg: "Teeka Omulimo",
+      fr: "Réserver un rendez-vous",
+      dy: "Lalɔn se"
     },
     "appointments.appointment_added": {
       en: "Appointment added successfully",
@@ -2147,7 +2433,9 @@ const translations = {
       af: "Afspraak suksesvol bygevoeg",
       tw: "Wɔde nhyira aka ho",
       rw: "Ibyiringize byongeweho",
-      lg: "Omulimo gwongedwa"
+      lg: "Omulimo gwongedwa",
+      fr: "Rendez-vous ajouté avec succès",
+      dy: "Lalɔn fara a kan ka nyɛ"
     },
     "appointments.appointment_error": {
       en: "Failed to add appointment",
@@ -2160,7 +2448,9 @@ const translations = {
       af: "Kon nie afspraak byvoeg nie",
       tw: "W'antumi anka nhyira ho",
       rw: "Ntibyashobotse kongeraho ibyiringize",
-      lg: "Tekyasobodde kwongera omulimo"
+      lg: "Tekyasobodde kwongera omulimo",
+      fr: "Échec de l'ajout du rendez-vous",
+      dy: "Lalɔn ma se ka fara a kan"
     },
     "appointments.phone_number": {
       en: "Phone number (optional)",
@@ -2173,7 +2463,9 @@ const translations = {
       af: "Foonnommer (opsioneel)",
       tw: "N\u0254ma \u0254di (anhy\u025b da)",
       rw: "Nimero ya telefoni (ntibikwiye)",
-      lg: "Namba ya ssimu (terina kyeta)"
+      lg: "Namba ya ssimu (terina kyeta)",
+      fr: "Numéro de téléphone (optionnel)",
+      dy: "Telefoni nimɛrɔ (nka fɛ)"
     },
     "appointments.service_placeholder": {
       en: "Service",
@@ -2186,7 +2478,9 @@ const translations = {
       af: "Diens",
       tw: "Adwuma",
       rw: "Serivisi",
-      lg: "Mulimu"
+      lg: "Mulimu",
+      fr: "Service",
+      dy: "Sɔrɔn"
     },
     "appointments.add_to_list": {
       en: "Add to List",
@@ -2199,7 +2493,9 @@ const translations = {
       af: "Voeg by lys",
       tw: "Ka ho ka ab\u0254din",
       rw: "Ongeraha ku lisi",
-      lg: "Yongeza ku lukalala"
+      lg: "Yongeza ku lukalala",
+      fr: "Ajouter à la liste",
+      dy: "Fara a kan lisi la"
     },
     "appointments.title": {
       en: "Appointments",
@@ -2212,7 +2508,9 @@ const translations = {
       af: "Afsprake",
       tw: "Nhyehy\u025b",
       rw: "Abyiringize",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Rendez-vous",
+      dy: "Lalɔnw"
     },
     "appointments.list_view": {
       en: "List",
@@ -2225,7 +2523,9 @@ const translations = {
       af: "Lys",
       tw: "List",
       rw: "Urutonde",
-      lg: "Olukalala"
+      lg: "Olukalala",
+      fr: "Liste",
+      dy: "Lisi"
     },
     "appointments.calendar_view": {
       en: "Calendar",
@@ -2238,7 +2538,9 @@ const translations = {
       af: "Kalender",
       tw: "Kwadu",
       rw: "Kalenda",
-      lg: "Kkalenda"
+      lg: "Kkalenda",
+      fr: "Calendrier",
+      dy: "Kalandari"
     },
     "appointments.loading": {
       en: "Loading appointments...",
@@ -2251,7 +2553,9 @@ const translations = {
       af: "Laai afsprake...",
       tw: "Retre nhyira...",
       rw: "Irimo ibyiringize...",
-      lg: "Kiri emirimu..."
+      lg: "Kiri emirimu...",
+      fr: "Chargement des rendez-vous...",
+      dy: "Lalɔnw bɛ fa..."
     },
     "appointments.create_success": {
       en: "Appointment created successfully",
@@ -2264,7 +2568,9 @@ const translations = {
       af: "Afspraak suksesvol geskep",
       tw: "Wodee nhyira",
       rw: "Ibyiringize byashizweho",
-      lg: "Omulimo mwaliddwa"
+      lg: "Omulimo mwaliddwa",
+      fr: "Rendez-vous créé avec succès",
+      dy: "Lalɔn da a nyɛ"
     },
     "appointments.complete_success": {
       en: "Appointment completed successfully",
@@ -2277,7 +2583,9 @@ const translations = {
       af: "Afspraak suksesvol voltooi",
       tw: "Wowie nhyira",
       rw: "Ibyiringize byarangiye",
-      lg: "Omulimo kyamaliddwa"
+      lg: "Omulimo kyamaliddwa",
+      fr: "Rendez-vous terminé avec succès",
+      dy: "Lalɔn ban a nyɛ"
     },
     "appointments.complete_error": {
       en: "Failed to complete appointment",
@@ -2290,7 +2598,9 @@ const translations = {
       af: "Kon nie afspraak voltooi nie",
       tw: "W'ntumi anwie nhyira",
       rw: "Ntibyashobotse kurangiza ibyiringize",
-      lg: "Tekyasobodde okumaliriza omulimo"
+      lg: "Tekyasobodde okumaliriza omulimo",
+      fr: "Échec de la finalisation du rendez-vous",
+      dy: "Lalɔn ma se ka ban"
     },
     "appointments.cancel_success": {
       en: "Appointment cancelled successfully",
@@ -2303,7 +2613,9 @@ const translations = {
       af: "Afspraak suksesvol gekanselleer",
       tw: "Wofagye nhyira",
       rw: "Ibyiringize byahagaritswe",
-      lg: "Omulimo kyasaziddwawo"
+      lg: "Omulimo kyasaziddwawo",
+      fr: "Rendez-vous annulé avec succès",
+      dy: "Lalɔn ban a nyɛ"
     },
     "appointments.cancel_error": {
       en: "Failed to cancel appointment",
@@ -2316,7 +2628,9 @@ const translations = {
       af: "Kon nie afspraak kanselleer nie",
       tw: "W'ntumi anfagye nhyira",
       rw: "Ntibyashobotse kuhagarika ibyiringize",
-      lg: "Tekyasobodde okusaza omulimo"
+      lg: "Tekyasobodde okusaza omulimo",
+      fr: "Échec de l'annulation du rendez-vous",
+      dy: "Lalɔn ma se ka ban"
     },
     "appointments.delete_success": {
       en: "Appointment deleted successfully",
@@ -2329,7 +2643,9 @@ const translations = {
       af: "Afspraak suksesvol verwyder",
       tw: "Wopam nhyira",
       rw: "Ibyiringize byasibwe",
-      lg: "Omulimo kyasibwe"
+      lg: "Omulimo kyasibwe",
+      fr: "Rendez-vous supprimé avec succès",
+      dy: "Lalɔn ba a nyɛ"
     },
     "appointments.delete_error": {
       en: "Failed to delete appointment",
@@ -2342,7 +2658,9 @@ const translations = {
       af: "Kon nie afspraak verwyder nie",
       tw: "W'ntumi anpam nhyira",
       rw: "Ntibyashobotse gusiba ibyiringize",
-      lg: "Tekyasobodde okusiba omulimo"
+      lg: "Tekyasobodde okusiba omulimo",
+      fr: "Échec de la suppression du rendez-vous",
+      dy: "Lalɔn ma se ka ba"
     },
     "appointments.no_appointments_found": {
       en: "No appointments found",
@@ -2355,7 +2673,9 @@ const translations = {
       af: "Geen afsprake gevind nie",
       tw: "Huhu nhyira a wu",
       rw: "Ntabwo wabonetse ibyiringize",
-      lg: "Tewali mirimu abaaboneddwamu"
+      lg: "Tewali mirimu abaaboneddwamu",
+      fr: "Aucun rendez-vous trouvé",
+      dy: "Lalɔn si ma sɔrɔ"
     },
     "appointments.adjust_filters": {
       en: "Try adjusting your filters",
@@ -2368,7 +2688,9 @@ const translations = {
       af: "Probeer om jou filters aan te pas",
       tw: "Hyɛ na wosesa wo nsusuwso",
       rw: "Dongera guhindura amahugurwa",
-      lg: "Gezaako okukyusa obusungo"
+      lg: "Gezaako okukyusa obusungo",
+      fr: "Essayez d'ajuster vos filtres",
+      dy: "I ka sɛrɛw togo"
     },
     "appointments.get_started": {
       en: "Get started by creating your first appointment",
@@ -2381,7 +2703,9 @@ const translations = {
       af: "Begin deur die eerste afspraak te skep",
       tw: "Hy\u025b ase fa wo nhyira a edi kan",
       rw: "Tangira no gukora ibyiringize byawe bya mbere",
-      lg: "Tandika okuteeka omulimo gwo ogusooka"
+      lg: "Tandika okuteeka omulimo gwo ogusooka",
+      fr: "Commencez par créer votre premier rendez-vous",
+      dy: "I ka lalɔn foli da ka ta"
     },
     "appointments.error.customer_name": {
       en: "Customer name is required (min 2 characters)",
@@ -2394,7 +2718,9 @@ const translations = {
       af: "Kliëntnaam word vereis (min 2 karakters)",
       tw: "Adetɔnfo din ho hia (nkyerɛwde 2 ankasa)",
       rw: "Izina ry'umukiriya rirakenewe (byibuze inyuguti 2)",
-      lg: "Erinnya ly'omuguzi lyetaagisa (obunaku ennukuta 2)"
+      lg: "Erinnya ly'omuguzi lyetaagisa (obunaku ennukuta 2)",
+      fr: "Le nom du client est requis (min 2 caractères)",
+      dy: "Jagokɛla tɔgɔ kan (sɛbɛn fila kɔrɔ)"
     },
     "appointments.customer_name_placeholder": {
       en: "Enter customer name",
@@ -2407,7 +2733,9 @@ const translations = {
       af: "Tik kliëntnaam in",
       tw: "Hyɛ adanefo din no",
       rw: "Shyiramo izina ry'umukiriya",
-      lg: "Yingiza erinnya ly'omuguzi"
+      lg: "Yingiza erinnya ly'omuguzi",
+      fr: "Entrez le nom du client",
+      dy: "Jagokɛla tɔgɔ sɛbɛn"
     },
     "calendar.start_time": {
       en: "Start Time",
@@ -2420,7 +2748,9 @@ const translations = {
       af: "Begintyd",
       tw: "Berɛho Kɛse",
       rw: "Igihe cyo gutangira",
-      lg: "Obudde bwo kutandika"
+      lg: "Obudde bwo kutandika",
+      fr: "Heure de début",
+      dy: "Waati ka daminɛ"
     },
     "calendar.end_time": {
       en: "End Time",
@@ -2433,7 +2763,9 @@ const translations = {
       af: "Eindtyd",
       tw: "Berɛho Bɛso",
       rw: "Igihe cyo kurangirira",
-      lg: "Obudde bwo malirizira"
+      lg: "Obudde bwo malirizira",
+      fr: "Heure de fin",
+      dy: "Waati ka laban"
     },
     "calendar.notes_placeholder": {
       en: "Additional notes...",
@@ -2446,7 +2778,9 @@ const translations = {
       af: "Bykomende notas...",
       tw: "Nsɛm afoforo...",
       rw: "Inyandiko zongeraho...",
-      lg: "Ebiwandiiko ebirala..."
+      lg: "Ebiwandiiko ebirala...",
+      fr: "Notes supplémentaires...",
+      dy: "Kunnafoni wɛrɛ..."
     },
     "calendar.title": {
       en: "Calendar",
@@ -2459,7 +2793,9 @@ const translations = {
       af: "Kalender",
       tw: "Dapɛn",
       rw: "Kalenda",
-      lg: "Kkalenda"
+      lg: "Kkalenda",
+      fr: "Calendrier",
+      dy: "Kalandari"
     },
     "calendar.add_appointment_short": {
       en: "Add appointment",
@@ -2472,7 +2808,9 @@ const translations = {
       af: "Voeg afspraak by",
       tw: "Hyɛ nsrahyɛ",
       rw: "Ongeraho ibyiringize",
-      lg: "Yongera omulimo"
+      lg: "Yongera omulimo",
+      fr: "Ajouter un rendez-vous",
+      dy: "Lalɔn fara a kan"
     },
     "calendar.fill_details": {
       en: "Fill in the appointment details",
@@ -2485,7 +2823,9 @@ const translations = {
       af: "Vul die afspraakbesonderhede in",
       tw: "Hyɛ nsrahyɛ ho nsɛm",
       rw: "Uzuza ibisobanuro by'ibyiringize",
-      lg: "Jjuza ebikwata ku mirimu"
+      lg: "Jjuza ebikwata ku mirimu",
+      fr: "Remplissez les détails du rendez-vous",
+      dy: "Lalɔn laɲinifɛnw fanga"
     },
     "calendar.error.service": {
       en: "Please select a service",
@@ -2498,7 +2838,9 @@ const translations = {
       af: "Kies asseblief 'n diens",
       tw: "Yɛsrɛ wo yi dwumadie",
       rw: "Nyamuneka hitamo serivisi",
-      lg: "Nsaba olonde omulimo"
+      lg: "Nsaba olonde omulimo",
+      fr: "Veuillez sélectionner un service",
+      dy: "I ni ce, sɔrɔn laminin"
     },
     "calendar.error.date": {
       en: "Please select a date",
@@ -2511,7 +2853,9 @@ const translations = {
       af: "Kies asseblief 'n datum",
       tw: "Yɛsrɛ wo yi da",
       rw: "Nyamuneka hitamo itariki",
-      lg: "Nsaba olonde olunaku"
+      lg: "Nsaba olonde olunaku",
+      fr: "Veuillez sélectionner une date",
+      dy: "I ni ce, don laminin"
     },
     "calendar.error.past_date": {
       en: "Date cannot be in the past",
@@ -2524,7 +2868,9 @@ const translations = {
       af: "Datum kan nie in die verlede wees nie",
       tw: "Da no ntumi nnyɛ nea atwam",
       rw: "Itariki ntishobora kuba iy'igihe cyashize",
-      lg: "Olunaku telusobola kuba mu biseera ebyayita"
+      lg: "Olunaku telusobola kuba mu biseera ebyayita",
+      fr: "La date ne peut pas être dans le passé",
+      dy: "Don tɛ se ka kɛ kuma la"
     },
     "calendar.error.time": {
       en: "Please select a time",
@@ -2537,7 +2883,9 @@ const translations = {
       af: "Kies asseblief 'n tyd",
       tw: "Yɛsrɛ wo yi berɛ",
       rw: "Nyamuneka hitamo igihe",
-      lg: "Nsaba olonde obudde"
+      lg: "Nsaba olonde obudde",
+      fr: "Veuillez sélectionner une heure",
+      dy: "I ni ce, waati laminin"
     },
     "calendar.error.no_business": {
       en: "Business profile not found",
@@ -2550,7 +2898,9 @@ const translations = {
       af: "Besigingsprofiel nie gevind nie",
       tw: "Wɔannya dwumadie ho nsɛm",
       rw: "Iprofayili y'ubucuruzi ntiyabonetse",
-      lg: "Pulofaayo y'okulonda teraboneka"
+      lg: "Pulofaayo y'okulonda teraboneka",
+      fr: "Profil d'entreprise non trouvé",
+      dy: "Jago laɲini ma sɔrɔ"
     },
     "calendar.no_services": {
       en: "No services available. Please add services first.",
@@ -2563,9 +2913,11 @@ const translations = {
       af: "Geen dienste beskikbaar nie. Voeg asseblief eers dienste by.",
       tw: "Dwumadie biara nni hɔ. Yɛsrɛ wo fa dwumadie ka ho kan.",
       rw: "Nta serivisi ziboneka. Nyamuneka ongeraho serivisi mbere.",
-      lg: "Tewali mirimu giriwo. Nsaba oyongere emirimu okusooka."
+      lg: "Tewali mirimu giriwo. Nsaba oyongere emirimu okusooka.",
+      fr: "Aucun service disponible. Veuillez d'abord ajouter des services.",
+      dy: "Sɔrɔn si ma sɔrɔ. I ni ce, sɔrɔn fara a kan foli"
     },
-    "alert.setup_profile_first": {
+        "alert.setup_profile_first": {
       en: "Please set up your business profile first before adding transactions.",
       sw: "Tafadhali weka wasifu wako wa biashara kwanza kabla ya kuongeza muamala.",
       ha: "Don saita bayanan kasuwancin ka kafin kara mu'amala.",
@@ -2576,7 +2928,9 @@ const translations = {
       af: "Stel asseblief jou besigingsprofiel eerste voordat jy transaksies byvoeg.",
       tw: "Mfa dwumadie wo ho na w'ayɛ ho nsɛm mfaso ansa na woaba wo dwetɛ mu nsɛm.",
       rw: "Wushyire iprofayili yawo y'ubucuruzi mbere yo kongera imikoranire.",
-      lg: "Weteke pulofaayo yo eby'okulonda mbawo kuongera ebigulizo."
+      lg: "Weteke pulofaayo yo eby'okulonda mbawo kuongera ebigulizo.",
+      fr: "Veuillez d'abord configurer votre profil d'entreprise avant d'ajouter des transactions.",
+      dy: "I ni ce, ka i ka jago laɲini laban foli ka sanfɛ fara a kan."
     },
     "alert.setup_profile_first_expenses": {
       en: "Please set up your business profile first before adding expenses.",
@@ -2589,7 +2943,9 @@ const translations = {
       af: "Stel asseblief jou besigingsprofiel eerste voordat jy uitgawes byvoeg.",
       tw: "Mfa dwumadie wo ho na w'ayɛ ho nsɛm mfaso ansa na woaba wo ka.",
       rw: "Wushyire iprofayili yawo y'ubucuruzi mbere yo kongera ibiciro.",
-      lg: "Weteke pulofaayo yo eby'okulonda mbawo kuwulira ensimbi."
+      lg: "Weteke pulofaayo yo eby'okulonda mbawo kuwulira ensimbi.",
+      fr: "Veuillez d'abord configurer votre profil d'entreprise avant d'ajouter des dépenses.",
+      dy: "I ni ce, ka i ka jago laɲini laban foli ka saraw fara a kan."
     },
     "alert.failed_transaction": {
       en: "Failed to add transaction. Please try again.",
@@ -2602,7 +2958,9 @@ const translations = {
       af: "Kon nie daarin om transaksie by te voeg nie. Probeer asseblief weer.",
       tw: "Anhyɛ daa sɛ wo bɛtɔ wo dwetɛ mu nsɛm. Mfa wo kɔ so bɔ wo ho ban.",
       rw: "Byanze kongera imikoranire. Wagerageze nanone.",
-      lg: "Kirwadde okwongera ebigulizo. Geza okudda."
+      lg: "Kirwadde okwongera ebigulizo. Geza okudda.",
+      fr: "Échec de l'ajout de la transaction. Veuillez réessayer.",
+      dy: "Sanfɛ ma se ka fara a kan. I ni ce, i ka sinimali kɛ."
     },
     "alert.failed_expense": {
       en: "Failed to add expense. Please try again.",
@@ -2615,9 +2973,11 @@ const translations = {
       af: "Kon nie daarin om uitgawe by te voeg nie. Probeer asseblief weer.",
       tw: "Anhyɛ daa sɛ wo bɛtɔ wo ka. Mfa wo kɔ so bɔ wo ho ban.",
       rw: "Byanze kongera ibiciro. Wagerageze nanone.",
-      lg: "Kirwadde okwongera ensimbi. Geza okudda."
+      lg: "Kirwadde okwongera ensimbi. Geza okudda.",
+      fr: "Échec de l'ajout de la dépense. Veuillez réessayer.",
+      dy: "Sara ma se ka fara a kan. I ni ce, i ka sinimali kɛ."
     },
-    "common.confirm": {
+        "common.confirm": {
       en: "Confirm",
       sw: "Thibitisha",
       ha: "Tabatar",
@@ -2628,7 +2988,9 @@ const translations = {
       af: "Bevestig",
       tw: "Mu akyinnye",
       rw: "Emenyesha",
-      lg: "Kakasa"
+      lg: "Kakasa",
+      fr: "Confirmer",
+      dy: "Hakili to"
     },
     "common.view_all": {
       en: "View All",
@@ -2641,7 +3003,9 @@ const translations = {
       af: "Sien Alles",
       tw: "Hwɛ nea nyinaa",
       rw: "Reba Byose",
-      lg: "Londa Byona"
+      lg: "Londa Byona",
+      fr: "Voir tout",
+      dy: "Bɛɛ lamina"
     },
     // Money Actions
     "common.record_income": {
@@ -2655,7 +3019,9 @@ const translations = {
       af: "Rekord Inkomste",
       tw: "Kyerɛw Sika a Wofra",
       rw: "Icyandikire amafaranga ashingiye",
-      lg: "Wandika ensobi ez'eyingiza"
+      lg: "Wandika ensobi ez'eyingiza",
+      fr: "Enregistrer un revenu",
+      dy: "Donkili sɛbɛn"
     },
     "common.record_expense": {
       en: "Record Expense",
@@ -2668,7 +3034,9 @@ const translations = {
       af: "Rekord Uitgawes",
       tw: "Kyerɛw Sika a Wode Di",
       rw: "Icyandikire imihango",
-      lg: "Wandika embeera z'okukola"
+      lg: "Wandika embeera z'okukola",
+      fr: "Enregistrer une dépense",
+      dy: "Sara sɛbɛn"
     },
     "common.count_cash": {
       en: "Count Cash",
@@ -2681,7 +3049,9 @@ const translations = {
       af: "Tel Kontant",
       tw: "Bɔ Sika",
       rw: "Ibika amafaranga",
-      lg: "Bala ensobi"
+      lg: "Bala ensobi",
+      fr: "Compter l'argent",
+      dy: "Wosoro kali"
     },
     "common.reconcile_cash": {
       en: "Reconcile Cash",
@@ -2694,7 +3064,9 @@ const translations = {
       af: "Versoen Kontant",
       tw: "Dwumadie Sika",
       rw: "Kunganya amafaranga",
-      lg: "Londoola ensobi"
+      lg: "Londoola ensobi",
+      fr: "Réconcilier l'argent",
+      dy: "Wosoro laɲini"
     },
     "common.cash_in": {
       en: "KES 0",
@@ -2707,7 +3079,9 @@ const translations = {
       af: "KES 0",
       tw: "KES 0",
       rw: "KES 0",
-      lg: "KES 0"
+      lg: "KES 0",
+      fr: "KES 0",
+      dy: "KES 0"
     },
     "common.cash_out": {
       en: "KES 0",
@@ -2720,7 +3094,9 @@ const translations = {
       af: "KES 0",
       tw: "KES 0",
       rw: "KES 0",
-      lg: "KES 0"
+      lg: "KES 0",
+      fr: "KES 0",
+      dy: "KES 0"
     },
     "common.cash_profit": {
       en: "KES 0",
@@ -2733,7 +3109,9 @@ const translations = {
       af: "KES 0",
       tw: "KES 0",
       rw: "KES 0",
-      lg: "KES 0"
+      lg: "KES 0",
+      fr: "KES 0",
+      dy: "KES 0"
     },
     "common.search_cash_flow": {
       en: "Search cash flow...",
@@ -2746,7 +3124,9 @@ const translations = {
       af: "Soek geldvloei...",
       tw: "Hwe sika a...",
       rw: "Shakisha imali yinjira no imuka...",
-      lg: "Noona ensimbi eziva no zituuka..."
+      lg: "Noona ensimbi eziva no zituuka...",
+      fr: "Rechercher les flux de trésorerie...",
+      dy: "Wosoro taama nini..."
     },
     "common.cash_all": {
       en: "All",
@@ -2759,7 +3139,9 @@ const translations = {
       af: "Almal",
       tw: "Nso",
       rw: "Byose",
-      lg: "Byona"
+      lg: "Byona",
+      fr: "Tout",
+      dy: "Bɛɛ"
     },
     "common.money_in": {
       en: "Money In",
@@ -2772,7 +3154,9 @@ const translations = {
       af: "Geld In",
       tw: "Sika Bae",
       rw: "Amafaranga muri",
-      lg: "Ensobi munda"
+      lg: "Ensobi munda",
+      fr: "Argent entrant",
+      dy: "Wosoro don"
     },
     "common.money_out": {
       en: "Money Out",
@@ -2785,7 +3169,9 @@ const translations = {
       af: "Geld Uit",
       tw: "Sika K ",
       rw: "Amafaranga ziva",
-      lg: "Ensobi ziva"
+      lg: "Ensobi ziva",
+      fr: "Argent sortant",
+      dy: "Wosoro bɔ"
     },
     "common.cash_recent_activity": {
       en: "Recent Activity",
@@ -2798,9 +3184,11 @@ const translations = {
       af: "Onlangse Aktiwiteite",
       tw: "Nne dwumadzi a etwa hwe",
       rw: "Imyugaragumbo ya vuba",
-      lg: "Emirimu gyakati"
+      lg: "Emirimu gyakati",
+      fr: "Activité récente",
+      dy: "Ko kɔrɔbɔrɔbɔ"
     },
-    "more.business_tools": {
+        "more.business_tools": {
       en: "Business Tools",
       sw: "Zana za Biashara",
       ha: "Kayan Aikin Kasuwanci",
@@ -2811,7 +3199,9 @@ const translations = {
       af: "Besigheidsinstrumente",
       tw: "Nneɛma Adwuma",
       rw: "Ibikoresho by'ubucuruzi",
-      lg: "Ebikozesebwa mu bizinensi"
+      lg: "Ebikozesebwa mu bizinensi",
+      fr: "Outils d'entreprise",
+      dy: "Jago fɛnw"
     },
     "more.reports": {
       en: "Reports",
@@ -2824,7 +3214,9 @@ const translations = {
       af: "Verslae",
       tw: "Amanneɛbɔ",
       rw: "Raporo",
-      lg: "Lipoota"
+      lg: "Lipoota",
+      fr: "Rapports",
+      dy: "Kunnafoniw"
     },
     "more.reports_description": {
       en: "View business reports and analytics",
@@ -2837,7 +3229,9 @@ const translations = {
       af: "Bekyk besigheidsverslae en ontledings",
       tw: "Hwɛ adwuma ho amanneɛbɔ ne nsusuwii",
       rw: "Reba raporo z'ubucuruzi n'isesengura",
-      lg: "Laba lipoota z'ebizinensi n'okwekenenya"
+      lg: "Laba lipoota z'ebizinensi n'okwekenenya",
+      fr: "Consultez les rapports et analyses d'entreprise",
+      dy: "Jago kunnafoniw ni laɲiniw lamina"
     },
     "more.settings": {
       en: "Settings",
@@ -2850,7 +3244,9 @@ const translations = {
       af: "Instellings",
       tw: "Nhyehyɛeɛ",
       rw: "Igenamiterere",
-      lg: "Enteekateeka"
+      lg: "Enteekateeka",
+      fr: "Paramètres",
+      dy: "Laɲiniw"
     },
     "more.settings_description": {
       en: "Manage your business settings",
@@ -2863,7 +3259,9 @@ const translations = {
       af: "Bestuur jou besigheidsinstellings",
       tw: "Hwɛ wo adwuma nhyehyɛeɛ so",
       rw: "Genzura igenamiterere ry'ubucuruzi bwawe",
-      lg: "Ddukanya enteekateeka z'ebizinensi byo"
+      lg: "Ddukanya enteekateeka z'ebizinensi byo",
+      fr: "Gérez les paramètres de votre entreprise",
+      dy: "I ka jago laɲiniw laɲini"
     },
     "more.community_support": {
       en: "Community & Support",
@@ -2876,7 +3274,9 @@ const translations = {
       af: "Gemeenskap & Ondersteuning",
       tw: "Mpɔtam Hɔ ne Mmoa",
       rw: "Umuryango n'Ubufasha",
-      lg: "Ekibiina n'Obuyambi"
+      lg: "Ekibiina n'Obuyambi",
+      fr: "Communauté et assistance",
+      dy: "Kafo ni dɛmɛ"
     },
     "more.subscription": {
       en: "Subscription",
@@ -2889,7 +3289,9 @@ const translations = {
       af: "Inskrypsie",
       tw: "Mfitiase?",
       rw: "Usajili",
-      lg: "Okulaba"
+      lg: "Okulaba",
+      fr: "Abonnement",
+      dy: "Sɛbɛn"
     },
     "more.subscription_description": {
       en: "Upgrade to premium features",
@@ -2902,7 +3304,9 @@ const translations = {
       af: "Gradeer na premium kenmerke",
       tw: "Bue akontomum ho nkitahode",
       rw: "Kwihangira ku ibikorwa byiza",
-      lg: "Yongera ku bikwa bya waggulu"
+      lg: "Yongera ku bikwa bya waggulu",
+      fr: "Passez aux fonctionnalités premium",
+      dy: "Fɛnɲumanw ta"
     },
     "more.beehive_community": {
       en: "BeeHive Community",
@@ -2915,7 +3319,9 @@ const translations = {
       af: "BeeHive Gemeenskap",
       tw: "BeeHive Mpɔtam Hɔ",
       rw: "Umuryango wa BeeHive",
-      lg: "Ekibiina kya BeeHive"
+      lg: "Ekibiina kya BeeHive",
+      fr: "Communauté BeeHive",
+      dy: "BeeHive kafo"
     },
     "more.beehive_description": {
       en: "Connect with other business owners",
@@ -2928,7 +3334,9 @@ const translations = {
       af: "Koppel met ander besigheidseienaars",
       tw: "Fa wo ho hyɛ adwumawuranom foforɔ mu",
       rw: "Guhuza n'abandi bafite ubucuruzi",
-      lg: "Yungibwa n'abalala ab'ebizinensi"
+      lg: "Yungibwa n'abalala ab'ebizinensi",
+      fr: "Connectez-vous avec d'autres chefs d'entreprise",
+      dy: "Jagokɛla wɛrɛw fɛɛrɛ"
     },
     "more.welcome_tour": {
       en: "Welcome Tour",
@@ -2941,7 +3349,9 @@ const translations = {
       af: "Welkomtoer",
       tw: "Akwaaba Akwantu",
       rw: "Urugendo rwo kwakira",
-      lg: "Olugendo lw'okwaniriza"
+      lg: "Olugendo lw'okwaniriza",
+      fr: "Visite de bienvenue",
+      dy: "I ni ce taama"
     },
     "more.tour_description": {
       en: "Learn how to use BeeZee",
@@ -2954,7 +3364,9 @@ const translations = {
       af: "Leer hoe om BeeZee te gebruik",
       tw: "Sua sɛdeɛ wobɛ de BeeZee adi dwuma",
       rw: "Wige uburyo bwo gukoresha BeeZee",
-      lg: "Yiga engeri y'okukozesa BeeZee"
+      lg: "Yiga engeri y'okukozesa BeeZee",
+      fr: "Apprenez à utiliser BeeZee",
+      dy: "BeeZee kɛcogo kalan"
     },
     "more.help_support": {
       en: "Help & Support",
@@ -2967,7 +3379,9 @@ const translations = {
       af: "Hulp & Ondersteuning",
       tw: "Mmoa ne Nkɔsoɔ",
       rw: "Ubufasha n'Inkunga",
-      lg: "Obuyambi n'Okuwagira"
+      lg: "Obuyambi n'Okuwagira",
+      fr: "Aide et assistance",
+      dy: "Dɛmɛ ni bali"
     },
     "more.help_description": {
       en: "Get help and contact support",
@@ -2980,7 +3394,9 @@ const translations = {
       af: "Kry hulp en kontak ondersteuning",
       tw: "Nya mmoa na kɔ nkɔsoɔ so",
       rw: "Shakisha ubufasha kandi uvugishe inkunga",
-      lg: "Funa obuyambi era weekwatagane n'abawagizi"
+      lg: "Funa obuyambi era weekwatagane n'abawagizi",
+      fr: "Obtenez de l'aide et contactez le support",
+      dy: "Dɛmɛ sɔrɔ ka bali ta"
     },
     "more.business_stats": {
       en: "Business Quick Stats",
@@ -2993,7 +3409,9 @@ const translations = {
       af: "Besigheid Vinnige Statistieke",
       tw: "Adwuma Akontaabu Ntɛmntɛm",
       rw: "Imibare Yihuse y'Ubucuruzi",
-      lg: "Ebibalo by'amangu eby'ebizinensi"
+      lg: "Ebibalo by'amangu eby'ebizinensi",
+      fr: "Statistiques rapides de l'entreprise",
+      dy: "Jago kaliya"
     },
     "more.total_transactions": {
       en: "Total Transactions",
@@ -3006,7 +3424,9 @@ const translations = {
       af: "Totale Transaksies",
       tw: "Nneɛma Nyinaa",
       rw: "Imikoranire Yose",
-      lg: "Ebigulizo byonna"
+      lg: "Ebigulizo byonna",
+      fr: "Total des transactions",
+      dy: "Sanfɛ bɛɛ"
     },
     "more.monthly_revenue": {
       en: "Monthly Revenue",
@@ -3019,7 +3439,9 @@ const translations = {
       af: "Maandelikse Inkomste",
       tw: "Bosome Sika a Wofra",
       rw: "Amafaranga y'ukwezi",
-      lg: "Ensimbi z'omwezi"
+      lg: "Ensimbi z'omwezi",
+      fr: "Revenu mensuel",
+      dy: "Kalo donkili"
     },
     "more.target_achievement": {
       en: "Target Achievement",
@@ -3032,7 +3454,9 @@ const translations = {
       af: "Teikenbereik",
       tw: "Botaeɛ a Wadu",
       rw: "Kugera ku ntego",
-      lg: "Okutuuka ku kiruubirirwa"
+      lg: "Okutuuka ku kiruubirirwa",
+      fr: "Atteinte des objectifs",
+      dy: "Laɲinibɔ se"
     },
     "more.customer_rating": {
       en: "Customer Rating",
@@ -3045,7 +3469,9 @@ const translations = {
       af: "Kliëntgradering",
       tw: "Adetɔfoɔ Nsusuiɛ",
       rw: "Igipimo cy'abakiriya",
-      lg: "Omuwendo gw'abaguzi"
+      lg: "Omuwendo gw'abaguzi",
+      fr: "Évaluation client",
+      dy: "Jagokɛla jate"
     },
     "more.member_since": {
       en: "Member since",
@@ -3058,7 +3484,9 @@ const translations = {
       af: "Lid sedert",
       tw: "Ɔyɛ ɔbabea fi",
       rw: "Umunyamuryango kuva",
-      lg: "Omumemba okuva"
+      lg: "Omumemba okuva",
+      fr: "Membre depuis",
+      dy: "Kafo taama kabi"
     },
     "app.name": {
       en: "BeeZee App",
@@ -3071,7 +3499,9 @@ const translations = {
       af: "BeeZee Toep",
       tw: "BeeZee Dwumadie",
       rw: "Porogaramu ya BeeZee",
-      lg: "Pulogulaamu ya BeeZee"
+      lg: "Pulogulaamu ya BeeZee",
+      fr: "Application BeeZee",
+      dy: "BeeZee taama"
     },
     "common.industry": {
       en: "Industry",
@@ -3084,7 +3514,9 @@ const translations = {
       af: "Bedryf",
       tw: "Adwuma",
       rw: "Inganda",
-      lg: "Ekyuma"
+      lg: "Ekyuma",
+      fr: "Secteur d'activité",
+      dy: "Baara yɔrɔ"
     },
     "common.country": {
       en: "Country",
@@ -3097,7 +3529,9 @@ const translations = {
       af: "Land",
       tw: "Ɔman",
       rw: "Igihugu",
-      lg: "Eggwanga"
+      lg: "Eggwanga",
+      fr: "Pays",
+      dy: "Jamana"
     },
     "footer.privacy": {
       en: "Privacy",
@@ -3110,7 +3544,9 @@ const translations = {
       af: "Privaatheid",
       tw: "Ahintasɛm",
       rw: "Ibanga",
-      lg: "Ekyama"
+      lg: "Ekyama",
+      fr: "Confidentialité",
+      dy: "Gundo"
     },
     "footer.terms": {
       en: "Terms",
@@ -3123,7 +3559,9 @@ const translations = {
       af: "Terme",
       tw: "Nhyehyɛeɛ",
       rw: "Amabwiriza",
-      lg: "Ebiragiro"
+      lg: "Ebiragiro",
+      fr: "Conditions",
+      dy: "Sariyaw"
     },
     "footer.help": {
       en: "Help",
@@ -3136,9 +3574,11 @@ const translations = {
       af: "Hulp",
       tw: "Mmoa",
       rw: "Ubufasha",
-      lg: "Obuyambi"
+      lg: "Obuyambi",
+      fr: "Aide",
+      dy: "Dɛmɛ"
     },
-    "credit.record_payment": {
+        "credit.record_payment": {
       en: "Record Payment",
       sw: "Rekodi Malipo",
       ha: "Rubuta Biya",
@@ -3149,7 +3589,9 @@ const translations = {
       af: "Rekord Betaling",
       tw: "Kyerɛw Ka",
       rw: "Andika Kwishyura",
-      lg: "Wandika Okusasula"
+      lg: "Wandika Okusasula",
+      fr: "Enregistrer le paiement",
+      dy: "Juguyɔrɔ sɛbɛn"
     },
     "credit.for_customer": {
       en: "For",
@@ -3162,7 +3604,9 @@ const translations = {
       af: "Vir",
       tw: "Ma",
       rw: "Kuri",
-      lg: "Eri"
+      lg: "Eri",
+      fr: "Pour",
+      dy: "Ka"
     },
     "credit.original_amount": {
       en: "Original Amount",
@@ -3175,7 +3619,9 @@ const translations = {
       af: "Oorspronklike Bedrag",
       tw: "Sika a Ɛdi Kan",
       rw: "Amafaranga y'Umwimerere",
-      lg: "Omuwendo ogw'edda"
+      lg: "Omuwendo ogw'edda",
+      fr: "Montant d'origine",
+      dy: "Damina donkili"
     },
     "credit.paid_so_far": {
       en: "Paid So Far",
@@ -3188,7 +3634,9 @@ const translations = {
       af: "Tot Dusver Betaal",
       tw: "Wɔatua Kɔsi Seesei",
       rw: "Byishyuwe Kugeza Ubu",
-      lg: "Ebisasudde okutuusa kati"
+      lg: "Ebisasudde okutuusa kati",
+      fr: "Payé jusqu'à présent",
+      dy: "A jɔ ka se"
     },
     "credit.remaining_balance": {
       en: "Remaining Balance",
@@ -3201,7 +3649,9 @@ const translations = {
       af: "Oorblywende Balans",
       tw: "Sika a Aka",
       rw: "Amafaranga Asigaye",
-      lg: "Omuwendo ogusigadde"
+      lg: "Omuwendo ogusigadde",
+      fr: "Solde restant",
+      dy: "Donkili sigi"
     },
     "credit.payment_amount": {
       en: "Payment Amount",
@@ -3214,7 +3664,9 @@ const translations = {
       af: "Betalingsbedrag",
       tw: "Sika a Wɔbɛtua",
       rw: "Amafaranga yo Kwishyura",
-      lg: "Omuwendo gw'okusasula"
+      lg: "Omuwendo gw'okusasula",
+      fr: "Montant du paiement",
+      dy: "Juguyɔrɔ donkili"
     },
     "credit.max_payment": {
       en: "Maximum",
@@ -3227,7 +3679,9 @@ const translations = {
       af: "Maksimum",
       tw: "Nea Ɛkɔ Akyiri",
       rw: "Ntarengwa",
-      lg: "Ekisinga obungi"
+      lg: "Ekisinga obungi",
+      fr: "Maximum",
+      dy: "Kɛrɛnkɛrɛn"
     },
     "credit.record_partial_payment": {
       en: "Record Partial Payment",
@@ -3240,7 +3694,9 @@ const translations = {
       af: "Rekord Gedeeltelike Betaling",
       tw: "Kyerɛw Ka Kakra",
       rw: "Andika Kwishyura Igice",
-      lg: "Wandika Okusasula Ekitundu"
+      lg: "Wandika Okusasula Ekitundu",
+      fr: "Enregistrer un paiement partiel",
+      dy: "Juguyɔrɔ kɛndɛ sɛbɛn"
     },
     "credit.mark_as_paid": {
       en: "Mark as Fully Paid",
@@ -3253,7 +3709,9 @@ const translations = {
       af: "Merk as Volledig Betaal",
       tw: "Hyɛ Sɛ Wɔatua Nyinaa",
       rw: "Shyira Nka Byishyuwe Byose",
-      lg: "Teeka nga Kisasudde Byonna"
+      lg: "Teeka nga Kisasudde Byonna",
+      fr: "Marquer comme entièrement payé",
+      dy: "A don i ye a jɔ"
     },
     "credit.payment_recorded": {
       en: "Payment Recorded!",
@@ -3266,7 +3724,9 @@ const translations = {
       af: "Betaling Aangeteken!",
       tw: "Wɔakyerɛw Ka!",
       rw: "Kwishyura Byanditswe!",
-      lg: "Okusasula Kuwandiikiddwa!"
+      lg: "Okusasula Kuwandiikiddwa!",
+      fr: "Paiement enregistré !",
+      dy: "Juguyɔrɔ sɛbɛn!"
     },
     "credit.payment_success_message": {
       en: "Payment has been successfully recorded",
@@ -3279,7 +3739,9 @@ const translations = {
       af: "Betaling is suksesvol aangeteken",
       tw: "Wɔakyerɛw ka no yiye",
       rw: "Kwishyura byanditswe neza",
-      lg: "Okusasula kuwandiikiddwa bulungi"
+      lg: "Okusasula kuwandiikiddwa bulungi",
+      fr: "Le paiement a été enregistré avec succès",
+      dy: "Juguyɔrɔ sɛbɛn ka nyɛ"
     },
     "credit.description_optional": {
       en: "Description (optional)",
@@ -3292,7 +3754,9 @@ const translations = {
       af: "Beskrywing (opsioneel)",
       tw: "Nkyerkyeremu (ano adwuma)",
       rw: "Ubusobanuro (bitari ngombwa)",
-      lg: "Okulaga (okwetaala)"
+      lg: "Okulaga (okwetaala)",
+      fr: "Description (optionnel)",
+      dy: "Laɲinibɔ (nka fɛ)"
     },
     "credit.what_is_this_credit_for": {
       en: "What is this credit for?",
@@ -3305,7 +3769,9 @@ const translations = {
       af: "Watter is hierdie krediet vir?",
       tw: "Nde3ma b3y no?",
       rw: "Iyi credit y'ikibiri iki?",
-      lg: "Kulunda kino ki kya kya?"
+      lg: "Kulunda kino ki kya kya?",
+      fr: "À quoi sert ce crédit ?",
+      dy: "Juguyɔrɔ nin bɛ kɛ ko di?"
     },
     "credit.customer_name": {
       en: "Customer Name",
@@ -3318,7 +3784,9 @@ const translations = {
       af: "Kliënt Naam",
       tw: "Din Afofra",
       rw: "Izina ry'Umukiriya",
-      lg: "Linnya lya Mukyala"
+      lg: "Linnya lya Mukyala",
+      fr: "Nom du client",
+      dy: "Jagokɛla tɔgɔ"
     },
     "credit.cancel": {
       en: "Cancel",
@@ -3331,7 +3799,9 @@ const translations = {
       af: "Kanselleer",
       tw: "Twa Mu",
       rw: "Kuraho",
-      lg: "Sazaamu"
+      lg: "Sazaamu",
+      fr: "Annuler",
+      dy: "Ban"
     },
     "credit.overdue": {
       en: "Overdue",
@@ -3344,7 +3814,9 @@ const translations = {
       af: "Agterstallig",
       tw: "Aduru",
       rw: "Zararabijwe",
-      lg: "Zikaddewo"
+      lg: "Zikaddewo",
+      fr: "En retard",
+      dy: "A ka tɛmɛn"
     },
     "credit.payment_exceeds_balance": {
       en: "Payment amount cannot exceed remaining balance of {amount}",
@@ -3357,7 +3829,9 @@ const translations = {
       af: "Betaalbedrag kan nie oorskuld balans van {amount} oorskry",
       tw: "Sika a wode b3nt so nnkora {amount}",
       rw: "Amafaranga yo kwishura atashobora kurenga {amount}",
-      lg: "Emu gy'okusasula tegenda kudda {amount}"
+      lg: "Emu gy'okusasula tegenda kudda {amount}",
+      fr: "Le montant du paiement ne peut pas dépasser le solde restant de {amount}",
+      dy: "Juguyɔrɔ donkili tɛ se ka {amount} tɛmɛn"
     },
     "credit.invalid_payment_amount": {
       en: "Invalid payment amount",
@@ -3370,7 +3844,9 @@ const translations = {
       af: "Ongeldige betalingsbedrag",
       tw: "Sika a wɔbɛtua no nyɛ",
       rw: "Amafaranga yo kwishyura ntabwo ari yo",
-      lg: "Omuwendo gw'okusasula tegukkirizibwa"
+      lg: "Omuwendo gw'okusasula tegukkirizibwa",
+      fr: "Montant de paiement invalide",
+      dy: "Juguyɔrɔ donkili tɛ di"
     },
     "common.processing": {
       en: "Processing...",
@@ -3383,9 +3859,11 @@ const translations = {
       af: "Verwerk...",
       tw: "Ɛreyɛ Adwuma...",
       rw: "Biratunganywa...",
-      lg: "Kikola..."
+      lg: "Kikola...",
+      fr: "Traitement...",
+      dy: "Bɛ kɛ..."
     },
-    "buzz.low_stock_alert": {
+        "buzz.low_stock_alert": {
       en: "Low Stock Alert",
       sw: "Tahadhari ya Uhaba wa Bidhaa",
       ha: "Faɗakarwar Ƙarancin Kaya",
@@ -3396,7 +3874,9 @@ const translations = {
       af: "Lae Voorraad Waarskuwing",
       tw: "Nneɛma Kakra Kɔkɔbɔ",
       rw: "Umuburo w'Ibicuruzwa Bike",
-      lg: "Okulabula Ebintu Ebitono"
+      lg: "Okulabula Ebintu Ebitono",
+      fr: "Alerte de stock faible",
+      dy: "Bansan dɔ kɔlɔsi"
     },
     "buzz.items_need_restock": {
       en: "items need restocking",
@@ -3409,7 +3889,9 @@ const translations = {
       af: "items benodig hervoorraad",
       tw: "nneɛma hia sɛ wɔde bɛsan aba",
       rw: "ibicuruzwa bikeneye kongera kubikwa",
-      lg: "ebintu byetaaga okuddamu okutekebwa"
+      lg: "ebintu byetaaga okuddamu okutekebwa",
+      fr: "articles nécessitent un réapprovisionnement",
+      dy: "fɛnw ka kan ka baa sin"
     },
     "buzz.overdue_payments": {
       en: "Overdue Payments",
@@ -3422,7 +3904,9 @@ const translations = {
       af: "Agterstallige Betalings",
       tw: "Aka a Wɔatwa Akyɛ",
       rw: "Kwishyura Byarenze Igihe",
-      lg: "Okusasula Okwayise Obudde"
+      lg: "Okusasula Okwayise Obudde",
+      fr: "Paiements en retard",
+      dy: "Juguyɔrɔ minnu ka tɛmɛn"
     },
     "buzz.from": {
       en: "from",
@@ -3435,7 +3919,9 @@ const translations = {
       af: "van",
       tw: "efi",
       rw: "kuva",
-      lg: "okuva"
+      lg: "okuva",
+      fr: "de",
+      dy: "kabi"
     },
     "buzz.customers": {
       en: "customers",
@@ -3448,7 +3934,9 @@ const translations = {
       af: "kliënte",
       tw: "adetɔfoɔ",
       rw: "abakiriya",
-      lg: "abaguzi"
+      lg: "abaguzi",
+      fr: "clients",
+      dy: "jagokɛlaw"
     },
     "buzz.top_seller": {
       en: "Top Seller",
@@ -3461,7 +3949,9 @@ const translations = {
       af: "Top Verkoper",
       tw: "Ɔdetɔni Kɛseɛ",
       rw: "Umucuruzi Mukuru",
-      lg: "Omutunzi Omukulu"
+      lg: "Omutunzi Omukulu",
+      fr: "Meilleur vendeur",
+      dy: "Wɛrɛkɛlaɲɛ"
     },
     "buzz.trending_up": {
       en: "Trending Up",
@@ -3474,7 +3964,9 @@ const translations = {
       af: "Styg",
       tw: "Ɛrekɔ Soro",
       rw: "Birazamuka",
-      lg: "Bilinnya Waggulu"
+      lg: "Bilinnya Waggulu",
+      fr: "Tendance à la hausse",
+      dy: "Bɛ taa san fɛ"
     },
     "buzz.trending_down": {
       en: "Trending Down",
@@ -3487,7 +3979,9 @@ const translations = {
       af: "Daal",
       tw: "Ɛresiane",
       rw: "Biragabanuka",
-      lg: "Bikka Wansi"
+      lg: "Bikka Wansi",
+      fr: "Tendance à la baisse",
+      dy: "Bɛ taa duguma"
     },
     "buzz.this_week": {
       en: "this week",
@@ -3500,7 +3994,9 @@ const translations = {
       af: "hierdie week",
       tw: "dapɛn yi",
       rw: "iki cyumweru",
-      lg: "wiiki eno"
+      lg: "wiiki eno",
+      fr: "cette semaine",
+      dy: "do sanbe"
     },
     "buzz.great_momentum": {
       en: "Great Momentum!",
@@ -3513,7 +4009,9 @@ const translations = {
       af: "Groot Momentum!",
       tw: "Nkɔsoɔ Kɛseɛ!",
       rw: "Iterambere Ryiza!",
-      lg: "Enkulaakulana Ennungi!"
+      lg: "Enkulaakulana Ennungi!",
+      fr: "Grande dynamique !",
+      dy: "Nɔɔrɔ ba!"
     },
     "buzz.sales_up_message": {
       en: "You're doing great! Keep up the momentum.",
@@ -3526,7 +4024,9 @@ const translations = {
       af: "Jy doen great! Hou aan.",
       tw: "Woreyɛ adwuma pa! Kɔ so.",
       rw: "Urakora neza! Komeza.",
-      lg: "Okola bulungi! Weeyongereyo."
+      lg: "Okola bulungi! Weeyongereyo.",
+      fr: "Vous faites du bon travail ! Continuez sur cette lancée.",
+      dy: "I bɛ baara ɲuman kɛ! I ka taa ɲɛ."
     },
     "buzz.restock_reminder": {
       en: "Restock Reminder",
@@ -3539,7 +4039,9 @@ const translations = {
       af: "Hervoorraad Herinnering",
       tw: "Nkae Sɛ Wɔde Bɛsan Aba",
       rw: "Ibyibutsa byo Kongera Kubika",
-      lg: "Ekijjukizo eky'Okuddamu Okuteka"
+      lg: "Ekijjukizo eky'Okuddamu Okuteka",
+      fr: "Rappel de réapprovisionnement",
+      dy: "Baa sin tulosi"
     },
     "buzz.selling_fast": {
       en: "is selling fast",
@@ -3552,7 +4054,9 @@ const translations = {
       af: "verkoop vinnig",
       tw: "ɛretɔn ntɛm",
       rw: "biracuruzwa vuba",
-      lg: "bitundibwa mangu"
+      lg: "bitundibwa mangu",
+      fr: "se vend rapidement",
+      dy: "bɛ wɛrɛ ka maa"
     },
     "buzz.follow_up_needed": {
       en: "Follow-up Needed",
@@ -3565,7 +4069,9 @@ const translations = {
       af: "Opvolg Nodig",
       tw: "Ɛhia Sɛ Wɔdi Akyi",
       rw: "Gukurikirana Birakenewe",
-      lg: "Okugoberera Kyetaagisa"
+      lg: "Okugoberera Kyetaagisa",
+      fr: "Suivi nécessaire",
+      dy: "Dɛmɛ ka kan"
     },
     "buzz.customers_overdue": {
       en: "customers have overdue payments",
@@ -3578,7 +4084,9 @@ const translations = {
       af: "kliënte het agterstallige betalings",
       tw: "adetɔfoɔ wɔ aka a wɔatwa akyɛ",
       rw: "abakiriya bafite kwishyura byarenze igihe",
-      lg: "abaguzi balina okusasula okwayise obudde"
+      lg: "abaguzi balina okusasula okwayise obudde",
+      fr: "clients ont des paiements en retard",
+      dy: "jagokɛlaw juguyɔrɔ minnu ka tɛmɛn"
     },
     "buzz.left": {
       en: "left",
@@ -3591,7 +4099,9 @@ const translations = {
       af: "oor",
       tw: "aka",
       rw: "bisigaye",
-      lg: "ebisigadde"
+      lg: "ebisigadde",
+      fr: "restant(s)",
+      dy: "bɛ sigi"
     },
     "buzz.avg_overdue": {
       en: "Avg",
@@ -3604,7 +4114,9 @@ const translations = {
       af: "Gem",
       tw: "Nkabom",
       rw: "Impuzandengo",
-      lg: "Omutabaganya"
+      lg: "Omutabaganya",
+      fr: "Moy",
+      dy: "Cɛsiri"
     },
     "buzz.days": {
       en: "days",
@@ -3617,7 +4129,9 @@ const translations = {
       af: "dae",
       tw: "nna",
       rw: "iminsi",
-      lg: "ennaku"
+      lg: "ennaku",
+      fr: "jours",
+      dy: "donw"
     },
     "buzz.sold": {
       en: "sold",
@@ -3630,7 +4144,9 @@ const translations = {
       af: "verkoop",
       tw: "wɔatɔn",
       rw: "byacurujwe",
-      lg: "bitundiddwa"
+      lg: "bitundiddwa",
+      fr: "vendu(s)",
+      dy: "a wɛrɛ"
     },
     "buzz.vs": {
       en: "vs",
@@ -3643,9 +4159,11 @@ const translations = {
       af: "vs",
       tw: "ne",
       rw: "na",
-      lg: "ne"
+      lg: "ne",
+      fr: "vs",
+      dy: "ni"
     },
-    "beehive.community_member": {
+        "beehive.community_member": {
       en: "Community Member",
       sw: "Mwanachama wa Jamii",
       ha: "Memba na Al'umma",
@@ -3656,7 +4174,9 @@ const translations = {
       af: "Gemeenskapslid",
       tw: "Mpɔtam Hɔ Ɔbabea",
       rw: "Umunyamuryango w'Umuryango",
-      lg: "Omumemba w'Ekibiina"
+      lg: "Omumemba w'Ekibiina",
+      fr: "Membre de la communauté",
+      dy: "Kafo mɔgɔ"
     },
     "beehive.title": {
       en: "BeeHive Community",
@@ -3669,7 +4189,9 @@ const translations = {
       af: "BeeHive Gemeenskap",
       tw: "BeeHive Mpɔtam Hɔ",
       rw: "Umuryango wa BeeHive",
-      lg: "Ekibiina kya BeeHive"
+      lg: "Ekibiina kya BeeHive",
+      fr: "Communauté BeeHive",
+      dy: "BeeHive kafo"
     },
     "beehive.description": {
       en: "Share ideas and help improve BeeZee for everyone",
@@ -3682,7 +4204,9 @@ const translations = {
       af: "Deel idees en help om BeeZee vir almalmal te verbeter",
       tw: "Kyɛ nneɛma na boa wo yɛ BeeZee ayɛ pɛpɛɛrɛ ma obiara",
       rw: "Ugereranya ibitekerezo no gufasha kongera imikorere ya BeeZee ku buri wese",
-      lg: "Wulula ennono era okuyamba okukula BeeZee ku buli omu"
+      lg: "Wulula ennono era okuyamba okukula BeeZee ku buli omu",
+      fr: "Partagez des idées et aidez à améliorer BeeZee pour tout le monde",
+      dy: "Miriya fɛnw kassa ka dɛmɛ ka BeeZee nyuman ka kɛ mɔgɔ bɛɛ ye"
     },
     "beehive.search_placeholder": {
       en: "Search requests...",
@@ -3695,7 +4219,9 @@ const translations = {
       af: "Soek versoeke...",
       tw: "Hwɛ nkyerɛwe...",
       rw: "Shakisa ibisabwa...",
-      lg: "Noonya ebibuulirizo..."
+      lg: "Noonya ebibuulirizo...",
+      fr: "Rechercher des demandes...",
+      dy: "Bisigiw nini..."
     },
     "beehive.all": {
       en: "All",
@@ -3708,7 +4234,9 @@ const translations = {
       af: "Almal",
       tw: "Naara",
       rw: "Byose",
-      lg: "Byona"
+      lg: "Byona",
+      fr: "Tous",
+      dy: "Bɛɛ"
     },
     "beehive.new_features": {
       en: "New Features",
@@ -3721,7 +4249,9 @@ const translations = {
       af: "Nuwe Kenmerke",
       tw: "Nneɛma Foforo",
       rw: "Ibiranga Bishya",
-      lg: "Ebifa Bipya"
+      lg: "Ebifa Bipya",
+      fr: "Nouvelles fonctionnalités",
+      dy: "Fɛnɲumanw"
     },
     "beehive.improvements": {
       en: "Improvements",
@@ -3734,12 +4264,14 @@ const translations = {
       af: "Verbeteringe",
       tw: "Nneɛma a Bɛtɛ",
       rw: "Imihinduka",
-      lg: "Okukulakulanya"
+      lg: "Okukulakulanya",
+      fr: "Améliorations",
+      dy: "Nyumanyuma"
     },
     "beehive.bug_fixes": {
       en: "Bug Fixes",
       sw: "Matatizo ya Matatizo",
-      ha: " gyaran fashin",
+      ha: "gyaran fashin",
       yo: "Itọju Aṣiṣẹ",
       ig: "Nsacha Mmepe",
       zu: "Ukugunyazwa Kwabug",
@@ -3747,7 +4279,9 @@ const translations = {
       af: "Bug Reparasies",
       tw: "Sɔre Nneɛma a Ɛyɛ",
       rw: "Kuvanga Amakosa",
-      lg: "Okusanyawo Obubi"
+      lg: "Okusanyawo Obubi",
+      fr: "Corrections de bugs",
+      dy: "Fili labato"
     },
     "beehive.integrations": {
       en: "Integrations",
@@ -3760,7 +4294,9 @@ const translations = {
       af: "Integrasies",
       tw: "Nkabɔm",
       rw: "Ukwihuza",
-      lg: "Okuyungana"
+      lg: "Okuyungana",
+      fr: "Intégrations",
+      dy: "Fɛrɛfɛrɛw"
     },
     "beehive.add_request": {
       en: "Add New Request",
@@ -3773,7 +4309,9 @@ const translations = {
       af: "Voeg Nuwe Versoek By",
       tw: "Fa Bɛtɛm Foforo",
       rw: "Ongeraho Ibisabwa Rishya",
-      lg: "Yongeza Ekibuulirizo Kipya"
+      lg: "Yongeza Ekibuulirizo Kipya",
+      fr: "Ajouter une nouvelle demande",
+      dy: "Bisigi kura fara a kan"
     },
     "beehive.total_requests": {
       en: "Total",
@@ -3786,7 +4324,9 @@ const translations = {
       af: "Totaal",
       tw: "Nyinaa",
       rw: "Yose",
-      lg: "Zonna"
+      lg: "Zonna",
+      fr: "Total",
+      dy: "Bɛɛ"
     },
     "beehive.completed": {
       en: "Done",
@@ -3799,7 +4339,9 @@ const translations = {
       af: "Klaar",
       tw: "Adwuma",
       rw: "Byakunywe",
-      lg: "Kiraze"
+      lg: "Kiraze",
+      fr: "Terminé",
+      dy: "A ban"
     },
     "beehive.in_progress": {
       en: "In Progress",
@@ -3812,7 +4354,9 @@ const translations = {
       af: "Aan die gang",
       tw: "Ɛreyɛ Adwuma",
       rw: "Iri mu nterano",
-      lg: "Kikola mu maaso"
+      lg: "Kikola mu maaso",
+      fr: "En cours",
+      dy: "Bɛ kɛ"
     },
     "beehive.no_requests": {
       en: "No requests found",
@@ -3825,7 +4369,9 @@ const translations = {
       af: "Geen versoeke gevind nie",
       tw: "Nni hoka a wɔhunu",
       rw: "Nta bisabwa byabonetse",
-      lg: "Tewali ebibuulirizo byabonetse"
+      lg: "Tewali ebibuulirizo byabonetse",
+      fr: "Aucune demande trouvée",
+      dy: "Bisigi si ma sɔrɔ"
     },
     "beehive.no_requests_description": {
       en: "Be the first to share an idea!",
@@ -3838,7 +4384,9 @@ const translations = {
       af: "Wees die eerste om 'n idee te deel!",
       tw: "Yɛ wo a kan wo bɛto nneɛma bi!",
       rw: "Uba kuwambere wongera ibitekerezo!",
-      lg: "Buddde ng'omukiriza okulula ennono!"
+      lg: "Buddde ng'omukiriza okulula ennono!",
+      fr: "Soyez le premier à partager une idée !",
+      dy: "I kɛnɛya ka miriya fɛn fɔ!"
     },
     "beehive.add_first_request": {
       en: "Add First Request",
@@ -3851,7 +4399,9 @@ const translations = {
       af: "Voeg Eerste Versoek By",
       tw: "Fa Bɛtɛm Kan",
       rw: "Ongeraho Ibisabwa Rya Mbere",
-      lg: "Yongeza Ekibuulirizo Ekyasooka"
+      lg: "Yongeza Ekibuulirizo Ekyasooka",
+      fr: "Ajouter la première demande",
+      dy: "Bisigi foli fara a kan"
     },
     "beehive.title_label": {
       en: "Title",
@@ -3864,7 +4414,9 @@ const translations = {
       af: "Titel",
       tw: "Din",
       rw: "Izina",
-      lg: "Linnya"
+      lg: "Linnya",
+      fr: "Titre",
+      dy: "Tɔgɔ"
     },
     "beehive.description_label": {
       en: "Description",
@@ -3877,7 +4429,9 @@ const translations = {
       af: "Beskrywing",
       tw: "Nkyermu",
       rw: "Ubusobanuro",
-      lg: "Okulaga"
+      lg: "Okulaga",
+      fr: "Description",
+      dy: "Laɲinibɔ"
     },
     "beehive.category_label": {
       en: "Category",
@@ -3890,7 +4444,9 @@ const translations = {
       af: "Kategorie",
       tw: "Nkor",
       rw: "Itsinda",
-      lg: "Ebika"
+      lg: "Ebika",
+      fr: "Catégorie",
+      dy: "Bamanan"
     },
     "beehive.priority_label": {
       en: "Priority",
@@ -3903,7 +4459,9 @@ const translations = {
       af: "Prioriteit",
       tw: "Ahodze",
       rw: "Uburikongore",
-      lg: "Okukoma"
+      lg: "Okukoma",
+      fr: "Priorité",
+      dy: "ɲɛnamaya"
     },
     "beehive.new_feature": {
       en: "New Feature",
@@ -3916,7 +4474,9 @@ const translations = {
       af: "Nuwe Funksie",
       tw: "Nde",
       rw: "Ibiranga Bishya",
-      lg: "Ekifa Ekipya"
+      lg: "Ekifa Ekipya",
+      fr: "Nouvelle fonctionnalité",
+      dy: "Fɛnɲuman"
     },
     "beehive.improvement": {
       en: "Improvement",
@@ -3929,7 +4489,9 @@ const translations = {
       af: "Verbetering",
       tw: "Mfaso",
       rw: "Imihinduka",
-      lg: "Okukulakulanya"
+      lg: "Okukulakulanya",
+      fr: "Amélioration",
+      dy: "Nyumanya"
     },
     "beehive.bug_fix": {
       en: "Bug Fix",
@@ -3942,7 +4504,9 @@ const translations = {
       af: "Fout Regstelling",
       tw: "Siesie",
       rw: "Kuvanga Amakosa",
-      lg: "Okusanyawo Obubi"
+      lg: "Okusanyawo Obubi",
+      fr: "Correction de bug",
+      dy: "Fili labato"
     },
     "beehive.integration": {
       en: "Integration",
@@ -3955,7 +4519,9 @@ const translations = {
       af: "Integrasie",
       tw: "Ndwuma",
       rw: "Ukwihuza",
-      lg: "Okuyungana"
+      lg: "Okuyungana",
+      fr: "Intégration",
+      dy: "Fɛrɛfɛrɛ"
     },
     "beehive.low": {
       en: "Low",
@@ -3968,7 +4534,9 @@ const translations = {
       af: "Laag",
       tw: "So",
       rw: "Hasi",
-      lg: "Wansi"
+      lg: "Wansi",
+      fr: "Basse",
+      dy: "Dɔ"
     },
     "beehive.medium": {
       en: "Medium",
@@ -3981,7 +4549,9 @@ const translations = {
       af: "Medium",
       tw: "Fata",
       rw: "Hagati",
-      lg: "Wakati"
+      lg: "Wakati",
+      fr: "Moyenne",
+      dy: "Cɛsiri"
     },
     "beehive.high": {
       en: "High",
@@ -3994,7 +4564,9 @@ const translations = {
       af: "Hoog",
       tw: "Soro",
       rw: "Hejuru",
-      lg: "Waggulu"
+      lg: "Waggulu",
+      fr: "Haute",
+      dy: "Ba"
     },
     "beehive.error_title_required": {
       en: "Title is required",
@@ -4007,7 +4579,9 @@ const translations = {
       af: "Titel is verplig",
       tw: "Din ho hia",
       rw: "Izina rirakenewe",
-      lg: "Linnya lyetaagibwa"
+      lg: "Linnya lyetaagibwa",
+      fr: "Le titre est requis",
+      dy: "Tɔgɔ kan"
     },
     "beehive.error_title_min": {
       en: "Title must be at least 5 characters",
@@ -4020,7 +4594,9 @@ const translations = {
       af: "Titel moet ten minste 5 karakters h",
       tw: "Din b tumi da akray",
       rw: "Izina rigomba kuba rinzi nka 5",
-      lg: "Linnya lyetaagibwa okuba na baambugulwa 5 oba okusingawo"
+      lg: "Linnya lyetaagibwa okuba na baambugulwa 5 oba okusingawo",
+      fr: "Le titre doit comporter au moins 5 caractères",
+      dy: "Tɔgɔ ka kan ka sɛbɛn 5 kɔrɔ"
     },
     "beehive.error_description_required": {
       en: "Description is required",
@@ -4033,7 +4609,9 @@ const translations = {
       af: "Beskrywing is verplig",
       tw: "Nkyermu ho hia",
       rw: "Ubusobanuro burakenewe",
-      lg: "Okulaga kuyetaagibwa"
+      lg: "Okulaga kuyetaagibwa",
+      fr: "La description est requise",
+      dy: "Laɲinibɔ kan"
     },
     "beehive.error_description_min": {
       en: "Description must be at least 10 characters",
@@ -4046,7 +4624,9 @@ const translations = {
       af: "Beskrywing moet ten minste 10 karakters h",
       tw: "Nkyermu b tumi da akray",
       rw: "Ubusobanuro rigomba kuba rinzi nka 10",
-      lg: "Okulaga lyetaagibwa okuba na baambugulwa 10 oba okusingawo"
+      lg: "Okulaga lyetaagibwa okuba na baambugulwa 10 oba okusingawo",
+      fr: "La description doit comporter au moins 10 caractères",
+      dy: "Laɲinibɔ ka kan ka sɛbɛn 10 kɔrɔ"
     },
     "beehive.title_placeholder": {
       en: "Brief title for your request",
@@ -4059,7 +4639,9 @@ const translations = {
       af: "Kort titel vir jou versoek",
       tw: "Din tiaa ma bu",
       rw: "Izina rifupi ry'ibisabwa ryawe",
-      lg: "Linnya lya waggulu lya ekibuulirizo lyo"
+      lg: "Linnya lya waggulu lya ekibuulirizo lyo",
+      fr: "Titre bref pour votre demande",
+      dy: "I ka bisigi tɔgɔ surunyɛ"
     },
     "beehive.description_placeholder": {
       en: "Describe your request in detail",
@@ -4072,7 +4654,9 @@ const translations = {
       af: "Beskryf jou versoek in detail",
       tw: "Kyer beere no ho ns",
       rw: "Sobanura ibisabwa byawe by'urunyi",
-      lg: "Luliriza ekibuulirizo lyo n'obulungi"
+      lg: "Luliriza ekibuulirizo lyo n'obulungi",
+      fr: "Décrivez votre demande en détail",
+      dy: "I ka bisigi laɲini ka ɲɛ"
     },
     "beehive.delete_confirm": {
       en: "Delete this request?",
@@ -4085,7 +4669,9 @@ const translations = {
       af: "Vee hierdie versoek uit?",
       tw: "P beere yi?",
       rw: "Siba ibisabwa riri?",
-      lg: "Sangula ekibuulirizo eno?"
+      lg: "Sangula ekibuulirizo eno?",
+      fr: "Supprimer cette demande ?",
+      dy: "I bɔra bisigi nin ba?"
     },
     "beehive.delete_confirm_message": {
       en: "This action cannot be undone.",
@@ -4098,9 +4684,11 @@ const translations = {
       af: "Hierdie aksie kan nie ontdoen word word nie.",
       tw: "Ndwuma yi ntumi de bue.",
       rw: "Iyi ngenza ntirishobora kugarurwa.",
-      lg: "Omulimu guno tegenda kuddibulwa."
+      lg: "Omulimu guno tegenda kuddibulwa.",
+      fr: "Cette action ne peut pas être annulée.",
+      dy: "Nin baara tɛ se ka sɛgin."
     },
-    "common.end_day": {
+        "common.end_day": {
       en: "End Day",
       sw: "Mwisho wa Siku",
       ha: "Kawo Karfe",
@@ -4111,7 +4699,9 @@ const translations = {
       af: "Eind Dag",
       tw: "Bɛyɛ Da",
       rw: "Imanya umunsi",
-      lg: "Maliza olunaku"
+      lg: "Maliza olunaku",
+      fr: "Fin de journée",
+      dy: "Don laban"
     },
     "common.day": {
       en: "Day",
@@ -4124,7 +4714,9 @@ const translations = {
       af: "Dag",
       tw: "Da",
       rw: "Umunsi",
-      lg: "Olunaku"
+      lg: "Olunaku",
+      fr: "Jour",
+      dy: "Don"
     },
     "common.week": {
       en: "Week",
@@ -4137,7 +4729,9 @@ const translations = {
       af: "Week",
       tw: "Kwasida",
       rw: "Icyumweru",
-      lg: "Sabbula"
+      lg: "Sabbula",
+      fr: "Semaine",
+      dy: "Do"
     },
     "common.month": {
       en: "Month",
@@ -4150,7 +4744,9 @@ const translations = {
       af: "Maand",
       tw: "Bosome",
       rw: "Ukwezi",
-      lg: "Omwezi"
+      lg: "Omwezi",
+      fr: "Mois",
+      dy: "Kalo"
     },
     "common.year": {
       en: "Year",
@@ -4163,7 +4759,9 @@ const translations = {
       af: "Jaar",
       tw: "Afe",
       rw: "Umwaka",
-      lg: "Omwaka"
+      lg: "Omwaka",
+      fr: "Année",
+      dy: "San"
     },
     "common.close_day_fresh": {
       en: "Close Day Fresh",
@@ -4176,7 +4774,9 @@ const translations = {
       af: "Sluit Dag Vars",
       tw: "To Da Foforo",
       rw: "Funga umunsi musha",
-      lg: "Ggalawo olunaku olupya"
+      lg: "Ggalawo olunaku olupya",
+      fr: "Fermer la journée fraîche",
+      dy: "Don kura da"
     },
     // Reconciliation Terms
     "common.expected": {
@@ -4190,7 +4790,9 @@ const translations = {
       af: "Verwag",
       tw: "Aho wɔhwɛ",
       rw: "Byagombaga",
-      lg: "Ekiyitibwamu"
+      lg: "Ekiyitibwamu",
+      fr: "Attendu",
+      dy: "A ɲɔn"
     },
     "common.actual": {
       en: "Actual",
@@ -4203,7 +4805,9 @@ const translations = {
       af: "Werklik",
       tw: "Kan",
       rw: "Ubwoko",
-      lg: "Ky'omulimu"
+      lg: "Ky'omulimu",
+      fr: "Réel",
+      dy: "Nɔnɔ"
     },
     "common.who_owes_you": {
       en: "Who Owes You",
@@ -4216,7 +4820,9 @@ const translations = {
       af: "Wie Skuld Jou",
       tw: "Obi a ɔda wo",
       rw: "Abanyuzigira",
-      lg: "Abanyinaawe"
+      lg: "Abanyinaawe",
+      fr: "Qui vous doit",
+      dy: "Jɔntigiɲɛ"
     },
     "common.no_outstanding_credit": {
       en: "No outstanding credit",
@@ -4229,7 +4835,9 @@ const translations = {
       af: "Geen uitstaande krediet",
       tw: "Nni hɔ a wɔda",
       rw: "Nta kugufuka",
-      lg: "Tewali ssente ezisigadde"
+      lg: "Tewali ssente ezisigadde",
+      fr: "Aucun crédit impayé",
+      dy: "Juguyɔrɔ te sigi"
     },
     "common.money_in_out": {
       en: "Money In/Out",
@@ -4242,9 +4850,11 @@ const translations = {
       af: "Geld In/Uit",
       tw: "Sika Bɛba Mu/Bɛfi Mu",
       rw: "Amafaranga muri/ziva",
-      lg: "Ensimbi Munda/Bweru"
+      lg: "Ensimbi Munda/Bweru",
+      fr: "Argent entrant/sortant",
+      dy: "Wosoro don/bɔ"
     },
-    // Calendar and App Sharing Translations
+        // Calendar and App Sharing Translations
     "calendar.upcoming_appointments": {
       en: "Upcoming Appointments",
       sw: "Miadi Inayokuja",
@@ -4256,7 +4866,9 @@ const translations = {
       af: "Komende Afsprake",
       tw: "Nsrahyɛ a ɛbɛba",
       rw: "Abyiringize Bizaza",
-      lg: "Emirimu Egijja"
+      lg: "Emirimu Egijja",
+      fr: "Rendez-vous à venir",
+      dy: "Lalɔnw minnu bɛ na"
     },
     "calendar.manage_schedule": {
       en: "Manage your schedule",
@@ -4269,7 +4881,9 @@ const translations = {
       af: "Bestuur jou skedule",
       tw: "Di wo nsɛmfa no ho nhyehyɛe",
       rw: "Gucunga igenamiriro yawe",
-      lg: "Ddukanya enkola yo"
+      lg: "Ddukanya enkola yo",
+      fr: "Gérer votre agenda",
+      dy: "I ka lalɔnw laɲini"
     },
     "calendar.next_appointments": {
       en: "Next Appointments",
@@ -4282,7 +4896,9 @@ const translations = {
       af: "Volgende Afsprake",
       tw: "Nsrahyɛ a ɛto so",
       rw: "Abyiringize Bikurikira",
-      lg: "Emirimu Egiddako"
+      lg: "Emirimu Egiddako",
+      fr: "Prochains rendez-vous",
+      dy: "Lalɔn wɛrɛw"
     },
     "calendar.more_today": {
       en: "more today",
@@ -4295,7 +4911,9 @@ const translations = {
       af: "meer vandag",
       tw: "de nnɛ",
       rw: "byongeye uyu munsi",
-      lg: "ebisingawano leero"
+      lg: "ebisingawano leero",
+      fr: "plus aujourd'hui",
+      dy: "wɛrɛ bi"
     },
     "calendar.book_first": {
       en: "Book your first appointment to get started",
@@ -4308,7 +4926,9 @@ const translations = {
       af: "Boek jou eerste afspraak om te begin",
       tw: "Hyɛ wo nsrahyɛ a edi kan no adi",
       rw: "Shyiraho ibyiringize byawe bya mbere gutangira",
-      lg: "Teekawo omulimo gwo ogwo okutandika"
+      lg: "Teekawo omulimo gwo ogwo okutandika",
+      fr: "Réservez votre premier rendez-vous pour commencer",
+      dy: "I ka lalɔn foli se ka ta"
     },
     "calendar.manage_appointments": {
       en: "Manage Appointments",
@@ -4321,7 +4941,9 @@ const translations = {
       af: "Bestuur Afsprake",
       tw: "Di wo nsrahyɛ ho nhyehyɛe",
       rw: "Gucanya Ibyiringize",
-      lg: "Ddukanya Emirimu"
+      lg: "Ddukanya Emirimu",
+      fr: "Gérer les rendez-vous",
+      dy: "Lalɔnw laɲini"
     },
     "more.share_app": {
       en: "Share App",
@@ -4334,7 +4956,9 @@ const translations = {
       af: "Deel App",
       tw: "Kyɛ App",
       rw: "Kwegeranya Porogaramu",
-      lg: "Ggulawo App"
+      lg: "Ggulawo App",
+      fr: "Partager l'application",
+      dy: "App jira"
     },
     "more.share_app_message": {
       en: "Check out BeeZee - the amazing business management app that helps me track sales, inventory, appointments, and more! 🐝\n\nDownload it here: {url}",
@@ -4347,10 +4971,11 @@ const translations = {
       af: "Kyk na BeeZee - die wonderlike besigheidsbestuursprogram wat my help om verkope, voorraad, afsprake, en meer op te spoor! 🐝\n\nLaai dit hier af: {url}",
       tw: "Hwɛ BeeZee - adwuma a ɛyɛ fɛ a ɛboa me kɔtɔɔte ntadehyɛ, nneɛma a wɔde sie, nsrahyɛ, ne nea ɛkeka ho! 🐝\n\nTwe no hɔ: {url}",
       rw: "Reba BeeZee - porogaramu nziza yo gukurikanya umwuga ufasha kurakarika ibiciro, umurimo, ibyiringize, na byinshi! 🐝\n\nShakira hano: {url}",
-      lg: "Laba BeeZee - puloguramu enungi eyamba okulondoola emvumo, ebiguluko, emirimu, n'ebingi! 🐝\n\nWanno wano: {url}"
+      lg: "Laba BeeZee - puloguramu enungi eyamba okulondoola emvumo, ebiguluko, emirimu, n'ebingi! 🐝\n\nWanno wano: {url}",
+      fr: "Découvrez BeeZee - l'application incroyable de gestion d'entreprise qui m'aide à suivre les ventes, les stocks, les rendez-vous et plus encore ! 🐝\n\nTéléchargez-la ici : {url}",
+      dy: "BeeZee lamina - jago laɲini taama ɲuman min bɛ dɛmɛ ne ka sanfɛw, bansanw, lalɔnw, ni wɛrɛw fɛrɛ! 🐝\n\nA fa yan: {url}"
     },
-    // Buzz Insights Translations
-    "buzz.daily_cash_summary": {
+        "buzz.daily_cash_summary": {
       en: "Daily Cash Summary",
       sw: "Muhtasari wa Pesa ya Kila Siku",
       ha: "Jimilla Tallatan Kudin Rana",
@@ -4361,7 +4986,9 @@ const translations = {
       af: "Daaglikse Kontant Opsomming",
       tw: "Nsɛmka a Wnya Da Ho",
       rw: "Incamake Y'imfura Y'umunsi",
-      lg: "Okulabirako Kw'Ensobi Ya Lunaku"
+      lg: "Okulabirako Kw'Ensobi Ya Lunaku",
+      fr: "Résumé de trésorerie quotidien",
+      dy: "Don wosoro laɲiniban"
     },
     "buzz.cash_flow": {
       en: "Today's cash flow",
@@ -4374,7 +5001,9 @@ const translations = {
       af: "Geldvandeling vandag",
       tw: "Sika a ɛkɔ nnɛ",
       rw: "Imiterere y'imfura uyu munsi",
-      lg: "Okuva kw'ensobi wano"
+      lg: "Okuva kw'ensobi wano",
+      fr: "Flux de trésorerie du jour",
+      dy: "Bi wosoro taama"
     },
     "buzz.inventory_summary": {
       en: "Inventory Summary",
@@ -4387,7 +5016,9 @@ const translations = {
       af: "Voorraad Opsomming",
       tw: "Nneɛma a Wde Si Ho",
       rw: "Incamake Y'ibiterere",
-      lg: "Okulabirako Kw'ebiguluko"
+      lg: "Okulabirako Kw'ebiguluko",
+      fr: "Résumé d'inventaire",
+      dy: "Bansan laɲiniban"
     },
     "buzz.total_items": {
       en: "{count} items in stock",
@@ -4400,7 +5031,9 @@ const translations = {
       af: "{count} items in voorraad",
       tw: "{count} nneɛma a wɔde asi",
       rw: "{count} ibintu mu murongo",
-      lg: "{count} bintu byawanywe"
+      lg: "{count} bintu byawanywe",
+      fr: "{count} articles en stock",
+      dy: "{count} fɛnw bɛ bansan kɔnɔ"
     },
     "buzz.credit_summary": {
       en: "Credit Summary",
@@ -4413,7 +5046,9 @@ const translations = {
       af: "Krediet Opsomming",
       tw: "Nneɛma a Wɔde Bɔ",
       rw: "Incamake Y'inguzanyo",
-      lg: "Okulabirako Kw'essente"
+      lg: "Okulabirako Kw'essente",
+      fr: "Résumé de crédit",
+      dy: "Juguyɔrɔ laɲiniban"
     },
     "buzz.outstanding_credit": {
       en: "{count} outstanding payments",
@@ -4426,7 +5061,9 @@ const translations = {
       af: "{count} uitstaande betalings",
       tw: "{count} ntadehyɛ a aka",
       rw: "{count} amafaranga atazibona",
-      lg: "{count} ssente azikiriddwa"
+      lg: "{count} ssente azikiriddwa",
+      fr: "{count} paiements impayés",
+      dy: "{count} juguyɔrɔ minnu ma jɔ"
     },
     "common.completing": {
       en: "Completing...",
@@ -4439,7 +5076,9 @@ const translations = {
       af: "Voltooi...",
       tw: "Rekyɛ...",
       rw: "Byarangiza...",
-      lg: "Kyamaliddwa..."
+      lg: "Kyamaliddwa...",
+      fr: "Finalisation...",
+      dy: "Bɛ laban..."
     },
     "common.transactions_subtitle": {
       en: "Track all income and expenses",
@@ -4452,7 +5091,9 @@ const translations = {
       af: "Volg alle inkomste en uitgawes",
       tw: "Di sika nyinaa akyi",
       rw: "Kurikirana amafaranga yose",
-      lg: "Goberera ensimbi zonna"
+      lg: "Goberera ensimbi zonna",
+      fr: "Suivez tous les revenus et dépenses",
+      dy: "Donkili ni saraw bɛɛ fɛrɛ"
     },
     "common.net_income": {
       en: "Net",
@@ -4465,7 +5106,9 @@ const translations = {
       af: "Netto",
       tw: "Nkwa",
       rw: "Isigara",
-      lg: "Amafaranga amasoefu"
+      lg: "Amafaranga amasoefu",
+      fr: "Net",
+      dy: "Sɛgɛn"
     },
     "common.no_transactions": {
       en: "No transactions yet",
@@ -4478,7 +5121,9 @@ const translations = {
       af: "Nog geen transaksies nie",
       tw: "Ɛnni adetɔn biara",
       rw: "Nta masanzu arahari",
-      lg: "Tewali mirimu gyonna"
+      lg: "Tewali mirimu gyonna",
+      fr: "Aucune transaction pour le moment",
+      dy: "Sanfɛ si ma sɔrɔ fɔlɔ"
     },
     "common.no_transactions_desc": {
       en: "Your transactions will appear here once you start recording",
@@ -4491,7 +5136,9 @@ const translations = {
       af: "Jou transaksies sal hier verskyn sodra jy begin opneem",
       tw: "Wo adetɔn bɛba ha sɛ wobɛhyɛ ase",
       rw: "Amasanzu yawe azagaragara hano nutangira kwandika",
-      lg: "Emirimu gyo birigalabika wano bw'otandika okuwandiika"
+      lg: "Emirimu gyo birigalabika wano bw'otandika okuwandiika",
+      fr: "Vos transactions apparaîtront ici une fois que vous commencerez à enregistrer",
+      dy: "I ka sanfɛw bɛ jɛ yan ni i daminɛ sɛbɛnli la"
     },
     "common.in": {
       en: "In",
@@ -4504,7 +5151,9 @@ const translations = {
       af: "In",
       tw: "Mu",
       rw: "Muri",
-      lg: "Munda"
+      lg: "Munda",
+      fr: "Entrant",
+      dy: "Don"
     },
     "common.out": {
       en: "Out",
@@ -4517,7 +5166,9 @@ const translations = {
       af: "Uit",
       tw: "Fi mu",
       rw: "Hanze",
-      lg: "Bweru"
+      lg: "Bweru",
+      fr: "Sortant",
+      dy: "Bɔ"
     },
     "common.view_performance": {
       en: "View performance",
@@ -4530,7 +5181,9 @@ const translations = {
       af: "Bekyk prestasie",
       tw: "Hwɛ adwumayɛ",
       rw: "Reba imikorere",
-      lg: "Laba emirimu"
+      lg: "Laba emirimu",
+      fr: "Voir les performances",
+      dy: "Baaraja lamina"
     },
     "common.reconciliation": {
       en: "Reconciliation",
@@ -4543,7 +5196,9 @@ const translations = {
       af: "Versoeniging",
       tw: "Nhwehwɛmu",
       rw: "Kunganya",
-      lg: "Okulondoola"
+      lg: "Okulondoola",
+      fr: "Réconciliation",
+      dy: "Laɲiniban"
     },
     "common.app_name": {
       en: "BeeZee",
@@ -4556,7 +5211,9 @@ const translations = {
       af: "BeeZee",
       tw: "BeeZee",
       rw: "BeeZee",
-      lg: "BeeZee"
+      lg: "BeeZee",
+      fr: "BeeZee",
+      dy: "BeeZee"
     },
     "common.premium_business_os": {
       en: "Premium Business OS",
@@ -4569,7 +5226,9 @@ const translations = {
       af: "Premium Besigheid Stelsel",
       tw: "Adwuma Kɛse Nsɛm",
       rw: "Sisitemu y'Ubucuruzi Nziza",
-      lg: "Enkola y'Obusubuzi Obulungi"
+      lg: "Enkola y'Obusubuzi Obulungi",
+      fr: "Système d'exploitation d'entreprise premium",
+      dy: "Jago OS ɲuman"
     },
     "common.language": {
       en: "Language",
@@ -4582,7 +5241,9 @@ const translations = {
       af: "Taal",
       tw: "Language",
       rw: "Ururimi",
-      lg: "Lulimi"
+      lg: "Lulimi",
+      fr: "Langue",
+      dy: "Kan"
     },
     "common.beehive": {
       en: "BeeHive Community",
@@ -4595,7 +5256,9 @@ const translations = {
       af: "BeeHive Gemeenskap",
       tw: "BeeHive Community",
       rw: "Itsinda rya BeeHive",
-      lg: "Olulimi lwa BeeHive"
+      lg: "Olulimi lwa BeeHive",
+      fr: "Communauté BeeHive",
+      dy: "BeeHive kafo"
     },
     "common.total": {
       en: "total",
@@ -4608,7 +5271,9 @@ const translations = {
       af: "totaal",
       tw: "total",
       rw: "zose",
-      lg: "byona"
+      lg: "byona",
+      fr: "total",
+      dy: "bɛɛ"
     },
     "common.insights": {
       en: "Decision Insights",
@@ -4621,7 +5286,9 @@ const translations = {
       af: "Besluit Insigte",
       tw: "Mfitiaseɛ apɛdeɛ",
       rw: "Ubusobanuro bw'ibyemezo",
-      lg: "Okumanya Ebimu ku By'okulonda"
+      lg: "Okumanya Ebimu ku By'okulonda",
+      fr: "Aperçus décisionnels",
+      dy: "Laɲinifɛnw"
     },
     "common.cash_reconciliation": {
       en: "Cash Reconciliation",
@@ -4634,179 +5301,11 @@ const translations = {
       af: "Kas Versoeniging",
       tw: "Nhwehwɛmu Sika",
       rw: "Kunganya Amafaranga",
-      lg: "Okulondoola Ensobi"
+      lg: "Okulondoola Ensobi",
+      fr: "Réconciliation de trésorerie",
+      dy: "Wosoro laɲiniban"
     },
-    // Business Terms
-    "common.business": {
-      en: "Business",
-      sw: "Biashara",
-      ha: "Sana'a",
-      yo: "Iṣowo",
-      ig: "Azụmaahịa",
-      zu: "Ishasho",
-      xh: "Ishasho",
-      af: "Besigheid",
-      tw: "Adwuma",
-      rw: "Ubucuruzi",
-      lg: "By'ensi"
-    },
-    "common.customers": {
-      en: "Customers",
-      sw: "Wateja",
-      ha: "Abokan ciniki",
-      yo: "Aṣẹwọri",
-      ig: "Ọnụ ahịa",
-      zu: "Abakithi",
-      xh: "Abakithi",
-      af: "Kliënte",
-      tw: "Akwadufo",
-      rw: "Abakiriya",
-      lg: "Abakyaala"
-    },
-    "common.suppliers": {
-      en: "Suppliers",
-      sw: "Wauzaji",
-      ha: "Masu sayar da kayayyaki",
-      yo: "Onjẹwọ",
-      ig: "Ndị na-enye ihe",
-      zu: "Abathengisi",
-      xh: "Abathengisi",
-      af: "Verskaffers",
-      tw: "Onyinafo",
-      rw: "Abatangiza",
-      lg: "Abaguzi"
-    },
-    "common.reports": {
-      en: "Reports",
-      sw: "Ripoti",
-      ha: "Rahoto",
-      yo: "Ipinnu",
-      ig: "Nkọwa",
-      zu: "Izingxoxo",
-      xh: "Izingxoxo",
-      af: "Verslae",
-      tw: "Ho aduane",
-      rw: "Ibyanditswe",
-      lg: "Ebiwandiiko"
-    },
-    "common.settings": {
-      en: "Settings",
-      sw: "Mipangilio",
-      ha: "Saituna",
-      yo: "Àtúnṣe",
-      ig: "Ntọọrụ",
-      zu: "Izilungiselelo",
-      xh: "Izilungiselelo",
-      af: "Verstellings",
-      tw: "Nhyehyɛe",
-      rw: "Iboneza",
-      lg: "Enteekateeka"
-    },
-    "common.business_settings": {
-      en: "Business Settings",
-      sw: "Mipangilio ya Biashara",
-      ha: "Saitunan Sana'a",
-      yo: "Àtúnṣe Iṣowo",
-      ig: "Ntọọrụ Azụmaahịa",
-      zu: "Izilungiselelo Zokushasho",
-      xh: "Izilungiselelo Zokushasho",
-      af: "Besigheid Verstellings",
-      tw: "Nhyehyɛe Adwuma",
-      rw: "Iboneza Ry'Ubucuruzi",
-      lg: "Enteekateeka z'By'ensi"
-    },
-    "common.app_settings": {
-      en: "App Settings",
-      sw: "Mipangilio ya App",
-      ha: "Saitunan App",
-      yo: "Àtúnṣe App",
-      ig: "Ntọọrụ App",
-      zu: "Izilungiselelo Ze-App",
-      xh: "Izilungiselelo Ze-App",
-      af: "App Verstellings",
-      tw: "Nhyehyɛe App",
-      rw: "Iboneza Ry'App",
-      lg: "Enteekateeka z'App"
-    },
-    "common.account": {
-      en: "Account",
-      sw: "Akaunti",
-      ha: "Akaunti",
-      yo: "Akaunti",
-      ig: "Akaunti",
-      zu: "I-akhawunti",
-      xh: "I-akhawunti",
-      af: "Rekening",
-      tw: "Akaunti",
-      rw: " Konti",
-      lg: "Akaunti"
-    },
-    "common.privacy_policy": {
-      en: "Privacy Policy",
-      sw: "Sera ya Faragha",
-      ha: "Manufar Sirri",
-      yo: "Ìlànà Ìfarabọlẹ",
-      ig: "Iwu Nzuzo",
-      zu: "Inqubo lezimfihlo",
-      xh: "Inqubo lezimfihlo",
-      af: "Privaatheidbeleid",
-      tw: "Asɛm Bɔne Ho Ahodeɛ",
-      rw: "Uburyo bwo guhanga umwirondoro",
-      lg: "Enkola y'obwabulamu"
-    },
-    "common.logout": {
-      en: "Logout",
-      sw: "Toka",
-      ha: "Fita",
-      yo: "Jade",
-      ig: "Pụọ",
-      zu: "Phuma",
-      xh: "Phuma",
-      af: "Teken af",
-      tw: "Firi",
-      rw: "Tangira",
-      lg: "Fulumu"
-    },
-    "common.operations": {
-      en: "Operations",
-      sw: "Uendeshaji",
-      ha: "Aikata",
-      yo: "Ṣiṣẹ",
-      ig: "Ọrụ",
-      zu: "Imisebenzi",
-      xh: "Imisebenzi",
-      af: "Operasies",
-      tw: "Nneɛma",
-      rw: "Imirimo",
-      lg: "Emirimu"
-    },
-    "common.more": {
-      en: "More",
-      sw: "Zaidi",
-      ha: "Sabo",
-      yo: "Siwọ sii",
-      ig: "Ọzọ",
-      zu: "Okwengeziwe",
-      xh: "Okwengeziwe",
-      af: "Meer",
-      tw: "Bio",
-      rw: "Buriyongwe",
-      lg: "Okusingiwa"
-    },
-    "common.more_subtitle": {
-      en: "Additional options and features",
-      sw: "Chaguo zaidi na vipengele",
-      ha: "Zabin fiye da fasaloli",
-      yo: "Àwọn aṣayan ati àwọn ẹya afikun",
-      ig: "Nhọrọ mgbakwunye na ngwaọrụ",
-      zu: "Ezinye izikhetho namakhono",
-      xh: "Ezinye iikhethi namakhono",
-      af: "Bykomende opsies en funksies",
-      tw: "Nneɛma a ɛfa ne nneɛma afoforo",
-      rw: "Ibihindagurira byongeyeho n'ibikorwa",
-      lg: "Ebikwata ku by'okusingiwa na birimu ebimanyi"
-    },
-    // Target Language
+        // Target Language
     "target.achieved": {
       en: "achieved",
       sw: "imefikiwa",
@@ -4818,7 +5317,9 @@ const translations = {
       af: "bereik",
       tw: "ayɛ",
       rw: "byakunywe",
-      lg: "by'akolebwa"
+      lg: "by'akolebwa",
+      fr: "atteint",
+      dy: "a se"
     },
     "target.daily_achieved": {
       en: "You've hit your daily target!",
@@ -4831,7 +5332,9 @@ const translations = {
       af: "Jou het jou daaglike teiken bereik!",
       tw: "Wadu botae da akyi da!",
       rw: "Wageze ku intego yawo ya munsi!",
-      lg: "Otuuse emboozi yo lwa lunaku!"
+      lg: "Otuuse emboozi yo lwa lunaku!",
+      fr: "Vous avez atteint votre objectif quotidien !",
+      dy: "I se i ka don laɲini!"
     },
     "target.of": {
       en: "of",
@@ -4844,9 +5347,11 @@ const translations = {
       af: "van",
       tw: "firi",
       rw: "ya",
-      lg: "w'oku"
+      lg: "w'oku",
+      fr: "de",
+      dy: "ka"
     },
-    // Status Indicators
+        // Status Indicators
     "common.critical": {
       en: "Critical",
       sw: "Hatari",
@@ -4858,7 +5363,9 @@ const translations = {
       af: "Kritiek",
       tw: "Hwee",
       rw: "Ibyo bahangayik",
-      lg: "W'obulabe"
+      lg: "W'obulabe",
+      fr: "Critique",
+      dy: "Gosɛbɛ"
     },
     "common.low": {
       en: "Low",
@@ -4871,7 +5378,9 @@ const translations = {
       af: "Laag",
       tw: "So",
       rw: "Nto",
-      lg: "Wansi"
+      lg: "Wansi",
+      fr: "Bas",
+      dy: "Dɔ"
     },
     "common.good": {
       en: "Good",
@@ -4884,7 +5393,9 @@ const translations = {
       af: "Goed",
       tw: "Pa",
       rw: "Byiza",
-      lg: "Malungi"
+      lg: "Malungi",
+      fr: "Bon",
+      dy: "ɲuman"
     },
     "common.left": {
       en: "left",
@@ -4897,7 +5408,9 @@ const translations = {
       af: "oorgela",
       tw: "fã",
       rw: "isigaye",
-      lg: "yasigaziddwa"
+      lg: "yasigaziddwa",
+      fr: "restant",
+      dy: "bɛ sigi"
     },
     "common.complete": {
       en: "complete",
@@ -4910,7 +5423,9 @@ const translations = {
       af: "voltooi",
       tw: "wie",
       rw: "byarangije",
-      lg: "waggula"
+      lg: "waggula",
+      fr: "complet",
+      dy: "banna"
     },
     "common.running_low": {
       en: "Running Low",
@@ -4923,7 +5438,9 @@ const translations = {
       af: "Begin Laag",
       tw: "Re retwe",
       rw: "Ri nto",
-      lg: "Zirina wansi"
+      lg: "Zirina wansi",
+      fr: "Faible",
+      dy: "Bɛ dɔ"
     },
     "common.running_low_label": {
       en: "Running Low",
@@ -4936,9 +5453,11 @@ const translations = {
       af: "Begin Laag",
       tw: "Re retwe",
       rw: "Ri nto",
-      lg: "Zirina wansi"
+      lg: "Zirina wansi",
+      fr: "Faible",
+      dy: "Bɛ dɔ"
     },
-    // Home Screen
+        // Home Screen
     "home.starting_cash": {
       en: "Starting Cash",
       sw: "Pesa ya Kuanzia",
@@ -4950,7 +5469,9 @@ const translations = {
       af: "Beginkas",
       tw: "Sika a bɛfi ase",
       rw: "Amafaranga yo gutangira",
-      lg: "Ensobi eyasooka"
+      lg: "Ensobi eyasooka",
+      fr: "Trésorerie de départ",
+      dy: "Wosoro daminɛ"
     },
     "home.quick_actions": {
       en: "Quick Actions",
@@ -4963,9 +5484,11 @@ const translations = {
       af: "Vinnige Aksies",
       tw: "Nneɛma a ɛyɛ tiaa",
       rw: "Imirimo yihuse",
-      lg: "Emirimu egya wansi"
+      lg: "Emirimu egya wansi",
+      fr: "Actions rapides",
+      dy: "Baaraw surunyɛw"
     },
-    // Stock Management
+        // Stock Management
     "stockTakeModeTitle": {
       en: "Stock Take Mode",
       sw: "Hali ya Kuhesabu Hifadhi",
@@ -4977,7 +5500,9 @@ const translations = {
       af: "Voorraad Telling Modus",
       tw: "Mode Sika Ho Adwuma",
       rw: "Uburyo bw'ibika by'ibicuruzwa",
-      lg: "Ennaku y'okubika emmotoka"
+      lg: "Ennaku y'okubika emmotoka",
+      fr: "Mode d'inventaire",
+      dy: "Bansan kali cogo"
     },
     "stockTakeCounting": {
       en: "Counting",
@@ -4990,7 +5515,9 @@ const translations = {
       af: "Tel",
       tw: "Bɔ kyerɛw",
       rw: "Gubanza",
-      lg: "Okubala"
+      lg: "Okubala",
+      fr: "Comptage",
+      dy: "Kali"
     },
     "stockTakePrevious": {
       en: "Previous",
@@ -5003,7 +5530,9 @@ const translations = {
       af: "Vorige",
       tw: "Dada",
       rw: "Ibikurikira",
-      lg: "Ebyo ebyaliwo"
+      lg: "Ebyo ebyaliwo",
+      fr: "Précédent",
+      dy: "Tɛmɛn"
     },
     "stockTakeNewCount": {
       en: "New Count",
@@ -5016,7 +5545,9 @@ const translations = {
       af: "Nuwe Tel",
       tw: "Bɔ kyerɛw foforo",
       rw: "Gubanza gushya",
-      lg: "Okubala okupya"
+      lg: "Okubala okupya",
+      fr: "Nouveau comptage",
+      dy: "Kali kura"
     },
     "stockTakeSkip": {
       en: "Skip",
@@ -5029,7 +5560,9 @@ const translations = {
       af: "Slaan oor",
       tw: "Twa",
       rw: "Gusimuka",
-      lg: "Sanyamu"
+      lg: "Sanyamu",
+      fr: "Ignorer",
+      dy: "Tɛmɛn"
     },
     "stockTakeSaveAndNext": {
       en: "Save and Next",
@@ -5042,7 +5575,9 @@ const translations = {
       af: "Stoor en Volgende",
       tw: "Sie na kɔ so",
       rw: "Bika no ukurikirwe",
-      lg: "Tereka no nga ddibira"
+      lg: "Tereka no nga ddibira",
+      fr: "Enregistrer et suivant",
+      dy: "Marako ka taa ɲɛ"
     },
     "finishLater": {
       en: "Finish Later",
@@ -5055,7 +5590,9 @@ const translations = {
       af: "Voltooi Later",
       tw: "Wie akyiri",
       rw: "Birangiza hanyuma",
-      lg: "Maliza oluvannyuma"
+      lg: "Maliza oluvannyuma",
+      fr: "Terminer plus tard",
+      dy: "Laban kɔfɛ"
     },
     "saving": {
       en: "Saving...",
@@ -5068,9 +5605,11 @@ const translations = {
       af: "Stoor...",
       tw: "Retre...",
       rw: "Gubika...",
-      lg: "Kirabira..."
+      lg: "Kirabira...",
+      fr: "Enregistrement...",
+      dy: "Marako bɛ kɛ..."
     },
-    "modal": {
+        "modal": {
       "update_available": {
         en: "Update Available",
         sw: "Sasisha Inapatikana",
@@ -5082,9 +5621,11 @@ const translations = {
         af: "Opdateer Beskikbaar",
         tw: "Nsakrae Wɔ",
         rw: "Kuvugurura Ibyiringiro",
-        lg: "Okusanyisa Oluvanyuma"
+        lg: "Okusanyisa Oluvanyuma",
+        fr: "Mise à jour disponible",
+        dy: "Fɛn kura bɛ yen"
       },
-    "update_description": {
+      "update_description": {
         en: "A new version is ready to install with the latest features and improvements.",
         sw: "Toleo jipya limeandikizwa kwa vipenge vipya na uboreshaji.",
         ha: "Sabu sabu sabu yana shirya don ginin ginin ginin.",
@@ -5095,179 +5636,208 @@ const translations = {
         af: "'n Nuwe weergawe is beskikbaar vir installasie met die nuutste kenmerke en verbeteringe.",
         tw: "Foforo foforo no wɔ baako yɛn sika.",
         rw: "Verisiya mushya gushya inzira nshya zamashyaka.",
-        lg: "Enkola ntono ez'ebirimu by'empya."
+        lg: "Enkola ntono ez'ebirimu by'empya.",
+        fr: "Une nouvelle version est prête à être installée avec les dernières fonctionnalités et améliorations.",
+        dy: "Fɛn kura bɛ se ka la a la fɛnɲumanw ni nyumanyuma la."
       },
-    "subscription": {
-      "upgrade_to_premium": {
-        en: "Upgrade to Premium",
-        sw: "Sasua kwa Premium",
-        ha: "Sanya zuwa na fasaha",
-        yo: "Yi s? àw?n or? premium",
-        ig: "Melite ihe nkiri",
-        zu: "Yandisa kwa premium",
-        xh: "Yandisa kwa premium",
-        af: "Gradeer na Premium",
-        tw: "Bue akontomum premium",
-        rw: "Kwihangira ku premium",
-        lg: "Yongera ku premium"
+      "subscription": {
+        "upgrade_to_premium": {
+          en: "Upgrade to Premium",
+          sw: "Sasua kwa Premium",
+          ha: "Sanya zuwa na fasaha",
+          yo: "Yi s? àw?n or? premium",
+          ig: "Melite ihe nkiri",
+          zu: "Yandisa kwa premium",
+          xh: "Yandisa kwa premium",
+          af: "Gradeer na Premium",
+          tw: "Bue akontomum premium",
+          rw: "Kwihangira ku premium",
+          lg: "Yongera ku premium",
+          fr: "Passer à Premium",
+          dy: "Premium ta"
+        },
+        "subscription_activated": {
+          en: "Subscription Activated!",
+          sw: "Usajili Umeanzishwa!",
+          ha: "Biyan Ku?i Umeanza!",
+          yo: "Àkósílè Ti ?j?yá!",
+          ig: "Mmepe Amalite!",
+          zu: "Ukuqondo Kuqaliswe!",
+          xh: "Ukuqondo Kuqaliswe!",
+          af: "Inskrypsie Geaktiveer!",
+          tw: "Mfitiase? Atw?de!",
+          rw: "Usajiri Rurangiye!",
+          lg: "Okulaba Kikolebwa!",
+          fr: "Abonnement activé !",
+          dy: "Sɛbɛn bɛ baara!"
+        },
+        "enjoy_premium_features": {
+          en: "Enjoy all premium features",
+          sw: "Furahia vipengele vyote vya premium",
+          ha: "Fahimta da fasaha duka",
+          yo: "Gbadun aw?n or? premium",
+          ig: "Nwee ihe nkiri niile",
+          zu: "Zokwazi izipho ezilungilelayo",
+          xh: "Zokwazi izipho ezilungilelayo",
+          af: "Geniet premium kenmerke",
+          tw: "Di premium akontaamu mu nkitahode",
+          rw: "Ukunda ibikorwa byiza byose",
+          lg: "Wulira bikwa bya waggulu",
+          fr: "Profitez de toutes les fonctionnalités premium",
+          dy: "Premium fɛnɲumanw bɛɛ dun"
+        },
+        "next_billing": {
+          en: "Next billing",
+          sw: "Malipo ijayo",
+          ha: "Biya ta gaba",
+          yo: "Isanw? t?l?",
+          ig: "?gw? ?b?ch?",
+          zu: "Ukukhokha okulandelayo",
+          xh: "Ukukhokha okulandelayo",
+          af: "Volgende betaling",
+          tw: "Sika a b?to a b?",
+          rw: "Ukwishyura uyuza kurwira",
+          lg: "Okulaba okwaddirira",
+          fr: "Prochaine facturation",
+          dy: "Juguyɔrɔ wɛrɛ"
+        },
+        "what_you_get": {
+          en: "What you get:",
+          sw: "Unachopata:",
+          ha: "Me ka samu:",
+          yo: "Nj? o l?",
+          ig: "Kedu i ga-enyer?",
+          zu: "Othola yini:",
+          xh: "Zothola yini:",
+          af: "Wat jy kry:",
+          tw: "Wode b? ka:",
+          rw: "Urimutanga wowe:",
+          lg: "Ebino gy'olina:",
+          fr: "Ce que vous obtenez :",
+          dy: "Nin bɛ i se:"
+        },
+        "per_week": {
+          en: "/week",
+          sw: "/wiki",
+          ha: "/mako",
+          yo: "/saptan",
+          ig: "/izu",
+          zu: "/veki",
+          xh: "/veki",
+          af: "/week",
+          tw: "/sabati",
+          rw: "/icyumweri",
+          lg: "/wiiki",
+          fr: "/semaine",
+          dy: "/do"
+        },
+        "secure": {
+          en: "Secure",
+          sw: "Salama",
+          ha: "Amana",
+          yo: "Aile?",
+          ig: "Nchekwa",
+          zu: "Uthixo",
+          xh: "Uthixo",
+          af: "Veilig",
+          tw: "B?y?",
+          rw: "Byiza",
+          lg: "Kisa",
+          fr: "Sécurisé",
+          dy: "Ladon"
+        },
+        "weekly": {
+          en: "Weekly",
+          sw: "Kila wiki",
+          ha: "Kullum mako",
+          yo: "Ni saptan",
+          ig: "Kwa izu",
+          zu: "Nsuku ngamanye",
+          xh: "Nsuku ngamanye",
+          af: "Weekliks",
+          tw: "Saptani",
+          rw: "Buri cyumweri",
+          lg: "Ekiwiki",
+          fr: "Hebdomadaire",
+          dy: "Do o do"
+        },
+        "premium": {
+          en: "Premium",
+          sw: "Premium",
+          ha: "Fasaha",
+          yo: "Premium",
+          ig: "Premium",
+          zu: "Premium",
+          xh: "Premium",
+          af: "Premium",
+          tw: "Premium",
+          rw: "Premium",
+          lg: "Premium",
+          fr: "Premium",
+          dy: "Premium"
+        },
+        "payment_via_kyshi": {
+          en: "Payment processed securely via Kyshi",
+          sw: "Malipo yamesindwa salama kupitia Kyshi",
+          ha: "Biya ana sarrafa amince ta Kyshi",
+          yo: "Isanw ? ti ?n?y?n l?r?il? nipas? Kyshi",
+          ig: "?gw? ? na-emelitere a n'ezie ihie na Kyshi",
+          zu: "Ukukhokha kuqaliswe ngokusebenza kwi-Kyshi",
+          xh: "Ukukhokha kuqaliswe ngokusebenza kwi-Kyshi",
+          af: "Betaling word veilig deur middel Kyshi",
+          tw: "Sika a w?y? b?to a w?ho Kyshi",
+          rw: "Ukwishyura rwa ku burya bwiza na Kyshi",
+          lg: "Okulaba okuweerwa nga Kyshi",
+          fr: "Paiement sécurisé via Kyshi",
+          dy: "Juguyɔrɔ bɛ kɛ ladon la Kyshi fɛ"
+        },
+        "no_card_data": {
+          en: "Your payment details are never stored on our servers",
+          sw: "Maelezo yako ya malipo hayawehifadhiwa kwenye seva zetu",
+          ha: "Cikakki bayananku ba a adana a kan sako a kan kyauta",
+          yo: "Alaye isanwo r? ko t? l? s? il? l??p? l?r? il?",
+          ig: "Ihe ??gw? gi adagh?gh?ta n'ihu na s?va gi",
+          zu: "Iminikwangu yakho yokukhokha hayagcinwa kwi-servea zethu",
+          xh: "Iminyoka yakho yokukhokha hayagcinwa kwi-servea zethu",
+          af: "Jou betaalinligging word nooit op ons bedieners gestoor",
+          tw: "Nne3ma a wode b?to nka w?ho s?v?",
+          rw: "Ibyinawe by'ukwishyura ntagihangira ku serivera zacu",
+          lg: "Emu gy'okusasula tegenda ku tekaawo ku ssentebe",
+          fr: "Vos informations de paiement ne sont jamais stockées sur nos serveurs",
+          dy: "I ka juguyɔrɔ laɲinifɛnw tɛ marako ɛn sɛrvɛrw kan"
+        },
+        "subscribe_now": {
+          en: "Subscribe Now",
+          sw: "Jisajili Sasa",
+          ha: "Biyan Ku?i Sasa",
+          yo: "S? Àkósílè L?w?",
+          ig: "Bia Mmepe Ugbua",
+          zu: "Qala Ukuqondo Manje",
+          xh: "Qala Ukuqondo Manje",
+          af: "Teken Inskrypsie Nou",
+          tw: "Bia Mfitiase? Sei",
+          rw: "Saba Usajili Nonaha",
+          lg: "Saba Okulaba Kati",
+          fr: "S'abonner maintenant",
+          dy: "Sɛbɛn kɔnɔ"
+        },
+        "processing": {
+          en: "Processing...",
+          sw: "Inachakanywa...",
+          ha: "Ake sarrafawa...",
+          yo: "N s? l??...",
+          ig: "Na-emep?ta...",
+          zu: "Iqhubuzeka...",
+          xh: "Iqhubuzeka...",
+          af: "Besig besig...",
+          tw: "Rebr?...",
+          rw: "Iri gukurikizwa...",
+          lg: "Kirabirira...",
+          fr: "Traitement en cours...",
+          dy: "Bɛ kɛ..."
+        }
       },
-      "subscription_activated": {
-        en: "Subscription Activated!",
-        sw: "Usajili Umeanzishwa!",
-        ha: "Biyan Ku?i Umeanza!",
-        yo: "Àkósílè Ti ?j?yá!",
-        ig: "Mmepe Amalite!",
-        zu: "Ukuqondo Kuqaliswe!",
-        xh: "Ukuqondo Kuqaliswe!",
-        af: "Inskrypsie Geaktiveer!",
-        tw: "Mfitiase? Atw?de!",
-        rw: "Usajiri Rurangiye!",
-        lg: "Okulaba Kikolebwa!"
-      },
-      "enjoy_premium_features": {
-        en: "Enjoy all premium features",
-        sw: "Furahia vipengele vyote vya premium",
-        ha: "Fahimta da fasaha duka",
-        yo: "Gbadun aw?n or? premium",
-        ig: "Nwee ihe nkiri niile",
-        zu: "Zokwazi izipho ezilungilelayo",
-        xh: "Zokwazi izipho ezilungilelayo",
-        af: "Geniet premium kenmerke",
-        tw: "Di premium akontaamu mu nkitahode",
-        rw: "Ukunda ibikorwa byiza byose",
-        lg: "Wulira bikwa bya waggulu"
-      },
-      "next_billing": {
-        en: "Next billing",
-        sw: "Malipo ijayo",
-        ha: "Biya ta gaba",
-        yo: "Isanw? t?l?",
-        ig: "?gw? ?b?ch?",
-        zu: "Ukukhokha okulandelayo",
-        xh: "Ukukhokha okulandelayo",
-        af: "Volgende betaling",
-        tw: "Sika a b?to a b?",
-        rw: "Ukwishyura uyuza kurwira",
-        lg: "Okulaba okwaddirira"
-      },
-      "what_you_get": {
-        en: "What you get:",
-        sw: "Unachopata:",
-        ha: "Me ka samu:",
-        yo: "Nj? o l?",
-        ig: "Kedu i ga-enyer?",
-        zu: "Othola yini:",
-        xh: "Zothola yini:",
-        af: "Wat jy kry:",
-        tw: "Wode b? ka:",
-        rw: "Urimutanga wowe:",
-        lg: "Ebino gy'olina:"
-      },
-      "per_week": {
-        en: "/week",
-        sw: "/wiki",
-        ha: "/mako",
-        yo: "/saptan",
-        ig: "/izu",
-        zu: "/veki",
-        xh: "/veki",
-        af: "/week",
-        tw: "/sabati",
-        rw: "/icyumweri",
-        lg: "/wiiki"
-      },
-      "secure": {
-        en: "Secure",
-        sw: "Salama",
-        ha: "Amana",
-        yo: "Aile?",
-        ig: "Nchekwa",
-        zu: "Uthixo",
-        xh: "Uthixo",
-        af: "Veilig",
-        tw: "B?y?",
-        rw: "Byiza",
-        lg: "Kisa"
-      },
-      "weekly": {
-        en: "Weekly",
-        sw: "Kila wiki",
-        ha: "Kullum mako",
-        yo: "Ni saptan",
-        ig: "Kwa izu",
-        zu: "Nsuku ngamanye",
-        xh: "Nsuku ngamanye",
-        af: "Weekliks",
-        tw: "Saptani",
-        rw: "Buri cyumweri",
-        lg: "Ekiwiki"
-      },
-      "premium": {
-        en: "Premium",
-        sw: "Premium",
-        ha: "Fasaha",
-        yo: "Premium",
-        ig: "Premium",
-        zu: "Premium",
-        xh: "Premium",
-        af: "Premium",
-        tw: "Premium",
-        rw: "Premium",
-        lg: "Premium"
-      },
-      "payment_via_kyshi": {
-        en: "Payment processed securely via Kyshi",
-        sw: "Malipo yamesindwa salama kupitia Kyshi",
-        ha: "Biya ana sarrafa amince ta Kyshi",
-        yo: "Isanw ? ti ?n?y?n l?r?il? nipas? Kyshi",
-        ig: "?gw? ? na-emelitere a n'ezie ihie na Kyshi",
-        zu: "Ukukhokha kuqaliswe ngokusebenza kwi-Kyshi",
-        xh: "Ukukhokha kuqaliswe ngokusebenza kwi-Kyshi",
-        af: "Betaling word veilig deur middel Kyshi",
-        tw: "Sika a w?y? b?to a w?ho Kyshi",
-        rw: "Ukwishyura rwa ku burya bwiza na Kyshi",
-        lg: "Okulaba okuweerwa nga Kyshi"
-      },
-      "no_card_data": {
-        en: "Your payment details are never stored on our servers",
-        sw: "Maelezo yako ya malipo hayawehifadhiwa kwenye seva zetu",
-        ha: "Cikakki bayananku ba a adana a kan sako a kan kyauta",
-        yo: "Alaye isanwo r? ko t? l? s? il? l??p? l?r? il?",
-        ig: "Ihe ??gw? gi adagh?gh?ta n'ihu na s?va gi",
-        zu: "Iminikwangu yakho yokukhokha hayagcinwa kwi-servea zethu",
-        xh: "Iminyoka yakho yokukhokha hayagcinwa kwi-servea zethu",
-        af: "Jou betaalinligging word nooit op ons bedieners gestoor",
-        tw: "Nne3ma a wode b?to nka w?ho s?v?",
-        rw: "Ibyinawe by'ukwishyura ntagihangira ku serivera zacu",
-        lg: "Emu gy'okusasula tegenda ku tekaawo ku ssentebe"
-      },
-      "subscribe_now": {
-        en: "Subscribe Now",
-        sw: "Jisajili Sasa",
-        ha: "Biyan Ku?i Sasa",
-        yo: "S? Àkósílè L?w?",
-        ig: "Bia Mmepe Ugbua",
-        zu: "Qala Ukuqondo Manje",
-        xh: "Qala Ukuqondo Manje",
-        af: "Teken Inskrypsie Nou",
-        tw: "Bia Mfitiase? Sei",
-        rw: "Saba Usajili Nonaha",
-        lg: "Saba Okulaba Kati"
-      },
-      "processing": {
-        en: "Processing...",
-        sw: "Inachakanywa...",
-        ha: "Ake sarrafawa...",
-        yo: "N s? l??...",
-        ig: "Na-emep?ta...",
-        zu: "Iqhubuzeka...",
-        xh: "Iqhubuzeka...",
-        af: "Besig besig...",
-        tw: "Rebr?...",
-        rw: "Iri gukurikizwa..."
-      }
-    },
-    "current_version": {
+      "current_version": {
         en: "Current:",
         sw: "Hivi sasa:",
         ha: "Yanzu a yanzu:",
@@ -5278,9 +5848,11 @@ const translations = {
         af: "Huidige:",
         tw: "Sedie:",
         rw: "Uyuha rwo:",
-        lg: "Kati wano:"
+        lg: "Kati wano:",
+        fr: "Actuel :",
+        dy: "Nin bɛ yen:"
       },
-    "new_version": {
+      "new_version": {
         en: "New:",
         sw: "Mpya:",
         ha: "Sabu sabu:",
@@ -5291,9 +5863,11 @@ const translations = {
         af: "Nuwe:",
         tw: "Foforo:",
         rw: "Shya mushya:",
-        lg: "Empya empya:"
+        lg: "Empya empya:",
+        fr: "Nouveau :",
+        dy: "Kura:"
       },
-    "reminder_24h": {
+      "reminder_24h": {
         en: "We'll remind you again in 24 hours if you choose \"Later\"",
         sw: "Tutakukumbusha tena saa mbili mbili moja uchague \"Baadaye\"",
         ha: "Muna sanin cikin ake goma awan awa 24 sa'a idan ka za \"Baya\"",
@@ -5304,9 +5878,11 @@ const translations = {
         af: "Ons sal jou weer in 24 uur as jy \"Later\" kies",
         tw: "Yɛma bɛma wo wo bɛma wɔ 24 awa sɛ wɔ kyerɛ \"Ɛkwan\"",
         rw: "Tuzakubwiriza nanone igihe 24 amazero uhereze \"Bikurira\"",
-        lg: "Tujjakubulira emabanga emabiri 24 nga olwanyo \"Okumanga\""
+        lg: "Tujjakubulira emabanga emabiri 24 nga olwanyo \"Okumanga\"",
+        fr: "Nous vous rappellerons dans 24 heures si vous choisissez \"Plus tard\"",
+        dy: "An bɛ i tulosi waati 24 kɔfɛ ni i nka \"Kɔfɛ\" sugandi"
       },
-    "later": {
+      "later": {
         en: "Later",
         sw: "Baadaye",
         ha: "Baya",
@@ -5317,9 +5893,11 @@ const translations = {
         af: "Later",
         tw: "Akyiri",
         rw: "Bikurira",
-        lg: "Okumanga"
+        lg: "Okumanga",
+        fr: "Plus tard",
+        dy: "Kɔfɛ"
       },
-    "update_now": {
+      "update_now": {
         en: "Update Now",
         sw: "Sasisha Sasa",
         ha: "Saka Sasa",
@@ -5330,9 +5908,11 @@ const translations = {
         af: "Dateer Nou",
         tw: "Sakrae Dadaan",
         rw: "Kuvugurura Nonaha",
-        lg: "Kukusanyisa Ng'ono"
+        lg: "Kukusanyisa Ng'ono",
+        fr: "Mettre à jour maintenant",
+        dy: "Fɛn kura la sisan"
       },
-    "updating": {
+      "updating": {
         en: "Updating...",
         sw: "Inasishaji...",
         ha: "Ana saka...",
@@ -5343,9 +5923,11 @@ const translations = {
         af: "Besig met besig...",
         tw: "Retre...",
         rw: "Gukora...",
-        lg: "Kukusanyisa..."
+        lg: "Kukusanyisa...",
+        fr: "Mise à jour...",
+        dy: "Bɛ fɛn kura la..."
       },
-    "confirm": {
+      "confirm": {
         en: "Confirm",
         sw: "Thibitisha",
         ha: "Tabatar",
@@ -5356,9 +5938,11 @@ const translations = {
         af: "Bevestig",
         tw: "Gba ɛka",
         rw: "Kwemeza",
-        lg: "Goberera"
+        lg: "Goberera",
+        fr: "Confirmer",
+        dy: "Hakili to"
       },
-    "cancel": {
+      "cancel": {
         en: "Cancel",
         sw: "Ghairi",
         ha: "Soke",
@@ -5369,9 +5953,11 @@ const translations = {
         af: "Kanselleer",
         tw: "Twe",
         rw: "Kureka",
-        lg: "Sazaamu"
+        lg: "Sazaamu",
+        fr: "Annuler",
+        dy: "Ban"
       },
-    "processing": {
+      "processing": {
         en: "Processing...",
         sw: "Inashindikiza...",
         ha: "Ana aikiwa...",
@@ -5382,10 +5968,12 @@ const translations = {
         af: "Verwerk...",
         tw: "Retre...",
         rw: "Irihiza...",
-        lg: "Kirabirira..."
+        lg: "Kirabirira...",
+        fr: "Traitement...",
+        dy: "Bɛ kɛ..."
       }
     },
-    "payment": {
+        "payment": {
       "for_customer": {
         en: "For",
         sw: "Kwa",
@@ -5397,9 +5985,11 @@ const translations = {
         af: "Vir",
         tw: "Maa",
         rw: "Kuri",
-        lg: "Ku"
+        lg: "Ku",
+        fr: "Pour",
+        dy: "Ka"
       },
-    "original_amount": {
+      "original_amount": {
         en: "Original Amount",
         sw: "Kiasi Asilia",
         ha: "Adadin Asali",
@@ -5410,9 +6000,11 @@ const translations = {
         af: "Oorspronklike Bedrag",
         tw: "Kɛseyɛ",
         rw: "Inkingi",
-        lg: "Emu ku"
+        lg: "Emu ku",
+        fr: "Montant d'origine",
+        dy: "Damina donkili"
       },
-    "paid_so_far": {
+      "paid_so_far": {
         en: "Paid So Far",
         sw: "Imelipisho Hadi Sasa",
         ha: "An biya har zuwa",
@@ -5423,9 +6015,11 @@ const translations = {
         af: "Betaal Sover",
         tw: "Ato mu",
         rw: "Byakwiye",
-        lg: "Ezaliddwa"
+        lg: "Ezaliddwa",
+        fr: "Payé jusqu'à présent",
+        dy: "A jɔ ka se"
       },
-    "due_date": {
+      "due_date": {
         en: "Due Date",
         sw: "Tarehe ya Malipo",
         ha: "Ranar Biya",
@@ -5436,9 +6030,11 @@ const translations = {
         af: "Vervaldatum",
         tw: "Da a bɛ",
         rw: "Itariki yo kwishyura",
-        lg: "Olunaku olwo okulabya"
+        lg: "Olunaku olwo okulabya",
+        fr: "Date d'échéance",
+        dy: "Juguyɔrɔ don"
       },
-    "overdue_by": {
+      "overdue_by": {
         en: "Overdue by",
         sw: "Imechewa kwa",
         ha: "Wucewa da",
@@ -5449,9 +6045,11 @@ const translations = {
         af: "Oorverdue",
         tw: "Adawuru",
         rw: "Byakwiye",
-        lg: "Ewuliddwa"
+        lg: "Ewuliddwa",
+        fr: "En retard de",
+        dy: "A tɛmɛn don"
       },
-    "days": {
+      "days": {
         en: "days",
         sw: "siku",
         ha: "rana",
@@ -5462,9 +6060,11 @@ const translations = {
         af: "dae",
         tw: "nnɛma",
         rw: "iminsi",
-        lg: "enaku"
+        lg: "enaku",
+        fr: "jours",
+        dy: "donw"
       },
-    "remaining_balance": {
+      "remaining_balance": {
         en: "Remaining Balance",
         sw: "Salio Ilivyobaki",
         ha: "Makwancin",
@@ -5475,9 +6075,11 @@ const translations = {
         af: "Oorblywende Balans",
         tw: "Sika a aka",
         rw: "Ibice bya hirya",
-        lg: "Ebyokulinda ebirala"
+        lg: "Ebyokulinda ebirala",
+        fr: "Solde restant",
+        dy: "Donkili sigi"
       },
-    "payment_amount": {
+      "payment_amount": {
         en: "Payment Amount",
         sw: "Kiasi Cha Malipo",
         ha: "Adadin Biya",
@@ -5488,9 +6090,11 @@ const translations = {
         af: "Betaalbedrag",
         tw: "Kɛseyɛ a to",
         rw: "Inanga yo kwishyura",
-        lg: "Emu ku okulaba"
+        lg: "Emu ku okulaba",
+        fr: "Montant du paiement",
+        dy: "Juguyɔrɔ donkili"
       },
-    "max_payment": {
+      "max_payment": {
         en: "Maximum",
         sw: "Maksimum",
         ha: "Mafi",
@@ -5501,9 +6105,11 @@ const translations = {
         af: "Maksimum",
         tw: "Kɛse",
         rw: "Utera",
-        lg: "Waggulu"
+        lg: "Waggulu",
+        fr: "Maximum",
+        dy: "Kɛrɛnkɛrɛn"
       },
-    "record_payment": {
+      "record_payment": {
         en: "Record Payment",
         sw: "Rekodi Malipo",
         ha: "Rubuta Biya",
@@ -5514,9 +6120,11 @@ const translations = {
         af: "Teken Betaling",
         tw: "Kyɛ sika",
         rw: "Andika inanga",
-        lg: "Wandiika okulaba"
+        lg: "Wandiika okulaba",
+        fr: "Enregistrer le paiement",
+        dy: "Juguyɔrɔ sɛbɛn"
       },
-    "payment_recorded": {
+      "payment_recorded": {
         en: "Payment Recorded!",
         sw: "Malipo Imerekodiwa!",
         ha: "Biya An Rubuta!",
@@ -5527,9 +6135,11 @@ const translations = {
         af: "Betaling Teken!",
         tw: "Sika a kyɛ!",
         rw: "Inanga Yanditse!",
-        lg: "Okulaba Kwandiddwa!"
+        lg: "Okulaba Kwandiddwa!",
+        fr: "Paiement enregistré !",
+        dy: "Juguyɔrɔ sɛbɛn!"
       },
-    "payment_success_message": {
+      "payment_success_message": {
         en: "Payment has been successfully recorded",
         sw: "Malipo imeerekodiwa kwa mafanikio",
         ha: "Biya an rubuta da nasamu",
@@ -5540,9 +6150,11 @@ const translations = {
         af: "Betaling is suksesvol geteken",
         tw: "Sika a kyɛ yi akyinnye",
         rw: "Inanga yaranditse ne burunduse",
-        lg: "Okulaba kwandiddwa bulungi"
+        lg: "Okulaba kwandiddwa bulungi",
+        fr: "Le paiement a été enregistré avec succès",
+        dy: "Juguyɔrɔ sɛbɛn ka nyɛ"
       },
-    "record_partial_payment": {
+      "record_partial_payment": {
         en: "Record Partial Payment",
         sw: "Rekodi Malipo Sehemu",
         ha: "Rubuta Biya Wani",
@@ -5553,9 +6165,11 @@ const translations = {
         af: "Teken Gedeeltelike Betaling",
         tw: "Kyɛ sakrae kɛse",
         rw: "Andika inanga y'igice",
-        lg: "Wandiika okulaba okutono"
+        lg: "Wandiika okulaba okutono",
+        fr: "Enregistrer un paiement partiel",
+        dy: "Juguyɔrɔ kɛndɛ sɛbɛn"
       },
-    "mark_as_paid": {
+      "mark_as_paid": {
         en: "Mark as Fully Paid",
         sw: "Tia Alimesha Imelipisho Kamili",
         ha: "Sanya Aka Biya Cikak",
@@ -5566,10 +6180,12 @@ const translations = {
         af: "Teken as Volled Betaal",
         tw: "Hyehyɛ sɛ wato",
         rw: "Shyiraho amateka yuzuye",
-        lg: "Teeka nti zikole okulaba buli"
+        lg: "Teeka nti zikole okulaba buli",
+        fr: "Marquer comme entièrement payé",
+        dy: "A don i ye a jɔ"
       }
     },
-    "cash": {
+        "cash": {
       "in": {
         en: "Cash In",
         sw: "Pesa Ndani",
@@ -5581,7 +6197,9 @@ const translations = {
         af: "Geld In",
         tw: "Sika Bae",
         rw: "Amafaranga muri",
-        lg: "Ensobi munda"
+        lg: "Ensobi munda",
+        fr: "Entrée d'argent",
+        dy: "Wosoro don"
       },
       "out": {
         en: "Cash Out",
@@ -5594,7 +6212,9 @@ const translations = {
         af: "Geld Uit",
         tw: "Sika Kõ",
         rw: "Amafaranga ziva",
-        lg: "Ensobi ziva"
+        lg: "Ensobi ziva",
+        fr: "Sortie d'argent",
+        dy: "Wosoro bɔ"
       },
       "profit": {
         en: "Profit",
@@ -5607,7 +6227,9 @@ const translations = {
         af: "Wins",
         tw: "Mfaso",
         rw: "Inyungu",
-        lg: "Amagoba"
+        lg: "Amagoba",
+        fr: "Bénéfice",
+        dy: "Nafa"
       },
       "search_cash_flow": {
         en: "Search cash flow...",
@@ -5620,7 +6242,9 @@ const translations = {
         af: "Soek geldvloei...",
         tw: "Hwe sika a...",
         rw: "Shakisha imali yinjira no imuka...",
-        lg: "Noona ensimbi eziva no zituuka..."
+        lg: "Noona ensimbi eziva no zituuka...",
+        fr: "Rechercher les flux de trésorerie...",
+        dy: "Wosoro taama nini..."
       },
       "all": {
         en: "All",
@@ -5633,7 +6257,9 @@ const translations = {
         af: "Almal",
         tw: "Nso",
         rw: "Byose",
-        lg: "Byona"
+        lg: "Byona",
+        fr: "Tous",
+        dy: "Bɛɛ"
       },
       "money_in": {
         en: "Money In",
@@ -5646,7 +6272,9 @@ const translations = {
         af: "Geld In",
         tw: "Sika Bae",
         rw: "Amafaranga muri",
-        lg: "Ensobi munda"
+        lg: "Ensobi munda",
+        fr: "Argent entrant",
+        dy: "Wosoro don"
       },
       "money_out": {
         en: "Money Out",
@@ -5659,7 +6287,9 @@ const translations = {
         af: "Geld Uit",
         tw: "Sika Kõ",
         rw: "Amafaranga ziva",
-        lg: "Ensobi ziva"
+        lg: "Ensobi ziva",
+        fr: "Argent sortant",
+        dy: "Wosoro bɔ"
       },
       "payment_amount": {
         en: "Payment Amount",
@@ -5672,7 +6302,9 @@ const translations = {
         af: "Bedrag",
         tw: "Kosi Sika",
         rw: "Inanga yo kwishyura",
-        lg: "Emu ku okulaba"
+        lg: "Emu ku okulaba",
+        fr: "Montant du paiement",
+        dy: "Juguyɔrɔ donkili"
       },
       "ksh": {
         en: "KSh",
@@ -5685,7 +6317,9 @@ const translations = {
         af: "KSh",
         tw: "KSh",
         rw: "KSh",
-        lg: "KSh"
+        lg: "KSh",
+        fr: "KSh",
+        dy: "KSh"
       },
       "default_amount": {
         en: "0.00",
@@ -5698,7 +6332,9 @@ const translations = {
         af: "0.00",
         tw: "0.00",
         rw: "0.00",
-        lg: "0.00"
+        lg: "0.00",
+        fr: "0.00",
+        dy: "0.00"
       },
       "description": {
         en: "Description",
@@ -5711,7 +6347,9 @@ const translations = {
         af: "Beskrywing",
         tw: "Nkyerkyeremu",
         rw: "Ubusobanuro",
-        lg: "Okulaga"
+        lg: "Okulaga",
+        fr: "Description",
+        dy: "Laɲinibɔ"
       },
       "what_was_this_for": {
         en: "What was this for?",
@@ -5724,7 +6362,9 @@ const translations = {
         af: "Wat was dit vir?",
         tw: "Eyi de mfaa?",
         rw: "Ibi byari ibiri iki?",
-        lg: "Kino kya ki kirabikwa?"
+        lg: "Kino kya ki kirabikwa?",
+        fr: "À quoi cela servait-il ?",
+        dy: "Nin bɛ kɛ ko di?"
       },
       "customer_name_optional": {
         en: "Customer Name (Optional)",
@@ -5737,7 +6377,9 @@ const translations = {
         af: "Kliëntnaam (Opsioneel)",
         tw: "Ahenkan no (ano adwuma)",
         rw: "Izina ry'umukiriya (bitari ngombwa)",
-        lg: "Linnya lya omukyala (okwetaala)"
+        lg: "Linnya lya omukyala (okwetaala)",
+        fr: "Nom du client (optionnel)",
+        dy: "Jagokɛla tɔgɔ (nka fɛ)"
       },
       "customer_name": {
         en: "Customer Name",
@@ -5750,7 +6392,9 @@ const translations = {
         af: "Kliëntnaam",
         tw: "Ahenkan no",
         rw: "Izina ry'umukiriya",
-        lg: "Linnya lya omukyala"
+        lg: "Linnya lya omukyala",
+        fr: "Nom du client",
+        dy: "Jagokɛla tɔgɔ"
       },
       "payment_method": {
         en: "Payment Method",
@@ -5763,7 +6407,9 @@ const translations = {
         af: "Betalingsmetode",
         tw: "Toroɛ kwan",
         rw: "Uburyo bwo kwishyura",
-        lg: "Enkola y'okulaba"
+        lg: "Enkola y'okulaba",
+        fr: "Méthode de paiement",
+        dy: "Juguyɔrɔ cogo"
       },
       "cash": {
         en: "Cash",
@@ -5776,7 +6422,9 @@ const translations = {
         af: "Kontant",
         tw: "Sika",
         rw: "Amafaranga",
-        lg: "Ssente"
+        lg: "Ssente",
+        fr: "Espèces",
+        dy: "Wosoro"
       },
       "mobile_money": {
         en: "Mobile Money",
@@ -5789,7 +6437,9 @@ const translations = {
         af: "Mobiele Geld",
         tw: "Mobile sika",
         rw: "Amafaranga ya telefoni",
-        lg: "Ssente z'omu ttendekero"
+        lg: "Ssente z'omu ttendekero",
+        fr: "Argent mobile",
+        dy: "Wosoro tilama"
       },
       "credit": {
         en: "Credit",
@@ -5802,7 +6452,9 @@ const translations = {
         af: "Krediet",
         tw: "Credit",
         rw: "Crédit",
-        lg: "Kulunda"
+        lg: "Kulunda",
+        fr: "Crédit",
+        dy: "Juguyɔrɔ"
       },
       "other": {
         en: "Other",
@@ -5815,7 +6467,9 @@ const translations = {
         af: "Ander",
         tw: "Foforo",
         rw: "Ibindi",
-        lg: "Endala"
+        lg: "Endala",
+        fr: "Autre",
+        dy: "Wɛrɛ"
       },
       "save_transaction": {
         en: "Save Transaction",
@@ -5828,7 +6482,9 @@ const translations = {
         af: "Stoor Transaksie",
         tw: "Save dwumadzi",
         rw: "Bika umushinga",
-        lg: "Tereka ekintu"
+        lg: "Tereka ekintu",
+        fr: "Enregistrer la transaction",
+        dy: "Sanfɛ marako"
       },
       "add_transaction": {
         en: "Add Transaction",
@@ -5841,7 +6497,9 @@ const translations = {
         af: "Voeg Transaksie By",
         tw: "Ka dwumadzi ho",
         rw: "Ongeraho umushinga",
-        lg: "Yongera ekintu"
+        lg: "Yongera ekintu",
+        fr: "Ajouter une transaction",
+        dy: "Sanfɛ fara a kan"
       },
       "program_fee": {
         en: "Program Fee",
@@ -5854,7 +6512,9 @@ const translations = {
         af: "Programfooi",
         tw: "Programmu ahotɔ",
         rw: "Iyuze n'ihuriro",
-        lg: "Emu ku puloguramu"
+        lg: "Emu ku puloguramu",
+        fr: "Frais de programme",
+        dy: "Porogaramu sara"
       },
       "description_optional": {
         en: "Description (optional)",
@@ -5867,7 +6527,9 @@ const translations = {
         af: "Beskrywing (opsioneel)",
         tw: "Nkyerkyeremu (ano adwuma)",
         rw: "Ubusobanuro (bitari ngombwa)",
-        lg: "Okulaga (okwetaala)"
+        lg: "Okulaga (okwetaala)",
+        fr: "Description (optionnel)",
+        dy: "Laɲinibɔ (nka fɛ)"
       },
       "what_is_this_credit_for": {
         en: "What is this credit for?",
@@ -5880,7 +6542,9 @@ const translations = {
         af: "Wat is hierdie krediet vir?",
         tw: "Credit yi de mfaa?",
         rw: "Iyi crédit ari iki?",
-        lg: "Kulunda eno ki kikirabikwa?"
+        lg: "Kulunda eno ki kikirabikwa?",
+        fr: "À quoi sert ce crédit ?",
+        dy: "Juguyɔrɔ nin bɛ kɛ ko di?"
       },
       "category": {
         en: "Category",
@@ -5893,7 +6557,9 @@ const translations = {
         af: "Kategorie",
         tw: "Kyerɛwfa",
         rw: "Urupfu",
-        lg: "Ekika"
+        lg: "Ekika",
+        fr: "Catégorie",
+        dy: "Bamanan"
       },
       "supplies": {
         en: "Supplies",
@@ -5906,7 +6572,9 @@ const translations = {
         af: "Voorrade",
         tw: "Nneɛma a wɔde di dwuma",
         rw: "Ibikoresho",
-        lg: "Ebintu ebikozesebwa"
+        lg: "Ebintu ebikozesebwa",
+        fr: "Fournitures",
+        dy: "Fɛnw"
       },
       "who_do_you_owe": {
         en: "Who do you owe? *",
@@ -5919,7 +6587,9 @@ const translations = {
         af: "Aan wie skuld jy? *",
         tw: "Wode bɛn? *",
         rw: "Ugira ubandi? *",
-        lg: "Ow'oyita banange? *"
+        lg: "Ow'oyita banange? *",
+        fr: "À qui devez-vous ? *",
+        dy: "Jɔntigiɲɛ?"
       },
       "select_vendor_person": {
         en: "Select a vendor or person...",
@@ -5932,7 +6602,9 @@ const translations = {
         af: "Kies 'n verkoper of persoon...",
         tw: "Pɛ dwumadzi anaa obi...",
         rw: "Hitamo umucuruzi cyangwa umuntu...",
-        lg: "Londa omulisa oba muntu..."
+        lg: "Londa omulisa oba muntu...",
+        fr: "Sélectionnez un vendeur ou une personne...",
+        dy: "Fɛrɛkɛlaɲɛ wɛrɛ laminin..."
       },
       "new_vendor_name": {
         en: "New vendor name (if not listed above)",
@@ -5945,7 +6617,9 @@ const translations = {
         af: "Nuwe verkoper naam (indien nie hierbo gelys nie)",
         tw: "Dwumadzi foforo ahenkan (sɛ wɔnyɛ wo nsɛm a ɛwɔ hɔ no)",
         rw: "Izina ry'umucuruzi mushya (niba ritari ku rutandikanya hejuru)",
-        lg: "Linnya lya mulisa omulungi (nga tebannayizibwa waggulu)"
+        lg: "Linnya lya mulisa omulungi (nga tebannayizibwa waggulu)",
+        fr: "Nom du nouveau vendeur (si non listé ci-dessus)",
+        dy: "Fɛrɛkɛlaɲɛ kura tɔgɔ (ni a tɛ sɛbɛnw la)"
       },
       "enter_vendor_person_name": {
         en: "Enter vendor or person name",
@@ -5958,7 +6632,9 @@ const translations = {
         af: "Tik verkoper of persoon se naam in",
         tw: "Kyerɛ dwumadzi anaa obi din",
         rw: "Andika izina ry'umucuruzi cyangwa umuntu",
-        lg: "Yingiza linnya lya mulisa oba muntu"
+        lg: "Yingiza linnya lya mulisa oba muntu",
+        fr: "Entrez le nom du vendeur ou de la personne",
+        dy: "Fɛrɛkɛlaɲɛ wɛrɛ tɔgɔ sɛbɛn"
       },
       "due_date": {
         en: "Due Date *",
@@ -5971,7 +6647,9 @@ const translations = {
         af: "Vervaldatum *",
         tw: "Da a wɔbɛtɔ *",
         rw: "Umunsi w'ukwishyura *",
-        lg: "Ssaaza eri okulaba *"
+        lg: "Ssaaza eri okulaba *",
+        fr: "Date d'échéance *",
+        dy: "Juguyɔrɔ don *"
       },
       "date_format": {
         en: "yyyy/mm/dd",
@@ -5984,7 +6662,9 @@ const translations = {
         af: "yyyy/mm/dd",
         tw: "yyyy/mm/dd",
         rw: "yyyy/mm/dd",
-        lg: "yyyy/mm/dd"
+        lg: "yyyy/mm/dd",
+        fr: "aaaa/mm/jj",
+        dy: "san/kalo/don"
       },
       "default_due_date": {
         en: "2026/05/08",
@@ -5997,7 +6677,9 @@ const translations = {
         af: "2026/05/08",
         tw: "2026/05/08",
         rw: "2026/05/08",
-        lg: "2026/05/08"
+        lg: "2026/05/08",
+        fr: "2026/05/08",
+        dy: "2026/05/08"
       },
       "payment_due_date_default": {
         en: "Payment due date (default: 30 days from today)",
@@ -6010,7 +6692,9 @@ const translations = {
         af: "Betalingsvervaldatum (verstek: 30 dae vandag)",
         tw: "Da a wɔbɛtɔ (default: 30 nnɔmberɛ firi nnɛ)",
         rw: "Umunsi w'ukwishyura (mbisanzwe: iminsi 30 uhereye uyu munsi)",
-        lg: "Ssaaza eri okulaba (default: ennaku 30 olwaleero)"
+        lg: "Ssaaza eri okulaba (default: ennaku 30 olwaleero)",
+        fr: "Date d'échéance du paiement (par défaut : 30 jours à partir d'aujourd'hui)",
+        dy: "Juguyɔrɔ don (a bɛ kɛ: don 30 kabi bi)"
       },
       "cash.recent_activity": {
         en: "Recent Activity",
@@ -6023,10 +6707,12 @@ const translations = {
         af: "Onlangse Aktiwiteite",
         tw: "Nneɛma a ɛde foforo",
         rw: "Imikorere ya vuba",
-        lg: "Emirimu gyaffe"
+        lg: "Emirimu gyaffe",
+        fr: "Activité récente",
+        dy: "Ko kɔrɔbɔrɔbɔ"
       }
     },
-    "cash.in": {
+        "cash.in": {
       en: "Cash In",
       sw: "Pesa Ndani",
       ha: "Kudi Cikin",
@@ -6037,7 +6723,9 @@ const translations = {
       af: "Geld In",
       tw: "Sika Bae",
       rw: "Amafaranga muri",
-      lg: "Ensobi munda"
+      lg: "Ensobi munda",
+      fr: "Entrée d'argent",
+      dy: "Wosoro don"
     },
     "cash.out": {
       en: "Cash Out",
@@ -6050,7 +6738,9 @@ const translations = {
       af: "Geld Uit",
       tw: "Sika Ko",
       rw: "Amafaranga ziva",
-      lg: "Ensobi ziva"
+      lg: "Ensobi ziva",
+      fr: "Sortie d'argent",
+      dy: "Wosoro bɔ"
     },
     "cash.profit": {
       en: "Profit",
@@ -6063,7 +6753,9 @@ const translations = {
       af: "Wins",
       tw: "Mfaso",
       rw: "Inyungu",
-      lg: "Amagoba"
+      lg: "Amagoba",
+      fr: "Bénéfice",
+      dy: "Nafa"
     },
     "cash.search_cash_flow": {
       en: "Search cash flow...",
@@ -6076,7 +6768,9 @@ const translations = {
       af: "Soek geldvloei...",
       tw: "Hwe sika a...",
       rw: "Shakisha imali yinjira no imuka...",
-      lg: "Noona ensimbi eziva no zituuka..."
+      lg: "Noona ensimbi eziva no zituuka...",
+      fr: "Rechercher les flux de trésorerie...",
+      dy: "Wosoro taama nini..."
     },
     "cash.all": {
       en: "All",
@@ -6089,7 +6783,9 @@ const translations = {
       af: "Almal",
       tw: "Nso",
       rw: "Byose",
-      lg: "Byona"
+      lg: "Byona",
+      fr: "Tous",
+      dy: "Bɛɛ"
     },
     "cash.money_in": {
       en: "Money In",
@@ -6102,7 +6798,9 @@ const translations = {
       af: "Geld In",
       tw: "Sika Bae",
       rw: "Amafaranga muri",
-      lg: "Ensobi munda"
+      lg: "Ensobi munda",
+      fr: "Argent entrant",
+      dy: "Wosoro don"
     },
     "cash.money_out": {
       en: "Money Out",
@@ -6115,7 +6813,9 @@ const translations = {
       af: "Geld Uit",
       tw: "Sika Ko",
       rw: "Amafaranga ziva",
-      lg: "Ensobi ziva"
+      lg: "Ensobi ziva",
+      fr: "Argent sortant",
+      dy: "Wosoro bɔ"
     },
     "customer_name_optional": {
       en: "Customer Name (Optional)",
@@ -6128,7 +6828,9 @@ const translations = {
       af: "Kliëntnaam (Opsioneel)",
       tw: "Ahenkan no (ano adwuma)",
       rw: "Izina ry'umukiriya (bitari ngombwa)",
-      lg: "Linnya lya omukyala (okwetaala)"
+      lg: "Linnya lya omukyala (okwetaala)",
+      fr: "Nom du client (optionnel)",
+      dy: "Jagokɛla tɔgɔ (nka fɛ)"
     },
     "customer_name": {
       en: "Customer Name",
@@ -6141,7 +6843,9 @@ const translations = {
       af: "Kliëntnaam",
       tw: "Ahenkan no",
       rw: "Izina ry'umukiriya",
-      lg: "Linnya lya omukyala"
+      lg: "Linnya lya omukyala",
+      fr: "Nom du client",
+      dy: "Jagokɛla tɔgɔ"
     },
     "payment_method": {
       en: "Payment Method",
@@ -6154,7 +6858,9 @@ const translations = {
       af: "Betalingsmetode",
       tw: "Toroe kwan",
       rw: "Uburyo bwo kwishyura",
-      lg: "Enkola y'okulaba"
+      lg: "Enkola y'okulaba",
+      fr: "Méthode de paiement",
+      dy: "Juguyɔrɔ cogo"
     },
     "what_was_this_for": {
       en: "What was this for?",
@@ -6167,7 +6873,9 @@ const translations = {
       af: "Wat was dit vir?",
       tw: "Eyi de mfaa?",
       rw: "Ibi byari ibiri iki?",
-      lg: "Kino kya ki kirabikwa?"
+      lg: "Kino kya ki kirabikwa?",
+      fr: "À quoi cela servait-il ?",
+      dy: "Nin bɛ kɛ ko di?"
     },
     "save_transaction": {
       en: "Save Transaction",
@@ -6180,7 +6888,9 @@ const translations = {
       af: "Stoor Transaksie",
       tw: "Save dwumadzi",
       rw: "Bika umushinga",
-      lg: "Tereka ekintu"
+      lg: "Tereka ekintu",
+      fr: "Enregistrer la transaction",
+      dy: "Sanfɛ marako"
     },
     "cash.recent_activity": {
       en: "Recent Activity",
@@ -6193,7 +6903,9 @@ const translations = {
       af: "Onlangse Aktiwiteite",
       tw: "Nne dwumadzi a etwa hwe",
       rw: "Imyugaragumbo ya vuba",
-      lg: "Emirimu gyakati"
+      lg: "Emirimu gyakati",
+      fr: "Activité récente",
+      dy: "Ko kɔrɔbɔrɔbɔ"
     },
     "cash.no_cash_activity_found": {
       en: "No cash activity found",
@@ -6206,7 +6918,9 @@ const translations = {
       af: "Geen kontant aktiwiteite gevind nie",
       tw: "Nnhwehu sika dwumadzi",
       rw: "Ntabwo umusanzu w'amafaranga wabonetse",
-      lg: "Tewali wooma nsobi olusanyiddwa"
+      lg: "Tewali wooma nsobi olusanyiddwa",
+      fr: "Aucune activité de trésorerie trouvée",
+      dy: "Wosoro baara si ma sɔrɔ"
     },
     "cash.start_by_recording_first_transaction": {
       en: "Start by recording your first transaction",
@@ -6219,9 +6933,11 @@ const translations = {
       af: "Begin deur jou eerste transaksie op te neem",
       tw: "Hyfi dwumadzi a etwa kan",
       rw: "Tangira gukandika umushinga wawe wa mbere",
-      lg: "Tandika ng'okwandiika embeera yo okutandika"
+      lg: "Tandika ng'okwandiika embeera yo okutandika",
+      fr: "Commencez par enregistrer votre première transaction",
+      dy: "I ka sanfɛ foli sɛbɛn ka daminɛ"
     },
-    "transport.select_service": {
+        "transport.select_service": {
       en: "Select service",
       sw: "Chagua huduma",
       ha: "Za6i sabis",
@@ -6232,7 +6948,9 @@ const translations = {
       af: "Kies diens",
       tw: "P3 adwuma",
       rw: "Hitamo serivisi",
-      lg: "Londa mulimu"
+      lg: "Londa mulimu",
+      fr: "Sélectionner un service",
+      dy: "Sɔrɔn laminin"
     },
     "transport.distance_km": {
       en: "Distance (km)",
@@ -6245,7 +6963,9 @@ const translations = {
       af: "Afstand (km)",
       tw: "Kyemfara (km)",
       rw: "Imihango (km)",
-      lg: "Buwanvu (km)"
+      lg: "Buwanvu (km)",
+      fr: "Distance (km)",
+      dy: "Janya (km)"
     },
     "transport.use_base_amount": {
       en: "Use base amount only",
@@ -6258,7 +6978,9 @@ const translations = {
       af: "Gebruik slegs bedrag",
       tw: "Fa kosi nkabom yi nyina",
       rw: "Koresha inanga yibanze gusa",
-      lg: "Kozesa emu ku ntungo kimu kyokka"
+      lg: "Kozesa emu ku ntungo kimu kyokka",
+      fr: "Utiliser uniquement le montant de base",
+      dy: "Damina donkili kɔrɔ fɛrɛ"
     },
     "transport.tips_optional": {
       en: "Tips (optional)",
@@ -6271,7 +6993,9 @@ const translations = {
       af: "Fooie (opsioneel)",
       tw: "Ahy3de (ano adwuma)",
       rw: "Ibyinshi (bitari ngombwa)",
-      lg: "Empunzi (okwetaala)"
+      lg: "Empunzi (okwetaala)",
+      fr: "Pourboire (optionnel)",
+      dy: "Dɛmɛdonkili (nka fɛ)"
     },
     "transport.calculated_fare": {
       en: "Calculated Fare:",
@@ -6284,7 +7008,9 @@ const translations = {
       af: "Berekende Fooi:",
       tw: "Sika a w6at6:",
       rw: "Amafaranga yabonetse:",
-      lg: "Emu ku okulaba ebikolebwa:"
+      lg: "Emu ku okulaba ebikolebwa:",
+      fr: "Tarif calculé :",
+      dy: "Juguyɔrɔ kalan:"
     },
     "transport.rate": {
       en: "rate",
@@ -6297,7 +7023,9 @@ const translations = {
       af: "koers",
       tw: "koowa",
       rw: "ingano",
-      lg: "ennamba"
+      lg: "ennamba",
+      fr: "tarif",
+      dy: "janya donkili"
     },
     "transport.tips": {
       en: "tips",
@@ -6310,7 +7038,9 @@ const translations = {
       af: "fooie",
       tw: "ahy3de",
       rw: "ibyinshi",
-      lg: "empunzi"
+      lg: "empunzi",
+      fr: "pourboire",
+      dy: "dɛmɛdonkili"
     },
     "transport.base_amount_only": {
       en: "Base amount only",
@@ -6323,7 +7053,9 @@ const translations = {
       af: "Bedrag slegs",
       tw: "Kosi nkabom yi nyina",
       rw: "Inanga yibanze gusa",
-      lg: "Emu ku ntungo kimu kyokka"
+      lg: "Emu ku ntungo kimu kyokka",
+      fr: "Montant de base uniquement",
+      dy: "Damina donkili kɔrɔ"
     },
     "payment_method.title": {
       en: "Payment Method",
@@ -6336,7 +7068,9 @@ const translations = {
       af: "Betalingsmetode",
       tw: "Toro3 kwan",
       rw: "Uburyo bwo kwishyura",
-      lg: "Enkola y'okulaba"
+      lg: "Enkola y'okulaba",
+      fr: "Méthode de paiement",
+      dy: "Juguyɔrɔ cogo"
     },
     "customerName": {
       en: "Customer Name",
@@ -6349,7 +7083,9 @@ const translations = {
       af: "Kli6ntnaam",
       tw: "Ahenkan no",
       rw: "Izina ry'umukiriya",
-      lg: "Linnya lya omukyala"
+      lg: "Linnya lya omukyala",
+      fr: "Nom du client",
+      dy: "Jagokɛla tɔgɔ"
     },
     "common.description_placeholder_money_in": {
       en: "What was this for?",
@@ -6362,7 +7098,9 @@ const translations = {
       af: "Wat was dit vir?",
       tw: "Eyi de mfaa?",
       rw: "Ibi byari ibiri iki?",
-      lg: "Kino kya ki kirabikwa?"
+      lg: "Kino kya ki kirabikwa?",
+      fr: "À quoi cela servait-il ?",
+      dy: "Nin bɛ kɛ ko di?"
     },
     "credit.description_placeholder": {
       en: "What is this credit for?",
@@ -6375,7 +7113,9 @@ const translations = {
       af: "Wat is hierdie krediet vir?",
       tw: "Credit yi de mfaa?",
       rw: "Iyi cr6dit ari iki?",
-      lg: "Kulunda eno ki kikirabikwa?"
+      lg: "Kulunda eno ki kikirabikwa?",
+      fr: "À quoi sert ce crédit ?",
+      dy: "Juguyɔrɔ nin bɛ kɛ ko di?"
     },
     "common.payment_due_note": {
       en: "Payment due date (default: 30 days from today)",
@@ -6388,7 +7128,9 @@ const translations = {
       af: "Betalingsvervaldatum (verstek: 30 dae vandag)",
       tw: "Da a w6b6t6 (default: 30 nn6mber6 firi nn6)",
       rw: "Umunsi w'ukwishyura (mbisanzwe: iminsi 30 uhereye uyu munsi)",
-      lg: "Ssaaza eri okulaba (default: ennaku 30 olwaleero)"
+      lg: "Ssaaza eri okulaba (default: ennaku 30 olwaleero)",
+      fr: "Date d'échéance du paiement (par défaut : 30 jours à partir d'aujourd'hui)",
+      dy: "Juguyɔrɔ don (a bɛ kɛ: don 30 kabi bi)"
     },
     "transaction.save": {
       en: "Save Transaction",
@@ -6401,7 +7143,9 @@ const translations = {
       af: "Stoor Transaksie",
       tw: "Save dwumadzi",
       rw: "Bika umushinga",
-      lg: "Tereka ekintu"
+      lg: "Tereka ekintu",
+      fr: "Enregistrer la transaction",
+      dy: "Sanfɛ marako"
     },
     "credit.customer_name_required": {
       en: "Customer name is required for credit payment",
@@ -6414,737 +7158,11 @@ const translations = {
       af: "Kli6ntnaam wordelik vir kredietbetaling",
       tw: "Ahenkan no h6 ho ama sika a w6de hy3",
       rw: "Izina ry'umukiriya rirakenewe ku kwishyura",
-      lg: "Linnya lya omukyala lyetaagibwa okulaba"
+      lg: "Linnya lya omukyala lyetaagibwa okulaba",
+      fr: "Le nom du client est requis pour le paiement par crédit",
+      dy: "Jagokɛla tɔgɔ kan juguyɔrɔ la"
     },
-    "credit.failed_to_add": {
-      en: "Failed to add credit for",
-      sw: "Imeshindikana kuongeza mkopo kwa",
-      ha: "Bai sami ba kara kudin ga",
-      yo: "A k6 le fi kr6dit s3",
-      ig: "Agb6gh6 agbakw6gh6ta mkp6gh6ta maka",
-      zu: "Akukho kwafuneka kwengeza ikredi",
-      xh: "Akukho kwafuneka kwengeza ikredi",
-      af: "Misluk om krediet by te voeg",
-      tw: "Ank6 sika a w6de b6",
-      rw: "Byanze kwongera credit",
-      lg: "Teekawo kulunda"
-    },
-    "credit.new_customer_created": {
-      en: "New customer \"{name}\" created with {currency} {amount} credit",
-      sw: "Mteja mpya \"{name}\" ameundwa na {currency} {amount} mkopo",
-      ha: "Mai siyan sabuwar \"{name}\" an haifa da {currency} {amount} kudi",
-      yo: "Onish6 tuntun \"{name}\" a s6 p6l6 p6l6 {currency} {amount} kr6dit",
-      ig: "Ahia 6h6r6 \"{name}\" e k6r6r6 na {currency} {amount} mkp6gh6ta",
-      zu: "Umthengi omusha \"{name}\" wakhiwa ne-{currency} {amount} ikredi",
-      xh: "Umthengi omusha \"{name}\" wakhiwa ne-{currency} {amount} ikredi",
-      af: "Nuwe kli6nt \"{name}\" geskep met {currency} {amount} krediet",
-      tw: "Onyame foforo \"{name}\" w6tee no {currency} {amount} sika a w6de",
-      rw: "Umukiriya mushya \"{name}\" yaremewe na {currency} {amount} credit",
-      lg: "Omukyala omupya \"{name}\" yatondebwa ne {currency} {amount} kulunda"
-    },
-    "credit.added_to_customer": {
-      en: "{currency} {amount} credit added to {name}. New total: {currency} {total}",
-      sw: "{currency} {amount} mkopo umefungwa kwa {name}. Jumla mpya: {currency} {total}",
-      ha: "{currency} {amount} kudi aka 6nganta zuwa {name}. Jimilla sabo: {currency} {total}",
-      yo: "{currency} {amount} kr6dit a ti fifi m6 {name}. Lapap6 tuntun: {currency} {total}",
-      ig: "{currency} {amount} mkp6gh6ta etinyere {name}. Ng6k6ta 6h6r6: {currency} {total}",
-      zu: "{currency} {amount} ikredi engeziwe kwi-{name}. Isamba esisha: {currency} {total}",
-      xh: "{currency} {amount} ikredi engeziwe kwi-{name}. Isamba esisha: {currency} {total}",
-      af: "{currency} {amount} krediet bygevoeg by {name}. Nuwe totaal: {currency} {total}",
-      tw: "{currency} {amount} sika a w6de aka k6 ho {name}. Nyinaa foforo: {currency} {total}",
-      rw: "{currency} {amount} credit yongerewe ku {name}. Igiteranyo gishya: {currency} {total}",
-      lg: "{currency} {amount} kulunda eyingiddwa ku {name}. Ennaku ntono: {currency} {total}"
-    },
-    "credit.payment_failed": {
-      en: "Failed to process payment",
-      sw: "Imeshindikana kusindikiza malipo",
-      ha: "Bai sami a biya",
-      yo: "A k6 le se isanwo",
-      ig: "Agb6gh6 agbap6ta 6gw6",
-      zu: "Akukho kwafuneka kusindikisa malilo",
-      xh: "Akukho kwafuneka kusindikisa malilo",
-      af: "Betaling het misluk",
-      tw: "Sika a w6de yii b6",
-      rw: "Byanze kwishyura",
-      lg: "Okulaba tekusekedde"
-    },
-    "credit.business_id_not_found": {
-      en: "Business ID not found",
-      sw: "ID ya biashara haipatikani",
-      ha: "ID na kasuwanci ba a samu",
-      yo: "ID i6il6 k6 ri",
-      ig: "ID ahia agap6tagh6",
-      zu: "ID ye bizini ayifumaneki",
-      xh: "ID ye bizini ayifumaneki",
-      af: "Besigheid ID nie gevind nie",
-      tw: "Adwuma ID nnhun",
-      rw: "ID y'ubucuruzi ntabwo ibonetse",
-      lg: "ID y'ebivudde tebaawo"
-    },
-    "credit.select_vendor_required": {
-      en: "Please select who you owe money to or enter a new name",
-      sw: "Tafadhali chagua unamdeni nani au ingiza jina jipya",
-      ha: "Da fatan za6i wane ka ke da ko ka shigar da suna sabuwar",
-      yo: "J6w6 gb6gb6 6ni 6 nj6 nkan tabi fi oruk6 tuntun",
-      ig: "Biko gharo onye 6 ga akw6 ma 6 tinye aha 6h6r6",
-      zu: "Siyawa ukhetha ubani owanikwa okanye faka igama elisha",
-      xh: "Siyawa ukhetha ubani owanikwa okanye faka igama elisha",
-      af: "Kies asseblief wie jy skuld is of voeg 'n nuwe naam in",
-      tw: "Ka wo b3 wo de b3n ana wo ka b3 din foforo",
-      rw: "Niba ubandi wowe cyangwa wandika izina rishya",
-      lg: "Londa ow'oyita banange okongera linnya elipya"
-    },
-    "credit.new_vendor_created": {
-      en: "New vendor \"{name}\" created. You owe them {currency} {amount}",
-      sw: "Muuzaji mpya \"{name}\" ameundwa. Unamdeni {currency} {amount}",
-      ha: "Mai sayar sabuwar \"{name}\" an haifa. Kana da {currency} {amount}",
-      yo: "Al6s6 tuntun \"{name}\" a s6. O nj6 w6n {currency} {amount}",
-      ig: "Onye na-ere ihe 6h6r6 \"{name}\" e k6r6r6. 6 ga akw6 {currency} {amount}",
-      zu: "Umthengisi omusha \"{name}\" wakhiwa. Unanikwa {currency} {amount}",
-      xh: "Umthengisi omusha \"{name}\" wakhiwa. Unanikwa {currency} {amount}",
-      af: "Nuwe verkoper \"{name}\" geskep. Jy skuld hulle {currency} {amount}",
-      tw: "Dwumadzifoforo \"{name}\" w6tee. Wo de {currency} {amount} a w6de",
-      rw: "Umucuruzi mushya \"{name}\" yaremewe. Ubanda {currency} {amount}",
-      lg: "Omulisa omupya \"{name}\" yatondebwa. Ow'oyita {currency} {amount}"
-    },
-    "credit.added_to_vendor": {
-      en: "{currency} {amount} added to {name}. Total owed: {currency} {total}",
-      sw: "{currency} {amount} umefungwa kwa {name}. Jumla ya deni: {currency} {total}",
-      ha: "{currency} {amount} aka 6nganta zuwa {name}. Jimillar da: {currency} {total}",
-      yo: "{currency} {amount} a ti fifi m6 {name}. Lapap6 ti a nj6: {currency} {total}",
-      ig: "{currency} {amount} etinyere {name}. Ng6k6ta 6 ga akw6: {currency} {total}",
-      zu: "{currency} {amount} engeziwe kwi-{name}. Isamba esiphambiliyo: {currency} {total}",
-      xh: "{currency} {amount} engeziwe kwi-{name}. Isamba esiphambiliyo: {currency} {total}",
-      af: "{currency} {amount} bygevoeg by {name}. Totaal geskuld: {currency} {total}",
-      tw: "{currency} {amount} aka k6 ho {name}. Sika a w6de nyinaa: {currency} {total}",
-      rw: "{currency} {amount} yongerewe ku {name}. Igiteranyo cy'ubandi: {currency} {total}",
-      lg: "{currency} {amount} eyingiddwa ku {name}. Enssimbi eze wamu: {currency} {total}"
-    },
-    "credit.no_vendors_found": {
-      en: "No vendors found. Enter a new vendor name below.",
-      sw: "Hakuna muuzaji uliopatikana. Ingiza jina la muuzaji mpya hapa chini.",
-      ha: "Babu mai sayar da aka samu. Shigar da sunan mai sayar sabuwar a kasa.",
-      yo: "K6 si al6s6 kan w6 r6. Fi oruk6 al6s6 tuntun s6t6n.",
-      ig: "Enwegh6 onye na-ere ihe a ch6t6r6. Tinye aha onye na-ere ihe 6h6r6 n'okpuru.",
-      zu: "Akwabho abathengisi abafumanekayo. Faka igama lomthengisi omusha ngezantsi.",
-      xh: "Akwabho abathengisi abafumanekayo. Faka igama lomthengisi omusha ngezantsi.",
-      af: "Geen verkopers gevind nie. Voeg 'n nuwe verkoper naam hier onder in.",
-      tw: "Nnh3 dwumadzi bi a hwee. B0 din dwumadzi foforo aha ase.",
-      rw: "Ntabwo abacuruzi batandukanye. Andika izina ry'umucuruzi mushya hepfo.",
-      lg: "Tewali ba mulisa batuuse. Yingiza linnya lya mulisa omupya wansi."
-    },
-    "credit.owed_label": {
-      en: "Owed:",
-      sw: "Deni:",
-      ha: "Da:",
-      yo: "Nj6:",
-      ig: "Akw6:",
-      zu: "Owanikwa:",
-      xh: "Owanikwa:",
-      af: "Geskuld:",
-      tw: "Ade:",
-      rw: "Banda:",
-      lg: "Ziddwa:"
-    },
-    "credit.who_do_you_owe": {
-      en: "Who do you owe?",
-      sw: "Unamdeni nani?",
-      ha: "Wane ka ke da?",
-      yo: "W6 ni 6 nj6?",
-      ig: "Onye 6 ga akw6?",
-      zu: "Ubani owanikwa?",
-      xh: "Ubani owanikwa?",
-      af: "Wie skuld jy?",
-      tw: "Wo de b3n?",
-      rw: "Ubandi wowe ni nde?",
-      lg: "Ow'oyita banange?"
-    },
-    "credit.select_vendor_person": {
-      en: "Select a vendor or person...",
-      sw: "Chagua muuzaji au mtu...",
-      ha: "Za6i mai sayar ko mutum...",
-      yo: "Yan al6s6 tabi eniyan...",
-      ig: "Horo onye na-ere ihe tabi mmad6...",
-      zu: "Khetha umthengisi okanye umntu...",
-      xh: "Khetha umthengisi okanye umntu...",
-      af: "Kies 'n verkoper of persoon...",
-      tw: "P3 dwumadzi anaa obi...",
-      rw: "Hitamo umucuruzi cyangwa umuntu...",
-      lg: "Londa omulisa oba omuntu..."
-    },
-    "credit.new_vendor_name": {
-      en: "New vendor name",
-      sw: "Jina la muuzaji mpya",
-      ha: "Sunan mai sayar sabuwar",
-      yo: "Oruk6 al6s6 tuntun",
-      ig: "Aha onye na-ere ihe 6h6r6",
-      zu: "Igama lomthengisi omusha",
-      xh: "Igama lomthengisi omusha",
-      af: "Nuwe verkoper naam",
-      tw: "Din dwumadzi foforo",
-      rw: "Izina ry'umucuruzi mushya",
-      lg: "Linnya lya mulisa omupya"
-    },
-    "credit.make_payment": {
-      en: "Make Payment",
-      sw: "Fanya Malipo",
-      ha: "Yi Biya",
-      yo: "Se Iroyin",
-      ig: "Me Bughar",
-      zu: "Yenza Ukukhokha",
-      xh: "Yenza Ukukhokha",
-      af: "Doen Betaling",
-      tw: "Y3 Sika",
-      rw: "Shyiramo Kwishyura",
-      lg: "Ssula Emu"
-    },
-    "credit.credit_purchase": {
-      en: "Credit Purchase",
-      sw: "Ununuzi wa Mkopo",
-      ha: "Sayar da Kudi",
-      yo: "Ra Rira",
-      ig: "Nr6 Ah",
-      zu: "Uthengo Lwe-Credit",
-      xh: "Uthengo Lwe-Credit",
-      af: "Krediet Aankoop",
-      tw: "B3 Nt3mu",
-      rw: "Gukora ku Credit",
-      lg: "Okugula ku ntungo"
-    },
-    "credit.original": {
-      en: "Original:",
-      sw: "Asili:",
-      ha: "Farko:",
-      yo: "Ak6k6:",
-      ig: "Mb:",
-      zu: "Okwokuqala:",
-      xh: "Okwokuqala:",
-      af: "Oorspronklike:",
-      tw: "Mfitiase:",
-      rw: "Umwimerere:",
-      lg: "Eddala:"
-    },
-    "credit.paid": {
-      en: "Paid:",
-      sw: "Imelipwa:",
-      ha: "An Biya:",
-      yo: "Ti a San:",
-      ig: "Adagh:",
-      zu: "Akhiyiwe:",
-      xh: "Akhiyiwe:",
-      af: "Betaal:",
-      tw: "Ato W",
-      rw: "Byishyuwe:",
-      lg: "Ebisasudwe:"
-    },
-    "credit.remaining": {
-      en: "Remaining:",
-      sw: "Iliyobaki:",
-      ha: "Da Rage:",
-      yo: "Ti o Ku:",
-      ig: "Gbaf:",
-      zu: "Esalayo:",
-      xh: "Esalayo:",
-      af: "Oorblywende:",
-      tw: "Nea aka:",
-      rw: "Asigaye:",
-      lg: "Esigadde:"
-    },
-    "credit.enter_amount": {
-      en: "Enter amount",
-      sw: "Ingiza kiasi",
-      ha: "Shigar adadi",
-      yo: "Te iye",
-      ig: "Tinye ego",
-      zu: "Faka inani",
-      xh: "Faka inani",
-      af: "Voeg bedrag in",
-      tw: "Hy3 mu n",
-      rw: "Injiza amafaranga",
-      lg: "Yingiza omuwendo"
-    },
-    "credit.cancel_payment": {
-      en: "Cancel",
-      sw: "Ghairi",
-      ha: "Soke",
-      yo: "Fagile",
-      ig: "Kwch",
-      zu: "Khansela",
-      xh: "Khansela",
-      af: "Kanselleer",
-      tw: "Twa Mu",
-      rw: "Kuraho",
-      lg: "Sazaamu"
-    },
-    "credit.pay_amount": {
-      en: "Pay {amount}",
-      sw: "Lipa {amount}",
-      ha: "Biya {amount}",
-      yo: "San {amount}",
-      ig: "Bughar {amount}",
-      zu: "Khokha {amount}",
-      xh: "Khokha {amount}",
-      af: "Betaal {amount}",
-      tw: "To {amount}",
-      rw: "Shyura {amount}",
-      lg: "Ssula {amount}"
-    },
-    "credit.processing": {
-      en: "Processing...",
-      sw: "Inachakanywa...",
-      ha: "Ake sarrafawa...",
-      yo: "Nse ni...",
-      ig: "Na-emep",
-      zu: "Iqhubeka...",
-      xh: "Iqhubeka...",
-      af: "Verwerk...",
-      tw: "Rebr...",
-      rw: "Iri gukurikizwa...",
-      lg: "Kikola..."
-    },
-    "credit.payment_amount_max": {
-      en: "Payment Amount ({amount} max)",
-      sw: "Kiasi cha Malipo ({amount} kiwango cha juu)",
-      ha: "Adadin Biya ({amount} mafi girma)",
-      yo: "Iye Iroyin ({amount} iye giga)",
-      ig: "Igo Bughar ({amount} kachas",
-      zu: "Inani Lokukhokha ({amount} eliphezulu)",
-      xh: "Inani Lokukhokha ({amount} eliphezulu)",
-      af: "Betaalbedrag ({amount} maks)",
-      tw: "Iye Sika ({amount} k",
-      rw: "Amafaranga yo Kwishyura ({amount} nini",
-      lg: "Omuwendo gw'okusasula ({amount} w"
-    },
-    "credit.customers_tab": {
-      en: "Customers",
-      sw: "Wateja",
-      ha: "Mai siyan",
-      yo: "Aja",
-      ig: "Nd",
-      zu: "Abakheni",
-      xh: "Abakheni",
-      af: "Kliënte",
-      tw: "Afofra",
-      rw: "Abakiriya",
-      lg: "Abakyaala"
-    },
-    "credit.no_customers": {
-      en: "No customers yet",
-      sw: "Hakuna wateja bado",
-      ha: "Babu mai siyan har yanzu",
-      yo: "Kò sí àjà rà",
-      ig: "Enweghi ndi asha na iberibe",
-      zu: "Akukho abakheni kakade",
-      xh: "Akukho abakheni kakade",
-      af: "Nog geen kliënte nie",
-      tw: "Nnh3 afofra bio",
-      rw: "Nta mukiriya ufite",
-      lg: "Tewali mukyala wali"
-    },
-    "credit.add_first": {
-      en: "Add your first customer",
-      sw: "Ongeza mteja wako wa kwanza",
-      ha: "Sanya mai siyan na farko",
-      yo: "Fi akjlk r ak",
-      ig: "Tinye onye asha gi mb",
-      zu: "Yongeza umthengi wakho wokuqala",
-      xh: "Yongeza umthengi wakho wokuqala",
-      af: "Voeg jou eerste kliënt by",
-      tw: "Dim afofra a edi kan",
-      rw: "ongera umukiriya wa mbere",
-      lg: "ongera omukyala wo ku busooka"
-    },
-    "credit.personal_tab": {
-      en: "Personal",
-      sw: "Binafsi",
-      ha: "Kashanka",
-      yo: "Ti",
-      ig: "Onwe",
-      zu: "Ezakho",
-      xh: "Ezakho",
-      af: "Persoonlik",
-      tw: "Wo Ara",
-      rw: "Bwite",
-      lg: "Byawe"
-    },
-    "credit.all_filter": {
-      en: "All",
-      sw: "Zote",
-      ha: "Duka",
-      yo: "Gb",
-      ig: "Nz",
-      zu: "Zonke",
-      xh: "Zonke",
-      af: "Alles",
-      tw: "N",
-      rw: "Rusange",
-      lg: "Byona"
-    },
-    "credit.outstanding_filter": {
-      en: "Outstanding",
-      sw: "Zilizobaki",
-      ha: "Da Rage",
-      yo: "Ti o Ku",
-      ig: "Gbaf",
-      zu: "Ezilahlekileyo",
-      xh: "Ezilahlekileyo",
-      af: "Uitstaand",
-      tw: "Nea aka",
-      rw: "Ziracyariho",
-      lg: "Ezisigadde"
-    },
-    "credit.partial_filter": {
-      en: "Partial",
-      sw: "Sehemu",
-      ha: "Wani",
-      yo: "Ap",
-      ig: "Nke",
-      zu: "Ingxenye",
-      xh: "Ingxenye",
-      af: "Gedeeltelik",
-      tw: "fa",
-      rw: "Icyiciro",
-      lg: "Ekitundu"
-    },
-    "credit.paid_filter": {
-      en: "Paid",
-      sw: "Imelipwa",
-      ha: "An Biya",
-      yo: "Ti a San",
-      ig: "Adagh",
-      zu: "Akhiyiwe",
-      xh: "Akhiyiwe",
-      af: "Betaal",
-      tw: "Ato W",
-      rw: "Byishyuwe",
-      lg: "Ebisasudwe"
-    },
-    "credit.add_new_credit": {
-      en: "Add New Credit",
-      sw: "Ongeza Mkopo Mpya",
-      ha: "6ara Kudi Sabuwar",
-      yo: "Fi Iroyin Titun",
-      ig: "Tinye Ah Mpya",
-      zu: "Yongeza I-Credit Entsha",
-      xh: "Yongeza I-Credit Entsha",
-      af: "Voeg Nuwe Krediet By",
-      tw: "B3 Nt3mu Foforo",
-      rw: "Ongera Credit Mushya",
-      lg: "Yongeza Kulunda Omupya"
-    },
-    "credit.search_placeholder": {
-      en: "Search customers...",
-      sw: "Tafuta wateja...",
-      ha: "Ceki mai siyan...",
-      yo: "Wa aja...",
-      ig: "Ch",
-      zu: "Futha abakheni...",
-      xh: "Futha abakheni...",
-      af: "Soek kliënte...",
-      tw: "Hwe afofra...",
-      rw: "Shakisha abakiriya...",
-      lg: "Noonya abakyaala..."
-    },
-    "credit.filter_credits": {
-      en: "Filter Credits",
-      sw: "Chuja Mikopo",
-      ha: "Sanya Kudi",
-      yo: "Fi Iroyin",
-      ig: "Gba Ah",
-      zu: "Hlula I-Credit",
-      xh: "Hlula I-Credit",
-      af: "Filtreer Krediet",
-      tw: "Fi Nt3mu",
-      rw: "Hakisha Credit",
-      lg: "Lula Kulunda"
-    },
-    "credit.total_owed": {
-      en: "Total Owed",
-      sw: "Jumla ya Deni",
-      ha: "Jimillar Da",
-      yo: "Iye Lapap",
-      ig: "Igo Ng",
-      zu: "Inani Eliphelelele",
-      xh: "Inani Eliphelelele",
-      af: "Totale Oorskuld",
-      tw: "Kodi Nyinaa",
-      rw: "Imbiri Yose",
-      lg: "Emu Yose"
-    },
-    "credit.overdue_amount": {
-      en: "Overdue",
-      sw: "Ilipwa baada ya muda",
-      ha: "Ya wuce kwan",
-      yo: "Ti O P",
-      ig: "M",
-      zu: "Ezilahlekileyo",
-      xh: "Ezilahlekileyo",
-      af: "Agterstallig",
-      tw: "Aduru",
-      rw: "Zararabijwe",
-      lg: "Zikaddewo"
-    },
-    "credit.no_credits_found": {
-      en: "No credits found",
-      sw: "Hakuna mikopo iliyopatikana",
-      ha: "Babu kudi da aka samu",
-      yo: "Ko si iroyin ti a rii",
-      ig: "A ch6tagh6 ihe 6b6",
-      zu: "Awukho izinto ezifumanekayo",
-      xh: "Akukho izinto ezifumanekayo",
-      af: "Geen krediet gevind nie",
-      tw: "Anhwehua nt3mu biara",
-      rw: "Nta bintu byabonetse",
-      lg: "Tewali ebintu gyazaabulidde"
-    },
-    "credit.add_first_credit": {
-      en: "Add your first credit entry",
-      sw: "Ongeza kipya chako cha kwanza cha mkopo",
-      ha: "6ara shigar da farko",
-      yo: "Fi iroyin ak6k6 r6",
-      ig: "Tinye ihe 6b6 mb6",
-      zu: "Qala ngokongeza into yakho yokuqala",
-      xh: "Qala ngokongeza into yakho yokuqala",
-      af: "Begin deur jou eerste item by te voeg",
-      tw: "Hy3 ase dea wo b3 nnto ahy3",
-      rw: "Tangira kongera ikintu cya mbere",
-      lg: "Tandika okuyongeza ekintu kyo okusooka"
-    },
-    "credit.total_owed_to_you": {
-      en: "Total Owed to You",
-      sw: "Jumla ya Deni Unayopokea",
-      ha: "Jimillar Da Kake",
-      yo: "Iye Ti a San",
-      ig: "Igo Ga Adagh",
-      zu: "Inani Eliphelelele Olenayo",
-      xh: "Inani Eliphelelele Olenayo",
-      af: "Totale Oorskuld aan Jou",
-      tw: "Kodi a Wode B",
-      rw: "Imbiri Uwawe",
-      lg: "Emu Gy'oyise"
-    },
-    "credit.total_you_owe": {
-      en: "Total You Owe",
-      sw: "Jumla ya Deni Unayo",
-      ha: "Jimillar Da Kake",
-      yo: "Iye Ti o J",
-      ig: "Igo Ga Adagh",
-      zu: "Inani Eliphelelele Olenayo",
-      xh: "Inani Eliphelelele Olenayo",
-      af: "Totale Oorskuld deur Jou",
-      tw: "Kodi a Wo B",
-      rw: "Imbiri Uwawe",
-      lg: "Emu Gy'oyise"
-    },
-    "credit.add_credit_customer": {
-      en: "Add Credit Customer",
-      sw: "Ongeza Mteja wa Mkopo",
-      ha: "6ara Mai Siyan Mkopo",
-      yo: "Fi Aja Iroyin",
-      ig: "Tinye Nd Ah",
-      zu: "Yongeza Umkheni We-Credit",
-      xh: "Yongeza Umkheni We-Credit",
-      af: "Voeg Kredietklïent By",
-      tw: "B3 Afofra Nt3mu",
-      rw: "Ongera Umukiriya wa Credit",
-      lg: "Yongeza Omukyala wa Kulunda"
-    },
-    "credit.add_personal_credit": {
-      en: "Add Personal Credit",
-      sw: "Ongeza Mkopo wa Kibinafsi",
-      ha: "6ara Kudi Ta Kai",
-      yo: "Fi Iroyin Ti",
-      ig: "Tinye Ah Onwe",
-      zu: "Yongeza I-Credit Ezakho",
-      xh: "Yongeza I-Credit Ezakho",
-      af: "Voeg Persoonlike Krediet By",
-      tw: "B3 Nt3mu Wo Ara",
-      rw: "Ongera Credit Bwite",
-      lg: "Yongeza Kulunda Byawe"
-    },
-    "credit.no_credit_customers_found": {
-      en: "No credit customers found",
-      sw: "Hakuna wateja wa mkopo waliopatikana",
-      ha: "Babu mai siyan mkopo da aka samu",
-      yo: "Ko si aja iroyin ti a rii",
-      ig: "Achoputa ndi  kredit",
-      zu: "Akukho abakheni becredit abafumanekayo",
-      xh: "Akukho abakheni becredit abafumanekayo",
-      af: "Geen kredietklïnte gevind nie",
-      tw: "Nnhwehu afofra nt3mu biara",
-      rw: "Ntabwo abakiriya becredit batandukanye",
-      lg: "Tewali abakyaala b'entungo batuuse"
-    },
-    "credit.start_by_adding_first_customer": {
-      en: "Start by adding your first credit customer",
-      sw: "Anza kwa kuongeza mteja wako wa kwanza wa mkopo",
-      ha: "Fara ta yin mai siyan mkopo na farko",
-      yo: "Bere pelu ti o n fi aja iroyin akókò",
-      ig: "Bido de tinye onye  kredit izizi",
-      zu: "Qala ngokongeza umkheni wakho wokuqala wecredit",
-      xh: "Qala ngokongeza umkheni wakho wokuqala wecredit",
-      af: "Begin deur jou eerste kredietklïnt by te voeg",
-      tw: "Hyfi ase dea wo b3d3 afofra nt3mu ahy3",
-      rw: "Tangira kongera umukiriya wawe wa mbere wa credit",
-      lg: "Tandika okuyongiza omukyala woyo okusooka w'entungo"
-    },
-    "credit.search_customers": {
-      en: "Search customers...",
-      sw: "Tafuta wateja...",
-      ha: "Ceki mai siyan...",
-      yo: "Wa aja...",
-      ig: "Ch",
-      zu: "Futha abakheni...",
-      xh: "Futha abakheni...",
-      af: "Soek kliënte...",
-      tw: "Hwe afofra...",
-      rw: "Shakisha abakiriya...",
-      lg: "Noonya abakyaala..."
-    },
-    "credit.amount_owed": {
-      en: "Amount Owed",
-      sw: "Kiasi cha Deni",
-      ha: "Adadin Da",
-      yo: "Iye Ti o J",
-      ig: "Igo Ga Adagh",
-      zu: "Inani Eliphelelele",
-      xh: "Inani Eliphelelele",
-      af: "Oorskuld Bedrag",
-      tw: "Kodi a Wode B",
-      rw: "Imbiri",
-      lg: "Emu Gy'oyise"
-    },
-    "credit.add_customer": {
-      en: "Add Customer",
-      sw: "Ongeza Mteja",
-      ha: "6ara Mai Siyan",
-      yo: "Fi Aja",
-      ig: "Tinye Nd",
-      zu: "Yongeza Umkheni",
-      xh: "Yongeza Umkheni",
-      af: "Voeg Kliënt By",
-      tw: "B3 Afofra",
-      rw: "Ongera Umukiriya",
-      lg: "Yongeza Omukyala"
-    },
-    "credit.all": {
-      en: "All",
-      sw: "Zote",
-      ha: "Duka",
-      yo: "Gb",
-      ig: "Nz",
-      zu: "Zonke",
-      xh: "Zonke",
-      af: "Alles",
-      tw: "N",
-      rw: "Rusange",
-      lg: "Byona"
-    },
-    "credit.all_customers": {
-      en: "All Customers",
-      sw: "Wateja Wote",
-      ha: "Duk Mai Siyan",
-      yo: "Aja P",
-      ig: "Nd Mma",
-      zu: "Abakheni Bonke",
-      xh: "Abakheni Bonke",
-      af: "Alle Kliënte",
-      tw: "Afofra Nyinaa",
-      rw: "Abakiriya Bose",
-      lg: "Abakyaala Bona"
-    },
-    "credit.total_amount": {
-      en: "Total Amount",
-      sw: "Kiasi Jumla",
-      ha: "Jimillar Adadin",
-      yo: "Iye Lapap",
-      ig: "Igo Ng",
-      zu: "Inani Eliphelelele",
-      xh: "Inani Eliphelelele",
-      af: "Totale Bedrag",
-      tw: "Kodi Nyinaa",
-      rw: "Imbiri Yose",
-      lg: "Emu Yose"
-    },
-    "credit.paid_amount": {
-      en: "Paid Amount",
-      sw: "Kiasi Kilicholipwa",
-      ha: "Adadin Da An Biya",
-      yo: "Iye Ti a San",
-      ig: "Igo Adagh",
-      zu: "Inani Eliphelelele Elakhiyiwe",
-      xh: "Inani Eliphelelele Elakhiyiwe",
-      af: "Betaalde Bedrag",
-      tw: "Kodi a Ato W",
-      rw: "Imbiri Yishyuwe",
-      lg: "Emu Ebisasudwe"
-    },
-    "credit.outstanding": {
-      en: "Outstanding",
-      sw: "Zilizobaki",
-      ha: "Da Rage",
-      yo: "Ti o Ku",
-      ig: "Gbaf",
-      zu: "Ezilahlekileyo",
-      xh: "Ezilahlekileyo",
-      af: "Uitstaand",
-      tw: "Nea aka",
-      rw: "Ziracyariho",
-      lg: "Ezisigadde"
-    },
-    "credit.credit_purchases": {
-      en: "Credit Purchases",
-      sw: "Ununuzi wa Mkopo",
-      ha: "Sayar da Kudi",
-      yo: "Ra Rira",
-      ig: "Nr6 Ah",
-      zu: "Uthengo Lwe-Credit",
-      xh: "Uthengo Lwe-Credit",
-      af: "Krediet Aankope",
-      tw: "B3 Nt3mu",
-      rw: "Gukora ku Credit",
-      lg: "Okugula ku ntungo"
-    },
-    "credit.if_not_listed": {
-      en: "(if not listed above)",
-      sw: "(kama haipo juu)",
-      ha: "(idan ba a cikin jerin)",
-      yo: "(ti ko w6 ninu at6k6)",
-      ig: "(6 ma 6 n'elu)",
-      zu: "(akungabho phezulu)",
-      xh: "(akungabho phezulu)",
-      af: "(indien nie hier bo vermeld nie)",
-      tw: "(s3 w6da ho so)",
-      rw: "(itagira ari ku rutirirwaho)",
-      lg: "(bwe tewali ku londeddwa waggulu)"
-    },
-    "credit.enter_vendor_person_name": {
-      en: "Enter vendor or person name",
-      sw: "Ingiza jina la muuzaji au mtu",
-      ha: "Shigar da sunan mai sayar ko mutum",
-      yo: "Fi oruk6 al6s6 tabi eniyan",
-      ig: "Tinye aha onye na-ere ihe tabi mmad6",
-      zu: "Faka igama lomthengisi okanye umntu",
-      xh: "Faka igama lomthengisi okanye umntu",
-      af: "Voeg verkoper of persoon naam in",
-      tw: "B0 din dwumadzi anaa obi din",
-      rw: "Andika izina ry'umucuruzi cyangwa umuntu",
-      lg: "Yingiza linnya lya mulisa oba omuntu"
-    },
-    "credit.due_date": {
-      en: "Due Date",
-      sw: "Tarehe ya Kulipwa",
-      ha: "Ranar Biya",
-      yo: "Oj6p6 6sanw6",
-      ig: "6b6ch6 6kw6 6gw6",
-      zu: "Umhla wokukhokha",
-      xh: "Umhla wokukhokha",
-      af: "Vervaldatum",
-      tw: "Da a w6b6t6",
-      rw: "Umunsi w'ukwishyura",
-      lg: "Ssaaza eri okulaba"
-    },
-    "services.title": {
+        "services.title": {
       en: "SERVICES",
       sw: "HUDUMA",
       ha: "HIDIMA",
@@ -7155,7 +7173,9 @@ const translations = {
       af: "DIENSTE",
       tw: "ADWUMA",
       rw: "SERIVISI",
-      lg: "MIRIMU"
+      lg: "MIRIMU",
+      fr: "SERVICES",
+      dy: "SƆRƆNW"
     },
     "services.base_km_pricing": {
       en: "Base + KM pricing",
@@ -7168,7 +7188,9 @@ const translations = {
       af: "Bedrag + KM prys",
       tw: "Kodi nkabom + KM",
       rw: "Inanga yibanze + KM",
-      lg: "Emu ku ntungo + KM"
+      lg: "Emu ku ntungo + KM",
+      fr: "Tarif de base + KM",
+      dy: "Damina donkili + KM"
     },
     "services.minutes": {
       en: "minutes",
@@ -7181,7 +7203,9 @@ const translations = {
       af: "minute",
       tw: "sika y",
       rw: "iminota",
-      lg: "ddakiika"
+      lg: "ddakiika",
+      fr: "minutes",
+      dy: "miniti"
     },
     "services.days": {
       en: "days",
@@ -7194,7 +7218,9 @@ const translations = {
       af: "dae",
       tw: "nn6mmer",
       rw: "iminsi",
-      lg: "ennaku"
+      lg: "ennaku",
+      fr: "jours",
+      dy: "donw"
     },
     "services.add_service": {
       en: "Add Service",
@@ -7207,7 +7233,9 @@ const translations = {
       af: "Voeg Diens by",
       tw: "B3 Adwuma",
       rw: "Ongera Serivisi",
-      lg: "Yongeza Mulimu"
+      lg: "Yongeza Mulimu",
+      fr: "Ajouter un service",
+      dy: "Sɔrɔn fara a kan"
     },
     "services.edit_service": {
       en: "Edit Service",
@@ -7220,7 +7248,9 @@ const translations = {
       af: "Wysig Diens",
       tw: "Yan Adwuma",
       rw: "Hindura Serivisi",
-      lg: "Kyusa Mulimu"
+      lg: "Kyusa Mulimu",
+      fr: "Modifier le service",
+      dy: "Sɔrɔn bato"
     },
     "services.delete_service": {
       en: "Delete Service",
@@ -7233,7 +7263,9 @@ const translations = {
       af: "Verwyder Diens",
       tw: "Twe Adwuma",
       rw: "Siba Serivisi",
-      lg: "Saza Mulimu"
+      lg: "Saza Mulimu",
+      fr: "Supprimer le service",
+      dy: "Sɔrɔn ba"
     },
     "services.service_name": {
       en: "Service Name",
@@ -7246,7 +7278,9 @@ const translations = {
       af: "Diensnaam",
       tw: "Din Adwuma",
       rw: "Izina ry'umurimo",
-      lg: "Linnya lya mulimu"
+      lg: "Linnya lya mulimu",
+      fr: "Nom du service",
+      dy: "Sɔrɔn tɔgɔ"
     },
     "services.enter_service_name": {
       en: "Enter service name",
@@ -7259,7 +7293,9 @@ const translations = {
       af: "Voeg diensnaam in",
       tw: "B0 din adwuma",
       rw: "Andika izina ry'umurimo",
-      lg: "Yingiza linnya lya mulimu"
+      lg: "Yingiza linnya lya mulimu",
+      fr: "Entrez le nom du service",
+      dy: "Sɔrɔn tɔgɔ sɛbɛn"
     },
     "services.price": {
       en: "Price",
@@ -7272,7 +7308,9 @@ const translations = {
       af: "Prys",
       tw: "Kodi",
       rw: "Iyinga",
-      lg: "Emu"
+      lg: "Emu",
+      fr: "Prix",
+      dy: "Donkili"
     },
     "services.category": {
       en: "Category",
@@ -7285,7 +7323,9 @@ const translations = {
       af: "Kategorie",
       tw: "Nkyerkyeremu",
       rw: "Ubwoko",
-      lg: "Kika"
+      lg: "Kika",
+      fr: "Catégorie",
+      dy: "Bamanan"
     },
     "services.enter_category": {
       en: "Enter category",
@@ -7298,7 +7338,9 @@ const translations = {
       af: "Voeg kategorie in",
       tw: "B0 nkyerkyeremu",
       rw: "Andika ubwoko",
-      lg: "Yingiza kika"
+      lg: "Yingiza kika",
+      fr: "Entrez la catégorie",
+      dy: "Bamanan sɛbɛn"
     },
     "services.duration_minutes": {
       en: "Duration (minutes)",
@@ -7311,7 +7353,9 @@ const translations = {
       af: "Duur (minute)",
       tw: "Ber (sika y)",
       rw: "Igihe (iminota)",
-      lg: "Embeera (ddakiika)"
+      lg: "Embeera (ddakiika)",
+      fr: "Durée (minutes)",
+      dy: "Tuma (miniti)"
     },
     "services.description": {
       en: "Description",
@@ -7324,7 +7368,9 @@ const translations = {
       af: "Beskrywing",
       tw: "Nkyerkyeremu",
       rw: "Ubusobanuro",
-      lg: "Okulaga"
+      lg: "Okulaga",
+      fr: "Description",
+      dy: "Laɲinibɔ"
     },
     "services.describe_service": {
       en: "Describe your service",
@@ -7337,7 +7383,9 @@ const translations = {
       af: "Beskryf jou diens",
       tw: "Ka ho kyer3w adwuma no",
       rw: "Garagamisha serivisi yawe",
-      lg: "Londoola omulimu gwo"
+      lg: "Londoola omulimu gwo",
+      fr: "Décrivez votre service",
+      dy: "I ka sɔrɔn laɲini"
     },
     "services.update_service": {
       en: "Update Service",
@@ -7350,9 +7398,11 @@ const translations = {
       af: "Werkwoord Diens",
       tw: "Update Adwuma",
       rw: "Hindura Serivisi",
-      lg: "Update Mulimu"
+      lg: "Update Mulimu",
+      fr: "Mettre à jour le service",
+      dy: "Sɔrɔn fɛn kura la"
     },
-    "inventory.item_name": {
+        "inventory.item_name": {
       en: "Item Name",
       sw: "Jina la Kifaa",
       ha: "Sunan Kaya",
@@ -7363,7 +7413,9 @@ const translations = {
       af: "Itemnaam",
       tw: "Din Nkan",
       rw: "Izina ry'ikintu",
-      lg: "Linnya lya kintu"
+      lg: "Linnya lya kintu",
+      fr: "Nom de l'article",
+      dy: "Fɛn tɔgɔ"
     },
     "inventory.category": {
       en: "Category",
@@ -7376,7 +7428,9 @@ const translations = {
       af: "Kategorie",
       tw: "Nkyerkyeremu",
       rw: "Ubwoko",
-      lg: "Kika"
+      lg: "Kika",
+      fr: "Catégorie",
+      dy: "Bamanan"
     },
     "inventory.enter_category": {
       en: "Enter category",
@@ -7389,7 +7443,9 @@ const translations = {
       af: "Voeg kategorie in",
       tw: "B0 nkyerkyeremu",
       rw: "Andika ubwoko",
-      lg: "Yingiza kika"
+      lg: "Yingiza kika",
+      fr: "Entrez la catégorie",
+      dy: "Bamanan sɛbɛn"
     },
     "inventory.quantity": {
       en: "Quantity",
@@ -7402,7 +7458,9 @@ const translations = {
       af: "Hoeveelheid",
       tw: "Dodow",
       rw: "Ingano",
-      lg: "Emiwendo"
+      lg: "Emiwendo",
+      fr: "Quantité",
+      dy: "Juru"
     },
     "inventory.min_stock": {
       en: "Min Stock",
@@ -7415,7 +7473,9 @@ const translations = {
       af: "Minimum Voorraad",
       tw: "Stok Ketewa",
       rw: "Imbuto Nto",
-      lg: "Emmotoka Etete"
+      lg: "Emmotoka Etete",
+      fr: "Stock minimum",
+      dy: "Bansan dɔ"
     },
     "inventory.units": {
       en: "Units",
@@ -7428,7 +7488,9 @@ const translations = {
       af: "Eenheid",
       tw: "Units",
       rw: "Ibice",
-      lg: "Ebice"
+      lg: "Ebice",
+      fr: "Unités",
+      dy: "Kɛrɛn"
     },
     "inventory.select_unit": {
       en: "Select unit",
@@ -7441,7 +7503,9 @@ const translations = {
       af: "Kies eenheid",
       tw: "P3 units",
       rw: "Hitamo ibice",
-      lg: "Londa ebice"
+      lg: "Londa ebice",
+      fr: "Sélectionner l'unité",
+      dy: "Kɛrɛn laminin"
     },
     "inventory.kg": {
       en: "kg",
@@ -7454,7 +7518,9 @@ const translations = {
       af: "kg",
       tw: "kg",
       rw: "kg",
-      lg: "kg"
+      lg: "kg",
+      fr: "kg",
+      dy: "kg"
     },
     "inventory.liters": {
       en: "liters",
@@ -7467,7 +7533,9 @@ const translations = {
       af: "liter",
       tw: "liters",
       rw: "ilita",
-      lg: "lita"
+      lg: "lita",
+      fr: "litres",
+      dy: "liti"
     },
     "inventory.meters": {
       en: "meters",
@@ -7480,7 +7548,9 @@ const translations = {
       af: "meter",
       tw: "mita",
       rw: "mita",
-      lg: "mita"
+      lg: "mita",
+      fr: "mètres",
+      dy: "mɛtri"
     },
     "inventory.boxes": {
       en: "boxes",
@@ -7493,7 +7563,9 @@ const translations = {
       af: "bokse",
       tw: "bokisi",
       rw: "amabokisi",
-      lg: "ebikokisi"
+      lg: "ebikokisi",
+      fr: "boîtes",
+      dy: "bɔksi"
     },
     "inventory.supplier": {
       en: "Supplier",
@@ -7506,7 +7578,9 @@ const translations = {
       af: "Verskaffer",
       tw: "Dwumadzifo",
       rw: "Umucuruzi",
-      lg: "Omulisa"
+      lg: "Omulisa",
+      fr: "Fournisseur",
+      dy: "Fɛrɛkɛlaɲɛ"
     },
     "inventory.supplier_name": {
       en: "Supplier name",
@@ -7519,7 +7593,9 @@ const translations = {
       af: "Verskaffernaam",
       tw: "Din dwumadzifo",
       rw: "Izina ry'umucuruzi",
-      lg: "Linnya lya mulisa"
+      lg: "Linnya lya mulisa",
+      fr: "Nom du fournisseur",
+      dy: "Fɛrɛkɛlaɲɛ tɔgɔ"
     },
     "inventory.cost_price": {
       en: "Cost Price",
@@ -7532,7 +7608,9 @@ const translations = {
       af: "Kosteprys",
       tw: "Kodi a w6t6",
       rw: "Iyinga ry'ugura",
-      lg: "Emu ku kugula"
+      lg: "Emu ku kugula",
+      fr: "Prix d'achat",
+      dy: "Sanfɛ donkili"
     },
     "inventory.selling_price": {
       en: "Selling Price",
@@ -7545,7 +7623,9 @@ const translations = {
       af: "Verkoopprys",
       tw: "Kodi a w6t6",
       rw: "Iyinga ry'ukurura",
-      lg: "Emu ku kutuula"
+      lg: "Emu ku kutuula",
+      fr: "Prix de vente",
+      dy: "Wɛrɛ donkili"
     },
     "inventory.add_item": {
       en: "Add Item",
@@ -7558,100 +7638,11 @@ const translations = {
       af: "Voeg Item by",
       tw: "B3 Nkan",
       rw: "Ongera ikintu",
-      lg: "Yongeza ekintu"
+      lg: "Yongeza ekintu",
+      fr: "Ajouter un article",
+      dy: "Fɛn fara a kan"
     },
-    "services.total_services": {
-      en: "Total Services",
-      sw: "Jumla ya Huduma",
-      ha: "Jimillar Hidima",
-      yo: "Lapap6 Ise",
-      ig: "Ng6k6ta Oru",
-      zu: "Isamba Sonke Insiza",
-      xh: "Isamba Sonke Insiza",
-      af: "Totale Dienste",
-      tw: "Nne3ma Adwuma Nyinaa",
-      rw: "Imbiri Yose Serivisi",
-      lg: "Emirimu Gyona"
-    },
-    "services.available": {
-      en: "Available",
-      sw: "Inapatikana",
-      ha: "Ana samu",
-      yo: "T6 l6",
-      ig: "Enwugho",
-      zu: "Ikhona",
-      xh: "Ikhona",
-      af: "Beskikbaar",
-      tw: "W3 h6",
-      rw: "Biboneka",
-      lg: "Waliwo"
-    },
-    "services.low_stock": {
-      en: "Low Stock",
-      sw: "Hifadhi Chini",
-      ha: "Kayayyaki Kadan",
-      yo: "Stok Kekere",
-      ig: "Nchekota Nta",
-      zu: "Isitok esiphansi",
-      xh: "Isitok esiphansi",
-      af: "Minimum Voorraad",
-      tw: "Stok Ketewa",
-      rw: "Imbuto Nto",
-      lg: "Emmotoka Etete"
-    },
-    "services.products_need_restock": {
-      en: "Products Need Restock",
-      sw: "Bidhaa Zihitaji Kupangwa",
-      ha: "Kayayyaki Suna Sake Sabunta",
-      yo: "Aw6n Nlo Nlo 6t6n",
-      ig: "Akw6gh6 Nchekota Igbakwun",
-      zu: "Amaprodukt afuna ukubuyiselwa",
-      xh: "Amaprodukt afuna ukubuyiselwa",
-      af: "Produkte Benodig Herbestel",
-      tw: "Nne3ma hwe b3 ka b3",
-      rw: "Ibicuruzwa bikeneye kongera",
-      lg: "Ebintu bisobola okuddamu"
-    },
-    "services.total_service_value": {
-      en: "Total Service Value",
-      sw: "Thamani Jumla ya Huduma",
-      ha: "Darajar Jimillar Hidima",
-      yo: "Iye Lapap6 Ise",
-      ig: "Ihe Ng6k6ta Oru",
-      zu: "Inani Eliphelelele Insiza",
-      xh: "Inani Eliphelelele Insiza",
-      af: "Totale Dienste Waarde",
-      tw: "Nne3ma Adwuma Nyinaa",
-      rw: "Agacuruzwa Kamwe Serivisi",
-      lg: "Emmuluba Yawona Mirimu"
-    },
-    "services.avg_price": {
-      en: "Avg Price",
-      sw: "Bei Ya Kati",
-      ha: "Farashi Na Tsaka",
-      yo: "Iye Apap6",
-      ig: "Igo Ochie",
-      zu: "Inani Elilinganayo",
-      xh: "Inani Elilinganayo",
-      af: "Gemiddelde Prys",
-      tw: "Kodi a Nea B",
-      rw: "Iyinga Rikurikirwa",
-      lg: "Emu ku Rikondwamu"
-    },
-    "services.search_services": {
-      en: "Search services...",
-      sw: "Tafuta huduma...",
-      ha: "Bincika hidima...",
-      yo: "Wa ise...",
-      ig: "Ch6ta oru...",
-      zu: "Sesha izinto...",
-      xh: "Khangela izinto...",
-      af: "Soek dienste...",
-      tw: "Hwe adwuma...",
-      rw: "Shakisha serivisi...",
-      lg: "Noonya mirimu..."
-    },
-    "services.filter.all": {
+        "filter.all": {
       en: "All",
       sw: "Zote",
       ha: "Duka",
@@ -7662,138 +7653,9 @@ const translations = {
       af: "Almal",
       tw: "Nso",
       rw: "Byose",
-      lg: "Byona"
-    },
-    "services.web_design": {
-      en: "Web Design",
-      sw: "Ubunifu wa Tovuti",
-      ha: "Zane Tsarin Yan Gida",
-      yo: "Ap6r6 W3b",
-      ig: "Nr6ta Weebu",
-      zu: "Ukuklwa Kwewebhu",
-      xh: "Ukuklwa Kwewebhu",
-      af: "Webontwerp",
-      tw: "W3b D",
-      rw: "Imyubakire",
-      lg: "Okukola ku wewebu"
-    },
-    "services.writing": {
-      en: "Writing",
-      sw: "Uandishi",
-      ha: "Rubuta",
-      yo: "K6k6",
-      ig: "Idee",
-      zu: "Ukuhluza",
-      xh: "Ukuhluza",
-      af: "Skryf",
-      tw: "Ky",
-      rw: "Kwandika",
-      lg: "Kuwandika"
-    },
-    "services.consulting": {
-      en: "Consulting",
-      sw: "Ushauri",
-      ha: "Tuntuba",
-      yo: "It6k6n",
-      ig: "Iny6maka",
-      zu: "Ukubonelela",
-      xh: "Ukubonelela",
-      af: "Raadgewende",
-      tw: "B6to",
-      rw: "Gutanga inama",
-      lg: "Okubuuza"
-    },
-    "services.design": {
-      en: "Design",
-      sw: "Ubunifu",
-      ha: "Zane",
-      yo: "Ap6r6",
-      ig: "Nr6ta",
-      zu: "Ukuklwa",
-      xh: "Ukuklwa",
-      af: "Ontwerp",
-      tw: "Ap",
-      rw: "Imyubakire",
-      lg: "Okukola"
-    },
-    "services.development": {
-      en: "Development",
-      sw: "Maendeleo",
-      ha: "Ci Gaban",
-      yo: "Igb6r6s6",
-      ig: "Mmepe",
-      zu: "Ukuthuthukiswa",
-      xh: "Ukuthuthukiswa",
-      af: "Ontwikkeling",
-      tw: "B",
-      rw: "Iterambere",
-      lg: "Okutumbulwa"
-    },
-    "services.marketing": {
-      en: "Marketing",
-      sw: "Masoko",
-      ha: "Sayarwa",
-      yo: "Titaja",
-      ig: "Nzuk6ta",
-      zu: "Ukusasaza",
-      xh: "Ukusasaza",
-      af: "Bemarketing",
-      tw: "B",
-      rw: "Gucurura",
-      lg: "Okutumbula"
-    },
-    "services.no_services_found": {
-      en: "No services found",
-      sw: "Hakuna huduma zilipatikana",
-      ha: "Babu hidima da aka samu",
-      yo: "A k6 ri ise kan ti w6 r6",
-      ig: "Enwegh6 oru 6 ch6t6r6",
-      zu: "Akukho izinto ezifumanekayo",
-      xh: "Akukho izinto ezifumanekayo",
-      af: "Geen diens gevind nie",
-      tw: "Nnh3 adwuma bi a hwee",
-      rw: "Ntabwo serivisi zibonetse",
-      lg: "Tewali mirimu tuziise"
-    },
-    "services.unavailable": {
-      en: "Unavailable",
-      sw: "Haipatikani",
-      ha: "Bai samu",
-      yo: "K6 si t6",
-      ig: "Anagh6 ad6gh6",
-      zu: "Ayikho",
-      xh: "Ayikho",
-      af: "Nie Beskikbaar",
-      tw: "Nnh3 h6",
-      rw: "Ntabwo biboneka",
-      lg: "Tewaliwo"
-    },
-    "services.start_by_adding_first_service": {
-      en: "Start by adding your first service",
-      sw: "Anza kwa kuongeza huduma yako ya kwanza",
-      ha: "Fara da 6ara hidimarka farko",
-      yo: "Bere nipa fifi iise ak6k6 r6",
-      ig: "Bido tinye oru g6 mb6",
-      zu: "Qala ngokongeza insiza yakho yokuqala",
-      xh: "Qala ngokongeza insiza yakho yokuqala",
-      af: "Begin deur jou eerste diens by te voeg",
-      tw: "Bere fi b3 adwuma ahy3",
-      rw: "Tangira kongera serivisi yawe ya mbere",
-      lg: "Tandika okuyongeza mulimu gwo okusooka"
-    },
-    // Category Filter Labels
-    "filter.all": {
-      en: "All",
-      sw: "Zote",
-      ha: "Duka",
-      yo: "Gbogbo",
-      ig: "Nile",
-      zu: "Zonke",
-      xh: "Zonke",
-      af: "Almal",
-      tw: "Nso",
-      rw: "Byose",
-      lg: "Byona"
+      lg: "Byona",
+      fr: "Tous",
+      dy: "Bɛɛ"
     },
     "filter.web_design": {
       en: "Web Design",
@@ -7806,7 +7668,9 @@ const translations = {
       af: "Webontwerp",
       tw: "W3b D",
       rw: "Imyubakire",
-      lg: "Okukola ku wewebu"
+      lg: "Okukola ku wewebu",
+      fr: "Conception Web",
+      dy: "Wɛbidi fɛn"
     },
     "filter.writing": {
       en: "Writing",
@@ -7819,7 +7683,9 @@ const translations = {
       af: "Skryf",
       tw: "Ky",
       rw: "Kwandika",
-      lg: "Kuwandika"
+      lg: "Kuwandika",
+      fr: "Rédaction",
+      dy: "Sɛbɛnli"
     },
     "filter.consulting": {
       en: "Consulting",
@@ -7832,7 +7698,9 @@ const translations = {
       af: "Raadgewende",
       tw: "B6to",
       rw: "Gutanga inama",
-      lg: "Okubuuza"
+      lg: "Okubuuza",
+      fr: "Consultation",
+      dy: "Laɲinibaara"
     },
     "filter.design": {
       en: "Design",
@@ -7845,7 +7713,9 @@ const translations = {
       af: "Ontwerp",
       tw: "Ap",
       rw: "Imyubakire",
-      lg: "Okukola"
+      lg: "Okukola",
+      fr: "Design",
+      dy: "Fɛnlabato"
     },
     "filter.development": {
       en: "Development",
@@ -7858,7 +7728,9 @@ const translations = {
       af: "Ontwikkeling",
       tw: "B",
       rw: "Iterambere",
-      lg: "Okutumbulwa"
+      lg: "Okutumbulwa",
+      fr: "Développement",
+      dy: "Nɔɔrɔ"
     },
     "filter.marketing": {
       en: "Marketing",
@@ -7871,9 +7743,10 @@ const translations = {
       af: "Bemarketing",
       tw: "B",
       rw: "Gucurura",
-      lg: "Okutumbula"
+      lg: "Okutumbula",
+      fr: "Marketing",
+      dy: "Fɛrɛfɛrɛbaara"
     },
-    // Additional filter categories for other industries
     "filter.electronics": {
       en: "Electronics",
       sw: "Elektroniki",
@@ -7885,7 +7758,9 @@ const translations = {
       af: "Elektronika",
       tw: "Electronics",
       rw: "Electronics",
-      lg: "Electronics"
+      lg: "Electronics",
+      fr: "Électronique",
+      dy: "Elekitirɔni"
     },
     "filter.clothing": {
       en: "Clothing",
@@ -7898,7 +7773,9 @@ const translations = {
       af: "Kleding",
       tw: "Ntama",
       rw: "Imbuto",
-      lg: "Empya"
+      lg: "Empya",
+      fr: "Vêtements",
+      dy: "Dugu fɛnw"
     },
     "filter.food": {
       en: "Food",
@@ -7911,7 +7788,9 @@ const translations = {
       af: "Kos",
       tw: "Aduane",
       rw: "Imbuto",
-      lg: "Ebyokulya"
+      lg: "Ebyokulya",
+      fr: "Alimentation",
+      dy: "Dumuni fɛnw"
     },
     "filter.beauty": {
       en: "Beauty",
@@ -7924,7 +7803,9 @@ const translations = {
       af: "Skoonheid",
       tw: "Ahoho",
       rw: "Ubuhanzi",
-      lg: "Obulamu"
+      lg: "Obulamu",
+      fr: "Beauté",
+      dy: "ɲuman"
     },
     "filter.household": {
       en: "Household",
@@ -7937,7 +7818,9 @@ const translations = {
       af: "Huishoudelik",
       tw: "Fie",
       rw: "Inzu",
-      lg: "Eby'omulimu"
+      lg: "Eby'omulimu",
+      fr: "Ménage",
+      dy: "Sofɛnw"
     },
     "filter.toys": {
       en: "Toys",
@@ -7950,7 +7833,9 @@ const translations = {
       af: "Speelgoed",
       tw: "Nne3ma ahyehy",
       rw: "Imikino",
-      lg: "Ebizanyi"
+      lg: "Ebizanyi",
+      fr: "Jouets",
+      dy: "Denniw fɛnw"
     },
     "filter.appetizers": {
       en: "Appetizers",
@@ -7963,7 +7848,9 @@ const translations = {
       af: "Voorgeregte",
       tw: "Aduan ahy",
       rw: "Ibimera bya mbere",
-      lg: "Empewo"
+      lg: "Empewo",
+      fr: "Apéritifs",
+      dy: "Dumuni daminɛ fɛnw"
     },
     "filter.mains": {
       en: "Mains",
@@ -7976,7 +7863,9 @@ const translations = {
       af: "Hoofgeregte",
       tw: "Aduan ak",
       rw: "Ibiribwa by'ingenzi",
-      lg: "Emmere enkulu"
+      lg: "Emmere enkulu",
+      fr: "Plats principaux",
+      dy: "Dumuni ba fɛnw"
     },
     "filter.desserts": {
       en: "Desserts",
@@ -7989,7 +7878,9 @@ const translations = {
       af: "Nageregte",
       tw: "Nne3ma ahy",
       rw: "Imbuto zo kuribwa",
-      lg: "Emmere ey'omuliro"
+      lg: "Emmere ey'omuliro",
+      fr: "Desserts",
+      dy: "Dumuni laban fɛnw"
     },
     "filter.beverages": {
       en: "Beverages",
@@ -8002,7 +7893,9 @@ const translations = {
       af: "Drankies",
       tw: "Nsuo",
       rw: "Imboga",
-      lg: "Amazzi"
+      lg: "Amazzi",
+      fr: "Boissons",
+      dy: "Minyɔ fɛnw"
     },
     "filter.sides": {
       en: "Sides",
@@ -8015,7 +7908,9 @@ const translations = {
       af: "Byprodukte",
       tw: "Aka",
       rw: "Ibintu bya hanyuma",
-      lg: "Ebikungahizibwe"
+      lg: "Ebikungahizibwe",
+      fr: "Accompagnements",
+      dy: "Dɛmɛ fɛnw"
     },
     "filter.specials": {
       en: "Specials",
@@ -8028,7 +7923,9 @@ const translations = {
       af: "Spesiale",
       tw: "B",
       rw: "Bihariye",
-      lg: "Ebikulu"
+      lg: "Ebikulu",
+      fr: "Spéciaux",
+      dy: "Kɛrɛnkɛrɛn fɛnw"
     },
     "filter.local": {
       en: "Local",
@@ -8041,7 +7938,9 @@ const translations = {
       af: "Plaaslik",
       tw: "Kuro",
       rw: "Hafi",
-      lg: "Wansi"
+      lg: "Wansi",
+      fr: "Local",
+      dy: "Sigiyɔrɔ"
     },
     "filter.long_distance": {
       en: "Long Distance",
@@ -8054,7 +7953,9 @@ const translations = {
       af: "Langafstand",
       tw: "K",
       rw: "Bya nini",
-      lg: "Oluvanyuma"
+      lg: "Oluvanyuma",
+      fr: "Longue distance",
+      dy: "Janya ba"
     },
     "filter.airport": {
       en: "Airport",
@@ -8067,7 +7968,9 @@ const translations = {
       af: "Lughawe",
       tw: "Kokuro",
       rw: "Ubugoroba",
-      lg: "Lwanda ly'ennyonyi"
+      lg: "Lwanda ly'ennyonyi",
+      fr: "Aéroport",
+      dy: "Jeliɲɔgɔn"
     },
     "filter.corporate": {
       en: "Corporate",
@@ -8080,7 +7983,9 @@ const translations = {
       af: "Korporatief",
       tw: "Adwumakuw",
       rw: "Ishyirahamwe",
-      lg: "Olulimi"
+      lg: "Olulimi",
+      fr: "Entreprise",
+      dy: "Jago ba"
     },
     "filter.special": {
       en: "Special",
@@ -8093,7 +7998,9 @@ const translations = {
       af: "Spesiale",
       tw: "B",
       rw: "Bihariye",
-      lg: "Ebikulu"
+      lg: "Ebikulu",
+      fr: "Spécial",
+      dy: "Kɛrɛnkɛrɛn"
     },
     "filter.delivery": {
       en: "Delivery",
@@ -8106,7 +8013,9 @@ const translations = {
       af: "Aflewering",
       tw: "T",
       rw: "Kugaburira",
-      lg: "Okutumbula"
+      lg: "Okutumbula",
+      fr: "Livraison",
+      dy: "Faabaara"
     },
     "filter.hair": {
       en: "Hair",
@@ -8119,7 +8028,9 @@ const translations = {
       af: "Haar",
       tw: "Hw",
       rw: "Amabuye",
-      lg: "Obuyonzi"
+      lg: "Obuyonzi",
+      fr: "Cheveux",
+      dy: "Kunsigi"
     },
     "filter.nails": {
       en: "Nails",
@@ -8132,7 +8043,9 @@ const translations = {
       af: "Naels",
       tw: "Ntaban",
       rw: "Amaninzwe",
-      lg: "Emikono"
+      lg: "Emikono",
+      fr: "Ongles",
+      dy: "Bolokolow"
     },
     "filter.skincare": {
       en: "Skincare",
@@ -8145,7 +8058,9 @@ const translations = {
       af: "Huidsorg",
       tw: "Ho",
       rw: "Kurinda",
-      lg: "Okwambulula"
+      lg: "Okwambulula",
+      fr: "Soin de la peau",
+      dy: "Farikolo ɲɛnajɛ"
     },
     "filter.wellness": {
       en: "Wellness",
@@ -8158,7 +8073,9 @@ const translations = {
       af: "Welstand",
       tw: "Apomuden",
       rw: "Ubwizame",
-      lg: "Obulamu"
+      lg: "Obulamu",
+      fr: "Bien-être",
+      dy: "Kɛnɛya"
     },
     "filter.makeup": {
       en: "Makeup",
@@ -8171,7 +8088,9 @@ const translations = {
       af: "Grimering",
       tw: "Ntaban",
       rw: "Imyenda",
-      lg: "Empisa"
+      lg: "Empisa",
+      fr: "Maquillage",
+      dy: "ɲɛfɛn"
     },
     "filter.massage": {
       en: "Massage",
@@ -8184,7 +8103,9 @@ const translations = {
       af: "Massering",
       tw: "Ns",
       rw: "Gukwirakwira",
-      lg: "Okukambula"
+      lg: "Okukambula",
+      fr: "Massage",
+      dy: "Fariɲagali"
     },
     "filter.fabrics": {
       en: "Fabrics",
@@ -8197,7 +8118,9 @@ const translations = {
       af: "Stowwe",
       tw: "Ntama",
       rw: "Imbuto",
-      lg: "Empya"
+      lg: "Empya",
+      fr: "Tissus",
+      dy: "Finifini fɛnw"
     },
     "filter.threads": {
       en: "Threads",
@@ -8210,7 +8133,9 @@ const translations = {
       af: "Draad",
       tw: "Ntaban",
       rw: "Urusengero",
-      lg: "Olusika"
+      lg: "Olusika",
+      fr: "Fils",
+      dy: "Suruku fɛnw"
     },
     "filter.zippers_fasteners": {
       en: "Zippers & Fasteners",
@@ -8223,7 +8148,9 @@ const translations = {
       af: "Ritse & Vasstellers",
       tw: "Zippers & Fasteners",
       rw: "Imifungo ya zipper & Imifungo",
-      lg: "Zippers & Fasteners"
+      lg: "Zippers & Fasteners",
+      fr: "Fermetures éclair & Attaches",
+      dy: "Zipper ni dabari fɛnw"
     },
     "filter.buttons_accessories": {
       en: "Buttons & Accessories",
@@ -8236,7 +8163,9 @@ const translations = {
       af: "Knoppe & Bykomstighede",
       tw: "Bttn & Acc",
       rw: "Imifungo & Imifasho",
-      lg: "Emitwe & Ebintu ebirala"
+      lg: "Emitwe & Ebintu ebirala",
+      fr: "Boutons & Accessoires",
+      dy: "Butɔni ni fɛn wɛrɛw"
     },
     "filter.interfacing_linings": {
       en: "Interfacing & Linings",
@@ -8249,7 +8178,9 @@ const translations = {
       af: "Interfacing & Voerings",
       tw: "Interfacing & Linings",
       rw: "Guhurira no gutwikiragura",
-      lg: "Okukwanaganya n'okutambula"
+      lg: "Okukwanaganya n'okutambula",
+      fr: "Entoilage & Doublures",
+      dy: "Dugukolo ni mɔn fɛnw"
     },
     "filter.elastic_trims": {
       en: "Elastic & Trims",
@@ -8262,7 +8193,9 @@ const translations = {
       af: "Elasties & Versierings",
       tw: "Elastic & Trims",
       rw: "Elastic & Imifasho",
-      lg: "Elastic & Ebikolongo"
+      lg: "Elastic & Ebikolongo",
+      fr: "Élastiques & Garnitures",
+      dy: "Elastiki ni labatofɛnw"
     },
     "filter.measuring_tools": {
       en: "Measuring Tools",
@@ -8275,7 +8208,9 @@ const translations = {
       af: "Meetgereedskap",
       tw: "Nne3ma a",
       rw: "Ibikoresho bya gupima",
-      lg: "Ebipimise"
+      lg: "Ebipimise",
+      fr: "Outils de mesure",
+      dy: "Jantigɛ fɛnw"
     },
     "filter.cutting_tools": {
       en: "Cutting Tools",
@@ -8288,7 +8223,9 @@ const translations = {
       af: "Snygereedskap",
       tw: "Ade",
       rw: "Ibikoresho bya guteka",
-      lg: "Ebikwata"
+      lg: "Ebikwata",
+      fr: "Outils de coupe",
+      dy: "Jɛgɛ fɛnw"
     },
     "filter.sewing_tools": {
       en: "Sewing Tools",
@@ -8301,7 +8238,9 @@ const translations = {
       af: "Naigareedskap",
       tw: "Dwumadzi",
       rw: "Ibikoresho byo gusoma",
-      lg: "Ebikolwa"
+      lg: "Ebikolwa",
+      fr: "Outils de couture",
+      dy: "Suruku fɛnw"
     },
     "filter.patterns_templates": {
       en: "Patterns & Templates",
@@ -8314,7 +8253,9 @@ const translations = {
       af: "Patrone & Template",
       tw: "Patterns & Templates",
       rw: "Imiterere & Amashushanyaho",
-      lg: "Enkula n'empandiika"
+      lg: "Enkula n'empandiika",
+      fr: "Patrons & Modèles",
+      dy: "Labatofɛn ni misaliw"
     },
     "filter.dyes_chemicals": {
       en: "Dyes & Chemicals",
@@ -8327,7 +8268,9 @@ const translations = {
       af: "Kleurstowwe & Chemikalie",
       tw: "Kasa & Nne3ma a",
       rw: "Amabara & Ibinyabuzima",
-      lg: "Biziba & Ebikozesebwa"
+      lg: "Biziba & Ebikozesebwa",
+      fr: "Teintures & Produits chimiques",
+      dy: "Kala ni kɛmikali fɛnw"
     },
     "filter.packaging_materials": {
       en: "Packaging Materials",
@@ -8340,7 +8283,9 @@ const translations = {
       af: "Verpakingsmateriaal",
       tw: "Nne3ma a",
       rw: "Ibikoresho byo gutunganya",
-      lg: "Ebintu ebikozesebwa okutunganya"
+      lg: "Ebintu ebikozesebwa okutunganya",
+      fr: "Matériaux d'emballage",
+      dy: "Tulunbaara fɛnw"
     },
     "filter.other": {
       en: "Other",
@@ -8353,7 +8298,9 @@ const translations = {
       af: "Ander",
       tw: "Foforo",
       rw: "Ibindi",
-      lg: "Ebirala"
+      lg: "Ebirala",
+      fr: "Autre",
+      dy: "Wɛrɛ"
     },
     "filter.appliances": {
       en: "Appliances",
@@ -8366,7 +8313,9 @@ const translations = {
       af: "Toestelle",
       tw: "Nne3ma a",
       rw: "Ibikoresho byo mu rugo",
-      lg: "Ebintu ebiri mu nju"
+      lg: "Ebintu ebiri mu nju",
+      fr: "Appareils électroménagers",
+      dy: "Sofɛn baaraw"
     },
     "filter.vehicles": {
       en: "Vehicles",
@@ -8379,7 +8328,9 @@ const translations = {
       af: "Voertuie",
       tw: "Kojo",
       rw: "Imodoka",
-      lg: "Emmotoka"
+      lg: "Emmotoka",
+      fr: "Véhicules",
+      dy: "Mobiluw"
     },
     "filter.phones": {
       en: "Phones",
@@ -8392,7 +8343,9 @@ const translations = {
       af: "Foon",
       tw: "Kas",
       rw: "Telefoni",
-      lg: "Ebiwandiike"
+      lg: "Ebiwandiike",
+      fr: "Téléphones",
+      dy: "Telefoniw"
     },
     "filter.computers": {
       en: "Computers",
@@ -8405,7 +8358,9 @@ const translations = {
       af: "Rekenaars",
       tw: "K",
       rw: "Kompyuta",
-      lg: "Kampula"
+      lg: "Kampula",
+      fr: "Ordinateurs",
+      dy: "Kɔmputɛrw"
     },
     "filter.general": {
       en: "General",
@@ -8418,9 +8373,11 @@ const translations = {
       af: "Algemeen",
       tw: "N",
       rw: "Rusange",
-      lg: "Ebyawamu"
+      lg: "Ebyawamu",
+      fr: "Général",
+      dy: "Bɛɛ"
     },
-    "services.services_tab": {
+        "services.services_tab": {
       en: "Services",
       sw: "Huduma",
       ha: "Hidimomi",
@@ -8431,7 +8388,9 @@ const translations = {
       af: "Dienste",
       tw: "Adwuma",
       rw: "Serivisi",
-      lg: "Mirimu"
+      lg: "Mirimu",
+      fr: "Services",
+      dy: "Sɔrɔnw"
     },
     "services.inventory_tab": {
       en: "Inventory",
@@ -8444,7 +8403,9 @@ const translations = {
       af: "Voorraad",
       tw: "Nne3ma",
       rw: "Ibintu",
-      lg: "Ebintu"
+      lg: "Ebintu",
+      fr: "Inventaire",
+      dy: "Bansan"
     },
     "services.add_service_form": {
       en: "Add Service",
@@ -8457,7 +8418,9 @@ const translations = {
       af: "Voeg Diens by",
       tw: "B3 Adwuma",
       rw: "Ongera Serivisi",
-      lg: "Yongeza Mulimu"
+      lg: "Yongeza Mulimu",
+      fr: "Ajouter un service",
+      dy: "Sɔrɔn fara a kan"
     },
     "services.example_premium_headphones": {
       en: "e.g., Premium Headphones",
@@ -8470,7 +8433,9 @@ const translations = {
       af: "bv., Premium Hoofsluitfone",
       tw: "mf., Headphones aho",
       rw: "ur., Headphones Zo hejuru",
-      lg: "cc., Headphones z'omugagga"
+      lg: "cc., Headphones z'omugagga",
+      fr: "ex. : Casques Premium",
+      dy: "nis.: Sɔrɔnba fɛnw"
     },
     "services.example_special_pasta": {
       en: "e.g., Special Pasta Dish",
@@ -8483,7 +8448,9 @@ const translations = {
       af: "bv., Spesiale Pasta Gereg",
       tw: "mf., Ounj6 Pasta aho",
       rw: "ur., Ifunguro ry'ibiri rya pasta ry'ihuriye",
-      lg: "cc., Emmere ya pasta ey'okugululwa"
+      lg: "cc., Emmere ya pasta ey'okugululwa",
+      fr: "ex. : Plat de Pâtes Spécial",
+      dy: "nis.: Dumuni kɛrɛnkɛrɛn"
     },
     "services.example_airport_transfer": {
       en: "e.g., Airport Transfer",
@@ -8496,7 +8463,9 @@ const translations = {
       af: "bv., Lughawe Oordrag",
       tw: "mf., Fa ko fi Kokuro",
       rw: "ur., Kwihangira ku bugoroba",
-      lg: "cc., Okutumbula ku lwanda ly'ennyonyi"
+      lg: "cc., Okutumbula ku lwanda ly'ennyonyi",
+      fr: "ex. : Transfert Aéroport",
+      dy: "nis.: Jeliɲɔgɔn taama"
     },
     "services.example_haircut_styling": {
       en: "e.g., Haircut & Styling",
@@ -8505,11 +8474,13 @@ const translations = {
       yo: "m.f., Ge Irun & Fi",
       ig: "mf., Ikp Aka & Zee",
       zu: "mf., Ukudla izinwele nokuhlela",
-      xh: "mf.", 
+      xh: "mf.",
       af: "bv., Kapsnyd en Stylering",
       tw: "mf., B3 hw & B",
       rw: "ur., Gukata amabuye no guhindura",
-      lg: "okukwata obuyonzi n'okukola"
+      lg: "okukwata obuyonzi n'okukola",
+      fr: "ex. : Coupe & Coiffure",
+      dy: "nis.: Kunsigi jɛgɛ ni labato"
     },
     "services.example_custom_suit": {
       en: "e.g., Custom Suit Alteration",
@@ -8517,12 +8488,14 @@ const translations = {
       ha: "m.f., Gyara Suti na Farko",
       yo: "m.f., Se Aa K",
       ig: "mf., Mgbat Aka",
-      zu: "mf.", 
+      zu: "mf.",
       xh: "mf.",
       af: "bv., Pasgemaak Aanpassings",
       tw: "mf.",
       rw: "ur.",
-      lg: "cc."
+      lg: "cc.",
+      fr: "ex. : Retouche de Costume",
+      dy: "nis.: Dugu fɛn labato"
     },
     "services.example_phone_repair": {
       en: "e.g., Phone Screen Repair",
@@ -8530,38 +8503,44 @@ const translations = {
       ha: "m.f., Gyaran Fone",
       yo: "m.f., Se F",
       ig: "mf., Mgb",
-      zu: "mf.", 
+      zu: "mf.",
       xh: "mf.",
       af: "bv., Foon Skerm Herstel",
       tw: "mf.",
       rw: "ur.",
-      lg: "cc."
+      lg: "cc.",
+      fr: "ex. : Réparation d'écran de téléphone",
+      dy: "nis.: Telefoni ɲɛ labato"
     },
     "services.example_website_design": {
       en: "e.g., Website Design Project",
       sw: "mf., Mradi wa Ubunifu wa Tovuti",
       ha: "m.f., Aikacin Zane Yan Gida",
       yo: "m.f., Ise Ap6r6 W3b",
-      ig: "mf.", 
-      zu: "mf.", 
+      ig: "mf.",
+      zu: "mf.",
       xh: "mf.",
       af: "bv., Webwerf Ontwerp Projek",
       tw: "mf.",
       rw: "ur.",
-      lg: "cc."
+      lg: "cc.",
+      fr: "ex. : Projet de Conception Web",
+      dy: "nis.: Wɛbidi fɛn baara"
     },
     "services.example_service_name": {
       en: "e.g., Service Name",
       sw: "mf., Jina la Huduma",
       ha: "m.f., Sunan Hidima",
       yo: "m.f., Oruk6 Ise",
-      ig: "mf.", 
-      zu: "mf.", 
+      ig: "mf.",
+      zu: "mf.",
       xh: "mf.",
       af: "bv., Diensnaam",
       tw: "mf.",
       rw: "ur.",
-      lg: "cc."
+      lg: "cc.",
+      fr: "ex. : Nom du service",
+      dy: "nis.: Sɔrɔn tɔgɔ"
     },
     "services.price_per_km": {
       en: "Price per km",
@@ -8574,7 +8553,9 @@ const translations = {
       af: "Prys per km",
       tw: "Kodi a km",
       rw: "Iyinga kuri km",
-      lg: "Emu ku km"
+      lg: "Emu ku km",
+      fr: "Prix par km",
+      dy: "Km donkili"
     },
     "services.base_amount": {
       en: "Base Amount",
@@ -8587,7 +8568,9 @@ const translations = {
       af: "Bedrag",
       tw: "Emu",
       rw: "Inanga yibanze",
-      lg: "Emu ku ntungo"
+      lg: "Emu ku ntungo",
+      fr: "Montant de base",
+      dy: "Damina donkili"
     },
     "services.total_fare": {
       en: "Total Fare:",
@@ -8600,7 +8583,9 @@ const translations = {
       af: "Totale Bedrag:",
       tw: "Kodi Nyinaa:",
       rw: "Imbiri Yose:",
-      lg: "Emu Yose:"
+      lg: "Emu Yose:",
+      fr: "Tarif total :",
+      dy: "Juguyɔrɔ bɛɛ:"
     },
     "services.fare_calculation": {
       en: "{currency} {pricePerKm} (per km) + {currency} {baseAmount} (base amount)",
@@ -8613,7 +8598,9 @@ const translations = {
       af: "{currency} {pricePerKm} (per km) + {currency} {baseAmount} (bedrag)",
       tw: "{currency} {pricePerKm} (na km) + {currency} {baseAmount} (emu)",
       rw: "{currency} {pricePerKm} (ku km) + {currency} {baseAmount} (inanga yibanze)",
-      lg: "{currency} {pricePerKm} (ku km) + {currency} {baseAmount} (emu ku ntungo)"
+      lg: "{currency} {pricePerKm} (ku km) + {currency} {baseAmount} (emu ku ntungo)",
+      fr: "{currency} {pricePerKm} (par km) + {currency} {baseAmount} (montant de base)",
+      dy: "{currency} {pricePerKm} (km la) + {currency} {baseAmount} (damina donkili)"
     },
     "services.no_inventory_found": {
       en: "No inventory items found",
@@ -8626,7 +8613,9 @@ const translations = {
       af: "Geen voorraaditems gevind nie",
       tw: "Anhwehua nne3ma biara",
       rw: "Nta bintu byabonetse",
-      lg: "Tewali ebintu gyazaabulidde"
+      lg: "Tewali ebintu gyazaabulidde",
+      fr: "Aucun article d'inventaire trouvé",
+      dy: "Bansan fɛn si ma sɔrɔ"
     },
     "services.start_by_adding_first_item": {
       en: "Start by adding your first inventory item",
@@ -8639,7 +8628,9 @@ const translations = {
       af: "Begin deur jou eerste item by te voeg",
       tw: "Hy3 ase dea wo b3 nnto ahy3",
       rw: "Tangira kongera ikintu cya mbere",
-      lg: "Tandika okuyongeza ekintu kyo okusooka"
+      lg: "Tandika okuyongeza ekintu kyo okusooka",
+      fr: "Commencez par ajouter votre premier article d'inventaire",
+      dy: "I ka bansan fɛn foli fara a kan ka daminɛ"
     },
     "services.describe_service_placeholder": {
       en: "Describe your service...",
@@ -8652,7 +8643,9 @@ const translations = {
       af: "Beskryf jou diens...",
       tw: "Ka ho kyer3w adwuma no...",
       rw: "Garagamisha serivisi yawe...",
-      lg: "Londoola omulimu gwo..."
+      lg: "Londoola omulimu gwo...",
+      fr: "Décrivez votre service...",
+      dy: "I ka sɔrɔn laɲini..."
     },
     "difference": {
       en: "Difference",
@@ -8665,10 +8658,11 @@ const translations = {
       af: "Verskil",
       tw: "Bɛnne",
       rw: "Ibyinshi",
-      lg: "Enjawulo"
+      lg: "Enjawulo",
+      fr: "Différence",
+      dy: "Jɔyɔrɔ"
     },
-    // Inventory Management
-    "inventory.total_items": {
+        "inventory.total_items": {
       en: "Total Items",
       sw: "Jumla ya Vitu",
       ha: "Jimillar Kayayyaki",
@@ -8679,7 +8673,9 @@ const translations = {
       af: "Totale Items",
       tw: "Nneɛma Nyinaa",
       rw: "Imbiri Yose",
-      lg: "Ebintu Byona"
+      lg: "Ebintu Byona",
+      fr: "Nombre total d'articles",
+      dy: "Fɛn bɛɛ"
     },
     "inventory.total_qty": {
       en: "Total Qty",
@@ -8692,7 +8688,9 @@ const translations = {
       af: "Totale Hoeveelheid",
       tw: "Nneɛma Nyinaa",
       rw: "Imibiri Yose",
-      lg: "Emiwendo Gyona"
+      lg: "Emiwendo Gyona",
+      fr: "Quantité totale",
+      dy: "Juru bɛɛ"
     },
     "inventory.low_stock": {
       en: "Low Stock",
@@ -8705,7 +8703,9 @@ const translations = {
       af: "Lae Voorraad",
       tw: "Sika Bɛtɔ",
       rw: "Imiterere Irabije",
-      lg: "Emmotoka Etete"
+      lg: "Emmotoka Etete",
+      fr: "Stock faible",
+      dy: "Bansan dɔ"
     },
     "inventory.total_stock_value": {
       en: "Total Stock Value",
@@ -8718,7 +8718,9 @@ const translations = {
       af: "Totale Voorraad Waarde",
       tw: "Sika Nyinaa a Wɔwɔ",
       rw: "Agacuruzwa Kamwe",
-      lg: "Emmuluba Yawona"
+      lg: "Emmuluba Yawona",
+      fr: "Valeur totale du stock",
+      dy: "Bansan donkili bɛɛ"
     },
     "inventory.add_new_item": {
       en: "Add New Item",
@@ -8731,7 +8733,9 @@ const translations = {
       af: "Voeg Nuwe Item By",
       tw: "Fa Bɛtɛm Foforo",
       rw: "Ongeraho Ikintu Gishya",
-      lg: "Yongeza Ekintu Kipya"
+      lg: "Yongeza Ekintu Kipya",
+      fr: "Ajouter un nouvel article",
+      dy: "Fɛn kura fara a kan"
     },
     "inventory.search_items": {
       en: "Search items...",
@@ -8744,7 +8748,9 @@ const translations = {
       af: "Soek items...",
       tw: "Hwɛ nneɛma...",
       rw: "Shakisha ibintu...",
-      lg: "Noonya ebintu..."
+      lg: "Noonya ebintu...",
+      fr: "Rechercher des articles...",
+      dy: "Fɛnw nini..."
     },
     "inventory.running_low": {
       en: "Running Low",
@@ -8757,7 +8763,9 @@ const translations = {
       af: "Besig om op",
       tw: "Retre",
       rw: "Ririmo gutakara",
-      lg: "Kiruma kuwona"
+      lg: "Kiruma kuwona",
+      fr: "Faible",
+      dy: "Bɛ dɔ"
     },
     "inventory.reorder_soon": {
       en: "reorder soon",
@@ -8770,7 +8778,9 @@ const translations = {
       af: "hervoor binnekort",
       tw: "san wo bio",
       rw: "ongera gutaha",
-      lg: "ddamu okuddemu"
+      lg: "ddamu okuddemu",
+      fr: "réapprovisionner bientôt",
+      dy: "ka baa sin sisan"
     },
     "inventory.min": {
       en: "Min",
@@ -8783,7 +8793,9 @@ const translations = {
       af: "Min",
       tw: "Ketewa",
       rw: "Nto",
-      lg: "Wansi"
+      lg: "Wansi",
+      fr: "Min",
+      dy: "Dɔ"
     },
     "inventory.left": {
       en: "left",
@@ -8796,7 +8808,9 @@ const translations = {
       af: "oorgela",
       tw: "fã",
       rw: "isigaye",
-      lg: "sangula"
+      lg: "sangula",
+      fr: "restant",
+      dy: "bɛ sigi"
     },
     "inventory.manage": {
       en: "Manage Inventory",
@@ -8809,7 +8823,9 @@ const translations = {
       af: "Bestuur Jou Voorraad",
       tw: "Sika Ho Adwuma",
       rw: "Genzura Imiterere",
-      lg: "Ddukanya Emmotoka"
+      lg: "Ddukanya Emmotoka",
+      fr: "Gérer l'inventaire",
+      dy: "Bansan laɲini"
     },
     "inventory.check_alerts": {
       en: "Check Alerts",
@@ -8822,7 +8838,9 @@ const translations = {
       af: "Kontroleer Waarskuwings",
       tw: "Hwɛ Nsɛm a Wɔbɔ",
       rw: "Kureka Amakuru",
-      lg: "Laba Ebikwata"
+      lg: "Laba Ebikwata",
+      fr: "Vérifier les alertes",
+      dy: "Kɔlɔsiw lamina"
     },
     "inventory.checking": {
       en: "Checking...",
@@ -8835,7 +8853,9 @@ const translations = {
       af: "Kontroleer...",
       tw: "Retre...",
       rw: "Irihindura...",
-      lg: "Kirabira..."
+      lg: "Kirabira...",
+      fr: "Vérification...",
+      dy: "Bɛ lamina..."
     },
     "inventory.quick_add": {
       en: "Quick Add +",
@@ -8848,10 +8868,11 @@ const translations = {
       af: "Voeg Vinnig By +",
       tw: "Fa Bɛtɛm Tiaa +",
       rw: "Ongeraho Bihuta +",
-      lg: "Yongeza Bwangu +"
+      lg: "Yongeza Bwangu +",
+      fr: "Ajout rapide +",
+      dy: "Surunyɛ fara a kan +"
     },
-    // Stock Page Specific
-    "stockSubtitle": {
+        "stockSubtitle": {
       en: "Manage your inventory",
       sw: "Dhibiti hifadhi yako",
       ha: "Kula da kayayyanki",
@@ -8862,7 +8883,9 @@ const translations = {
       af: "Bestuur jou voorraad",
       tw: "Di sika a wɔwɔ ho",
       rw: "Gucanya imiterere yawe",
-      lg: "Teekateeka emmotoka zo"
+      lg: "Teekateeka emmotoka zo",
+      fr: "Gérez votre inventaire",
+      dy: "I ka bansan laɲini"
     },
     "totalProducts": {
       en: "Total Products",
@@ -8875,7 +8898,9 @@ const translations = {
       af: "Totaal Produkte",
       tw: "Nneɛma a wɔwɔ",
       rw: "Imibare y'ibicuruzwa",
-      lg: "Emiwendo gy'ebintu"
+      lg: "Emiwendo gy'ebintu",
+      fr: "Nombre total de produits",
+      dy: "Fɛn bɛɛ"
     },
     "items": {
       en: "Items",
@@ -8888,7 +8913,9 @@ const translations = {
       af: "Items",
       tw: "Nneɛma",
       rw: "Ibintu",
-      lg: "Ebintu"
+      lg: "Ebintu",
+      fr: "Articles",
+      dy: "Fɛnw"
     },
     "runningLowLabel": {
       en: "Running Low",
@@ -8901,7 +8928,9 @@ const translations = {
       af: "Begin Laag",
       tw: "Re retwe",
       rw: "Ri nto",
-      lg: "Zirina wansi"
+      lg: "Zirina wansi",
+      fr: "Faible",
+      dy: "Bɛ dɔ"
     },
     "noItemsYet": {
       en: "No Items Yet",
@@ -8914,7 +8943,9 @@ const translations = {
       af: "Nog Items Nog",
       tw: "Ndaa Ntɔnuma",
       rw: "Nta vunjwa kuri iki",
-      lg: "Tewali ebintu"
+      lg: "Tewali ebintu",
+      fr: "Aucun article pour le moment",
+      dy: "Fɛn si ma sɔrɔ fɔlɔ"
     },
     "inventoryEmptyDescription": {
       en: "Start by adding your first product to inventory",
@@ -8927,7 +8958,9 @@ const translations = {
       af: "Begin deur die eerste produk by by te voeg",
       tw: "Bɛhyɛ ɛfa ɛfa wo ntɔnuma a adi kan",
       rw: "Tangira kongera ibicuruzwa bya mbere kuri imiterere",
-      lg: "Tandika okuyongeza ebintu byo ku bikka"
+      lg: "Tandika okuyongeza ebintu byo ku bikka",
+      fr: "Commencez par ajouter votre premier produit à l'inventaire",
+      dy: "I ka bansan fɛn foli fara a kan ka daminɛ"
     },
     "addItemButton": {
       en: "Add Product",
@@ -8940,7 +8973,9 @@ const translations = {
       af: "Voeg Produk By",
       tw: "Fa Nneɛma",
       rw: "Ongeraho ibicuruzwa",
-      lg: "Yongeza ebintu"
+      lg: "Yongeza ebintu",
+      fr: "Ajouter un produit",
+      dy: "Fɛn fara a kan"
     },
     "searchItems": {
       en: "Search items",
@@ -8953,7 +8988,9 @@ const translations = {
       af: "Soek items",
       tw: "Hwehwɛ nneɛma",
       rw: "Shakisha ibintu",
-      lg: "Noona ebintu"
+      lg: "Noona ebintu",
+      fr: "Rechercher des articles",
+      dy: "Fɛnw nini"
     },
     "quickActions": {
       en: "Quick Actions",
@@ -8966,7 +9003,9 @@ const translations = {
       af: "Vinnige Aksies",
       tw: "Nneɛma a ɛyɛ tiaa",
       rw: "Imirimo yihuse",
-      lg: "Emirimu egya wansi"
+      lg: "Emirimu egya wansi",
+      fr: "Actions rapides",
+      dy: "Baaraw surunyɛw"
     },
     "addItem": {
       en: "Add Item",
@@ -8979,7 +9018,9 @@ const translations = {
       af: "Voeg Item By",
       tw: "Fa Nneɛma",
       rw: "Ongeraho ikintu",
-      lg: "Yongeza ekintu"
+      lg: "Yongeza ekintu",
+      fr: "Ajouter un article",
+      dy: "Fɛn fara a kan"
     },
     "stockTake": {
       en: "Stock Take",
@@ -8992,10 +9033,11 @@ const translations = {
       af: "Voorraad Telling",
       tw: "Hwɛ Sika",
       rw: "Kugenzura imiterere",
-      lg: "Okukebera emmotoka"
+      lg: "Okukebera emmotoka",
+      fr: "Inventaire",
+      dy: "Bansan kali"
     },
-    // More Page Specific
-    "more_subtitle": {
+        "more_subtitle": {
       en: "Additional options and features",
       sw: "Chaguo zaidi na vipengele",
       ha: "Zabin fiye da fasaloli",
@@ -9006,7 +9048,9 @@ const translations = {
       af: "Bykomende opsies en funksies",
       tw: "Nneɛma a ɛfa ne nneɛma afoforo",
       rw: "Ibihindagurwa byongeyeho n'ibikorwa",
-      lg: "Ebikwata ku by'okusingiwa na birimu"
+      lg: "Ebikwata ku by'okusingiwa na birimu",
+      fr: "Options et fonctionnalités supplémentaires",
+      dy: "Fɛn wɛrɛw ni baaraw"
     },
     "share.app": {
       en: "Share App",
@@ -9019,7 +9063,9 @@ const translations = {
       af: "Deel App",
       tw: "Kyɛ App",
       rw: "Kwihangiza App",
-      lg: "Gulawo App"
+      lg: "Gulawo App",
+      fr: "Partager l'application",
+      dy: "App jira"
     },
     "community_insights": {
       en: "Community & Insights",
@@ -9032,7 +9078,9 @@ const translations = {
       af: "Gemeenskap & Insigte",
       tw: "Nkabɔmu & Nneɛma a ɛho hia",
       rw: "Ubumuga & Ubusobanururo",
-      lg: "Emmwanalulimi & Ebyokulabirako"
+      lg: "Emmwanalulimi & Ebyokulabirako",
+      fr: "Communauté et perspectives",
+      dy: "Kafo ni laɲinifɛnw"
     },
     "decision_insights": {
       en: "Decision Insights",
@@ -9045,7 +9093,9 @@ const translations = {
       af: "Besluit Insigte",
       tw: "Nneɛma a ɛho hia ma ɛfa ntɔm",
       rw: "Ubusobanururo bwa guhanga ibyemezo",
-      lg: "Ebyokulabirako ebikwata ku kukola"
+      lg: "Ebyokulabirako ebikwata ku kukola",
+      fr: "Aperçus décisionnels",
+      dy: "Laɲinifɛnw"
     },
     "beehive_community": {
       en: "BeeHive Community",
@@ -9058,11 +9108,10 @@ const translations = {
       af: "BeeHive Gemeenskap",
       tw: "Nkabɔmu BeeHive",
       rw: "Ubumuga bw'Abanyamuryango",
-      lg: "Emmwanalulimi gya BeeHive"
+      lg: "Emmwanalulimi gya BeeHive",
+      fr: "Communauté BeeHive",
+      dy: "BeeHive kafo"
     },
-    // Home Screen
-    // Target Language
-    // Greetings
     "greeting.welcome_back": {
       en: "Welcome back",
       sw: "Karibu tena",
@@ -9074,9 +9123,11 @@ const translations = {
       af: "Welkom terug",
       tw: "Akaba ba",
       rw: "Murakaza neza",
-      lg: "Wangeze"
+      lg: "Wangeze",
+      fr: "Bon retour",
+      dy: "I ni ce kɔfɛ"
     },
-    "inventory.example_headphones": {
+        "inventory.example_headphones": {
       en: "e.g., Premium Headphones",
       sw: "mf., Headphones Bora",
       ha: "m.f., Headphones Mai Kyau",
@@ -9087,7 +9138,9 @@ const translations = {
       af: "bv., Premium Oorfone",
       tw: "mf., Headphones ahenkan",
       rw: "ur., Headphones Zo hejuru",
-      lg: "cc., Headphones eby'omugagga"
+      lg: "cc., Headphones eby'omugagga",
+      fr: "ex. : Casques Premium",
+      dy: "nis.: Sɔrɔnba fɛnw"
     },
     "inventory.example_fuel": {
       en: "e.g., Fuel Can",
@@ -9100,7 +9153,9 @@ const translations = {
       af: "bv., Brandstofkan",
       tw: "mf., Kokuwa ahye",
       rw: "ur., Gucuma Ibikombe",
-      lg: "cc., Ebyokunywa"
+      lg: "cc., Ebyokunywa",
+      fr: "ex. : Bidon d'essence",
+      dy: "nis.: Tiyɛti fɛn"
     },
     "inventory.example_software": {
       en: "e.g., Software License",
@@ -9113,7 +9168,9 @@ const translations = {
       af: "bv., Software Lisensie",
       tw: "mf., Software krataa",
       rw: "ur., License ya Software",
-      lg: "cc., License ya kompyuta"
+      lg: "cc., License ya kompyuta",
+      fr: "ex. : Licence logicielle",
+      dy: "nis.: Sɔfitiwɛrɛ lisansi"
     },
     "inventory.example_item": {
       en: "e.g., Item Name",
@@ -9126,7 +9183,9 @@ const translations = {
       af: "bv., Item Naam",
       tw: "mf., Or\u1e29d nne\u025bma",
       rw: "ur., Izina ry'ikintu",
-      lg: "cc., Erinya ly'ekintu"
+      lg: "cc., Erinya ly'ekintu",
+      fr: "ex. : Nom de l'article",
+      dy: "nis.: Fɛn tɔgɔ"
     },
     "inventory.example_quantity": {
       en: "10",
@@ -9139,7 +9198,9 @@ const translations = {
       af: "10",
       tw: "10",
       rw: "10",
-      lg: "10"
+      lg: "10",
+      fr: "10",
+      dy: "10"
     },
     "inventory.example_threshold": {
       en: "5",
@@ -9152,7 +9213,9 @@ const translations = {
       af: "5",
       tw: "5",
       rw: "5",
-      lg: "5"
+      lg: "5",
+      fr: "5",
+      dy: "5"
     },
     "inventory.example_price": {
       en: "0.00",
@@ -9165,7 +9228,9 @@ const translations = {
       af: "0.00",
       tw: "0.00",
       rw: "0.00",
-      lg: "0.00"
+      lg: "0.00",
+      fr: "0.00",
+      dy: "0.00"
     },
     "inventory.edit_item": {
       en: "Edit item",
@@ -9178,7 +9243,9 @@ const translations = {
       af: "Wysig item",
       tw: "Sesa nne\u025bma",
       rw: "Hindura ikintu",
-      lg: "Kyusa ekintu"
+      lg: "Kyusa ekintu",
+      fr: "Modifier l'article",
+      dy: "Fɛn bato"
     },
     "inventory.delete_item": {
       en: "Delete item",
@@ -9191,7 +9258,9 @@ const translations = {
       af: "Verwyder item",
       tw: "T\u1d4dw nne\u025bma",
       rw: "Siba ikintu",
-      lg: "Sazaamu ekintu"
+      lg: "Sazaamu ekintu",
+      fr: "Supprimer l'article",
+      dy: "Fɛn ba"
     },
     "universal.delete_item": {
       en: "Delete Item",
@@ -9204,7 +9273,9 @@ const translations = {
       af: "Verwyder item",
       tw: "T\u1d4dw nne\u025bma",
       rw: "Siba ikintu",
-      lg: "Sazaamu ekintu"
+      lg: "Sazaamu ekintu",
+      fr: "Supprimer l'article",
+      dy: "Fɛn ba"
     },
     "common.no_upcoming_appointments": {
       en: "No upcoming appointments",
@@ -9217,7 +9288,9 @@ const translations = {
       af: "Geen komende afsprake nie",
       tw: "Nnya nhyira biara a reba",
       rw: "Nta byiringize bishizemo",
-      lg: "Tewali mirimu egikyagenda mu maaso"
+      lg: "Tewali mirimu egikyagenda mu maaso",
+      fr: "Aucun rendez-vous à venir",
+      dy: "Lalɔn si ma sɔrɔ min bɛ na"
     },
     "common.schedule_first_appointment": {
       en: "Schedule your first appointment",
@@ -9230,7 +9303,9 @@ const translations = {
       af: "Skeduleer jou eerste afspraak",
       tw: "Hyehye wo nhyira kan wo b",
       rw: "Tegeka ibyiringize byawe mbere",
-      lg: "Teeka omulimo gwo ogusooka"
+      lg: "Teeka omulimo gwo ogusooka",
+      fr: "Planifiez votre premier rendez-vous",
+      dy: "I ka lalɔn foli laɲini"
     },
     "common.delete_appointment": {
       en: "Delete Appointment",
@@ -9243,7 +9318,9 @@ const translations = {
       af: "Verwyder Afspraak",
       tw: "T\u1d4dw Nhyira",
       rw: "Siba Ibyiringize",
-      lg: "Gyawe Omulimo"
+      lg: "Gyawe Omulimo",
+      fr: "Supprimer le rendez-vous",
+      dy: "Lalɔn ba"
     },
     "common.delete_confirm": {
       en: "Are you sure you want to delete this appointment? This action cannot be undone.",
@@ -9256,7 +9333,9 @@ const translations = {
       af: "Is jy seker jy wil hierdie afspraak verwyder? Hierdie aksie kan nie ontdoen word nie.",
       tw: "Woka wo p\u1e49 s\u1e49 nhyira yi? Nney\u1e49 yi ntumi nky\u1e49 b\u1e49.",
       rw: "Uzanya ukeneye gukuraho iyi ibyiringize? Iyi nshinga itashobora kubikwa.",
-      lg: "Owuliriza nti oyagye omulimo guno? Omulimu guno tegya kuddibulwa."
+      lg: "Owuliriza nti oyagye omulimo guno? Omulimu guno tegya kuddibulwa.",
+      fr: "Êtes-vous sûr de vouloir supprimer ce rendez-vous ? Cette action ne peut pas être annulée.",
+      dy: "I bɔra i bɛ lalɔn nin ba? Nin baara tɛ se ka sɛgin."
     },
     "common.appointments": {
       en: "Appointments",
@@ -9269,7 +9348,9 @@ const translations = {
       af: "Afsprake",
       tw: "Nhyira",
       rw: "Abyiringize",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Rendez-vous",
+      dy: "Lalɔnw"
     },
     "common.no_services": {
       en: "No services available",
@@ -9282,7 +9363,9 @@ const translations = {
       af: "Geen dienste beskikbaar nie",
       tw: "Nnya adwuma biara",
       rw: "Nta serivisi ziboneka",
-      lg: "Tewali mirimu giriwo"
+      lg: "Tewali mirimu giriwo",
+      fr: "Aucun service disponible",
+      dy: "Sɔrɔn si ma sɔrɔ"
     },
     "common.add_first_service": {
       en: "Add your first service to get started",
@@ -9295,7 +9378,9 @@ const translations = {
       af: "Voeg jou eerste diens by om te begin",
       tw: "Fa adwuma wo kan sika wo b",
       rw: "Ongeraho serivisi yawe mbere gutangira",
-      lg: "Yongera omulimo gwo ogusooka okutandika"
+      lg: "Yongera omulimo gwo ogusooka okutandika",
+      fr: "Ajoutez votre premier service pour commencer",
+      dy: "I ka sɔrɔn foli fara a kan ka daminɛ"
     },
     "common.delete_service": {
       en: "Delete Service",
@@ -9308,7 +9393,9 @@ const translations = {
       af: "Verwyder Diens",
       tw: "T\u1d4dw Adwuma",
       rw: "Siba Serivisi",
-      lg: "Gyawo Omulimo"
+      lg: "Gyawo Omulimo",
+      fr: "Supprimer le service",
+      dy: "Sɔrɔn ba"
     },
     "common.services": {
       en: "Services",
@@ -9321,7 +9408,9 @@ const translations = {
       af: "Dienste",
       tw: "Adwuma",
       rw: "Serivisi",
-      lg: "Emirimu"
+      lg: "Emirimu",
+      fr: "Services",
+      dy: "Sɔrɔnw"
     },
     "common.active": {
       en: "active",
@@ -9334,7 +9423,9 @@ const translations = {
       af: "aktief",
       tw: "y\u1e3den",
       rw: "akora",
-      lg: "kikola"
+      lg: "kikola",
+      fr: "actif",
+      dy: "bɛ baara"
     },
     "common.no_items_in_inventory": {
       en: "No items in inventory",
@@ -9347,7 +9438,9 @@ const translations = {
       af: "Geen items in voorraad nie",
       tw: "Nnya nne\u025bma biara w\u0254 mu",
       rw: "Nta bintu muri inventory",
-      lg: "Tewali ebintu mu ssomero"
+      lg: "Tewali ebintu mu ssomero",
+      fr: "Aucun article dans l'inventaire",
+      dy: "Fɛn si ma sɔrɔ bansan kɔnɔ"
     },
     "common.inventory": {
       en: "Inventory",
@@ -9360,7 +9453,9 @@ const translations = {
       af: "Voorraad",
       tw: "Sika a w\u0254hy\u0254 mu",
       rw: "Imbuto",
-      lg: "Emmotoka"
+      lg: "Emmotoka",
+      fr: "Inventaire",
+      dy: "Bansan"
     },
     "common.delete_inventory": {
       en: "Delete Item",
@@ -9373,9 +9468,10 @@ const translations = {
       af: "Verwyder item",
       tw: "T\u1d4dw nne\u025bma",
       rw: "Siba ikintu",
-      lg: "Sazaamu ekintu"
+      lg: "Sazaamu ekintu",
+      fr: "Supprimer l'article",
+      dy: "Fɛn ba"
     }
-  }
 };
 
 export default translations;
