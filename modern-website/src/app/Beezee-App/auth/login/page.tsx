@@ -194,7 +194,7 @@ export default function Login() {
     // Validate that the formatted number is in a supported format
     const phoneValidation = validatePhone(phoneNumber);
     if (!phoneValidation.valid) {
-      setError('Invalid phone format. Please use a supported country format (Kenya, Nigeria, Ghana, Uganda, Rwanda, Tanzania, South Africa, Côte d\'Ivoire)');
+      setError('Invalid phone format. Côte d\'Ivoire numbers must have 8 digits after +225 (e.g., +22507778899). Other formats: Kenya (+254...), Nigeria (+234...), Ghana (+233...), Uganda (+256...), Rwanda (+250...), Tanzania (+255...), South Africa (+27...)');
       setIsLoading(false);
       return;
     }
@@ -325,7 +325,7 @@ export default function Login() {
                     </label>
                     <input
                       type="tel"
-                      placeholder="Enter phone number (e.g., +234567123321, +254712345678, 0712345678)"
+                      placeholder="Enter phone number (e.g., +254712345678, +234567123321, +22507778899, 0712345678)"
                       value={formData.phone}
                       onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                       className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all"

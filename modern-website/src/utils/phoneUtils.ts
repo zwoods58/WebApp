@@ -15,7 +15,7 @@ export const SUPPORTED_COUNTRIES: Record<string, PhoneFormat> = {
   ug: { code: '+256', name: 'Uganda', digits: 9, total: 12 },
   rw: { code: '+250', name: 'Rwanda', digits: 9, total: 12 },
   tz: { code: '+255', name: 'Tanzania', digits: 9, total: 12 },
-  ci: { code: '+225', name: "Côte d'Ivoire", digits: 10, total: 13 }
+  ci: { code: '+225', name: "Côte d'Ivoire", digits: 8, total: 12 }
 };
 
 /**
@@ -164,8 +164,8 @@ export function getDisplayPhone(phone: string): string {
     case 'gh': // Ghana: +233 XXX XXX XXX
       return `${country.code} ${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}`;
     
-    case 'ci': // Côte d'Ivoire: +225 XX XX XX XX XX
-      return `${country.code} ${digits.substring(0, 2)} ${digits.substring(2, 4)} ${digits.substring(4, 6)} ${digits.substring(6, 8)} ${digits.substring(8)}`;
+    case 'ci': // Côte d'Ivoire: +225 XX XX XX XX
+      return `${country.code} ${digits.substring(0, 2)} ${digits.substring(2, 4)} ${digits.substring(4, 6)} ${digits.substring(6, 8)}`;
     
     default:
       return formatted;
