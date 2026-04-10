@@ -171,7 +171,7 @@ async function generateSession(supabase: any, userId: string, deviceFingerprint:
 
 const phoneSchema = z.string().min(8).max(18).regex(/^\+?\d+$/, "Phone must contain only digits or start with +");
 const pinSchema = z.string().length(6).regex(/^\d{6}$/);
-const countryCodeSchema = z.enum(['KE', 'NG', 'ZA']);
+const countryCodeSchema = z.enum(['KE', 'NG', 'ZA', 'GH', 'UG', 'TZ', 'RW', 'CI']);
 
 const AuthRequestSchema = z.discriminatedUnion('action', [
     z.object({

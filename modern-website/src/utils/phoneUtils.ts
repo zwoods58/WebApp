@@ -14,7 +14,8 @@ export const SUPPORTED_COUNTRIES: Record<string, PhoneFormat> = {
   gh: { code: '+233', name: 'Ghana', digits: 9, total: 12 },
   ug: { code: '+256', name: 'Uganda', digits: 9, total: 12 },
   rw: { code: '+250', name: 'Rwanda', digits: 9, total: 12 },
-  tz: { code: '+255', name: 'Tanzania', digits: 9, total: 12 }
+  tz: { code: '+255', name: 'Tanzania', digits: 9, total: 12 },
+  ci: { code: '+225', name: "Côte d'Ivoire", digits: 10, total: 13 }
 };
 
 /**
@@ -99,6 +100,14 @@ export function formatPhoneNumber(phone: string): string {
       return '+255' + cleanPhone;
     }
     
+    // Côte d'Ivoire: starts with 225 and has 10 digits after country code
+    if (cleanPhone.startsWith('225') && cleanPhone.length === 13) {
+      return '+' + cleanPhone;
+    }
+    if (cleanPhone.length === 10 && (cleanPhone.startsWith('0') || cleanPhone.startsWith('5') || cleanPhone.startsWith('7'))) {
+      return '+225' + cleanPhone;
+    }
+    
     // Default to Kenya if no clear match and length is 9
     if (cleanPhone.length === 9) {
       return '+254' + cleanPhone;
@@ -154,6 +163,9 @@ export function getDisplayPhone(phone: string): string {
     
     case 'gh': // Ghana: +233 XXX XXX XXX
       return `${country.code} ${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}`;
+    
+    case 'ci': // Côte d'Ivoire: +225 XX XX XX XX XX
+      return `${country.code} ${digits.substring(0, 2)} ${digits.substring(2, 4)} ${digits.substring(4, 6)} ${digits.substring(6, 8)} ${digits.substring(8)}`;
     
     default:
       return formatted;
