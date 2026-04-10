@@ -91,12 +91,17 @@ export default function Header({ industry, country }: HeaderProps) {
       'TZ': [
         { code: 'en', name: 'English', nativeName: 'English', flag: '🇹🇿' },
         { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' }
+      ],
+      'CI': [
+        { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇨🇮' },
+        { code: 'dy', name: 'Dioula', nativeName: 'Diouula', flag: '🇨🇮' },
+        { code: 'en', name: 'English', nativeName: 'English', flag: '🇨🇮' }
       ]
     };
 
     // Convert country to uppercase for proper matching
     const upperCountry = (country || '').toUpperCase();
-    return countryLanguages[upperCountry] || countryLanguages['KE'];
+    return countryLanguages[upperCountry] || [{ code: 'en', name: 'English', nativeName: 'English', flag: '??' }];
   };
 
   const availableLanguages = getCountryLanguages();
@@ -115,7 +120,9 @@ export default function Header({ industry, country }: HeaderProps) {
       'af': 'lang.afrikaans',
       'tw': 'lang.twi',
       'rw': 'lang.kinyarwanda',
-      'lg': 'lang.luganda'
+      'lg': 'lang.luganda',
+      'fr': 'lang.french',
+      'dy': 'lang.dioula'
     };
     
     const key = languageKeyMap[langCode] || `lang.${langCode}`;

@@ -209,7 +209,7 @@ export default function SettingsPage() {
           description: t('settings.currency_desc', 'Set your local currency'),
           icon: CreditCard,
           action: 'select',
-          options: ['KES', 'NGN', 'GHS', 'ZAR', 'USD', 'EUR', 'GBP']
+          options: ['KES', 'NGN', 'GHS', 'ZAR', 'XOF', 'USD', 'EUR', 'GBP']
         }
       ]
     },

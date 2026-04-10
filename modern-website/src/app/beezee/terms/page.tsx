@@ -106,7 +106,7 @@ export default function BeezeeTermsPage() {
 
             <section>
                 <h2>17. Governing Law</h2>
-                <p>These Terms are governed by the laws of Kenya (referencing regional optimization for Kenya, South Africa, and Nigeria).</p>
+                <p>These Terms are governed by the laws of Kenya (referencing regional optimization for Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania, and Côte d'Ivoire).</p>
             </section>
 
             <section>

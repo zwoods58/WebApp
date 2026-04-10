@@ -115,8 +115,8 @@ const features: FeatureContent[] = [
         benefitHeadline: 'Your language, your money, your business',
         description: 'BeeZee works your way. From your local language to your country money, from shop to street business. Get business tools that understand you and your world.',
         highlights: [
-            'Many languages (English, Swahili, Yoruba, Igbo, Hausa, Afrikaans, Zulu, Xhosa, Twi, Luganda, Kinyarwanda)',
-            'Local money (KES, NGN, ZAR, GHS, UGX, RWF, TZS)',
+            'Many languages (English, Swahili, Yoruba, Igbo, Hausa, Afrikaans, Zulu, Xhosa, Twi, Luganda, Kinyarwanda, French, Dioula)',
+            'Local money (KES, NGN, ZAR, GHS, UGX, RWF, TZS, XOF)',
             'African business terms',
             'Features for African markets'
         ],

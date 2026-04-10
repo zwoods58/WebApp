@@ -27,9 +27,9 @@ interface ValidationRules {
 const VALIDATION_RULES: ValidationRules = {
   country: {
     required: true,
-    pattern: /^(KE|ZA|NG|GH|UG|RW|TZ)$/i,
+    pattern: /^(KE|ZA|NG|GH|UG|RW|TZ|CI)$/i,
     custom: (value: string) => {
-      const supportedCountries = ['KE', 'ZA', 'NG', 'GH', 'UG', 'RW', 'TZ'];
+      const supportedCountries = ['KE', 'ZA', 'NG', 'GH', 'UG', 'RW', 'TZ', 'CI'];
       if (!supportedCountries.includes(value.toUpperCase())) {
         return 'Country not supported. Please select from available options.';
       }
@@ -79,12 +79,13 @@ const VALIDATION_RULES: ValidationRules = {
         GH: /^\+233\d{9}$/,
         UG: /^\+256\d{9}$/,
         RW: /^\+250\d{9}$/,
-        TZ: /^\+255\d{9}$/
+        TZ: /^\+255\d{9}$/,
+        CI: /^\+225\d{10}$/
       };
 
       const isValid = Object.values(phoneRegex).some(regex => regex.test(value));
       if (!isValid) {
-        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ)';
+        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ), +225XXXXXXXXXXX (CI)';
       }
       return null;
     }

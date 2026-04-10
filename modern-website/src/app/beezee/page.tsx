@@ -12,8 +12,8 @@ import './beezee-animations.css';
 
 export const metadata: Metadata = {
   title: 'BeeZee | Easy Business Management for African Shops',
-  description: 'Simple business management for African shops and small businesses. Track sales, manage stock, and get smart business advice with BeeZee - made for Kenya, Nigeria, and South Africa.',
-  keywords: 'BeeZee, business management, African shops, Kenya business, Nigeria business, South Africa business, sales tracking, stock management, small business app, easy accounting',
+  description: 'Simple business management for African shops and small businesses. Track sales, manage stock, and get smart business advice with BeeZee - made for Kenya, Nigeria, South Africa, Ghana, Uganda, Rwanda, Tanzania, and Côte d\'Ivoire.',
+  keywords: 'BeeZee, business management, African shops, Kenya business, Nigeria business, South Africa business, Ghana business, Uganda business, Rwanda business, Tanzania business, Côte d\'Ivoire business, sales tracking, stock management, small business app, easy accounting',
   authors: [{ name: 'BeeZee Finance' }],
   creator: 'AtarWebb',
   publisher: 'AtarWebb',

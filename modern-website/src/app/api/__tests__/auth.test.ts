@@ -231,7 +231,7 @@ describe('Auth API - Security Tests', () => {
 
 describe('Auth API - Data Validation', () => {
   it('should validate country codes', () => {
-    const validCountries = ['KE', 'NG', 'ZA', 'US', 'GB'];
+    const validCountries = ['KE', 'NG', 'ZA', 'GH', 'UG', 'RW', 'TZ', 'CI', 'US', 'GB'];
     const invalidCountries = ['Kenya', 'k', 'KEN', ''];
 
     validCountries.forEach(country => {
@@ -244,7 +244,7 @@ describe('Auth API - Data Validation', () => {
   });
 
   it('should validate currency codes', () => {
-    const validCurrencies = ['KES', 'NGN', 'ZAR', 'USD', 'GBP'];
+    const validCurrencies = ['KES', 'NGN', 'ZAR', 'GHS', 'UGX', 'RWF', 'TZS', 'XOF', 'USD', 'GBP'];
     const invalidCurrencies = ['Kenyan', 'k', 'KESH', ''];
 
     validCurrencies.forEach(currency => {
