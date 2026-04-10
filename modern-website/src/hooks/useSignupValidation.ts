@@ -80,12 +80,12 @@ const VALIDATION_RULES: ValidationRules = {
         UG: /^\+256\d{9}$/,
         RW: /^\+250\d{9}$/,
         TZ: /^\+255\d{9}$/,
-        CI: /^\+225\d{10}$/
+        CI: /^\+225\d{8}$/
       };
 
       const isValid = Object.values(phoneRegex).some(regex => regex.test(value));
       if (!isValid) {
-        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ), +225XXXXXXXXXXX (CI)';
+        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ), +225XXXXXXXX (CI)';
       }
       return null;
     }

@@ -100,11 +100,11 @@ export function formatPhoneNumber(phone: string): string {
       return '+255' + cleanPhone;
     }
     
-    // Côte d'Ivoire: starts with 225 and has 10 digits after country code
-    if (cleanPhone.startsWith('225') && cleanPhone.length === 13) {
+    // Côte d'Ivoire: starts with 225 and has 8 digits after country code
+    if (cleanPhone.startsWith('225') && cleanPhone.length === 11) {
       return '+' + cleanPhone;
     }
-    if (cleanPhone.length === 10 && (cleanPhone.startsWith('0') || cleanPhone.startsWith('5') || cleanPhone.startsWith('7'))) {
+    if (cleanPhone.length === 8 && (cleanPhone.startsWith('0') || cleanPhone.startsWith('5') || cleanPhone.startsWith('7'))) {
       return '+225' + cleanPhone;
     }
     
