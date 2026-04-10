@@ -14,7 +14,8 @@ const essentialTranslations = {
     af: "Voeg Nuwe Item By",
     tw: "Fa BÉtÉm Foforo",
     rw: "Ongeraho Ikintu Gishya",
-    lg: "Yongeza Ekintu Kipya"
+    lg: "Yongeza Ekintu Kipya",
+    dy: "Ka ji faran"
   },
   
   // Appointments essential translations
@@ -29,7 +30,8 @@ const essentialTranslations = {
     af: "Voeg Afspreek By",
     tw: "Fa Nsrae Foforo",
     rw: "Ongeraha Umunsi",
-    lg: "Yongeza Olukalala"
+    lg: "Yongeza Olukalala",
+    dy: "Ka ji ladrɛ"
   },
   
   // Common fallback translations
@@ -44,7 +46,8 @@ const essentialTranslations = {
     af: "Stoor",
     tw: "Sie",
     rw: "Bika",
-    lg: "Tereka"
+    lg: "Tereka",
+    dy: "Saba"
   },
   
   "common.cancel": {
@@ -58,7 +61,8 @@ const essentialTranslations = {
     af: "Kanselleer",
     tw: "Twa",
     rw: "Kureka",
-    lg: "Sazaamu"
+    lg: "Sazaamu",
+    dy: "Ka banna"
   },
   
   "common.loading": {
@@ -72,7 +76,8 @@ const essentialTranslations = {
     af: "Laai...",
     tw: "Retrieving...",
     rw: "Ifashamo...",
-    lg: "Kika..."
+    lg: "Kika...",
+    dy: "Ka ba..."
   }
 };
 

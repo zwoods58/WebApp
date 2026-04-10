@@ -65,6 +65,11 @@ const UniversalLanguageSelector: React.FC<UniversalLanguageSelectorProps> = ({
         'TZ': [
           { code: 'en', name: 'English', nativeName: 'English', flag: '🇹🇿' },
           { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' }
+        ],
+        'CI': [
+          { code: 'en', name: 'English', nativeName: 'English', flag: '🇨🇮' },
+          { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇨🇮' },
+          { code: 'dy', name: 'Dioula', nativeName: 'Diouula', flag: '🇨🇮' }
         ]
       };
 

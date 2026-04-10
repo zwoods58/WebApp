@@ -23,7 +23,8 @@ const translations = {
       tw: "Sika",
       rw: "Amafaranga",
       lg: "Ssente",
-      fr: "Espèces"
+      fr: "Espèces",
+      dy: "Wosoro"
     },
     "payment.transfer": {
       en: "Transfer",
@@ -37,7 +38,8 @@ const translations = {
       tw: "Dane",
       rw: "Kohereza",
       lg: "Kyusa",
-      fr: "Virement"
+      fr: "Virement",
+      dy: "Forobɛ"
     },
     "payment.credit": {
       en: "Credit",
@@ -51,20 +53,22 @@ const translations = {
       tw: "Bɔ",
       rw: "Inguzanyo",
       lg: "Ebbanja",
-      fr: "Crédit"
+      fr: "Crédit",
+      dy: "Ka fɔlɔ"
     },
     "payment.mobile_money": {
       en: "Mobile Money",
       sw: "Pesa ya Kiganjani",
       ha: "Kudi mai waya",
-      yo: "Owọ lọdrọ ayẹlẹkun kọ",
+      yo: "Owoupdray ayelkun k",
       ig: "Ego mkpanaka",
       zu: "Imali yasefoni",
       xh: "Imali yasefoni",
       af: "Mobiele Geld",
       tw: "Sika a wode telefon so",
       rw: "Amafaranga ya telefoni",
-      lg: "Emmere ya ssimu"
+      lg: "Emmere ya ssimu",
+      dy: "Wosoro tilama"
     },
     // Navigation
     "nav.home": {
@@ -79,7 +83,8 @@ const translations = {
       tw: "Fie",
       rw: "Aho",
       lg: "Awange",
-      fr: "Accueil"
+      fr: "Accueil",
+      dy: "Sɔrɔ"
     },
     "nav.more": {
       en: "More",
@@ -93,7 +98,8 @@ const translations = {
       tw: "Bio",
       rw: "Buriyongwe",
       lg: "Okusingiwa",
-      fr: "Plus"
+      fr: "Plus",
+      dy: "Ka bɔ"
     },
     "country.select": {
       en: "Select Your Country",
@@ -176,7 +182,8 @@ const translations = {
       tw: "Kasa Borɔfo",
       rw: "Icyongereza",
       lg: "Lulimi Olungereza",
-      fr: "Anglais"
+      fr: "Anglais",
+      dy: "Diouula"
     },
     "lang.swahili": {
       en: "Swahili",
@@ -189,7 +196,8 @@ const translations = {
       af: "Swahili",
       tw: "Kiswahili kasa",
       rw: "Iswahili",
-      lg: "Lulimi lwa Swahili"
+      lg: "Lulimi lwa Swahili",
+      dy: "Diouula"
     },
     "lang.hausa": {
       en: "Hausa",
@@ -202,7 +210,8 @@ const translations = {
       af: "Hausa",
       tw: "Hausa kasa",
       rw: "Igihausa",
-      lg: "Lulimi lwa Hausa"
+      lg: "Lulimi lwa Hausa",
+      dy: "Diouula"
     },
     "lang.yoruba": {
       en: "Yoruba",
@@ -215,7 +224,8 @@ const translations = {
       af: "Yoruba",
       tw: "Yoruba kasa",
       rw: "Iyoruba",
-      lg: "Lulimi lwa Yoruba"
+      lg: "Lulimi lwa Yoruba",
+      dy: "Diouula"
     },
     "lang.igbo": {
       en: "Igbo",
@@ -228,7 +238,8 @@ const translations = {
       af: "Igbo",
       tw: "Igbo kasa",
       rw: "Igbo",
-      lg: "Lulimi lwa Igbo"
+      lg: "Lulimi lwa Igbo",
+      dy: "Diouula"
     },
     "lang.zulu": {
       en: "Zulu",
@@ -241,7 +252,8 @@ const translations = {
       af: "Zoeloe",
       tw: "Zulu kasa",
       rw: "Zulu",
-      lg: "Lulimi lwa Zulu"
+      lg: "Lulimi lwa Zulu",
+      dy: "Diouula"
     },
     "lang.xhosa": {
       en: "Xhosa",
@@ -254,7 +266,8 @@ const translations = {
       af: "Xhosa",
       tw: "Xhosa kasa",
       rw: "Xhosa",
-      lg: "Lulimi lwa Xhosa"
+      lg: "Lulimi lwa Xhosa",
+      dy: "Diouula"
     },
     "lang.afrikaans": {
       en: "Afrikaans",
@@ -267,7 +280,8 @@ const translations = {
       af: "Afrikaans",
       tw: "Afrikaans kasa",
       rw: "Afrikaans",
-      lg: "Lulimi lwa Afrikaans"
+      lg: "Lulimi lwa Afrikaans",
+      dy: "Diouula"
     },
     "lang.twi": {
       en: "Twi",
@@ -280,7 +294,8 @@ const translations = {
       af: "Twi",
       tw: "Twi kasa",
       rw: "Twi",
-      lg: "Lulimi lwa Twi"
+      lg: "Lulimi lwa Twi",
+      dy: "Diouula"
     },
     "lang.kinyarwanda": {
       en: "Kinyarwanda",
@@ -293,7 +308,8 @@ const translations = {
       af: "Kinyarwanda",
       tw: "Kinyarwanda kasa",
       rw: "Ikinyarwanda",
-      lg: "Lulimi lwa Kinyarwanda"
+      lg: "Lulimi lwa Kinyarwanda",
+      dy: "Diouula"
     },
     "lang.luganda": {
       en: "Luganda",
@@ -306,7 +322,23 @@ const translations = {
       af: "Luganda",
       tw: "Luganda kasa",
       rw: "Luganda",
-      lg: "Luganda"
+      lg: "Luganda",
+      dy: "Diouula"
+    },
+    "lang.dioula": {
+      en: "Dioula",
+      sw: "Dioula",
+      ha: "Dioula",
+      yo: "Dioula",
+      ig: "Dioula",
+      zu: "Dioula",
+      xh: "Dioula",
+      af: "Dioula",
+      tw: "Dioula",
+      rw: "Dioula",
+      lg: "Diouula",
+      fr: "Dioula",
+      dy: "Diouula"
     },
     "buzz.title": {
       en: "Buzz Community",

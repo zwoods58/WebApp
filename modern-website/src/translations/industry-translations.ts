@@ -23,7 +23,8 @@ const translations = {
       tw: "Bɔɔmu Ntɔnuma",
       rw: "Duka ry'ibicuruzwa",
       lg: "Dduuka ly'ebitundutundu",
-      fr: "Boutique de détail"
+      fr: "Boutique de détail",
+      dy: "Sɔrɔsɔrɔ"
     },
     "retail.new_sale": {
       en: "New Sale",
@@ -37,7 +38,8 @@ const translations = {
       tw: "Tintim Bɛyɛ",
       rw: "Icya mu guciti",
       lg: "Okutuula omulimu",
-      fr: "Nouvelle Vente"
+      fr: "Nouvelle Vente",
+      dy: "Wosoro fɔlɔ"
     },
     "retail.sale_amount": {
       en: "Sale amount",
