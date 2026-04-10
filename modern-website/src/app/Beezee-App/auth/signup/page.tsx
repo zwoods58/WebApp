@@ -207,10 +207,10 @@ function BeezeeSignupContent() {
 // Welcome Step Component
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="min-h-screen flex flex-col justify-between text-center">
+    <div className="h-screen flex flex-col text-center">
       {/* Logo at the top */}
-      <div className="pt-6 xs:pt-8 sm:pt-10 lg:pt-12 pb-2 xs:pb-4">
-        <div className="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 lg:w-24 lg:w-24 xl:w-28 xl:h-28 flex items-center justify-center mx-auto">
+      <div className="pt-8 pb-4">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mx-auto">
           <Image 
             src="/beezee-logo.png" 
             alt="BeeZee Logo" 
@@ -222,36 +222,35 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
       </div>
 
       {/* Content centered in the middle */}
-      <div className="flex-1 flex flex-col justify-center px-4 xs:px-6 sm:px-8 lg:px-12 py-4 xs:py-6">
+      <div className="flex-1 flex flex-col justify-center px-6">
         <div
-          className="max-w-xs xs:max-w-sm sm:max-w-md lg:max-w-2xl xl:max-w-3xl mx-auto fade-in-up w-full"
+          className="max-w-2xl mx-auto fade-in-up"
         >
-          <h1 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[var(--text-1)] mb-3 xs:mb-4 sm:mb-6 lg:mb-8 leading-tight xs:leading-tight sm:leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-1)] mb-4 sm:mb-6 leading-tight">
             Welcome to BeeZee
           </h1>
-          <p className="text-sm xs:text-base sm:text-lg lg:text-xl xl:text-2xl text-[var(--text-2)] mb-4 xs:mb-6 sm:mb-8 lg:mb-10 leading-relaxed xs:leading-relaxed">
+          <p className="text-lg sm:text-xl text-[var(--text-2)] mb-6 sm:mb-8 leading-relaxed">
             Join thousands of African entrepreneurs managing their business with ease.
           </p>
         </div>
       </div>
 
       {/* Buttons at the very bottom */}
-      <div className="pb-4 xs:pb-6 sm:pb-8 lg:pb-10 px-4 xs:px-6 sm:px-8 lg:px-12">
-        <div className="flex flex-col xs:flex-col sm:flex-row gap-2 xs:gap-3 sm:gap-4 lg:gap-6 justify-center max-w-2xs xs:max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto w-full">
+      <div className="pb-6 sm:pb-8 px-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-sm mx-auto sm:max-w-none">
           <button
             onClick={onNext}
-            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-2.5 xs:py-3 sm:py-4 lg:py-5 xl:py-6 px-4 xs:px-6 sm:px-8 lg:px-10 xl:px-12 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-2 xs:gap-3 text-xs xs:text-sm sm:text-base lg:text-lg xl:text-xl"
+            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
           >
             Sign Up
-            <ArrowRight size={14} className="xs:size-16 sm:size-18 lg:size-20 xl:size-24" />
+            <ArrowRight size={18} className="sm:size-20" />
           </button>
           
           <Link
             href="/Beezee-App/auth/login"
-            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-2.5 xs:py-3 sm:py-4 lg:py-5 xl:py-6 px-4 xs:px-6 sm:px-8 lg:px-10 xl:px-12 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-2 xs:gap-3 text-xs xs:text-sm sm:text-base lg:text-lg xl:text-xl"
+            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
           >
-            <LogIn size={14} className="xs:size-16 sm:size-18 lg:size-20 xl:size-24" />
-            Login
+            <LogIn size={18} className="sm:size-20" />
           </Link>
         </div>
       </div>
@@ -269,20 +268,20 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   const selectedCountry = countries.find(c => c.code === selected);
   
   return (
-    <div className="py-4 xs:py-6 sm:py-8 lg:py-10 px-4 xs:px-6 sm:px-8 lg:px-12 max-h-screen overflow-y-auto">
-      <h2 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--text-1)] mb-2 xs:mb-3 sm:mb-4 lg:mb-6 text-center">
+    <div className="py-6 sm:py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Select Your Country
       </h2>
-      <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-2)] text-center mb-4 xs:mb-6 sm:mb-8 lg:mb-10">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Choose where your business operates
       </p>
 
-      <div className="max-w-xs xs:max-w-sm sm:max-w-md lg:max-w-lg mx-auto mb-6 xs:mb-8 lg:mb-10">
+      <div className="max-w-md mx-auto mb-8">
         <div className="relative">
           <select
             value={selected}
             onChange={(e) => onSelect(e.target.value)}
-            className="w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-1)] appearance-none cursor-pointer"
+            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] appearance-none cursor-pointer"
           >
             <option value="" disabled>Select a country...</option>
             {countries.map((country) => (
@@ -336,28 +335,28 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-4 xs:py-6 sm:py-8 lg:py-10 px-4 xs:px-6 sm:px-8 lg:px-12 max-h-screen overflow-y-auto">
-      <h2 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--text-1)] mb-2 xs:mb-3 sm:mb-4 lg:mb-6 text-center">
+    <div className="py-6 sm:py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Choose Your Industry
       </h2>
-      <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-2)] text-center mb-4 xs:mb-6 sm:mb-8 lg:mb-10">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Select the category that best describes your business
       </p>
 
-      <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 lg:gap-6 mb-6 xs:mb-8 lg:mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {industries.map((industry) => (
           <button
             key={industry.id}
             onClick={() => onSelect(industry.id)}
-            className={`p-3 xs:p-4 sm:p-6 lg:p-8 rounded-xl border-2 transition-all text-left ${
+            className={`p-6 rounded-xl border-2 transition-all text-left ${
               selected === industry.id
                 ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
                 : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
             }`}
           >
-            <div className="text-lg xs:text-xl sm:text-2xl lg:text-3xl mb-1 xs:mb-2">{industry.icon}</div>
-            <div className="font-semibold text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-1)] mb-1 xs:mb-2">{industry.name}</div>
-            <div className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-3)]">Manage your {industry.name.toLowerCase()} business efficiently</div>
+            <div className="text-2xl mb-2">{industry.icon}</div>
+            <div className="font-semibold text-[var(--text-1)] mb-1">{industry.name}</div>
+            <div className="text-sm text-[var(--text-3)]">Manage your {industry.name.toLowerCase()} business efficiently</div>
           </button>
         ))}
       </div>
@@ -389,70 +388,70 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-4 xs:py-6 sm:py-8 lg:py-10 px-4 xs:px-6 sm:px-8 lg:px-12 max-h-screen overflow-y-auto">
-      <h2 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--text-1)] mb-2 xs:mb-3 sm:mb-4 lg:mb-6 text-center">
+    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Tell us about yourself
       </h2>
-      <p className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-2)] text-center mb-4 xs:mb-6 sm:mb-8 lg:mb-10">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Basic information to set up your account
       </p>
 
-      <div className="space-y-4 xs:space-y-6 sm:space-y-8 lg:space-y-10 mb-6 xs:mb-8 lg:mb-10">
+      <div className="space-y-6 mb-8">
         <div>
-          <label className="flex items-center gap-2 xs:gap-3 text-xs xs:text-sm sm:text-base lg:text-lg font-medium text-[var(--text-2)] mb-1 xs:mb-2">
-            <User size={12} className="xs:size-14 sm:size-16 lg:size-20" />
+          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
+            <User size={16} />
             Your name
           </label>
           <input
             type="text"
             value={formData.name || ''}
             onChange={(e) => onChange('name', e.target.value)}
-            className="w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-1)] placeholder-[var(--text-3)]"
+            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
             placeholder="John Doe"
           />
         </div>
 
         <div>
-          <label className="flex items-center gap-2 xs:gap-3 text-xs xs:text-sm sm:text-base lg:text-lg font-medium text-[var(--text-2)] mb-1 xs:mb-2">
-            <Building size={12} className="xs:size-14 sm:size-16 lg:size-20" />
+          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
+            <Building size={16} />
             Business name (optional)
           </label>
           <input
             type="text"
             value={formData.businessName || ''}
             onChange={(e) => onChange('businessName', e.target.value)}
-            className="w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-1)] placeholder-[var(--text-3)]"
+            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
             placeholder="Acme Corporation"
           />
         </div>
 
         <div>
-          <label className="flex items-center gap-2 xs:gap-3 text-xs xs:text-sm sm:text-base lg:text-lg font-medium text-[var(--text-2)] mb-1 xs:mb-2">
-            <Phone size={12} className="xs:size-14 sm:size-16 lg:size-20" />
+          <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
+            <Phone size={16} />
             Phone number
           </label>
           <input
             type="tel"
             value={formData.phoneNumber || ''}
             onChange={(e) => onChange('phoneNumber', e.target.value)}
-            className="w-full px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-1)] placeholder-[var(--text-3)]"
+            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] placeholder-[var(--text-3)]"
             placeholder="+254 700 000 000"
           />
         </div>
 
       </div>
 
-      <div className="flex gap-2 xs:gap-3 sm:gap-4 lg:gap-6">
+      <div className="flex gap-4">
         <button
           onClick={onPrev}
-          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg"
+          className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all"
         >
           Back
         </button>
         <button
           onClick={onNext}
           disabled={!formData.name || !formData.phoneNumber}
-          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs xs:text-sm sm:text-base lg:text-lg"
+          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-black font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>
