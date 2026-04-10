@@ -100,26 +100,26 @@ export function HybridDailyTarget({
   };
 
   return (
-    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
+    <div className="py-4 xs:py-6 sm:py-8 lg:py-10 px-4 xs:px-6 sm:px-8 lg:px-12 max-h-screen overflow-y-auto">
       <div className="animate-fade-in">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-4 sm:mb-6">
-          <span className="text-xl sm:text-2xl font-bold">$</span>
+        <div className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-3 xs:mb-4 sm:mb-6 lg:mb-8">
+          <span className="text-lg xs:text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">$</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 tracking-[-0.02em]">
+        <h2 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-[var(--text-1)] mb-2 xs:mb-3 sm:mb-4 lg:mb-6 tracking-[-0.02em]">
           What is your daily goal?
         </h2>
-        <p className="text-sm sm:text-base text-[var(--text-2)] max-w-md mx-auto mb-6 sm:mb-8">
+        <p className="text-xs xs:text-sm sm:text-base lg:text-lg xl:text-xl text-[var(--text-2)] max-w-xs xs:max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-2xl mx-auto mb-4 xs:mb-6 sm:mb-8 lg:mb-10">
           Set a target to help track your progress
         </p>
       </div>
 
       {/* Quick Options */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+      <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 lg:gap-6 mb-4 xs:mb-6 lg:mb-8">
         {quickOptions.map((option, index) => (
           <button
             key={option.value}
             onClick={() => handleQuickOptionSelect(option.value)}
-            className={`p-4 sm:p-6 rounded-xl border-2 transition-all animate-fade-in ${
+            className={`p-3 xs:p-4 sm:p-6 lg:p-8 rounded-xl border-2 transition-all animate-fade-in ${
               selectedTarget === option.value.toString() && !showCustomInput
                 ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20'
                 : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
@@ -127,12 +127,12 @@ export function HybridDailyTarget({
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-[var(--powder-dark)] font-bold">?</span>
-              <div className="text-xl sm:text-2xl font-bold text-[var(--text-1)]">
+              <div className="text-lg xs:text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--text-1)]">
                 {option.value}
               </div>
             </div>
-            <div className="text-sm sm:text-base font-medium text-[var(--text-1)] mb-1">{option.label}</div>
-            <div className="text-xs sm:text-sm text-[var(--text-2)]">{option.description}</div>
+            <div className="text-xs xs:text-sm sm:text-base lg:text-lg font-medium text-[var(--text-1)] mb-1 xs:mb-2">{option.label}</div>
+            <div className="text-xs xs:text-xs sm:text-sm lg:text-base text-[var(--text-2)]">{option.description}</div>
             {selectedTarget === option.value.toString() && !showCustomInput && (
               <div className="flex justify-center mt-2 animate-fade-in">
                 <span className="text-[var(--powder-dark)] font-bold">✓</span>
@@ -148,7 +148,7 @@ export function HybridDailyTarget({
           <div className="animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-[var(--text-2)] mb-1">Your custom daily target</div>
+                <div className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-2)] mb-1">Your custom daily target</div>
                 <div className="text-xl font-bold text-[var(--text-1)]">
                   {selectedTarget}
                 </div>
@@ -157,12 +157,9 @@ export function HybridDailyTarget({
                 <span className="text-white font-bold">✓</span>
               </div>
             </div>
-            <button
-              onClick={handleCustomInputClick}
-              className="text-sm text-[var(--powder-dark)] hover:text-[var(--powder-darker)] transition-colors mt-2"
-            >
+            <div className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--powder-dark)] hover:text-[var(--powder-darker)] transition-colors mt-2">
               Change amount
-            </button>
+            </div>
           </div>
         ) : !showCustomInput ? (
           <button
@@ -183,52 +180,46 @@ export function HybridDailyTarget({
                   value={customValue}
                   onChange={(e) => handleCustomValueChange(e.target.value)}
                   placeholder="Enter amount"
-                  className="flex-1 px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all"
+                  className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg"
                   autoFocus
                 />
                 <button
                   onClick={handleCustomValueSubmit}
-                  className="px-6 py-3 bg-[var(--powder-dark)] text-white font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all"
+                  className="px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--powder-dark)] text-white font-medium rounded-xl hover:bg-[var(--powder-mid)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg"
                 >
                   Set
                 </button>
               </div>
               {customError && (
-                <div className="mt-2 text-sm text-red-500">
+                <div className="mt-2 text-xs xs:text-sm sm:text-base lg:text-lg text-red-500">
                   {customError}
                 </div>
               )}
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={handleCustomValueSave}
-                className="text-sm text-[var(--powder-dark)] hover:text-[var(--powder-darker)] transition-colors"
-              >
+              <div className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--powder-dark)] hover:text-[var(--powder-darker)] transition-colors">
                 Save
-              </button>
-              <button
-                onClick={() => setShowCustomInput(false)}
-                className="text-sm text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
-              >
+              </div>
+              <div className="text-xs xs:text-sm sm:text-base lg:text-lg text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors">
                 Cancel
-              </button>
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <div className="flex gap-3 sm:gap-4">
+      <div className="flex gap-2 xs:gap-3 sm:gap-4 lg:gap-6">
         <button
           onClick={onPrev}
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all active:scale-[0.98] text-sm sm:text-base"
+          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all active:scale-[0.98] text-xs xs:text-sm sm:text-base lg:text-lg"
         >
           Back
         </button>
         <button
           onClick={handleComplete}
           disabled={!selectedTarget}
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 text-sm sm:text-base"
+          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 text-xs xs:text-sm sm:text-base lg:text-lg"
         >
           START USING BEEZEE
         </button>

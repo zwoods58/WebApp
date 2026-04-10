@@ -47,8 +47,8 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
   const renderSummaryItem = (label: string, value: string, isCompleted: boolean) => (
     <div className="fade-in">
       <div className="flex-1 text-left">
-        <div className="text-sm text-[var(--text-2)] mb-1">{label}</div>
-        <div className={`text-base font-medium ${
+        <div className="text-xs xs:text-xs sm:text-sm lg:text-base text-[var(--text-2)]">{label}</div>
+        <div className={`text-xs xs:text-sm sm:text-base lg:text-lg font-medium ${
           isCompleted ? 'text-[var(--text-1)]' : 'text-[var(--text-2)]'
         }`}>
           {value || <span className="italic">Not set</span>}
@@ -61,22 +61,22 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
   );
 
   return (
-    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
+    <div className="py-4 xs:py-6 sm:py-8 lg:py-10 px-4 xs:px-6 sm:px-8 lg:px-12 max-h-screen overflow-y-auto">
       <div className="fade-in">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-4 sm:mb-6">
-          <span className="text-xl sm:text-2xl font-bold">?</span>
+        <div className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-3 xs:mb-4 sm:mb-6 lg:mb-8">
+          <span className="text-lg xs:text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">?</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 tracking-[-0.02em]">
+        <h2 className="text-xl xs:text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-[var(--text-1)] mb-2 xs:mb-3 sm:mb-4 lg:mb-6 tracking-[-0.02em]">
           Review Your Business Profile
         </h2>
-        <p className="text-sm sm:text-base text-[var(--text-2)] max-w-md mx-auto mb-4">
+        <p className="text-xs xs:text-sm sm:text-base lg:text-lg xl:text-xl text-[var(--text-2)] max-w-xs xs:max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-2xl mx-auto mb-4 xs:mb-6">
           Here's a summary of your business information. Make sure everything looks correct before you get started.
         </p>
-        <div className="flex items-center justify-center gap-2 mb-6 sm:mb-8">
-          <div className="text-xs sm:text-sm text-[var(--text-2)]">
+        <div className="flex items-center justify-center gap-2 xs:gap-3 mb-4 xs:mb-6 sm:mb-8 lg:mb-10">
+          <div className="text-xs xs:text-xs sm:text-sm lg:text-base text-[var(--text-2)]">
             {getCompletionPercentage()}% Complete
           </div>
-          <div className="w-20 sm:w-24 h-2 bg-[var(--bg2)] rounded-full overflow-hidden">
+          <div className="w-16 xs:w-20 sm:w-24 lg:w-28 h-2 bg-[var(--bg2)] rounded-full overflow-hidden">
             <div
               className="h-full bg-[var(--powder-dark)] transition-all duration-500 ease-out"
               style={{ width: `${getCompletionPercentage()}%` }}
@@ -85,7 +85,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
         </div>
       </div>
 
-      <div className="space-y-4 mb-8 max-w-2xl mx-auto">
+      <div className="space-y-3 xs:space-y-4 sm:space-y-6 lg:space-y-8 mb-6 xs:mb-8 lg:mb-10 max-w-xs xs:max-w-sm sm:max-w-2xl lg:max-w-3xl mx-auto">
         {renderSummaryItem(
           'Country',
           getCountryDisplay(),
@@ -149,21 +149,21 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
         </div>
       )}
 
-      <div className="flex gap-3 sm:gap-4 max-w-xs sm:max-w-sm mx-auto">
+      <div className="flex gap-2 xs:gap-3 sm:gap-4 lg:gap-6 max-w-2xs xs:max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
         <button
           onClick={onPrev}
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all text-sm sm:text-base"
+          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all text-xs xs:text-sm sm:text-base lg:text-lg"
         >
           Back
         </button>
         <button
           onClick={onComplete}
           disabled={isLoading}
-          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 text-sm sm:text-base"
+          className="flex-1 px-3 xs:px-4 sm:px-6 lg:px-8 py-2 xs:py-2.5 sm:py-3 lg:py-4 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 flex items-center justify-center gap-2 xs:gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 text-xs xs:text-sm sm:text-base lg:text-lg"
         >
           {isLoading ? (
             <>
-              <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               Creating Business...
             </>
           ) : (
