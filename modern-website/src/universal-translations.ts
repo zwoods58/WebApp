@@ -22,7 +22,8 @@ const translations = {
       af: "Kontant",
       tw: "Sika",
       rw: "Amafaranga",
-      lg: "Ssente"
+      lg: "Ssente",
+      fr: "Espèces"
     },
     "payment.transfer": {
       en: "Transfer",
@@ -35,7 +36,8 @@ const translations = {
       af: "Oordrag",
       tw: "Dane",
       rw: "Kohereza",
-      lg: "Kyusa"
+      lg: "Kyusa",
+      fr: "Virement"
     },
     "payment.credit": {
       en: "Credit",
@@ -48,7 +50,8 @@ const translations = {
       af: "Krediet",
       tw: "Bɔ",
       rw: "Inguzanyo",
-      lg: "Ebbanja"
+      lg: "Ebbanja",
+      fr: "Crédit"
     },
     "payment.mobile_money": {
       en: "Mobile Money",
@@ -75,7 +78,8 @@ const translations = {
       af: "Tuis",
       tw: "Fie",
       rw: "Aho",
-      lg: "Awange"
+      lg: "Awange",
+      fr: "Accueil"
     },
     "nav.more": {
       en: "More",
@@ -88,7 +92,8 @@ const translations = {
       af: "Meer",
       tw: "Bio",
       rw: "Buriyongwe",
-      lg: "Okusingiwa"
+      lg: "Okusingiwa",
+      fr: "Plus"
     },
     "country.select": {
       en: "Select Your Country",
@@ -101,7 +106,8 @@ const translations = {
       af: "Kies Jou Land",
       tw: "Pepa Manɔmu",
       rw: "Hitamo Igihugu Nawe",
-      lg: "Londoo Ekibuga Kyawe"
+      lg: "Londoo Ekibuga Kyawe",
+      fr: "Sélectionnez votre pays"
     },
     "country.current": {
       en: "Current",
@@ -114,7 +120,8 @@ const translations = {
       af: "Huidig",
       tw: "Mpre",
       rw: "None uyu munsi",
-      lg: "Kati Kati"
+      lg: "Kati Kati",
+      fr: "Actuel"
     },
     "country.change_note": {
       en: "Note: Changing country will navigate you to the same page in the selected country's context.",
@@ -154,7 +161,8 @@ const translations = {
       af: "Kies Taal",
       tw: "Pepa Kasa",
       rw: "Hitamo Ururimi",
-      lg: "Londoo Olulimi"
+      lg: "Londoo Olulimi",
+      fr: "Sélectionner la langue"
     },
     "lang.english": {
       en: "English",
@@ -167,7 +175,8 @@ const translations = {
       af: "Engels",
       tw: "Kasa Borɔfo",
       rw: "Icyongereza",
-      lg: "Lulimi Olungereza"
+      lg: "Lulimi Olungereza",
+      fr: "Anglais"
     },
     "lang.swahili": {
       en: "Swahili",

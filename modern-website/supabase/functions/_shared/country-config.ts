@@ -41,9 +41,57 @@ export const COUNTRY_CONFIG = {
         taxIdRegex: /^\d{10}$/,
         smsFrom: 'Beezee'
     },
+    GH: {
+        name: 'Ghana',
+        smsProvider: 'twilio-verify' as SMSProviderType,
+        phoneRegex: /^233\d{9}$/,
+        phoneFormat: '233XXXXXXXXX',
+        phoneExample: '233201234567',
+        currency: 'GHS',
+        currencySymbol: 'GH¢',
+        taxIdLabel: 'TIN',
+        taxIdRegex: /^[A-Z0-9]{10}$/,
+        smsFrom: 'Beezee'
+    },
+    UG: {
+        name: 'Uganda',
+        smsProvider: 'twilio-verify' as SMSProviderType,
+        phoneRegex: /^256\d{9}$/,
+        phoneFormat: '256XXXXXXXXX',
+        phoneExample: '256712345678',
+        currency: 'UGX',
+        currencySymbol: 'UGX',
+        taxIdLabel: 'TIN',
+        taxIdRegex: /^[A-Z0-9]{10,12}$/,
+        smsFrom: 'Beezee'
+    },
+    TZ: {
+        name: 'Tanzania',
+        smsProvider: 'twilio-verify' as SMSProviderType,
+        phoneRegex: /^255\d{9}$/,
+        phoneFormat: '255XXXXXXXXX',
+        phoneExample: '255712345678',
+        currency: 'TZS',
+        currencySymbol: 'TZS',
+        taxIdLabel: 'TIN',
+        taxIdRegex: /^[0-9]{9}$/,
+        smsFrom: 'Beezee'
+    },
+    RW: {
+        name: 'Rwanda',
+        smsProvider: 'twilio-verify' as SMSProviderType,
+        phoneRegex: /^250\d{9}$/,
+        phoneFormat: '250XXXXXXXXX',
+        phoneExample: '250712345678',
+        currency: 'RWF',
+        currencySymbol: 'RWF',
+        taxIdLabel: 'TIN',
+        taxIdRegex: /^[1-9]\d{8}$/,
+        smsFrom: 'Beezee'
+    },
     CI: {
         name: "Cote d'Ivoire",
-        smsProvider: null as unknown as SMSProviderType,
+        smsProvider: 'twilio-verify' as SMSProviderType,
         phoneRegex: /^\+225[0-9]{8,10}$/,
         phoneFormat: '+225XXXXXXXX',
         phoneExample: '+2250709123456',

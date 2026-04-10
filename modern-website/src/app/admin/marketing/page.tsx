@@ -13,7 +13,7 @@ const INDUSTRIES = [
     description: 'General stores, electronics, clothing, grocery & food shops',
     icon: ShoppingCart,
     color: 'blue',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['general_store', 'electronics', 'clothing', 'grocery']
   },
   {
@@ -22,7 +22,7 @@ const INDUSTRIES = [
     description: 'Restaurants, cafes, bakeries, and food trucks',
     icon: Coffee,
     color: 'orange',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['restaurant', 'cafe', 'bakery', 'food_truck']
   },
   {
@@ -31,7 +31,7 @@ const INDUSTRIES = [
     description: 'Taxi services, delivery, logistics, and vehicle rental',
     icon: Truck,
     color: 'green',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['taxi', 'delivery', 'logistics', 'rental']
   },
   {
@@ -40,7 +40,7 @@ const INDUSTRIES = [
     description: 'Barber shops, hair stylists, nail salons, beauty services',
     icon: Sparkles,
     color: 'pink',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['barber', 'hair_stylist', 'nails', 'beauty_salon']
   },
   {
@@ -49,7 +49,7 @@ const INDUSTRIES = [
     description: 'Clothing tailors, alterations, custom designs, uniforms',
     icon: Target,
     color: 'purple',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['clothing_tailor', 'alterations', 'custom_designs', 'uniforms']
   },
   {
@@ -58,7 +58,7 @@ const INDUSTRIES = [
     description: 'Electronics, phone, appliance, and general repair services',
     icon: Wrench,
     color: 'gray',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['electronics_repair', 'phone_repair', 'appliance_repair', 'general_repair']
   },
   {
@@ -67,7 +67,7 @@ const INDUSTRIES = [
     description: 'Consulting, design, development, writing, real estate services',
     icon: Building,
     color: 'indigo',
-    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw'],
+    countries: ['ke', 'ng', 'za', 'gh', 'ug', 'tz', 'rw', 'ci'],
     sectors: ['consulting', 'design', 'development', 'writing', 'real_estate', 'virtual_assistant']
   }
 ];
@@ -79,7 +79,8 @@ const COUNTRIES = [
   { code: 'gh', name: 'Ghana', flag: '🇬🇭' },
   { code: 'ug', name: 'Uganda', flag: '🇺🇬' },
   { code: 'tz', name: 'Tanzania', flag: '🇹🇿' },
-  { code: 'rw', name: 'Rwanda', flag: '🇷🇼' }
+  { code: 'rw', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'ci', name: "Côte d'Ivoire", flag: '🇨🇮' }
 ];
 
 export default function MarketingAdmin() {

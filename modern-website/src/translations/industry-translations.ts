@@ -22,7 +22,8 @@ const translations = {
       af: "Winkelwinkel",
       tw: "Bɔɔmu Ntɔnuma",
       rw: "Duka ry'ibicuruzwa",
-      lg: "Dduuka ly'ebitundutundu"
+      lg: "Dduuka ly'ebitundutundu",
+      fr: "Boutique de détail"
     },
     "retail.new_sale": {
       en: "New Sale",
@@ -35,7 +36,8 @@ const translations = {
       af: "Nuwe Verkoop",
       tw: "Tintim Bɛyɛ",
       rw: "Icya mu guciti",
-      lg: "Okutuula omulimu"
+      lg: "Okutuula omulimu",
+      fr: "Nouvelle Vente"
     },
     "retail.sale_amount": {
       en: "Sale amount",
@@ -48,7 +50,8 @@ const translations = {
       af: "Verkoop bedrag",
       tw: "Boa a wɔtintim",
       rw: "Igiteranyo cy'icuruzwa",
-      lg: "Omuwendo gw'okutuula"
+      lg: "Omuwendo gw'okutuula",
+      fr: "Montant de la vente"
     },
     "retail.expense_amount": {
       en: "Expense amount",
@@ -61,7 +64,8 @@ const translations = {
       af: "Uitgawe bedrag",
       tw: "Boa a wode di",
       rw: "Igiteranyo cy'ibyago",
-      lg: "Omuwendo gw'okukozesa"
+      lg: "Omuwendo gw'okukozesa",
+      fr: "Montant des dépenses"
     },
     "retail.stock": {
       en: "Stock",
@@ -3169,7 +3173,8 @@ const translations = {
       af: "Kos Besigheid",
       tw: "Adwuma Nnu",
       rw: "Ubucuruzi bw'ibiryo",
-      lg: "By'ensi by'okulya"
+      lg: "By'ensi by'okulya",
+      fr: "Entreprise Alimentaire"
     },
     "food.menu": {
       en: "Menu",
@@ -3182,7 +3187,8 @@ const translations = {
       af: "Spyskaart",
       tw: "Emenyu",
       rw: "Menyu",
-      lg: "Emenyu"
+      lg: "Emenyu",
+      fr: "Menu"
     },
     "food.orders": {
       en: "Orders",
@@ -3195,7 +3201,8 @@ const translations = {
       af: "Bestellings",
       tw: "Bɛtɛm",
       rw: "Icyifuzo",
-      lg: "Olulala"
+      lg: "Olulala",
+      fr: "Commandes"
     },
     "food.specials": {
       en: "Today's Specials",

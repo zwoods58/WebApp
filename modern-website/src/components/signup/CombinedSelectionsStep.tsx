@@ -18,14 +18,14 @@ interface CombinedSelectionsStepProps {
 
 // Country data with enhanced configuration
 const countries = [
-  { code: 'KE', name: 'Kenya', flag: 'Côte d\'Ivoire flag: CI' },
-  { code: 'ZA', name: 'South Africa', flag: 'Côte d\'Ivoire flag: ZA' },
-  { code: 'NG', name: 'Nigeria', flag: 'Côte d\'Ivoire flag: NG' },
-  { code: 'GH', name: 'Ghana', flag: 'Côte d\'Ivoire flag: GH' },
-  { code: 'UG', name: 'Uganda', flag: 'Côte d\'Ivoire flag: UG' },
-  { code: 'RW', name: 'Rwanda', flag: 'Côte d\'Ivoire flag: RW' },
-  { code: 'TZ', name: 'Tanzania', flag: 'Côte d\'Ivoire flag: TZ' },
-  { code: 'CI', name: "Cote d'Ivoire", flag: 'Côte d\'Ivoire flag: CI' }
+  { code: 'KE', name: 'Kenya', flag: '??' },
+  { code: 'ZA', name: 'South Africa', flag: '??' },
+  { code: 'NG', name: 'Nigeria', flag: '??' },
+  { code: 'GH', name: 'Ghana', flag: '??' },
+  { code: 'UG', name: 'Uganda', flag: '??' },
+  { code: 'RW', name: 'Rwanda', flag: '??' },
+  { code: 'TZ', name: 'Tanzania', flag: '??' },
+  { code: 'CI', name: "Cote d'Ivoire", flag: '??' }
 ];
 
 export function CombinedSelectionsStep({ 

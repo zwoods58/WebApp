@@ -24,11 +24,11 @@ export async function GET(request: NextRequest) {
     let realtimeHealthy = false;
     let cacheHealthy = false;
 
-    // Database health check
+    // Database health check (optimized - lightweight query)
     try {
       const start = Date.now();
       const { supabase } = await import('@/lib/supabase');
-      await supabase.from('businesses').select('count').limit(1);
+      await supabase.from('health_check').select('status').eq('id', 1).single();
       dbResponseTime = Date.now() - start;
       dbHealthy = true;
     } catch (error) {
@@ -184,8 +184,8 @@ async function checkDatabaseHealth() {
     const start = Date.now();
     const { supabase } = await import('@/lib/supabase');
     
-    // Simple database query
-    await supabase.from('businesses').select('count').limit(1);
+    // Lightweight database query using health_check table
+    await supabase.from('health_check').select('status').eq('id', 1).single();
     
     return {
       status: 'fulfilled' as const,

@@ -30,7 +30,7 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, industry = 'retail' }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
-  const supportedLanguages = ['en', 'sw', 'ha', 'yo', 'ig', 'zu', 'xh', 'af', 'tw', 'rw', 'lg'];
+  const supportedLanguages = ['en', 'sw', 'ha', 'yo', 'ig', 'zu', 'xh', 'af', 'tw', 'rw', 'lg', 'fr'];
   
   const nativeNames: Record<string, string> = {
     en: 'English',
@@ -43,7 +43,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
     af: 'Afrikaans',
     tw: 'Twi',
     rw: 'Kinyarwanda',
-    lg: 'Luganda'
+    lg: 'Luganda',
+    fr: 'Français'
   };
 
   useEffect(() => {

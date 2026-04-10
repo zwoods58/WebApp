@@ -229,8 +229,8 @@ export default function UpdateManager({ children }: UpdateManagerProps) {
     // Initial check
     checkForUpdate();
     
-    // Periodic check every 30 seconds
-    updateCheckInterval = setInterval(checkForUpdate, 30000);
+    // Periodic check every 5 minutes (reduced frequency for free tier)
+    updateCheckInterval = setInterval(checkForUpdate, 300000);
     
     // Smart triggers
     const handleVisibilityChange = () => {
