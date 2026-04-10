@@ -157,31 +157,31 @@ export function CombinedSecurityStep({
   const pinsMatch = isPinFilled && isConfirmPinFilled && pin.join('') === confirmPin.join('');
 
   return (
-    <div className="py-12 max-w-2xl mx-auto">
+    <div className="py-6 sm:py-8 max-w-2xl mx-auto max-h-screen overflow-y-auto">
       {/* Progress Indicator */}
-      <div className="flex items-center justify-center gap-4 mb-8">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+      <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
           pinComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
         }`}>
-          {pinComplete ? <Check size={20} /> : '1'}
+          {pinComplete ? <Check size={16} className="sm:size-20" /> : '1'}
         </div>
-        <div className="w-20 h-1 bg-gray-200"></div>
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+        <div className="w-16 sm:w-20 h-1 bg-gray-200"></div>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
           securityComplete ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
         }`}>
-          {securityComplete ? <Check size={20} /> : '2'}
+          {securityComplete ? <Check size={16} className="sm:size-20" /> : '2'}
         </div>
       </div>
 
       <div className="space-y-8">
         {/* PIN Setup Section */}
         <div className="animate-fade-in">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock size={32} className="text-white" />
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <Lock size={24} className="sm:size-32 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">Create Your PIN</h2>
-            <p className="text-[var(--text-2)]">Choose a 6-digit PIN for secure access to your account</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-1)] mb-2">Create Your PIN</h2>
+            <p className="text-sm sm:text-base text-[var(--text-2)]">Choose a 6-digit PIN for secure access to your account</p>
           </div>
 
           {/* PIN Input Fields */}
@@ -199,7 +199,7 @@ export function CombinedSecurityStep({
                     {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
-                <div className="flex gap-2 justify-center">
+                <div className="flex gap-2 sm:gap-3 justify-center">
                   {pin.map((digit, index) => (
                     <input
                       key={`pin-${index}`}
@@ -212,7 +212,7 @@ export function CombinedSecurityStep({
                       onChange={(e) => handlePinChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       onPaste={(e) => handlePaste(e)}
-                      className="w-12 h-14 text-center text-2xl font-bold border-2 border-[var(--border)] rounded-lg focus:border-[var(--powder-dark)] focus:ring-2 focus:ring-[var(--powder-dark)]/20 transition-colors"
+                      className="w-11 h-11 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-[var(--border)] rounded-lg focus:border-[var(--powder-dark)] focus:ring-2 focus:ring-[var(--powder-dark)]/20 transition-colors"
                       disabled={isLoading}
                     />
                   ))}
@@ -231,7 +231,7 @@ export function CombinedSecurityStep({
                     {showConfirmPin ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
-                <div className="flex gap-2 justify-center">
+                <div className="flex gap-2 sm:gap-3 justify-center">
                   {confirmPin.map((digit, index) => (
                     <input
                       key={`confirm-${index}`}
@@ -244,7 +244,7 @@ export function CombinedSecurityStep({
                       onChange={(e) => handlePinChange(index, e.target.value, true)}
                       onKeyDown={(e) => handleKeyDown(index, e, true)}
                       onPaste={(e) => handlePaste(e, true)}
-                      className={`w-12 h-14 text-center text-2xl font-bold border-2 rounded-lg focus:ring-2 transition-colors ${
+                      className={`w-11 h-11 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 rounded-lg focus:ring-2 transition-colors ${
                         digit ? 'border-[var(--powder-dark)] ring-2 ring-[var(--powder-dark)]/20' : 'border-[var(--border)]'
                       } ${!pinsMatch && isConfirmPinFilled ? 'border-red-500 ring-2 ring-red-200' : ''}`}
                       disabled={isLoading}
@@ -275,13 +275,13 @@ export function CombinedSecurityStep({
 
         {/* Security Questions Section */}
         <div className="animate-fade-in">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-4">
-              <Shield size={40} strokeWidth={1.5} />
+          <div className="text-center mb-4 sm:mb-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-3 sm:mb-4">
+              <Shield size={32} className="sm:size-40" strokeWidth={1.5} />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">Security Question</h2>
-            <p className="text-[var(--text-2)] mb-2">Choose a security question to help recover your account</p>
-            <p className="text-[var(--text-3)] text-sm">You'll need to answer this question to reset your PIN</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-1)] mb-2">Security Question</h2>
+            <p className="text-sm sm:text-base text-[var(--text-2)] mb-2">Choose a security question to help recover your account</p>
+            <p className="text-xs sm:text-sm text-[var(--text-3)]">You'll need to answer this question to reset your PIN</p>
           </div>
 
           {/* Error Display */}
@@ -347,28 +347,28 @@ export function CombinedSecurityStep({
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex gap-4 mt-8">
+      <div className="flex gap-3 sm:gap-4 mt-6 sm:mt-8">
         {onCancel && (
           <button
             onClick={onCancel}
             disabled={isLoading}
-            className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-[var(--text-1)] font-medium rounded-xl hover:bg-[var(--border)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+            className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--glass-bg)] text-[var(--text-1)] font-medium rounded-xl hover:bg-[var(--border)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] text-sm sm:text-base"
           >
-            <ArrowLeft size={20} className="mr-2" />
+            <ArrowLeft size={16} className="sm:size-20 mr-2" />
             Back
           </button>
         )}
         <button
           onClick={handleCombinedComplete}
           disabled={!allComplete || isLoading || questionsLoading}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.98]"
+          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white font-medium rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center active:scale-[0.98] text-sm sm:text-base"
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
               Complete Security Setup
-              <ArrowRight size={20} />
+              <ArrowRight size={16} className="sm:size-20" />
             </>
           )}
         </button>

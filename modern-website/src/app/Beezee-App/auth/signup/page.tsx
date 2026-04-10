@@ -132,28 +132,26 @@ function BeezeeSignupContent() {
         />;
       case 4:
         return (
-          <div className="py-12">
-            <CombinedSecurityStep
-              onPINComplete={handlePINSetup}
-              onSecurityQuestionsComplete={(data) => {
-                console.log('Security question data received:', data);
-                signup.updateSecurityQuestions(data);
-              }}
-              onCombinedComplete={(pin: string, securityData: any) => {
-                // Handle PIN setup
-                handlePINSetup(pin);
-                // Store security questions data
-                signup.updateSecurityQuestions(securityData);
-                // Move to next step
-                setTimeout(() => {
-                  nextStep();
-                }, 500);
-              }}
-              onCancel={prevStep}
-              isLoading={signup.creationState.loading}
-              error={signup.creationState.error || undefined}
-            />
-          </div>
+          <CombinedSecurityStep
+            onPINComplete={handlePINSetup}
+            onSecurityQuestionsComplete={(data) => {
+              console.log('Security question data received:', data);
+              signup.updateSecurityQuestions(data);
+            }}
+            onCombinedComplete={(pin: string, securityData: any) => {
+              // Handle PIN setup
+              handlePINSetup(pin);
+              // Store security questions data
+              signup.updateSecurityQuestions(securityData);
+              // Move to next step
+              setTimeout(() => {
+                nextStep();
+              }, 500);
+            }}
+            onCancel={prevStep}
+            isLoading={signup.creationState.loading}
+            error={signup.creationState.error || undefined}
+          />
         );
       case 5:
         return <HybridDailyTarget 
@@ -209,48 +207,50 @@ function BeezeeSignupContent() {
 // Welcome Step Component
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="py-12 text-center min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col text-center">
       {/* Logo at the top */}
-      <div className="w-24 h-24 flex items-center justify-center mx-auto mb-8">
-        <Image 
-          src="/beezee-logo.png" 
-          alt="BeeZee Logo" 
-          width={96} 
-          height={96}
-          className="h-24 w-auto"
-        />
+      <div className="pt-8 pb-4">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mx-auto">
+          <Image 
+            src="/beezee-logo.png" 
+            alt="BeeZee Logo" 
+            width={96} 
+            height={96}
+            className="h-full w-auto"
+          />
+        </div>
       </div>
 
       {/* Content centered in the middle */}
-      <div className="flex-1 flex flex-col justify-center">
+      <div className="flex-1 flex flex-col justify-center px-6">
         <div
           className="max-w-2xl mx-auto fade-in-up"
         >
-          <h1 className="text-4xl font-bold text-[var(--text-1)] mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[var(--text-1)] mb-4 sm:mb-6 leading-tight">
             Welcome to BeeZee
           </h1>
-          <p className="text-xl text-[var(--text-2)] mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-[var(--text-2)] mb-6 sm:mb-8 leading-relaxed">
             Join thousands of African entrepreneurs managing their business with ease.
           </p>
         </div>
       </div>
 
       {/* Buttons at the very bottom */}
-      <div className="pb-8">
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="pb-6 sm:pb-8 px-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-sm mx-auto sm:max-w-none">
           <button
             onClick={onNext}
-            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-4 px-8 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-3"
+            className="bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
           >
             Sign Up
-            <ArrowRight size={20} />
+            <ArrowRight size={18} className="sm:size-20" />
           </button>
           
           <Link
             href="/Beezee-App/auth/login"
-            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-4 px-8 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-3"
+            className="bg-[var(--glass-bg)] border border-[var(--border)] text-[var(--text-1)] py-3 sm:py-4 px-6 sm:px-8 rounded-xl font-semibold hover:bg-[var(--border)] transition-all flex items-center justify-center gap-3 text-sm sm:text-base"
           >
-            <LogIn size={20} />
+            <LogIn size={18} className="sm:size-20" />
             Login
           </Link>
         </div>
@@ -269,11 +269,11 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   const selectedCountry = countries.find(c => c.code === selected);
   
   return (
-    <div className="py-12">
-      <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
+    <div className="py-6 sm:py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Select Your Country
       </h2>
-      <p className="text-[var(--text-2)] text-center mb-8">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Choose where your business operates
       </p>
 
@@ -336,11 +336,11 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-12">
-      <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
+    <div className="py-6 sm:py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Choose Your Industry
       </h2>
-      <p className="text-[var(--text-2)] text-center mb-8">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Select the category that best describes your business
       </p>
 
@@ -389,11 +389,11 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="py-12">
-      <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
+    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
         Tell us about yourself
       </h2>
-      <p className="text-[var(--text-2)] text-center mb-8">
+      <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8">
         Basic information to set up your account
       </p>
 

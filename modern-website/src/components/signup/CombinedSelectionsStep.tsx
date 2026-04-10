@@ -59,15 +59,15 @@ export function CombinedSelectionsStep({
   };
 
   return (
-    <div className="py-12">
+    <div className="py-6 sm:py-8">
       <div className="animate-fade-in">
-        <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-green-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-          <Globe size={40} className="text-[var(--powder-dark)]" />
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500/20 to-green-500/20 rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+          <Globe size={32} className="sm:size-40 text-[var(--powder-dark)]" />
         </div>
-        <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
           Set Up Your Business
         </h2>
-        <p className="text-[var(--text-2)] text-center mb-8 max-w-md mx-auto">
+        <p className="text-sm sm:text-base text-[var(--text-2)] text-center mb-6 sm:mb-8 max-w-md mx-auto">
           Choose your country, industry, and business sector to personalize your experience
         </p>
       </div>

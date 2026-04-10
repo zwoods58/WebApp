@@ -100,39 +100,39 @@ export function HybridDailyTarget({
   };
 
   return (
-    <div className="py-12">
+    <div className="py-6 sm:py-8 max-h-screen overflow-y-auto">
       <div className="animate-fade-in">
-        <div className="w-20 h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
-          <span className="text-2xl font-bold">$</span>
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[var(--powder-light)]/30 rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-4 sm:mb-6">
+          <span className="text-xl sm:text-2xl font-bold">$</span>
         </div>
-        <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 tracking-[-0.02em]">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 tracking-[-0.02em]">
           What is your daily goal?
         </h2>
-        <p className="text-[var(--text-2)] max-w-md mx-auto mb-8">
+        <p className="text-sm sm:text-base text-[var(--text-2)] max-w-md mx-auto mb-6 sm:mb-8">
           Set a target to help track your progress
         </p>
       </div>
 
       {/* Quick Options */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
         {quickOptions.map((option, index) => (
           <button
             key={option.value}
             onClick={() => handleQuickOptionSelect(option.value)}
-            className={`p-6 rounded-xl border-2 transition-all animate-fade-in ${
+            className={`p-4 sm:p-6 rounded-xl border-2 transition-all animate-fade-in ${
               selectedTarget === option.value.toString() && !showCustomInput
                 ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20'
                 : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
             }`}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-[var(--powder-dark)] font-bold">✓</span>
-              <span className="text-2xl font-bold text-[var(--text-1)]">
+              <span className="text-[var(--powder-dark)] font-bold">?</span>
+              <div className="text-xl sm:text-2xl font-bold text-[var(--text-1)]">
                 {option.value}
-              </span>
+              </div>
             </div>
-            <div className="text-sm font-medium text-[var(--text-1)] mb-1">{option.label}</div>
-            <div className="text-xs text-[var(--text-2)]">{option.description}</div>
+            <div className="text-sm sm:text-base font-medium text-[var(--text-1)] mb-1">{option.label}</div>
+            <div className="text-xs sm:text-sm text-[var(--text-2)]">{option.description}</div>
             {selectedTarget === option.value.toString() && !showCustomInput && (
               <div className="flex justify-center mt-2 animate-fade-in">
                 <span className="text-[var(--powder-dark)] font-bold">✓</span>
@@ -218,17 +218,17 @@ export function HybridDailyTarget({
       </div>
 
       {/* Navigation */}
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <button
           onClick={onPrev}
-          className="flex-1 px-6 py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all active:scale-[0.98]"
+          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--glass-bg)] text-black font-medium rounded-xl hover:bg-[var(--glass-bg)] transition-all active:scale-[0.98] text-sm sm:text-base"
         >
           Back
         </button>
         <button
           onClick={handleComplete}
           disabled={!selectedTarget}
-          className="flex-1 px-6 py-3 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20"
+          className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-[var(--powder-dark)] text-white font-bold rounded-xl hover:bg-[var(--powder-mid)] transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] shadow-lg shadow-[var(--powder-dark)]/20 text-sm sm:text-base"
         >
           START USING BEEZEE
         </button>
