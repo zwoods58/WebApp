@@ -6,7 +6,8 @@ export const countryConfigs = {
   gh: { name: 'Ghana', flag: '🇬🇭', currency: 'GHS', currencySymbol: 'GH₵' },
   ug: { name: 'Uganda', flag: '🇺🇬', currency: 'UGX', currencySymbol: 'UGX' },
   rw: { name: 'Rwanda', flag: '🇷🇼', currency: 'RWF', currencySymbol: 'RWF' },
-  tz: { name: 'Tanzania', flag: '🇹🇿', currency: 'TZS', currencySymbol: 'TZS' }
+  tz: { name: 'Tanzania', flag: '🇹🇿', currency: 'TZS', currencySymbol: 'TZS' },
+  ci: { name: "Cote d'Ivoire", flag: '🇨🇮', currency: 'XOF', currencySymbol: 'CFA' }
 };
 
 // Get currency for a country
@@ -37,7 +38,8 @@ export const validateDailyTarget = (amount: number, country: string): boolean =>
     gh: 50,    // Ghana: ~$4 USD minimum
     ug: 1000,  // Uganda: ~$0.27 USD minimum
     rw: 1000,  // Rwanda: ~$0.80 USD minimum
-    tz: 2000   // Tanzania: ~$0.80 USD minimum
+    tz: 2000,  // Tanzania: ~$0.80 USD minimum
+    ci: 1000   // Cote d'Ivoire: ~$1.6 USD minimum
   };
   
   const maxTargets = {
@@ -47,7 +49,8 @@ export const validateDailyTarget = (amount: number, country: string): boolean =>
     gh: 5000,    // Ghana: ~$400 USD maximum
     ug: 50000,   // Uganda: ~$13 USD maximum
     rw: 50000,   // Rwanda: ~$40 USD maximum
-    tz: 100000   // Tanzania: ~$40 USD maximum
+    tz: 100000,  // Tanzania: ~$40 USD maximum
+    ci: 100000   // Cote d'Ivoire: ~$160 USD maximum
   };
   
   const min = minTargets[lowerCountry as keyof typeof minTargets] || 100;

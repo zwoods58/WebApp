@@ -44,7 +44,8 @@ const countries = [
   { code: 'GH', name: 'Ghana', flag: '🇬🇭', flagAlt: 'GH' },
   { code: 'UG', name: 'Uganda', flag: '🇺🇬', flagAlt: 'UG' },
   { code: 'RW', name: 'Rwanda', flag: '🇷🇼', flagAlt: 'RW' },
-  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿', flagAlt: 'TZ' }
+  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿', flagAlt: 'TZ' },
+  { code: 'CI', name: "Cote d'Ivoire", flag: '🇨🇮', flagAlt: 'CI' }
 ];
 
 function BeezeeSignupContent() {
@@ -278,6 +279,8 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   onNext: () => void; 
   onPrev: () => void; 
 }) {
+  const selectedCountry = countries.find(c => c.code === selected);
+  
   return (
     <div className="py-12">
       <h2 className="text-3xl font-bold text-[var(--text-1)] mb-4 text-center">
@@ -287,23 +290,36 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
         Choose where your business operates
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-        {countries.map((country) => (
-          <button
-            key={country.code}
-            onClick={() => onSelect(country.code)}
-            className={`p-4 rounded-xl border-2 transition-all ${
-              selected === country.code
-                ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]'
-                : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
-            }`}
+      <div className="max-w-md mx-auto mb-8">
+        <div className="relative">
+          <select
+            value={selected}
+            onChange={(e) => onSelect(e.target.value)}
+            className="w-full px-4 py-3 bg-[var(--glass-bg)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--powder-dark)]/20 focus:border-[var(--powder-dark)] transition-all text-[var(--text-1)] appearance-none cursor-pointer"
           >
-            {getFlagDisplay(country)}
-            <div className="mt-2 text-sm font-medium text-[var(--text-1)]">
-              {country.name}
-            </div>
-          </button>
-        ))}
+            <option value="" disabled>Select a country...</option>
+            {countries.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.flag} {country.name}
+              </option>
+            ))}
+          </select>
+          
+          {/* Custom dropdown arrow */}
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <svg className="w-5 h-5 text-[var(--text-2)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        
+        {/* Selected country display */}
+        {selectedCountry && (
+          <div className="mt-4 flex items-center justify-center p-3 bg-[var(--powder-light)] rounded-xl border border-[var(--powder-dark)]/30">
+            <span className="text-2xl mr-3">{selectedCountry.flag}</span>
+            <span className="font-medium text-[var(--text-1)]">{selectedCountry.name}</span>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-4">

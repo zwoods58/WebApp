@@ -24,7 +24,7 @@ export const COUNTRY_CONFIG = {
         phoneFormat: '234XXXXXXXXXX',
         phoneExample: '2348012345678',
         currency: 'NGN',
-        currencySymbol: '₦',
+        currencySymbol: 'N',
         taxIdLabel: 'TIN',
         taxIdRegex: /^\d{10}$/,
         smsFrom: 'Beezee'
@@ -39,6 +39,18 @@ export const COUNTRY_CONFIG = {
         currencySymbol: 'R',
         taxIdLabel: 'Tax Reference Number',
         taxIdRegex: /^\d{10}$/,
+        smsFrom: 'Beezee'
+    },
+    CI: {
+        name: "Cote d'Ivoire",
+        smsProvider: null as unknown as SMSProviderType,
+        phoneRegex: /^\+225[0-9]{8,10}$/,
+        phoneFormat: '+225XXXXXXXX',
+        phoneExample: '+2250709123456',
+        currency: 'XOF',
+        currencySymbol: 'CFA',
+        taxIdLabel: 'IDU',
+        taxIdRegex: /^[A-Z0-9]{10,15}$/,
         smsFrom: 'Beezee'
     }
 } as const;
