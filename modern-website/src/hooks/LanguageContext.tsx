@@ -25,12 +25,13 @@ export const useLanguage = () => {
 interface LanguageProviderProps {
   children: ReactNode;
   industry?: string;
+  country?: string;
 }
 
-export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, industry = 'retail' }) => {
+export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, industry = 'retail', country }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
-  const supportedLanguages = ['en', 'sw', 'ha', 'yo', 'ig', 'zu', 'xh', 'af', 'tw', 'rw', 'lg', 'fr'];
+  const supportedLanguages = ['en', 'sw', 'ha', 'yo', 'ig', 'zu', 'xh', 'af', 'tw', 'rw', 'lg', 'fr', 'dy'];
   
   const nativeNames: Record<string, string> = {
     en: 'English',
@@ -44,15 +45,31 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children, in
     tw: 'Twi',
     rw: 'Kinyarwanda',
     lg: 'Luganda',
-    fr: 'Français'
+    fr: 'Français',
+    dy: 'Diouula'
   };
 
   useEffect(() => {
     const savedLanguage = localStorage.getItem('beezee_language');
     if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
       setCurrentLanguage(savedLanguage);
+    } else if (!savedLanguage && country) {
+      // Set default language based on country
+      const countryDefaults: Record<string, string> = {
+        'CI': 'fr', // Côte d'Ivoire defaults to French
+        'KE': 'en',
+        'NG': 'en',
+        'GH': 'en',
+        'UG': 'en',
+        'RW': 'en',
+        'TZ': 'en',
+        'ZA': 'en'
+      };
+      const defaultLang = countryDefaults[country] || 'en';
+      setCurrentLanguage(defaultLang);
+      localStorage.setItem('beezee_language', defaultLang);
     }
-  }, []);
+  }, [country]);
 
   const setLanguage = (lang: string) => {
     if (supportedLanguages.includes(lang)) {

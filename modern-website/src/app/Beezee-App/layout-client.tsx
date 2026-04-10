@@ -21,9 +21,14 @@ const ConnectionToast = lazy(() => import('@/components/universal/ConnectionToas
 
 function BeezeeContentWithLanguage({ children }: { children: React.ReactNode }) {
   const { industry } = useIndustry();
+  const pathname = usePathname();
+  
+  // Extract country from pathname for language provider
+  const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
+  const country = pathMatch?.[1] || '';
   
   return (
-    <LanguageProvider industry={industry}>
+    <LanguageProvider industry={industry} country={country}>
       <BeezeeContent>{children}</BeezeeContent>
     </LanguageProvider>
   );
