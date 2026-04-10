@@ -1,4 +1,5 @@
-import translations from '../translations-new';
+import universalTranslations from '../universal-translations';
+import industryTranslations from './industry-translations';
 import essentialTranslations from './essential-translations';
 
 // Cache-busting timestamp to force refresh translations
@@ -42,18 +43,18 @@ export default function smartTranslate(
     let translation: TranslationValue | null = null;
     
     // FIRST: Try universal section for any key (most efficient)
-    const universalTranslations = translations.universal as TranslationObject;
-    if (universalTranslations && universalTranslations[key]) {
-      translation = universalTranslations[key] as TranslationValue;
+    const universalSection = universalTranslations.universal as TranslationObject;
+    if (universalSection && universalSection[key]) {
+      translation = universalSection[key] as TranslationValue;
     }
     
     // SECOND: Try industry-specific sections if not found in universal
     if (!translation && keyParts.length >= 1) {
       const industrySection = keyParts[0]; // e.g., 'tailor', 'retail', etc.
-      const industryTranslations = translations[industrySection as keyof typeof translations] as TranslationObject;
-      if (industryTranslations && industryTranslations[key]) {
+      const industrySectionTranslations = industryTranslations[industrySection as keyof typeof industryTranslations] as TranslationObject;
+      if (industrySectionTranslations && industrySectionTranslations[key]) {
         // For industry-specific sections, the full key is stored
-        translation = industryTranslations[key] as TranslationValue;
+        translation = industrySectionTranslations[key] as TranslationValue;
       }
     }
     
