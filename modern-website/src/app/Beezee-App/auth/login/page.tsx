@@ -194,7 +194,7 @@ export default function Login() {
     // Validate that the formatted number is in a supported format
     const phoneValidation = validatePhone(phoneNumber);
     if (!phoneValidation.valid) {
-      setError('Invalid phone format. Please use a supported country format (Kenya, Nigeria, Ghana, Uganda, Rwanda, Tanzania, South Africa)');
+      setError('Invalid phone format. Please use a supported country format (Kenya, Nigeria, Ghana, Uganda, Rwanda, Tanzania, South Africa, Côte d\'Ivoire)');
       setIsLoading(false);
       return;
     }

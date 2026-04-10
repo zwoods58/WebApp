@@ -466,7 +466,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     if (!validation.valid) {
       return { 
         error: { 
-          message: 'Invalid phone format or unsupported country. Supported countries: Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania' 
+          message: 'Invalid phone format or unsupported country. Supported countries: Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania, Côte d\'Ivoire' 
         } 
       };
     }
@@ -591,7 +591,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     if (!validation.valid) {
       return { 
         error: { 
-          message: 'Invalid phone format or unsupported country. Supported countries: Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania' 
+          message: 'Invalid phone format or unsupported country. Supported countries: Kenya, South Africa, Nigeria, Ghana, Uganda, Rwanda, Tanzania, Côte d\'Ivoire' 
         } 
       };
     }
