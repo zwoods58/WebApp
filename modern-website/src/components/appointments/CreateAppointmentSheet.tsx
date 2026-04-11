@@ -252,7 +252,7 @@ export default function CreateAppointmentSheet({
           backgroundColor: '#ffffff'
         }}>
           <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#111827', margin: 0 }}>
-            {t('calendar.add_appointment', 'Add Appointment')}
+            {t('appointments.add_appointment', 'Add Appointment')}
           </h2>
           <button 
             onClick={onClose}
@@ -341,7 +341,7 @@ export default function CreateAppointmentSheet({
             {/* Date */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
-                {t('appointments.date', 'Date')} <span style={{ color: '#ef4444' }}>*</span>
+                {t('appointments.select_date', 'Date')} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="date"
@@ -511,7 +511,7 @@ export default function CreateAppointmentSheet({
               if (!submitting) e.currentTarget.style.backgroundColor = '#f3f4f6';
             }}
           >
-            {t('appointments.cancel', 'Cancel')}
+            {t('common.cancel', 'Cancel')}
           </button>
           <button
             type="submit"
