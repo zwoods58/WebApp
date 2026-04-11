@@ -32,7 +32,6 @@ import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
-import { SimpleTest } from '@/SimpleTest';
 
 export default function ServicesPage() {
   const params = useParams();
@@ -726,9 +725,6 @@ export default function ServicesPage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
       
-      {/* Translation Test Component */}
-      <SimpleTest />
-
       <div className="p-4 max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
           {pageTitle}

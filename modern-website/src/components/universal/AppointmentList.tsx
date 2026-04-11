@@ -212,19 +212,12 @@ export default function AppointmentList({
       )}
 
       {/* Action Links */}
-      <div className="flex gap-3 pt-3 border-t border-gray-100">
+      <div className="pt-3 border-t border-gray-100">
         <button
           onClick={onManageAppointments}
-          className="flex-1 py-2 px-3 text-blue-600 font-medium text-sm hover:bg-blue-50 rounded-lg transition-colors"
+          className="w-full py-2 px-3 text-blue-600 font-medium text-sm hover:bg-blue-50 rounded-lg transition-colors"
         >
           {t('appointments.manage_appointments', 'Manage Appointments')}
-        </button>
-        <button
-          onClick={onScheduleAppointment}
-          className="flex-1 py-2 px-3 bg-purple-500 text-white font-medium text-sm hover:bg-purple-600 rounded-lg transition-colors flex items-center justify-center gap-1"
-        >
-          <Plus size={16} />
-          {t('appointments.add_appointment', 'Add Appointment')}
         </button>
       </div>
 

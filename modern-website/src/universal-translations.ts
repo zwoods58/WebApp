@@ -6695,6 +6695,21 @@
         fr: "Crédit",
         dy: "Juguyɔrɔ"
       },
+      "credit.title": {
+        en: "Credit",
+        sw: "Mkopo",
+        ha: "Mkopo",
+        yo: "Crédit",
+        ig: "Crédit",
+        zu: "Crédit",
+        xh: "Crédit",
+        af: "Krediet",
+        tw: "Credit",
+        rw: "Crédit",
+        lg: "Kulunda",
+        fr: "Crédit",
+        dy: "Juguyr"
+      },
       "other": {
         en: "Other",
         sw: "Nyingine",
@@ -8015,6 +8030,21 @@
       lg: "MIRIMU",
       fr: "SERVICES",
       dy: "SƆRƆNW"
+    },
+    "services.search_services": {
+      en: "Search services...",
+      sw: "Tafuta huduma...",
+      ha: "Nemi hidima...",
+      yo: "Wa i...",
+      ig: "Chwaa oru...",
+      zu: "Funa izinsiza...",
+      xh: "Funda izinsiza...",
+      af: "Soek dienste...",
+      tw: "Hwe dwumadie...",
+      rw: "Shakisha serivisi...",
+      lg: "Noona mirimu...",
+      fr: "Rechercher des services...",
+      dy: "Bli s..."
     },
     "services.base_km_pricing": {
       en: "Base + KM pricing",

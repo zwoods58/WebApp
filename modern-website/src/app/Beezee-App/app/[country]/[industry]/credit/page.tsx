@@ -370,7 +370,7 @@ export default function CreditPage() {
 
       <div className="p-4 max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
-          {t('credit')}
+          {t('credit.title')}
         </h1>
 
         {/* Tab Switcher - Customers/Personal */}

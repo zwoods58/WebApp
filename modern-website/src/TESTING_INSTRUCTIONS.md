@@ -1,21 +1,11 @@
 # Translation System Testing Instructions
 
 ## Files Created for You
-1. **SimpleTest.tsx** - Basic test component
-2. **translation-debug-test.tsx** - Comprehensive test component  
-3. **smart-translation.ts** - Updated with debug logging
-4. **TRANSLATION_FIX_GUIDE.md** - Complete fix guide
+1. **smart-translation.ts** - Updated with debug logging
+2. **TRANSLATION_FIX_GUIDE.md** - Complete fix guide
 
-## Step 1: Add Test Component to Any BeeZee Page
-
-Add this import and component to any BeeZee page:
-
-```tsx
-import { SimpleTest } from '@/SimpleTest';
-
-// Add this somewhere in your page component
-<SimpleTest />
-```
+## Note: Debug Components Removed
+The SimpleTest.tsx and translation-debug-test.tsx components have been removed from the codebase to prevent debug overlays from appearing in production.
 
 **Good pages to test:**
 - `/Beezee-App/app/ke/retail/services/page.tsx`
