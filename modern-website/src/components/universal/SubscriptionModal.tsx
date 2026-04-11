@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import KenyaSubscriptionModal from './KenyaSubscriptionModal';
 import NigeriaSubscriptionModal from './NigeriaSubscriptionModal';
 import SouthAfricaSubscriptionModal from './SouthAfricaSubscriptionModal';
+import GhanaSubscriptionModal from './GhanaSubscriptionModal';
 
 // Country pricing configuration (from BeeZee landing page)
 const SUBSCRIPTION_PLANS = {
@@ -253,6 +254,17 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   if (country === 'za' && onSubscribe) {
     return (
       <SouthAfricaSubscriptionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubscribe={onSubscribe}
+      />
+    );
+  }
+
+  // Use Ghana-specific modal for Ghana users
+  if (country === 'gh' && onSubscribe) {
+    return (
+      <GhanaSubscriptionModal
         isOpen={isOpen}
         onClose={onClose}
         onSubscribe={onSubscribe}
