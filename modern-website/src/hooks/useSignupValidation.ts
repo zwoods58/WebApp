@@ -75,7 +75,7 @@ const VALIDATION_RULES: ValidationRules = {
       const phoneRegex = {
         KE: /^\+254\d{9}$/,
         ZA: /^\+27\d{9}$/,
-        NG: /^\+234\d{10}$/,
+        NG: /^\+234\d{8}$/,
         GH: /^\+233\d{9}$/,
         UG: /^\+256\d{9}$/,
         RW: /^\+250\d{9}$/,
@@ -85,7 +85,7 @@ const VALIDATION_RULES: ValidationRules = {
 
       const isValid = Object.values(phoneRegex).some(regex => regex.test(value));
       if (!isValid) {
-        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ), +225XXXXXXXX (CI)';
+        return 'Invalid phone format. Supported formats: +254XXXXXXXXX (KE), +27XXXXXXXXX (ZA), +234XXXXXXXX (NG), +233XXXXXXXXX (GH), +256XXXXXXXXX (UG), +250XXXXXXXXX (RW), +255XXXXXXXXX (TZ), +225XXXXXXXX (CI)';
       }
       return null;
     }

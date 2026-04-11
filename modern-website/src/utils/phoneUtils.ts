@@ -10,7 +10,7 @@ export interface PhoneFormat {
 export const SUPPORTED_COUNTRIES: Record<string, PhoneFormat> = {
   ke: { code: '+254', name: 'Kenya', digits: 9, total: 12 },
   za: { code: '+27', name: 'South Africa', digits: 9, total: 11 },
-  ng: { code: '+234', name: 'Nigeria', digits: 10, total: 13 },
+  ng: { code: '+234', name: 'Nigeria', digits: 8, total: 11 },
   gh: { code: '+233', name: 'Ghana', digits: 9, total: 12 },
   ug: { code: '+256', name: 'Uganda', digits: 9, total: 12 },
   rw: { code: '+250', name: 'Rwanda', digits: 9, total: 12 },
@@ -44,11 +44,11 @@ export function formatPhoneNumber(phone: string): string {
     // Remove leading zeros
     cleanPhone = cleanPhone.replace(/^0+/, '');
     
-    // Nigeria: starts with 234 and has 10 digits after country code
-    if (cleanPhone.startsWith('234') && cleanPhone.length === 13) {
+    // Nigeria: starts with 234 and has 8 digits after country code
+    if (cleanPhone.startsWith('234') && cleanPhone.length === 11) {
       return '+' + cleanPhone;
     }
-    if (cleanPhone.startsWith('234') && cleanPhone.length === 10) {
+    if (cleanPhone.startsWith('234') && cleanPhone.length === 8) {
       return '+234' + cleanPhone;
     }
     
@@ -149,7 +149,7 @@ export function getDisplayPhone(phone: string): string {
   
   // Format based on country
   switch (validation.country) {
-    case 'ng': // Nigeria: +234 XXX XXX XXXX
+    case 'ng': // Nigeria: +234 XXX XXX XX
       return `${country.code} ${digits.substring(0, 3)} ${digits.substring(3, 6)} ${digits.substring(6)}`;
     
     case 'ke': // Kenya: +254 XXX XXX XXX
