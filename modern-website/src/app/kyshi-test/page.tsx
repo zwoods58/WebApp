@@ -114,6 +114,23 @@ export default function KyshiTestPage() {
     }
   };
 
+  const testCoteDIvoirePlan = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/kyshi/test-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: 'plan_ci_weekly', eventType: 'subscription.created' })
+      });
+      const result = await response.json();
+      addResult('Cote D\'Ivoire Plan Test', result);
+    } catch (error) {
+      addResult('Cote D\'Ivoire Plan Test', { error: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
@@ -150,6 +167,14 @@ export default function KyshiTestPage() {
             className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 disabled:opacity-50"
           >
             Test Nigeria Plan
+          </button>
+          
+          <button
+            onClick={testCoteDIvoirePlan}
+            disabled={loading}
+            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50"
+          >
+            Test Cote D'Ivoire Plan
           </button>
           
           <button
@@ -201,6 +226,8 @@ export default function KyshiTestPage() {
                   <div> Kenya Weekly (plan_ke_weekly) - 200 KES (weekly)</div>
                   <div> Ghana Weekly (plan_gh_weekly) - 20 GHS (weekly)</div>
                   <div> Nigeria Weekly (plan_ng_weekly) - 500 NGN (weekly)</div>
+                  <div> South Africa Weekly (plan_za_weekly) - 30 ZAR (weekly)</div>
+                  <div> Cote D'Ivoire Weekly (plan_ci_weekly) - 1000 XOF (weekly)</div>
                 </div>
               </div>
             </div>
@@ -210,7 +237,7 @@ export default function KyshiTestPage() {
               <div className="text-sm space-y-2">
                 <div><strong>Webhook URL:</strong> https://yourdomain.com/api/webhook/kyshi</div>
                 <div><strong>Method:</strong> Webhook-only (no API keys needed)</div>
-                <div><strong>Countries:</strong> Kenya, Ghana, Nigeria</div>
+                <div><strong>Countries:</strong> Kenya, Ghana, Nigeria, South Africa, Cote D'Ivoire</div>
                 <div><strong>Frequency:</strong> Weekly for all plans</div>
               </div>
               

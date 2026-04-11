@@ -181,7 +181,7 @@ export const kyshiApi = (): KyshiApiClient => {
   return kyshiApiInstance;
 };
 
-// Utility functions for Kenya weekly subscription
+// Utility functions for country-specific weekly subscriptions
 export const createKenyaWeeklyPlan = async (): Promise<KyshiPlan> => {
   const planData: CreatePlanRequest = {
     name: 'Kenya Weekly Premium',
@@ -189,6 +189,18 @@ export const createKenyaWeeklyPlan = async (): Promise<KyshiPlan> => {
     interval: 'weekly',
     amount: 200,
     localCurrency: 'KES',
+  };
+
+  return kyshiApi().createPlan(planData);
+};
+
+export const createCoteDIvoireWeeklyPlan = async (): Promise<KyshiPlan> => {
+  const planData: CreatePlanRequest = {
+    name: 'Cote D\'Ivoire Weekly Premium',
+    description: 'Weekly subscription for BeeZee premium features in Cote D\'Ivoire',
+    interval: 'weekly',
+    amount: 1000,
+    localCurrency: 'XOF',
   };
 
   return kyshiApi().createPlan(planData);

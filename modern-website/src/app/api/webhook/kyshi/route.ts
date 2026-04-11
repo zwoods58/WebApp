@@ -57,6 +57,14 @@ const KYSHI_SUBSCRIPTION_PLANS = [
     currency: 'TZS',
     interval: 'weekly',
     code: 'TZ_WEEKLY_2000'
+  },
+  {
+    id: 'plan_ci_weekly',
+    name: 'Cote D\'Ivoire Weekly Plan',
+    amount: 1000,
+    currency: 'XOF',
+    interval: 'weekly',
+    code: 'CI_WEEKLY_1000'
   }
 ];
 

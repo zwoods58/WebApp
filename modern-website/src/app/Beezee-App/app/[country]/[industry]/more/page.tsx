@@ -314,11 +314,61 @@ export default function MorePage() {
         isOpen={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
         businessEmail="user@example.com"
-        onSubscribe={async (phoneNumber, paymentMethod, country, frequency, amount) => {
-          console.log('Subscription initiated:', { phoneNumber, paymentMethod, country, frequency, amount });
-          // Here you would integrate with your actual payment API
-          // For now, we'll simulate a successful subscription
-          await new Promise(resolve => setTimeout(resolve, 2000));
+        onSubscribe={async (identifier: string, paymentMethod: string, country: string, frequency: string, amount: number, provider?: string) => {
+          console.log('Subscription initiated:', { identifier, paymentMethod, country, frequency, amount, provider });
+          
+          try {
+            // Map country to plan ID
+            const planIdMap: Record<string, string> = {
+              'ke': 'plan_ke_weekly',
+              'ng': 'plan_ng_weekly', 
+              'za': 'plan_za_weekly',
+              'gh': 'plan_gh_weekly',
+              'ci': 'plan_ci_weekly',
+              'ug': 'plan_ug_weekly',
+              'rw': 'plan_rw_weekly',
+              'tz': 'plan_tz_weekly'
+            };
+            
+            const planId = planIdMap[country.toLowerCase()];
+            if (!planId) {
+              throw new Error(`No plan found for country: ${country}`);
+            }
+            
+            // Get business email for customer identification
+            const businessEmail = 'user@example.com'; // Simplified for now - will be enhanced with real user data
+            
+            // Call Kyshi API to create subscription
+            const response = await fetch('/api/kyshi/subscriptions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                customerEmail: businessEmail,
+                planId: planId,
+                paymentDetails: {
+                  identifier,
+                  paymentMethod,
+                  provider,
+                  country,
+                  amount
+                }
+              })
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+              throw new Error(result.message || 'Subscription creation failed');
+            }
+            
+            console.log('Kyshi subscription created:', result.subscription);
+            
+          } catch (error) {
+            console.error('Subscription creation failed:', error);
+            throw error;
+          }
         }}
       />
     </div>
