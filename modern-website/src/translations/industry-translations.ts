@@ -2321,21 +2321,6 @@ const translations = {
       fr: "Commencez à enregistrer les ventes et les dépenses pour les voir ici",
       dy: "Wosoro ni sarakaw sɛbɛn daminɛ ka kɛ a kama u ye jɛlen yan"
     },
-    "retail.inventory.add_item": {
-      en: "Add New Item",
-      sw: "Ongeza Kipya",
-      ha: "Ƙara Sabo",
-      yo: "Fi Tuntun",
-      ig: "Tinye ọhụrụ",
-      zu: "Yongeza okusha",
-      xh: "Yongeza okutsha",
-      af: "Voeg Nuwe Item By",
-      tw: "De nntɔm ho",
-      rw: "Ongeraho ikintu gishya",
-      lg: "Yongeza ekintu kipya",
-      fr: "Ajouter un nouvel article",
-      dy: "Fɛn kura fara a kan"
-    },
     "retail.inventory.edit_item": {
       en: "Edit Inventory Item",
       sw: "Hariri Kipya cha Hifadhi",
@@ -2350,36 +2335,6 @@ const translations = {
       lg: "Longoose ekintu ery'omwaka",
       fr: "Modifier l'article",
       dy: "Fɛn falen"
-    },
-    "retail.inventory.item_name": {
-      en: "Item Name",
-      sw: "Jina la Kipya",
-      ha: "Sunan Kayayyaki",
-      yo: "Orukọ Nkan",
-      ig: "Aha Ahịa",
-      zu: "Igama lelo",
-      xh: "Igama lelo",
-      af: "Item Naam",
-      tw: "Din nka no",
-      rw: "Izina ry'ikintu",
-      lg: "Linnya lya kintu",
-      fr: "Nom de l'article",
-      dy: "Fɛn tɔgɔ"
-    },
-    "retail.inventory.category": {
-      en: "Category",
-      sw: "Aina",
-      ha: "Sashi",
-      yo: "Ẹka",
-      ig: "Ụdị",
-      zu: "Uhlobo",
-      xh: "Uhlobo",
-      af: "Kategorie",
-      tw: "Kyerɛw",
-      rw: "Ubwoko",
-      lg: "Kika",
-      fr: "Catégorie",
-      dy: "Bansigi"
     },
     "retail.inventory.cost_price": {
       en: "Cost Price",
@@ -2440,21 +2395,6 @@ const translations = {
       lg: "Okumanya ebintu ebiteeke",
       fr: "Alerte de stock faible",
       dy: "Jago dɔgɔnin jaamini"
-    },
-    "retail.inventory.cancel": {
-      en: "Cancel",
-      sw: "Ghairi",
-      ha: "Soke",
-      yo: "Fagile",
-      ig: "Kpochapụ",
-      zu: "Khansela",
-      xh: "Rhoxisa",
-      af: "Kanselleer",
-      tw: "Twe",
-      rw: "Kuraho",
-      lg: "Sazaamu",
-      fr: "Annuler",
-      dy: "Bɔ"
     },
     "retail.inventory.add_item_button": {
       en: "Add Item",
@@ -6607,36 +6547,6 @@ const translations = {
       lg: "Nairobi CBD - Thika",
       fr: "Nairobi CBD - Thika",
       dy: "Nairobi CBD - Thika"
-    },
-    "common.daily": {
-      en: "Daily",
-      sw: "Kila siku",
-      ha: "Kullum rana",
-      yo: "Lójúmọ́",
-      ig: "Kwa ụbọchị",
-      zu: "Nsuku zonke",
-      xh: "Nsuku zonke",
-      af: "Daagliks",
-      tw: "Daily",
-      rw: "Buri munsi",
-      lg: "Bulungi lwa bulungi",
-      fr: "Quotidien",
-      dy: "Don o don"
-    },
-    "common.weekly": {
-      en: "Weekly",
-      sw: "Kila wiki",
-      ha: "Kullum mako",
-      yo: "Lójúú",
-      ig: "Kwa izu",
-      zu: "Ngasonto zonke",
-      xh: "Ngasonto zonke",
-      af: "Wekliks",
-      tw: "Weekly",
-      rw: "Buri cyumweru",
-      lg: "Buli week",
-      fr: "Hebdomadaire",
-      dy: "Dɔgɔkun o dɔgɔkun"
     },
     "common.on-demand": {
       en: "On Demand",

@@ -43,7 +43,7 @@ export default function smartTranslate(
     let translation: TranslationValue | null = null;
     
     // FIRST: Try universal section for any key (most efficient)
-    const universalSection = universalTranslations.universal as TranslationObject;
+    const universalSection = universalTranslations.universal as Record<string, TranslationValue>;
     if (universalSection && universalSection[key]) {
       translation = universalSection[key] as TranslationValue;
     }
