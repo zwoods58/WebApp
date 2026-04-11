@@ -1,9 +1,13 @@
-import universalTranslations from '../universal-translations';
+import universalTranslations from '../universal-translations.json';
 import industryTranslations from './industry-translations';
 import essentialTranslations from './essential-translations';
 
 // Cache-busting timestamp to force refresh translations
 const TRANSLATION_CACHE_BUSTER = Date.now();
+
+// Log the number of keys loaded
+console.log(`[TRANSLATION] Universal keys loaded: ${Object.keys(universalTranslations.universal || {}).length}`);
+console.log(`[TRANSLATION] Sample keys:`, Object.keys(universalTranslations.universal || {}).slice(0, 5));
 
 // Type definitions for translation system
 interface TranslationObject {
@@ -36,16 +40,24 @@ export default function smartTranslate(
   vars?: Record<string, any>
 ): string {
   try {
+    // DEBUG: Log translation lookup
+    console.log(`[TRANSLATION] Looking up key: ${key}, language: ${language}, industry: ${industry}`);
+    
     // Split the key into parts (e.g., 'tailor.orders.title' -> ['tailor', 'orders', 'title'])
     const keyParts = key.split('.');
     
     // Try to find the translation in the translations object
     let translation: TranslationValue | null = null;
     
+    // DEBUG: Check if universalTranslations is loaded
+    console.log(`[TRANSLATION] universalTranslations loaded:`, !!universalTranslations);
+    console.log(`[TRANSLATION] universalSection exists:`, !!universalTranslations?.universal);
+    
     // FIRST: Try universal section for any key (most efficient)
     const universalSection = universalTranslations.universal as Record<string, TranslationValue>;
     if (universalSection && universalSection[key]) {
       translation = universalSection[key] as TranslationValue;
+      console.log(`[TRANSLATION] Found in universal: ${key}`);
     }
     
     // SECOND: Try industry-specific sections if not found in universal
@@ -93,15 +105,20 @@ export default function smartTranslate(
     if ((essentialTranslations as EssentialTranslations)[key]) {
       const essentialTranslation = (essentialTranslations as EssentialTranslations)[key];
       if (language in essentialTranslation) {
+        console.log(`[TRANSLATION] Found in essential: ${key}`);
         return essentialTranslation[language];
       }
       // Fallback to English in essential translations
       if ('en' in essentialTranslation) {
+        console.log(`[TRANSLATION] Found in essential (English fallback): ${key}`);
         return essentialTranslation.en;
       }
     }
     
-    // If no translation found, return default text or key
+    // DEBUG: Log when translation is not found
+    console.log(`[TRANSLATION] NOT FOUND: ${key}, returning default: ${defaultText || key}`);
+    
+    // FOURTH: Return default text or key as last resort
     return defaultText || key;
     
   } catch (error) {
