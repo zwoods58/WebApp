@@ -314,6 +314,12 @@ export default function MorePage() {
         isOpen={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
         businessEmail="user@example.com"
+        onSubscribe={async (phoneNumber, paymentMethod, country, frequency, amount) => {
+          console.log('Subscription initiated:', { phoneNumber, paymentMethod, country, frequency, amount });
+          // Here you would integrate with your actual payment API
+          // For now, we'll simulate a successful subscription
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }}
       />
     </div>
   );

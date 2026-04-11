@@ -5,6 +5,7 @@ import { X, Check, Crown, CreditCard, Calendar, Shield, Star, Phone } from 'luci
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useParams } from 'next/navigation';
+import KenyaSubscriptionModal from './KenyaSubscriptionModal';
 
 // Country pricing configuration (from BeeZee landing page)
 const SUBSCRIPTION_PLANS = {
@@ -119,9 +120,10 @@ interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   businessEmail?: string;
+  onSubscribe?: (phoneNumber: string, paymentMethod: string, country: string, frequency: string, amount: number) => Promise<void>;
 }
 
-export default function SubscriptionModal({ isOpen, onClose, businessEmail }: SubscriptionModalProps) {
+export default function SubscriptionModal({ isOpen, onClose, businessEmail, onSubscribe }: SubscriptionModalProps) {
   const { t } = useLanguage();
   const params = useParams();
   const country = (params.country as string) || 'ke';
@@ -222,6 +224,17 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   };
 
   if (!isOpen) return null;
+
+  // Use Kenya-specific modal for Kenya users
+  if (country === 'ke' && onSubscribe) {
+    return (
+      <KenyaSubscriptionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubscribe={onSubscribe}
+      />
+    );
+  }
 
   return (
     <>
