@@ -74,7 +74,7 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }:
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
         
         <div style={{ backgroundColor: MpesaColors.primary }} className="p-5">
           <div className="flex justify-between items-center">
@@ -99,15 +99,15 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }:
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">{t.price}</div>
+        <div className="p-4 sm:p-6 text-center border-b">
+          <div className="text-2xl sm:text-3xl font-bold">{t.price}</div>
           <div className="text-sm text-gray-500 mt-1">{t.period}</div>
           <div className="text-xs text-green-600 mt-2">\u2713 VAT included \u2022 No hidden fees</div>
           <div className="text-xs text-gray-400 mt-1">\u21bb Billed every 7 days \u2022 Cancel anytime</div>
         </div>
 
         {step === 'form' && (
-          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 flex-1 overflow-y-auto">
             <div>
               <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
               <div className="flex">
@@ -135,17 +135,16 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }:
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
             <p className="font-medium text-gray-900">{t.waiting}</p>
             <p className="text-sm text-gray-500 mt-1">{t.waitingHint}</p>
-            <p className="text-xs text-gray-400 mt-4">Request sent to +254 {phoneNumber}</p>
           </div>
         )}
 
         {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4">\u2705</div>
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
+            <div className="text-4xl sm:text-5xl mb-4">\u2705</div>
             <p className="font-medium text-gray-900">{t.success}</p>
             <p className="text-sm text-gray-500 mt-1">{t.successHint}</p>
           </div>

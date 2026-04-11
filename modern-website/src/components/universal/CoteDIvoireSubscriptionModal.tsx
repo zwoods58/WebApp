@@ -75,7 +75,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
         
         <div style={{ backgroundColor: OrangeColors.primary }} className="p-5">
           <div className="flex justify-between items-center">
@@ -100,8 +100,8 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">{t.price}</div>
+        <div className="p-4 sm:p-6 text-center border-b">
+          <div className="text-2xl sm:text-3xl font-bold">{t.price}</div>
           <div className="text-sm text-gray-500 mt-1">{t.period}</div>
           <div className="text-xs text-green-600 mt-2">\u2713 Frais inclus</div>
           <div className="text-xs text-gray-400 mt-1">\u21bb Facturé chaque semaine \u2022 Annulez à tout moment</div>
@@ -109,7 +109,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
 
         {step === 'form' && (
           <>
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-3">{t.providerLabel}</label>
               <div className="flex gap-4">
                 <button
@@ -135,7 +135,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
               </div>
             </div>
 
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
               <div className="flex">
                 <span className="bg-gray-100 px-4 py-3 rounded-l-xl border text-gray-600">+225</span>
@@ -151,7 +151,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
               <p className="text-xs text-gray-500 mt-2">{t.phoneHint}</p>
             </div>
 
-            <div className="p-6 pt-0">
+            <div className="p-4 sm:p-6 pt-0">
               <button
                 onClick={handleSubmit}
                 style={{ backgroundColor: OrangeColors.primary }}
@@ -164,7 +164,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
             <p className="font-medium text-gray-900">{t.waiting}</p>
             <p className="text-sm text-gray-500 mt-1">{t.waitingHint}</p>
@@ -172,8 +172,8 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
         )}
 
         {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4">\u2705</div>
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
+            <div className="text-4xl sm:text-5xl mb-4">â</div>
             <p className="font-medium text-gray-900">{t.success}</p>
             <p className="text-sm text-gray-500 mt-1">{t.successHint}</p>
           </div>

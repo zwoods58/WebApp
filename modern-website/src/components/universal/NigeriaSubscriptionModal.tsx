@@ -45,7 +45,7 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
         
         <div style={{ backgroundColor: PagaColors.primary }} className="p-5">
           <h2 className="text-xl font-bold text-white">Subscribe with Paga</h2>
@@ -60,8 +60,8 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">\u20a6{amount.toLocaleString()}</div>
+        <div className="p-4 sm:p-6 text-center border-b">
+          <div className="text-2xl sm:text-3xl font-bold">\u20a6{amount.toLocaleString()}</div>
           <div className="text-sm text-gray-500 mt-1">weekly subscription \u2022 auto-renews every 7 days</div>
           <div className="text-xs text-green-600 mt-2">\u2713 7.5% VAT included</div>
           <div className="text-xs text-gray-400 mt-1">\u21bb Billed weekly \u2022 Cancel anytime</div>
@@ -69,9 +69,9 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
 
         {step === 'form' && (
           <>
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-3">Select payment method</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {paymentMethods.map(method => (
                   <button
                     key={method.id}
@@ -90,7 +90,7 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
               </div>
             </div>
 
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-2">
                 {paymentMethod === 'paga' && 'Paga ID or Phone Number'}
                 {paymentMethod === 'opay' && 'OPay Account Number'}
@@ -115,7 +115,7 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
               )}
             </div>
 
-            <div className="p-6 pt-0">
+            <div className="p-4 sm:p-6 pt-0">
               <button
                 onClick={handleSubmit}
                 style={{ backgroundColor: PagaColors.primary }}
@@ -128,7 +128,7 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
             <p className="font-medium text-gray-900">Check your phone</p>
             <p className="text-sm text-gray-500 mt-1">Approve payment on your Paga app or banking app</p>
@@ -136,8 +136,8 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSubscribe 
         )}
 
         {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4">\ud83c\udf89</div>
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
+            <div className="text-4xl sm:text-5xl mb-4">ð</div>
             <p className="font-medium text-gray-900">Weekly subscription activated!</p>
             <p className="text-sm text-gray-500 mt-1">You will be charged \u20a6{amount} every 7 days</p>
           </div>

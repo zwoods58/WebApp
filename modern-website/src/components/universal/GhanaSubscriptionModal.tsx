@@ -44,7 +44,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
         
         <div style={{ backgroundColor: currentProvider.color }} className="p-5">
           <h2 className={`text-xl font-bold ${currentProvider.textColor === 'white' ? 'text-white' : 'text-black'}`}>
@@ -63,8 +63,8 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">\u20b5{amount}</div>
+        <div className="p-4 sm:p-6 text-center border-b">
+          <div className="text-2xl sm:text-3xl font-bold">\u20b5{amount}</div>
           <div className="text-sm text-gray-500 mt-1">weekly subscription \u2022 auto-renews every 7 days</div>
           <div className="text-xs text-gray-500 mt-2">E-Levy included in price</div>
           <div className="text-xs text-gray-400 mt-1">\u21bb Billed weekly \u2022 Cancel anytime</div>
@@ -72,7 +72,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
 
         {step === 'form' && (
           <>
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-3">Choose your network</label>
               <div className="space-y-3">
                 <button
@@ -119,7 +119,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
               </div>
             </div>
 
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <label className="block text-sm font-medium mb-2">Mobile Money Number</label>
               <div className="flex">
                 <span className="bg-gray-100 px-4 py-3 rounded-l-xl border text-gray-600">+233</span>
@@ -137,7 +137,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
               </p>
             </div>
 
-            <div className="p-6 pt-0">
+            <div className="p-4 sm:p-6 pt-0">
               <button
                 style={{ backgroundColor: currentProvider.color }}
                 className={`w-full hover:opacity-90 py-3 rounded-xl font-semibold transition ${
@@ -152,7 +152,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
             <p className="font-medium text-gray-900">Check your phone</p>
             <p className="text-sm text-gray-500 mt-1">Enter your MoMo PIN to complete payment</p>
@@ -160,10 +160,10 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSubscribe }:
         )}
 
         {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4">\u2705</div>
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
+            <div className="text-4xl sm:text-5xl mb-4">â</div>
             <p className="font-medium text-gray-900">Weekly subscription activated!</p>
-            <p className="text-sm text-gray-500 mt-1">You will be charged \u20b5{amount} every 7 days</p>
+            <p className="text-sm text-gray-500 mt-1">You will be charged âµ{amount} every 7 days</p>
           </div>
         )}
 

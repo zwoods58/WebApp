@@ -37,7 +37,7 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
         
         <div style={{ backgroundColor: OzowColors.primary }} className="p-5">
           <h2 className="text-xl font-bold text-white">Subscribe in Rands</h2>
@@ -52,8 +52,8 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">R {amount}</div>
+        <div className="p-4 sm:p-6 text-center border-b">
+          <div className="text-2xl sm:text-3xl font-bold">R {amount}</div>
           <div className="text-sm text-gray-500 mt-1">weekly subscription \u2022 auto-renews every 7 days</div>
           <div className="text-xs text-green-600 mt-2">\u2713 15% VAT included</div>
           <div className="text-xs text-gray-400 mt-1">\u21bb Billed weekly \u2022 Cancel anytime</div>
@@ -61,7 +61,7 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
 
         {step === 'form' && (
           <>
-            <div className="p-6 border-b">
+            <div className="p-4 sm:p-6 border-b">
               <div className="flex gap-3 mb-5">
                 <button
                   onClick={() => setPaymentMethod('card')}
@@ -83,7 +83,7 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
 
               {paymentMethod === 'card' && (
                 <div className="space-y-4">
-                  <div>
+                  <div className="p-4 sm:p-6 border-b flex-1 overflow-y-auto">
                     <label className="block text-sm mb-1">Card Number</label>
                     <input
                       type="text"
@@ -93,7 +93,7 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
                       onChange={(e) => setCardDetails({...cardDetails, number: e.target.value})}
                     />
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 px-4 sm:px-6 pb-4">
                     <div className="flex-1">
                       <label className="block text-sm mb-1">Expiry (MM/YY)</label>
                       <input
@@ -119,15 +119,15 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
               )}
 
               {paymentMethod === 'ozow' && (
-                <div className="text-center py-6">
-                  <div className="text-4xl mb-3">\ud83c\udfe6</div>
+                <div className="text-center py-6 flex-1 flex flex-col justify-center">
+                  <div className="text-3xl sm:text-4xl mb-3">\ud83c\udfe6</div>
                   <p className="text-sm">You'll be redirected to your bank's secure portal</p>
                   <p className="text-xs text-gray-500 mt-2">Supports: FNB, Standard Bank, ABSA, Nedbank, Capitec</p>
                 </div>
               )}
             </div>
 
-            <div className="p-6 pt-0">
+            <div className="p-4 sm:p-6 pt-0">
               <button
                 onClick={handleSubmit}
                 style={{ backgroundColor: OzowColors.primary }}
@@ -140,7 +140,7 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="font-medium text-gray-900">Processing payment</p>
             <p className="text-sm text-gray-500 mt-1">
@@ -150,8 +150,8 @@ export default function SouthAfricaSubscriptionModal({ isOpen, onClose, onSubscr
         )}
 
         {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4">\ud83c\udf89</div>
+          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
+            <div className="text-4xl sm:text-5xl mb-4">\ud83c\udf89</div>
             <p className="font-medium text-gray-900">Weekly subscription activated!</p>
             <p className="text-sm text-gray-500 mt-1">You will be charged R{amount} every 7 days</p>
           </div>
