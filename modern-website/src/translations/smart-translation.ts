@@ -1,4 +1,4 @@
-import universalTranslations from '../universal-translations.json';
+import universalTranslations from '../universal-translations';
 import industryTranslations from './industry-translations';
 import essentialTranslations from './essential-translations';
 

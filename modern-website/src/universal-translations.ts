@@ -1,4 +1,4 @@
-﻿  export const translations = {
+﻿  const translations = {
   // === UNIVERSAL TERMS (Work across ALL industries) ===
   universal: {
     // Payment Methods
