@@ -1,4 +1,4 @@
-﻿  const translations = {
+﻿ const translations = {
   // === UNIVERSAL TERMS (Work across ALL industries) ===
   universal: {
     // Payment Methods
@@ -754,36 +754,6 @@
       fr: "{count} actif",
       dy: "{count} bɛ baara"
     },
-    "services.no_services": {
-      en: "No services",
-      sw: "Hakuna huduma",
-      ha: "Babu hidima",
-      yo: "K\u1ecdw\u1ecdl\u1ecdw\u1ecd\u1ecd \u1e63i\u1e63\u025b",
-      ig: "\u1ecc d\u1ecbgh\u1ecb \u1ecdr\u1ee5",
-      zu: "Akukho amasevisi",
-      xh: "Akukho iinkonzo",
-      af: "Geen dienste nie",
-      tw: "Nni h\u1ecdn nnwuma",
-      rw: "Nta serivisi",
-      lg: "Tewali mirimu",
-      fr: "Aucun service",
-      dy: "Sɔrɔn te"
-    },
-    "services.add_first": {
-      en: "Add your first service",
-      sw: "Ongeza huduma yako ya kwanza",
-      ha: "\u0256aya hidimar farko",
-      yo: "Fi i\u1e63i\u1e63\u1e63 \u1eb9 ak\u1ecd\u0301k\u1ecd\u0301 r\u1eb9",
-      ig: "Tinye \u1ecdr\u1ee5 mb\u1ee5 g\u1ecb",
-      zu: "Yongeza isevisi yakho yokuqala",
-      xh: "Yongeza isevisi yakho yokuqala",
-      af: "Voeg jou eerste diens by",
-      tw: "Fa wo nnwuma kan no",
-      rw: "Ongeraho serivisi yawe ya mbere",
-      lg: "Gatta omulimo gwo ogusooka",
-      fr: "Ajoutez votre premier service",
-      dy: "I ka sɔrɔn foli fara a kan"
-    },
     "nav.appointments": {
       en: "Appointments",
       sw: "Dhibiti Miadi",
@@ -948,8 +918,7 @@
       lg: "Ebintu",
       fr: "Articles",
       dy: "Fɛnw"
-    }
-  },
+    },
         // Common Actions
     "common.save": {
       en: "Save",
@@ -10703,6 +10672,7 @@
       fr: "Aucun article en stock",
       dy: "Mma si ma s"
     }
+  }  
 };
 
 export default translations;

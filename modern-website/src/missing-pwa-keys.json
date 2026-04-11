@@ -1,0 +1,49 @@
+{
+  "pwa_keys": {
+    "pwa.install_title": {
+      "en": "Install Beezee App",
+      "sw": "Sakinisha Programu ya Beezee", 
+      "ha": "Sanya Shirin Beezee",
+      "yo": "Fi Beezee App Sishe",
+      "ig": "Instala Beezee App",
+      "zu": "Faka i-App yeBeezee",
+      "xh": "Faka i-App yeBeezee",
+      "af": "Installeer Beezee App",
+      "tw": "Instoel Beezee App",
+      "rw": "Shyiramo Porogaramu ya Beezee",
+      "lg": "Sanyisa Puloguramu ya Beezee",
+      "fr": "Installer l'application Beezee",
+      "dy": "Install Beezee App"
+    },
+    "pwa.install_description": {
+      "en": "Add to home screen for quick access and offline use.",
+      "sw": "Ongeza kwenye skrini ya nyumbani kwa ufikiaji wa haraka na matumizi bila mtandao.",
+      "ha": "Sanya zuwa ga shafi na gida don saurin shiga da amfani a layi.",
+      "yo": "Fi kun iboju ile fun irinnsisoke kiakia ati lilo airotel.",
+      "ig": "Tinye n'ihü ihü  maka ighota ngwa ngwa ngwa na iji jikwaa na-enweghj netwak.",
+      "zu": "Yengeza kwisikrini sase ngokufikelela okusheshayo nokusebenza ngaphandle kwe-inthanethi.",
+      "xh": "Yongeza kwisikrini sase ngokufikelela okusheshayo nokusebenza ngaphandle kwe-inthanethi.",
+      "af": "Voeg by tuisskerm by vir vinnige toegang en aanlyn gebruik.",
+      "tw": "Fa koro home screen ho hohoe ntoboa ne wode a wura mu wifi.",
+      "rw": "Yongera kuri skurini ya mbere kuri gukurikiriza vuba no gukoresha bitarije interineti.",
+      "lg": "Yongeza ku ssukulinya ya wamu olw'okufuna okulabikira bulungi era okukozesa nga tewali waanyi.",
+      "fr": "Ajouter à l'écran d'accès pour un accès rapide et une utilisation hors ligne.",
+      "dy": "Ajouter à l'écran d'accueil pour un accès rapide et une utilisation hors ligne."
+    },
+    "pwa.add_to_home": {
+      "en": "Add to Home Screen",
+      "sw": "Ongeza kwenye Skrini ya Nyumbani",
+      "ha": "Sanya zuwa ga Shafi na Gida", 
+      "yo": "Fi kun Iboju Ile",
+      "ig": "Tinye n'Ihü Ihü",
+      "zu": "Yengeza kwisikrini sase",
+      "xh": "Yongeza kwisikrini sase",
+      "af": "Voeg by Tuisskerm",
+      "tw": "Fa koro Home Screen",
+      "rw": "Yongera kuri Skurini ya Mbere",
+      "lg": "Yongeza ku Ssukulinya ya Wamu",
+      "fr": "Ajouter à l'écran d'accueil",
+      "dy": "Ajouter à l'écran d'accueil"
+    }
+  }
+}

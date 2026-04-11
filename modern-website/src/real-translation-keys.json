@@ -1,0 +1,239 @@
+{
+  "totalKeys": 58,
+  "keys": [
+    "Authorization",
+    "Expires",
+    "Pragma",
+    "abc",
+    "amount",
+    "authorization",
+    "bcrypt",
+    "canvas",
+    "category",
+    "cleanup",
+    "comments_count",
+    "cost_price",
+    "count",
+    "created_at",
+    "credit",
+    "currency",
+    "customerName",
+    "daily_target",
+    "dateRange",
+    "div",
+    "due_date",
+    "enter_category",
+    "expense_date",
+    "expenses",
+    "from",
+    "globalDataRefresh",
+    "hours",
+    "id",
+    "is_corporate",
+    "item_name",
+    "limit",
+    "limit_multiplier",
+    "message_path",
+    "pause",
+    "paymentMethod",
+    "quantity",
+    "redirect",
+    "reference",
+    "response_data",
+    "resume",
+    "role",
+    "select_category",
+    "sell",
+    "sent_at",
+    "severity",
+    "softDataRefresh",
+    "status",
+    "stock",
+    "storage",
+    "style",
+    "subscription_tier",
+    "textarea",
+    "to",
+    "transaction_date",
+    "type",
+    "usd_price",
+    "violation_type",
+    "xss"
+  ],
+  "groupedByPrefix": {
+    "Authorization": [
+      "Authorization"
+    ],
+    "Expires": [
+      "Expires"
+    ],
+    "Pragma": [
+      "Pragma"
+    ],
+    "abc": [
+      "abc"
+    ],
+    "amount": [
+      "amount"
+    ],
+    "authorization": [
+      "authorization"
+    ],
+    "bcrypt": [
+      "bcrypt"
+    ],
+    "canvas": [
+      "canvas"
+    ],
+    "category": [
+      "category"
+    ],
+    "cleanup": [
+      "cleanup"
+    ],
+    "comments_count": [
+      "comments_count"
+    ],
+    "cost_price": [
+      "cost_price"
+    ],
+    "count": [
+      "count"
+    ],
+    "created_at": [
+      "created_at"
+    ],
+    "credit": [
+      "credit"
+    ],
+    "currency": [
+      "currency"
+    ],
+    "customerName": [
+      "customerName"
+    ],
+    "daily_target": [
+      "daily_target"
+    ],
+    "dateRange": [
+      "dateRange"
+    ],
+    "div": [
+      "div"
+    ],
+    "due_date": [
+      "due_date"
+    ],
+    "enter_category": [
+      "enter_category"
+    ],
+    "expense_date": [
+      "expense_date"
+    ],
+    "expenses": [
+      "expenses"
+    ],
+    "from": [
+      "from"
+    ],
+    "globalDataRefresh": [
+      "globalDataRefresh"
+    ],
+    "hours": [
+      "hours"
+    ],
+    "id": [
+      "id"
+    ],
+    "is_corporate": [
+      "is_corporate"
+    ],
+    "item_name": [
+      "item_name"
+    ],
+    "limit": [
+      "limit"
+    ],
+    "limit_multiplier": [
+      "limit_multiplier"
+    ],
+    "message_path": [
+      "message_path"
+    ],
+    "pause": [
+      "pause"
+    ],
+    "paymentMethod": [
+      "paymentMethod"
+    ],
+    "quantity": [
+      "quantity"
+    ],
+    "redirect": [
+      "redirect"
+    ],
+    "reference": [
+      "reference"
+    ],
+    "response_data": [
+      "response_data"
+    ],
+    "resume": [
+      "resume"
+    ],
+    "role": [
+      "role"
+    ],
+    "select_category": [
+      "select_category"
+    ],
+    "sell": [
+      "sell"
+    ],
+    "sent_at": [
+      "sent_at"
+    ],
+    "severity": [
+      "severity"
+    ],
+    "softDataRefresh": [
+      "softDataRefresh"
+    ],
+    "status": [
+      "status"
+    ],
+    "stock": [
+      "stock"
+    ],
+    "storage": [
+      "storage"
+    ],
+    "style": [
+      "style"
+    ],
+    "subscription_tier": [
+      "subscription_tier"
+    ],
+    "textarea": [
+      "textarea"
+    ],
+    "to": [
+      "to"
+    ],
+    "transaction_date": [
+      "transaction_date"
+    ],
+    "type": [
+      "type"
+    ],
+    "usd_price": [
+      "usd_price"
+    ],
+    "violation_type": [
+      "violation_type"
+    ],
+    "xss": [
+      "xss"
+    ]
+  }
+}

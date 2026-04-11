@@ -32,6 +32,7 @@ import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
+import { SimpleTest } from '@/SimpleTest';
 
 export default function ServicesPage() {
   const params = useParams();
@@ -708,9 +709,9 @@ export default function ServicesPage() {
         }
       } else {
         // Offline mode - TanStack Query handles this automatically
-        console.log('📴 Offline mode: TanStack Query will queue for later sync');
+        console.log(' Offline mode: TanStack Query will queue for later sync');
         showInfo(t('services.transport_offline_mode', 'Offline mode: Transport trip queued for sync'));
-        console.log(`✅ Transport trip queued for sync: ${service.service_name}`);
+        console.log(` Transport trip queued for sync: ${service.service_name}`);
       }
       
     } catch (error) {
@@ -724,6 +725,9 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header industry={industry} country={country} />
+      
+      {/* Translation Test Component */}
+      <SimpleTest />
 
       <div className="p-4 max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">

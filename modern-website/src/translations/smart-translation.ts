@@ -5,6 +5,12 @@ import essentialTranslations from './essential-translations';
 // Cache-busting timestamp to force refresh translations
 const TRANSLATION_CACHE_BUSTER = Date.now();
 
+// DEBUG: Check if imports are working
+console.log('[DEBUG] universalTranslations loaded:', !!universalTranslations);
+console.log('[DEBUG] universalTranslations keys:', Object.keys(universalTranslations?.universal || {}).length);
+console.log('[DEBUG] industryTranslations loaded:', !!industryTranslations);
+console.log('[DEBUG] essentialTranslations loaded:', !!essentialTranslations);
+
 // Log the number of keys loaded
 console.log(`[TRANSLATION] Universal keys loaded: ${Object.keys(universalTranslations.universal || {}).length}`);
 console.log(`[TRANSLATION] Sample keys:`, Object.keys(universalTranslations.universal || {}).slice(0, 5));
