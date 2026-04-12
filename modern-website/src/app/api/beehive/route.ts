@@ -100,6 +100,9 @@ async function beehiveHandler(request: NextRequest) {
       case 'voteOnRequest':
         const { requestId, voteType } = data;
         
+        // Convert voteType to database format
+        const dbVoteType = voteType === 'up' ? 'upvote' : 'downvote';
+        
         // Validate user_id exists in users table (or set to null if no users table)
         let validVoteUserId = userId;
         
@@ -128,7 +131,7 @@ async function beehiveHandler(request: NextRequest) {
           .single();
 
         if (existingVote) {
-          if (existingVote.vote_type === voteType) {
+          if (existingVote.vote_type === dbVoteType) {
             // Remove vote
             await supabaseAdmin
               .from('beehive_votes')
@@ -153,7 +156,7 @@ async function beehiveHandler(request: NextRequest) {
             // Change vote type
             await supabaseAdmin
               .from('beehive_votes')
-              .update({ vote_type: voteType })
+              .update({ vote_type: dbVoteType })
               .eq('id', existingVote.id);
 
             // Update vote counts
@@ -182,7 +185,7 @@ async function beehiveHandler(request: NextRequest) {
             .insert([{
               request_id: requestId,
               user_id: validVoteUserId,
-              vote_type: voteType
+              vote_type: dbVoteType
             }]);
 
           // Update vote count
@@ -324,6 +327,24 @@ async function beehiveHandler(request: NextRequest) {
         }
 
         return NextResponse.json({ success: true });
+
+      case 'getUserVotes':
+        const { requestIds } = data;
+        
+        // Get user's votes for specific requests
+        let votesQuery = supabaseAdmin
+          .from('beehive_votes')
+          .select('*')
+          .eq('user_id', userId);
+          
+        if (requestIds && requestIds.length > 0) {
+          votesQuery = votesQuery.in('request_id', requestIds);
+        }
+
+        const { data: votes, error: votesError } = await votesQuery;
+
+        if (votesError) throw votesError;
+        return NextResponse.json({ data: votes || [] });
 
       case 'listComments':
         const { requestId: commentsRequestId } = data;

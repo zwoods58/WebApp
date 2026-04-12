@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from 'react';
+import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import BottomSheetContainer from './BottomSheetContainer';
 
 const OrangeColors = {
   primary: '#FF6600',   // Orange - Official Orange Money color
@@ -10,17 +12,22 @@ const OrangeColors = {
 interface CoteDIvoireSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubscribe: (phoneNumber: string, paymentMethod: string, country: string, frequency: string, amount: number, provider?: string) => Promise<void>;
+  userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
-export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscribe }: CoteDIvoireSubscriptionModalProps) {
-  const amount = 1000;
-  const currency = 'XOF';
+export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, userData }: CoteDIvoireSubscriptionModalProps) {
+  const amount = COUNTRY_PAYMENT_METHODS.CI.defaultAmount;
+  const currency = COUNTRY_PAYMENT_METHODS.CI.currency;
   
   const [provider, setProvider] = useState('orange');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [step, setStep] = useState('form');
   const [language, setLanguage] = useState('fr');
+  const [paymentMethod, setPaymentMethod] = useState('mobile_money');
 
   const texts = {
     fr: {
@@ -62,10 +69,31 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
   const handleSubmit = async () => {
     setStep('waiting');
     try {
-      await onSubscribe(`225${phoneNumber.replace(/\s/g, '')}`, 'mobile_money', 'CI', 'weekly', amount, provider);
-      setTimeout(() => setStep('success'), 2000);
-      setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+      // Get plan ID for Côte d'Ivoire
+      const planId = await getPlanIdForCountry('CI', amount);
+      
+      // Create subscription request
+      const subscriptionRequest = {
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: phoneNumber,
+        countryCode: 'CI',
+        planId,
+        paymentMethod: paymentMethod === 'mobile_money' ? provider : paymentMethod
+      };
+
+      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
+      
+      if (response.success && response.authorizationUrl) {
+        // Redirect to payment URL
+        window.location.href = response.authorizationUrl;
+      } else {
+        setTimeout(() => setStep('success'), 2000);
+        setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+      }
     } catch (error) {
+      console.error('Subscription error:', error);
       alert(language === 'fr' ? 'Paiement échoué. Veuillez réessayer.' : 'Payment failed. Please try again.');
       setStep('form');
     }
@@ -74,115 +102,119 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSubscr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
-        
-        <div style={{ backgroundColor: OrangeColors.primary }} className="p-5">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-bold text-white">{t.title}</h2>
-              <p className="text-sm text-orange-100">{t.subtitle}</p>
-            </div>
-            <button 
-              onClick={() => setLanguage(l => l === 'fr' ? 'en' : 'fr')}
-              className="text-sm bg-white/20 px-3 py-1 rounded-full text-white"
-            >
-              {language === 'fr' ? 'English' : 'Français'}
-            </button>
+    <BottomSheetContainer isOpen={isOpen} onClose={onClose} initialHeight="50vh" maxHeight="70vh">
+      
+      {/* Compact Header */}
+      <div style={{ backgroundColor: OrangeColors.primary }} className="-mx-4 -mt-4 px-4 py-3">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-bold text-white">{t.title}</h2>
+            <p className="text-xs text-orange-100">{t.subtitle}</p>
           </div>
-        </div>
-
-        <div className="bg-orange-50 p-3 text-center border-b border-orange-100">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl">\ud83c\udf4a</span>
-            <span className="font-semibold text-orange-800">Orange Money</span>
-            <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Hebdomadaire</span>
-          </div>
-        </div>
-
-        <div className="p-4 sm:p-6 text-center border-b">
-          <div className="text-2xl sm:text-3xl font-bold">{t.price}</div>
-          <div className="text-sm text-gray-500 mt-1">{t.period}</div>
-          <div className="text-xs text-green-600 mt-2">\u2713 Frais inclus</div>
-          <div className="text-xs text-gray-400 mt-1">\u21bb Facturé chaque semaine \u2022 Annulez à tout moment</div>
-        </div>
-
-        {step === 'form' && (
-          <>
-            <div className="p-4 sm:p-6 border-b">
-              <label className="block text-sm font-medium mb-3">{t.providerLabel}</label>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setProvider('orange')}
-                  className={`flex-1 p-4 border rounded-xl text-center transition ${
-                    provider === 'orange' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="text-2xl mb-1">\ud83c\udf4a</div>
-                  <div className="font-semibold">Orange Money</div>
-                  <div className="text-xs text-gray-500">Jusqu'à 1M FCFA</div>
-                </button>
-                <button
-                  onClick={() => setProvider('mtn')}
-                  className={`flex-1 p-4 border rounded-xl text-center transition ${
-                    provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="text-2xl mb-1">\ud83d\udcf1</div>
-                  <div className="font-semibold">MTN MoMo</div>
-                  <div className="text-xs text-gray-500">Paiement instantané</div>
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 border-b">
-              <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
-              <div className="flex">
-                <span className="bg-gray-100 px-4 py-3 rounded-l-xl border text-gray-600">+225</span>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder={t.phonePlaceholder}
-                  className="flex-1 px-4 py-3 border rounded-r-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  required
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-2">{t.phoneHint}</p>
-            </div>
-
-            <div className="p-4 sm:p-6 pt-0">
-              <button
-                onClick={handleSubmit}
-                style={{ backgroundColor: OrangeColors.primary }}
-                className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold transition"
-              >
-                {t.button}
-              </button>
-            </div>
-          </>
-        )}
-
-        {step === 'waiting' && (
-          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-            <p className="font-medium text-gray-900">{t.waiting}</p>
-            <p className="text-sm text-gray-500 mt-1">{t.waitingHint}</p>
-          </div>
-        )}
-
-        {step === 'success' && (
-          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
-            <div className="text-4xl sm:text-5xl mb-4">â</div>
-            <p className="font-medium text-gray-900">{t.success}</p>
-            <p className="text-sm text-gray-500 mt-1">{t.successHint}</p>
-          </div>
-        )}
-
-        <div className="p-4 text-center text-xs text-gray-400 border-t">
-          {t.footer}
+          <button 
+            onClick={() => setLanguage(l => l === 'fr' ? 'en' : 'fr')}
+            className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
+          >
+            {language === 'fr' ? '🇬🇧' : '🇫🇷'}
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Compact Provider Badge */}
+      <div className="bg-orange-50 py-2 px-3 -mx-4 mt-2 border-b border-orange-100">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-lg">🍊</span>
+          <span className="text-sm font-semibold text-orange-800">Orange Money</span>
+          <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Hebdomadaire</span>
+        </div>
+      </div>
+
+      {/* Compact Price Section */}
+      <div className="py-3 text-center border-b">
+        <div className="text-xl font-bold">{t.price}</div>
+        <div className="text-xs text-gray-500 mt-0.5">{t.period}</div>
+        <div className="text-xs text-green-600 mt-1">✓ Frais inclus</div>
+      </div>
+
+      {step === 'form' && (
+        <>
+          {/* Compact Provider Selection */}
+          <div className="py-3 border-b">
+            <label className="block text-sm font-medium mb-2">{t.providerLabel}</label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setProvider('orange')}
+                className={`flex-1 p-3 border rounded-lg text-center transition ${
+                  provider === 'orange' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
+                }`}
+              >
+                <div className="text-lg mb-1">🍊</div>
+                <div className="text-xs font-semibold">Orange</div>
+              </button>
+              <button
+                onClick={() => setProvider('mtn')}
+                className={`flex-1 p-3 border rounded-lg text-center transition ${
+                  provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
+                }`}
+              >
+                <div className="text-lg mb-1">📱</div>
+                <div className="text-xs font-semibold">MTN</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Compact Phone Input */}
+          <div className="py-3 border-b">
+            <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
+            <div className="flex">
+              <span className="bg-gray-100 px-3 py-2.5 rounded-l-lg border text-gray-600 text-sm">+225</span>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder={t.phonePlaceholder}
+                className="flex-1 px-3 py-2.5 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                required
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
+          </div>
+
+          {/* Compact Submit Button */}
+          <div className="py-3">
+            <button
+              onClick={handleSubmit}
+              style={{ backgroundColor: OrangeColors.primary }}
+              className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold text-sm transition h-11"
+            >
+              {t.button}
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Compact Waiting State */}
+      {step === 'waiting' && (
+        <div className="py-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-3"></div>
+          <p className="text-sm font-medium text-gray-900">{t.waiting}</p>
+          <p className="text-xs text-gray-500 mt-1">{t.waitingHint}</p>
+        </div>
+      )}
+
+      {/* Compact Success State */}
+      {step === 'success' && (
+        <div className="py-6 text-center">
+          <div className="text-3xl mb-3">✅</div>
+          <p className="text-sm font-medium text-gray-900">{t.success}</p>
+          <p className="text-xs text-gray-500 mt-1">{t.successHint}</p>
+        </div>
+      )}
+      
+      {/* Compact Footer */}
+      <div className="py-2 text-center text-xs text-gray-400 border-t mt-2">
+        {t.footer}
+      </div>
+    </BottomSheetContainer>
   );
 }

@@ -40,38 +40,45 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-system-blue via-primary-blue to-secondary-blue transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F8F9FA] transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      <div className="text-center">
-        {/* Logo/Icon */}
-        <div className="mb-8 relative">
-          <div className="w-24 h-24 mx-auto relative">
-            <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl transform rotate-3"></div>
-            <div className="absolute inset-0 bg-white rounded-2xl shadow-2xl transform -rotate-3"></div>
-            <div className="relative inset-0 bg-gradient-to-br from-system-blue to-primary-blue rounded-2xl shadow-2xl flex items-center justify-center">
-              <span className="text-white text-4xl font-bold">BZ</span>
-            </div>
+      <div className="text-center flex flex-col items-center justify-between h-full max-h-screen py-12">
+        {/* Top: BeeZee Title */}
+        <div className="flex-1 flex items-center justify-center">
+          <h1 className="text-5xl font-bold text-gray-800">BeeZee</h1>
+        </div>
+
+        {/* Middle: Logo and Tagline */}
+        <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+          {/* BeeZee Logo */}
+          <div className="relative">
+            <img 
+              src="/beezee-icon-192x192.png" 
+              alt="BeeZee Logo" 
+              className="w-48 h-48 object-contain"
+            />
+            {/* Subtle pulse animation */}
+            <div className="absolute inset-0 w-48 h-48 rounded-full bg-system-blue opacity-10 animate-ping"></div>
           </div>
-          
-          {/* Pulse animation */}
-          <div className="absolute inset-0 w-24 h-24 mx-auto rounded-2xl bg-system-blue opacity-20 animate-ping"></div>
+
+          {/* Tagline */}
+          <p className="text-2xl text-gray-600 font-medium">Your digital black book</p>
         </div>
 
-        {/* App Name */}
-        <h1 className="text-4xl font-bold text-white mb-2">BeeZee</h1>
-        <p className="text-white/80 text-sm mb-8">Business Management Solution</p>
+        {/* Bottom: Powered by and Loading */}
+        <div className="flex-1 flex flex-col items-center justify-end space-y-8">
+          {/* Loading dots */}
+          <div className="flex justify-center space-x-2">
+            <div className="w-3 h-3 bg-system-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-3 h-3 bg-system-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-3 h-3 bg-system-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
 
-        {/* Loading dots */}
-        <div className="flex justify-center space-x-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          {/* Powered by */}
+          <p className="text-sm text-gray-500">Powered by AtarWebb</p>
         </div>
-
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
       </div>
     </div>
   );

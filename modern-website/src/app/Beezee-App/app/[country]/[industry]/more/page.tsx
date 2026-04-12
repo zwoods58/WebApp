@@ -120,13 +120,13 @@ export default function MorePage() {
           href: `/Beezee-App/app/${country}/${industry}/settings?from=more`,
           color: 'text-gray-600 bg-gray-50'
         } as LinkMenuItem,
-        {
+        country.toLowerCase() !== 'za' ? {
           icon: Crown,
           label: t('more.subscription', 'Subscription'),
           description: t('more.subscription_description', 'Upgrade to premium features'),
           onClick: () => setShowSubscriptionModal(true),
           color: 'text-teal-600 bg-teal-50'
-        } as ButtonMenuItem
+        } as ButtonMenuItem : null
       ]
     },
     {
@@ -213,7 +213,7 @@ export default function MorePage() {
             </h2>
             
             <div className="glass-card rounded-2xl border border-[var(--border)] divide-y divide-[var(--border-soft)]">
-              {section.items.map((item, itemIndex) => {
+              {section.items.filter(item => item !== null).map((item, itemIndex) => {
                 const content = (
                   <>
                     <div className="flex items-center gap-3">
@@ -229,6 +229,9 @@ export default function MorePage() {
                   </>
                 );
 
+                // Skip null items (for hidden subscription button)
+                if (!item) return null;
+                
                 // Render based on menu item type
                 if ('href' in item) {
                   // LinkMenuItem
@@ -309,68 +312,70 @@ export default function MorePage() {
       {/* Bottom Navigation - Fixed */}
       <BottomNav industry={industry} country={country} />
       
-      {/* Subscription Modal */}
-      <SubscriptionModal 
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-        businessEmail="user@example.com"
-        onSubscribe={async (identifier: string, paymentMethod: string, country: string, frequency: string, amount: number, provider?: string) => {
-          console.log('Subscription initiated:', { identifier, paymentMethod, country, frequency, amount, provider });
-          
-          try {
-            // Map country to plan ID
-            const planIdMap: Record<string, string> = {
-              'ke': 'plan_ke_weekly',
-              'ng': 'plan_ng_weekly', 
-              'za': 'plan_za_weekly',
-              'gh': 'plan_gh_weekly',
-              'ci': 'plan_ci_weekly',
-              'ug': 'plan_ug_weekly',
-              'rw': 'plan_rw_weekly',
-              'tz': 'plan_tz_weekly'
-            };
+      {/* Subscription Modal - Only for Kenya, Ghana, Côte d'Ivoire, and Nigeria */}
+      {country.toLowerCase() !== 'za' && (
+        <SubscriptionModal 
+          isOpen={showSubscriptionModal}
+          onClose={() => setShowSubscriptionModal(false)}
+          businessEmail="user@example.com"
+          onSubscribe={async (identifier: string, paymentMethod: string, country: string, frequency: string, amount: number, provider?: string) => {
+            console.log('Subscription initiated:', { identifier, paymentMethod, country, frequency, amount, provider });
             
-            const planId = planIdMap[country.toLowerCase()];
-            if (!planId) {
-              throw new Error(`No plan found for country: ${country}`);
+            try {
+              // Map country to plan ID
+              const planIdMap: Record<string, string> = {
+                'ke': 'plan_ke_weekly',
+                'ng': 'plan_ng_weekly', 
+                'za': 'plan_za_weekly',
+                'gh': 'plan_gh_weekly',
+                'ci': 'plan_ci_weekly',
+                'ug': 'plan_ug_weekly',
+                'rw': 'plan_rw_weekly',
+                'tz': 'plan_tz_weekly'
+              };
+              
+              const planId = planIdMap[country.toLowerCase()];
+              if (!planId) {
+                throw new Error(`No plan found for country: ${country}`);
+              }
+              
+              // Get business email for customer identification
+              const businessEmail = 'user@example.com'; // Simplified for now - will be enhanced with real user data
+              
+              // Call Kyshi API to create subscription
+              const response = await fetch('/api/kyshi/subscriptions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  customerEmail: businessEmail,
+                  planId: planId,
+                  paymentDetails: {
+                    identifier,
+                    paymentMethod,
+                    provider,
+                    country,
+                    amount
+                  }
+                })
+              });
+              
+              const result = await response.json();
+              
+              if (!result.success) {
+                throw new Error(result.message || 'Subscription creation failed');
+              }
+              
+              console.log('Kyshi subscription created:', result.subscription);
+              
+            } catch (error) {
+              console.error('Subscription creation failed:', error);
+              throw error;
             }
-            
-            // Get business email for customer identification
-            const businessEmail = 'user@example.com'; // Simplified for now - will be enhanced with real user data
-            
-            // Call Kyshi API to create subscription
-            const response = await fetch('/api/kyshi/subscriptions', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                customerEmail: businessEmail,
-                planId: planId,
-                paymentDetails: {
-                  identifier,
-                  paymentMethod,
-                  provider,
-                  country,
-                  amount
-                }
-              })
-            });
-            
-            const result = await response.json();
-            
-            if (!result.success) {
-              throw new Error(result.message || 'Subscription creation failed');
-            }
-            
-            console.log('Kyshi subscription created:', result.subscription);
-            
-          } catch (error) {
-            console.error('Subscription creation failed:', error);
-            throw error;
-          }
-        }}
-      />
+          }}
+        />
+      )}
     </div>
   );
 }

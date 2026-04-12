@@ -49,8 +49,14 @@ export interface CreatePlanRequest {
 }
 
 export interface CreateSubscriptionRequest {
-  customer: string; // customer ID or email
-  plan: string; // plan ID
+  customer: string; // customer email
+  planCode: string; // plan code from Kyshi
+  country?: string; // customer country code (e.g., 'KE', 'GH', 'NG', 'CI')
+  metadata?: {
+    country?: string;
+    payment_channels?: string[];
+    [key: string]: any;
+  };
 }
 
 export interface KyshiApiResponse<T> {
@@ -65,8 +71,8 @@ class KyshiApiClient {
   private secretKey: string;
 
   constructor() {
-    // According to docs: https://api.kyshi.co for live, remove /v1 from URL
-    this.baseUrl = process.env.KYSHI_BASE_URL || 'https://kyshi-mor-dev-qkuod6snia-nw.a.run.app/api';
+    // Official Kyshi API endpoint
+    this.baseUrl = process.env.KYSHI_BASE_URL || 'https://api.kyshi.co/v1';
     this.secretKey = process.env.KYSHI_SECRET_KEY || '';
     
     // Only throw error in runtime, not during build
@@ -81,6 +87,17 @@ class KyshiApiClient {
   ): Promise<KyshiApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
     
+    // Debug logging for authentication issues
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Kyshi API] Request:', {
+        url,
+        method: options.method || 'GET',
+        hasApiKey: !!this.secretKey,
+        apiKeyLength: this.secretKey?.length || 0,
+        apiKeyPrefix: this.secretKey?.substring(0, 8) || 'MISSING'
+      });
+    }
+    
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -92,6 +109,12 @@ class KyshiApiClient {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('[Kyshi API] Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url,
+        errorText
+      });
       throw new Error(`Kyshi API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
@@ -136,6 +159,11 @@ class KyshiApiClient {
     lastName?: string;
     phoneNumber?: string;
     currencyCode?: string;
+    country?: string; // Add country field
+    metadata?: {
+      country?: string;
+      [key: string]: any;
+    };
   }): Promise<KyshiCustomer> {
     const response = await this.makeRequest<KyshiCustomer>('/customers', {
       method: 'POST',

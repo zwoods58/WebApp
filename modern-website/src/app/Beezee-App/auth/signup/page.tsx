@@ -175,9 +175,9 @@ function BeezeeSignupContent() {
   };
 
   return (
-    <div className="h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
+    <div className="min-h-screen h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
       {/* Compact logo at top */}
-      <div className="flex justify-center items-center pt-8 pb-2 flex-shrink-0">
+      <div className="flex justify-center items-center pt-4 sm:pt-8 pb-2 flex-shrink-0">
         <div className="relative">
           <Image
             src="/beezee-icon-192x192.png"
@@ -212,13 +212,15 @@ function BeezeeSignupContent() {
         </div>
       )}
 
-      {/* Main content - no scrolling */}
-      <div className="flex-1 container mx-auto px-6 pb-6 flex items-center">
-        <div
-          key={currentStep}
-          className="max-w-md mx-auto w-full fade-in"
-        >
-          {renderStep()}
+      {/* Main content - scrollable on small screens, centered on larger ones */}
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="min-h-full container mx-auto px-4 sm:px-6 pb-6 flex flex-col justify-center">
+          <div
+            key={currentStep}
+            className="max-w-md mx-auto w-full fade-in py-2"
+          >
+            {renderStep()}
+          </div>
         </div>
       </div>
 
@@ -372,7 +374,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
       </div>
 
       <div
-        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
         style={{ animationDelay: '0.1s' }}
       >
         <div className="space-y-4">

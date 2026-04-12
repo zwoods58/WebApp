@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from 'react';
+import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import BottomSheetContainer from './BottomSheetContainer';
 
 const MpesaColors = {
   primary: '#1B5E20',  // Dark Green - Official M-Pesa color
@@ -11,46 +13,52 @@ const MpesaColors = {
 interface KenyaSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubscribe: (phoneNumber: string, paymentMethod: string, country: string, frequency: string, amount: number) => Promise<void>;
+  userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
-export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }: KenyaSubscriptionModalProps) {
-  const amount = 200;
-  const currency = 'KES';
+export default function KenyaSubscriptionModal({ isOpen, onClose, userData }: KenyaSubscriptionModalProps) {
+  const amount = COUNTRY_PAYMENT_METHODS.KE.defaultAmount;
+  const currency = COUNTRY_PAYMENT_METHODS.KE.currency;
   
   const [phoneNumber, setPhoneNumber] = useState('');
   const [step, setStep] = useState('form');
   const [language, setLanguage] = useState('en');
+  const [paymentMethod, setPaymentMethod] = useState('mobile_money');
+  const [mobileProvider, setMobileProvider] = useState('m-pesa');
 
   const texts = {
     en: {
       title: 'Lipa na M-Pesa',
       subtitle: 'Powered by Kyshi',
-      price: 'KES 200',
+      price: `KES ${amount}`,
       period: 'weekly subscription \u2022 auto-renews every 7 days',
       phoneLabel: 'M-Pesa Phone Number',
       phonePlaceholder: '712 345 678',
       phoneHint: 'You will receive an STK Push on this number',
-      button: 'Pay KES 200',
+      button: `Pay KES ${amount}`,
       waiting: 'Check your phone',
       waitingHint: 'Enter your M-Pesa PIN to complete',
       success: 'Weekly subscription activated!',
-      successHint: 'You will be charged KES 200 every 7 days',
+      successHint: `You will be charged KES ${amount} every 7 days`,
       footer: 'Secured by Kyshi \u2022 Protected by Safaricom'
     },
     sw: {
       title: 'Lipa kwa M-Pesa',
       subtitle: 'Inaendeshwa na Kyshi',
-      price: 'KES 200',
+      price: `KES ${amount}`,
       period: 'usajili wa kila wiki \u2022 hujirudia kila siku 7',
       phoneLabel: 'Nambari ya Simu ya M-Pesa',
       phonePlaceholder: '712 345 678',
       phoneHint: 'Utapokea STK Push kwenye nambari hii',
-      button: 'Lipia KES 200',
+      button: `Lipia KES ${amount}`,
       waiting: 'Angalia simu yako',
       waitingHint: 'Weka PIN yako ya M-Pesa kukamilisha',
       success: 'Usajili wa wiki umeanzishwa!',
-      successHint: 'Utatozwa KES 200 kila baada ya siku 7',
+      successHint: `Utatozwa KES ${amount} kila baada ya siku 7`,
       footer: 'Imelindwa na Kyshi \u2022 Safaricom'
     }
   };
@@ -61,10 +69,31 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }:
     e.preventDefault();
     setStep('waiting');
     try {
-      await onSubscribe(`254${phoneNumber}`, 'mpesa', 'KE', 'weekly', amount);
-      setTimeout(() => setStep('success'), 2000);
-      setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+      // Get plan ID for Kenya
+      const planId = await getPlanIdForCountry('KE', amount);
+      
+      // Create subscription request
+      const subscriptionRequest = {
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: `254${phoneNumber}`,
+        countryCode: 'KE',
+        planId,
+        paymentMethod: paymentMethod === 'mobile_money' ? mobileProvider : paymentMethod
+      };
+
+      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
+      
+      if (response.success && response.authorizationUrl) {
+        // Redirect to payment URL
+        window.location.href = response.authorizationUrl;
+      } else {
+        setTimeout(() => setStep('success'), 2000);
+        setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+      }
     } catch (error) {
+      console.error('Subscription error:', error);
       alert('Payment failed. Please try again.');
       setStep('form');
     }
@@ -73,87 +102,148 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSubscribe }:
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] shadow-xl overflow-hidden flex flex-col">
-        
-        <div style={{ backgroundColor: MpesaColors.primary }} className="p-5">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-bold text-white">{t.title}</h2>
-              <p className="text-sm text-green-200">{t.subtitle}</p>
-            </div>
-            <button 
-              onClick={() => setLanguage(l => l === 'en' ? 'sw' : 'en')}
-              className="text-sm bg-white/20 px-3 py-1 rounded-full text-white"
-            >
-              {language === 'en' ? 'Kiswahili' : 'English'}
-            </button>
+    <BottomSheetContainer isOpen={isOpen} onClose={onClose} initialHeight="55vh" maxHeight="75vh">
+      
+      {/* Compact Header */}
+      <div style={{ backgroundColor: MpesaColors.primary }} className="-mx-4 -mt-4 px-4 py-3">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-lg font-bold text-white">{t.title}</h2>
+            <p className="text-xs text-green-100">{t.subtitle}</p>
           </div>
-        </div>
-
-        <div className="bg-green-50 p-3 text-center border-b border-green-100">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl">\ud83d\udcf1</span>
-            <span className="font-semibold text-green-800">Lipa na M-Pesa</span>
-            <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Weekly</span>
-          </div>
-        </div>
-
-        <div className="p-4 sm:p-6 text-center border-b">
-          <div className="text-2xl sm:text-3xl font-bold">{t.price}</div>
-          <div className="text-sm text-gray-500 mt-1">{t.period}</div>
-          <div className="text-xs text-green-600 mt-2">\u2713 VAT included \u2022 No hidden fees</div>
-          <div className="text-xs text-gray-400 mt-1">\u21bb Billed every 7 days \u2022 Cancel anytime</div>
-        </div>
-
-        {step === 'form' && (
-          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5 flex-1 overflow-y-auto">
-            <div>
-              <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
-              <div className="flex">
-                <span className="bg-gray-100 px-4 py-3 rounded-l-xl border border-r-0 text-gray-600">+254</span>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                  placeholder={t.phonePlaceholder}
-                  className="flex-1 px-4 py-3 border rounded-r-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-2">{t.phoneHint}</p>
-            </div>
-
-            <button
-              type="submit"
-              style={{ backgroundColor: MpesaColors.primary }}
-              className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold text-lg transition"
-            >
-              {t.button}
-            </button>
-          </form>
-        )}
-
-        {step === 'waiting' && (
-          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <p className="font-medium text-gray-900">{t.waiting}</p>
-            <p className="text-sm text-gray-500 mt-1">{t.waitingHint}</p>
-          </div>
-        )}
-
-        {step === 'success' && (
-          <div className="p-6 sm:p-8 text-center flex-1 flex flex-col justify-center">
-            <div className="text-4xl sm:text-5xl mb-4">\u2705</div>
-            <p className="font-medium text-gray-900">{t.success}</p>
-            <p className="text-sm text-gray-500 mt-1">{t.successHint}</p>
-          </div>
-        )}
-
-        <div className="p-4 text-center text-xs text-gray-400 border-t">
-          {t.footer}
+          <button 
+            onClick={() => setLanguage(l => l === 'en' ? 'sw' : 'en')}
+            className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
+          >
+            {language === 'en' ? '🇰🇪' : '🇬🇧'}
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Compact Provider Badge */}
+      <div className="bg-green-50 py-2 px-3 -mx-4 mt-2 border-b border-green-100">
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-lg">📱</span>
+          <span className="text-sm font-semibold text-green-800">Lipa na M-Pesa</span>
+          <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Weekly</span>
+        </div>
+      </div>
+
+      {/* Compact Price Section */}
+      <div className="py-3 text-center border-b">
+        <div className="text-xl font-bold">{t.price}</div>
+        <div className="text-xs text-gray-500 mt-0.5">{t.period}</div>
+        <div className="text-xs text-green-600 mt-1">✓ VAT included • No hidden fees</div>
+      </div>
+
+      {step === 'form' && (
+        <form onSubmit={handleSubmit} className="space-y-4 mt-3">
+          {/* Compact Payment Method Selection */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Payment method</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('mobile_money')}
+                className={`flex-1 p-2 border rounded-lg text-center transition ${
+                  paymentMethod === 'mobile_money' 
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-200'
+                }`}
+              >
+                <div className="text-base mb-0.5">📱</div>
+                <div className="text-xs font-medium">Mobile</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('card')}
+                className={`flex-1 p-2 border rounded-lg text-center transition ${
+                  paymentMethod === 'card' 
+                    ? 'border-green-500 bg-green-50' 
+                    : 'border-gray-200'
+                }`}
+              >
+                <div className="text-base mb-0.5">💳</div>
+                <div className="text-xs font-medium">Card</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Compact Mobile Provider Selection */}
+          {paymentMethod === 'mobile_money' && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Mobile provider</label>
+              <div className="flex gap-2">
+                {['m-pesa', 'airtel_money', 't-kash'].map(provider => (
+                  <button
+                    key={provider}
+                    type="button"
+                    onClick={() => setMobileProvider(provider)}
+                    className={`flex-1 p-2 border rounded-lg text-center transition ${
+                      mobileProvider === provider 
+                        ? 'border-green-500 bg-green-50' 
+                        : 'border-gray-200'
+                    }`}
+                  >
+                    <div className="text-xs font-medium capitalize">
+                      {provider.replace('_', ' ').replace('money', '')}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Compact Phone Input */}
+          <div>
+            <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
+            <div className="flex">
+              <span className="bg-gray-100 px-3 py-2.5 rounded-l-lg border border-r-0 text-gray-600 text-sm">+254</span>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                placeholder={t.phonePlaceholder}
+                className="flex-1 px-3 py-2.5 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                required
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
+          </div>
+
+          {/* Compact Submit Button */}
+          <button
+            type="submit"
+            style={{ backgroundColor: MpesaColors.primary }}
+            className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold text-sm transition h-11"
+          >
+            {t.button}
+          </button>
+        </form>
+      )}
+
+      {/* Compact Waiting State */}
+      {step === 'waiting' && (
+        <div className="py-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-3"></div>
+          <p className="text-sm font-medium text-gray-900">{t.waiting}</p>
+          <p className="text-xs text-gray-500 mt-1">{t.waitingHint}</p>
+        </div>
+      )}
+
+      {/* Compact Success State */}
+      {step === 'success' && (
+        <div className="py-6 text-center">
+          <div className="text-3xl mb-3">✅</div>
+          <p className="text-sm font-medium text-gray-900">{t.success}</p>
+          <p className="text-xs text-gray-500 mt-1">{t.successHint}</p>
+        </div>
+      )}
+      
+      {/* Compact Footer */}
+      <div className="py-2 text-center text-xs text-gray-400 border-t mt-2">
+        {t.footer}
+      </div>
+    </BottomSheetContainer>
   );
 }

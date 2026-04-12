@@ -6,7 +6,7 @@
   "display": "standalone",
   "display_override": ["standalone"],
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#F8F9FA",
   "orientation": "portrait-primary",
   "scope": "/Beezee-App/",
   "id": "/Beezee-App/",

@@ -34,7 +34,8 @@ import {
   DashboardSkeleton,
   HomepageCalendar,
   PageLoading,
-  OfflineFallback
+  OfflineFallback,
+  ShareBanner
 } from '@/components/universal';
 
 // Dynamic imports for modal components to reduce initial bundle size
@@ -382,10 +383,10 @@ export default function IndustryDashboard() {
     
     if (!business) {
       if (!isOnline) {
-        console.log('� Offline - skipping auth redirect');
+        console.log('🔌 Offline - skipping auth redirect');
         return;
       }
-      console.log('�🔓 User not authenticated, redirecting to login');
+      console.log('🔓 User not authenticated, redirecting to login');
       router.replace('/Beezee-App/auth/login');
       return;
     }
@@ -452,11 +453,7 @@ export default function IndustryDashboard() {
     );
   }
   
-  // All hooks have been called above - safe to render now
-
-  
   // Helper functions for BuzzInsights data
-
   const calculateAverageOverdueDays = (overdueCredits: any[]) => {
     if (!overdueCredits || overdueCredits.length === 0) return 0;
     
@@ -467,9 +464,6 @@ export default function IndustryDashboard() {
     
     return Math.round(totalDays / overdueCredits.length);
   };
-
-  
-  // handleRefresh moved above to fix initialization order
 
   // Modal handlers for homepage quick actions
   const handleAddAppointment = () => {
@@ -497,16 +491,19 @@ export default function IndustryDashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-        {/* Header */}
-        <Header industry={industry} country={country} />
+      {/* Header */}
+      <Header industry={industry} country={country} />
 
-        {/* Main Content - Dynamic scrolling */}
-        <main className="flex-1">
-          <div className="pt-12 p-5 space-y-5 max-w-md mx-auto pb-20">
+      {/* Main Content - Dynamic scrolling */}
+      <main className="flex-1">
+        <div className="pt-12 p-5 space-y-5 max-w-md mx-auto pb-20">
           {isLoading ? (
             <DashboardSkeleton />
           ) : (
             <>
+              {/* Share Banner - Between Header and Daily Target */}
+              <ShareBanner industry={industry} country={country} />
+
               {/* Daily Target - Universal */}
               <div className="daily-target-section">
                 <DailyTarget 
@@ -538,134 +535,132 @@ export default function IndustryDashboard() {
                 </div>
               )}
 
-        {/* Buzz Insights - Business Intelligence */}
-        <div className="buzz-section">
-          <BuzzInsights
-            country={country}
-            industry={industry}
-          lowStockItems={safeInventory
-            ? safeInventory.filter((item: Inventory) => item.threshold !== undefined && item.quantity <= item.threshold)
-                .map((item: Inventory) => ({
-                  item_name: item.item_name,
-                  quantity: item.quantity,
-                  threshold: item.threshold!
-                }))
-            : []}
-          overdueCredit={{
-            count: safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date()).length : 0,
-            amount: safeCredit ? safeCredit
-              .filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date())
-              .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0,
-            avgDays: calculateAverageOverdueDays(
-                safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date()) : []
-              )
-          }}
-          topSellers={calculateTopSellers(safeTransactions, safeInventory)}
-          transactions={safeTransactions}
-          cashData={{
-            todayIn: todayStats?.sales || 0,
-            todayOut: todayStats?.expenses || 0,
-            profit: (todayStats?.sales || 0) - (todayStats?.expenses || 0)
-          }}
-          inventoryData={{
-            totalItems: safeInventory ? safeInventory.length : 0,
-            lowStock: safeInventory ? safeInventory.filter((item: Inventory) => item.threshold !== undefined && item.quantity <= item.threshold).length : 0,
-            totalValue: safeInventory ? safeInventory.reduce((sum: number, item: Inventory) => sum + (item.quantity * (item.selling_price || 0)), 0) : 0
-          }}
-          creditData={{
-            outstandingCount: safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid').length : 0,
-            totalOwed: safeCredit ? safeCredit
-              .filter((c: any) => c.status !== 'paid')
-              .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0,
-            overdueAmount: safeCredit ? safeCredit
-              .filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date())
-              .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0
-          }}
-          transportData={industry === 'transport' ? analyzeTransportTransactions(safeTransactions) : undefined}
-          />
-        </div>
+              {/* Buzz Insights - Business Intelligence */}
+              <div className="buzz-section">
+                <BuzzInsights
+                  country={country}
+                  industry={industry}
+                  lowStockItems={safeInventory
+                    ? safeInventory.filter((item: Inventory) => item.threshold !== undefined && item.quantity <= item.threshold)
+                        .map((item: Inventory) => ({
+                          item_name: item.item_name,
+                          quantity: item.quantity,
+                          threshold: item.threshold!
+                        }))
+                    : []}
+                  overdueCredit={{
+                    count: safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date()).length : 0,
+                    amount: safeCredit ? safeCredit
+                      .filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date())
+                      .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0,
+                    avgDays: calculateAverageOverdueDays(
+                        safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date()) : []
+                      )
+                  }}
+                  topSellers={calculateTopSellers(safeTransactions, safeInventory)}
+                  transactions={safeTransactions}
+                  cashData={{
+                    todayIn: todayStats?.sales || 0,
+                    todayOut: todayStats?.expenses || 0,
+                    profit: (todayStats?.sales || 0) - (todayStats?.expenses || 0)
+                  }}
+                  inventoryData={{
+                    totalItems: safeInventory ? safeInventory.length : 0,
+                    lowStock: safeInventory ? safeInventory.filter((item: Inventory) => item.threshold !== undefined && item.quantity <= item.threshold).length : 0,
+                    totalValue: safeInventory ? safeInventory.reduce((sum: number, item: Inventory) => sum + (item.quantity * (item.selling_price || 0)), 0) : 0
+                  }}
+                  creditData={{
+                    outstandingCount: safeCredit ? safeCredit.filter((c: any) => c.status !== 'paid').length : 0,
+                    totalOwed: safeCredit ? safeCredit
+                      .filter((c: any) => c.status !== 'paid')
+                      .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0,
+                    overdueAmount: safeCredit ? safeCredit
+                      .filter((c: any) => c.status !== 'paid' && new Date(c.due_date || '') < new Date())
+                      .reduce((sum: number, c: any) => sum + (c.status === 'partial' ? c.amount - (c.paid_amount || 0) : c.amount), 0) : 0
+                  }}
+                  transportData={industry === 'transport' ? analyzeTransportTransactions(safeTransactions) : undefined}
+                />
+              </div>
 
-        
-        {/* Industry-Specific Lists */}
-        <div className="space-y-5">
-          {/* Customer List - All Industries */}
-          <CustomerList
-            industry={industry}
-            country={country}
-            customers={credit}
-            onViewAll={() => window.location.href = `/Beezee-App/app/${country}/${industry}/credit`}
-            onAddCustomer={() => setShowCustomerModal(true)}
-          />
+              {/* Industry-Specific Lists */}
+              <div className="space-y-5">
+                {/* Customer List - All Industries */}
+                <CustomerList
+                  industry={industry}
+                  country={country}
+                  customers={credit}
+                  onViewAll={() => window.location.href = `/Beezee-App/app/${country}/${industry}/credit`}
+                  onAddCustomer={() => setShowCustomerModal(true)}
+                />
 
-          {/* Appointment List - Calendar Industries */}
-          {['salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
-            <AppointmentList
-              industry={industry}
-              country={country}
-              appointments={appointments}
-              onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
-              onScheduleAppointment={handleAddAppointment}
-            />
-          )}
+                {/* Appointment List - Calendar Industries */}
+                {['salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
+                  <AppointmentList
+                    industry={industry}
+                    country={country}
+                    appointments={appointments}
+                    onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
+                    onScheduleAppointment={handleAddAppointment}
+                  />
+                )}
 
-          {/* Service List - Service Industries */}
-          {['transport', 'salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
-            <ServiceList
-              industry={industry}
-              country={country}
-              services={services}
-              onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
-              onAddService={handleAddService}
-            />
-          )}
-        </div>
+                {/* Service List - Service Industries */}
+                {['transport', 'salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
+                  <ServiceList
+                    industry={industry}
+                    country={country}
+                    services={services}
+                    onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
+                    onAddService={handleAddService}
+                  />
+                )}
+              </div>
 
-        {/* Inventory List - Universal */}
-        <div className="inventory-section">
-          <InventoryList 
-            industry={industry}
-            country={country}
-            items={safeInventory.map((item: Inventory) => ({
-              id: item.id,
-              item_name: item.item_name,
-              quantity: item.quantity,
-              threshold: item.threshold ?? 0,
-              unit: '', // Unit doesn't exist in new interface, default to empty string
-              cost_price: item.cost_price,
-              selling_price: item.selling_price
-            }))} 
-          />
-        </div>
+              {/* Inventory List - Universal */}
+              <div className="inventory-section">
+                <InventoryList 
+                  industry={industry}
+                  country={country}
+                  items={safeInventory.map((item: Inventory) => ({
+                    id: item.id,
+                    item_name: item.item_name,
+                    quantity: item.quantity,
+                    threshold: item.threshold ?? 0,
+                    unit: '', // Unit doesn't exist in new interface, default to empty string
+                    cost_price: item.cost_price,
+                    selling_price: item.selling_price
+                  }))} 
+                />
+              </div>
             </>
           )}
         </div>
-        </main>
+      </main>
 
-        {/* Bottom Nav - Universal */}
-        <BottomNav industry={industry} country={country} />
+      {/* Bottom Nav - Universal */}
+      <BottomNav industry={industry} country={country} />
 
-        {/* Modals for Quick Actions */}
-        {showCustomerModal && (
-          <AddCustomerModal
-            isOpen={showCustomerModal}
-            onClose={() => setShowCustomerModal(false)}
-            onAddCustomer={handleAddCustomer}
-            country={country}
-            industry={industry}
-          />
-        )}
+      {/* Modals for Quick Actions */}
+      {showCustomerModal && (
+        <AddCustomerModal
+          isOpen={showCustomerModal}
+          onClose={() => setShowCustomerModal(false)}
+          onAddCustomer={handleAddCustomer}
+          country={country}
+          industry={industry}
+        />
+      )}
 
-
-        {showServiceModal && (
-          <EditServiceModal
-            isOpen={showServiceModal}
-            onClose={() => setShowServiceModal(false)}
-            onUpdate={handleUpdateService}
-            isAddMode={true}
-            country={country}
-            industry={industry}
-          />
-        )}
+      {showServiceModal && (
+        <EditServiceModal
+          isOpen={showServiceModal}
+          onClose={() => setShowServiceModal(false)}
+          onUpdate={handleUpdateService}
+          isAddMode={true}
+          country={country}
+          industry={industry}
+        />
+      )}
     </div>
   );
 }

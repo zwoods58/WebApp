@@ -335,7 +335,7 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
         <div className="space-y-3 mb-4">
           
             {comments.map((comment) => (
-              <div class="fade-in">
+              <div key={comment.id} className="fade-in">
                 <div className="flex items-start justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs">

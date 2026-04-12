@@ -69,6 +69,38 @@ export default function BeehivePage() {
   const [myVotes, setMyVotes] = useState<any[]>([]);
   const loading = isLoading;
   
+  // Fetch user votes when component mounts or when requests change
+  useEffect(() => {
+    const fetchUserVotes = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const response = await fetch('/api/beehive', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'getUserVotes',
+            userId: user.id,
+            data: { requestIds: requests.map(r => r.id) }
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setMyVotes(result.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching user votes:', error);
+      }
+    };
+
+    if (requests.length > 0) {
+      fetchUserVotes();
+    }
+  }, [user?.id, requests]);
+  
   // Simple online/offline status using TanStack Query
   const [isOnline, setIsOnline] = useState(true);
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -101,6 +133,27 @@ export default function BeehivePage() {
         throw new Error(error.error || 'Failed to vote');
       }
 
+      // Update local votes state immediately for better UX
+      const existingVoteIndex = myVotes.findIndex(v => v.request_id === requestId);
+      const existingVote = existingVoteIndex >= 0 ? myVotes[existingVoteIndex] : null;
+      
+      let updatedVotes;
+      if (existingVote) {
+        if (existingVote.vote_type === (voteType === 'up' ? 'upvote' : 'downvote')) {
+          // Remove vote
+          updatedVotes = myVotes.filter((_, index) => index !== existingVoteIndex);
+        } else {
+          // Change vote type
+          updatedVotes = [...myVotes];
+          updatedVotes[existingVoteIndex] = { ...existingVote, vote_type: voteType === 'up' ? 'upvote' : 'downvote' };
+        }
+      } else {
+        // Add new vote
+        updatedVotes = [...myVotes, { request_id: requestId, vote_type: voteType === 'up' ? 'upvote' : 'downvote' }];
+      }
+      
+      setMyVotes(updatedVotes);
+
       // Refresh requests to get updated vote counts
       await refetchRequests();
       showSuccess('Vote recorded successfully');
@@ -114,7 +167,7 @@ export default function BeehivePage() {
     const vote = myVotes.find(v => v.request_id === requestId);
     return {
       voted: !!vote,
-      voteType: vote?.vote_type || null
+      voteType: vote?.vote_type === 'upvote' ? 'up' : vote?.vote_type === 'downvote' ? 'down' : null
     };
   };
 
@@ -280,17 +333,17 @@ export default function BeehivePage() {
         </div>
 
         {/* Requests List */}
-        <div className="fade-in mt-8">
+        <div className="fade-in mt-8 space-y-4">
           {filteredRequests.map((request: BeehiveRequest, index: number) => {
             const userVote = getUserVote(request.id);
             const timeAgo = new Date(request.created_at).toLocaleDateString();
             
             return (
-              <div className="fade-in">
+              <div key={request.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
-                      👤
+                      ?
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">{t('beehive.community_member', 'Community Member')}</div>
@@ -364,13 +417,15 @@ export default function BeehivePage() {
 
                 {/* Comments Section */}
                 {expandedComments === request.id && (
-                  <BeehiveComments
-                    requestId={request.id}
-                    onCommentAdded={() => {
-                      console.log('🔄 Refreshing beehive data after comment added');
-                      refetchRequests();
-                    }}
-                  />
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <BeehiveComments
+                      requestId={request.id}
+                      onCommentAdded={() => {
+                        console.log('?? Refreshing beehive data after comment added');
+                        refetchRequests();
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             );
