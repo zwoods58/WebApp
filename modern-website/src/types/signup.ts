@@ -5,6 +5,7 @@ export interface SignupData {
   name: string;
   businessName: string;
   phoneNumber: string;
+  email: string;
   dailyTarget: number;
   currency: string; // Country currency (KES, ZAR, NGN, etc.)
   businessId?: string; // Unique business ID in format COUNTRY-INDUSTRY-7DIGIT

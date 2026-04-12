@@ -99,6 +99,7 @@ async function signupHandler(request: NextRequest) {
     // Prepare business data for database insertion
     const businessData: any = {
       phone_number: userData.phoneNumber,
+      email: userData.email,
       business_name: userData.businessName || `${userData.name}'s Business`,
       country: userData.country.toUpperCase(),
       industry: userData.industry,

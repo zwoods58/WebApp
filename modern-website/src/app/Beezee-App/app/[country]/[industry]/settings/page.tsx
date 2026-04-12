@@ -75,7 +75,7 @@ export default function SettingsPage() {
     if (business) {
       setEditedProfile({
         businessName: business?.business_name || '',
-        email: '',
+        email: business?.email || '',
         phoneNumber: business?.phone_number || '',
         industry: business?.industry || industry,
         country: business?.country || country.toUpperCase()
@@ -108,7 +108,7 @@ export default function SettingsPage() {
     if (business) {
       setEditedProfile({
         businessName: business?.business_name || '',
-        email: '',
+        email: business?.email || '',
         phoneNumber: business?.phone_number || '',
         industry: business?.industry || industry,
         country: business?.country || country.toUpperCase()
@@ -676,7 +676,7 @@ export default function SettingsPage() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">{t('settings.email', 'Email')}:</span>
-              <span className="text-gray-900">{'user@example.com'}</span>
+              <span className="text-gray-900">{business?.email || 'user@example.com'}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">{t('settings.phone', 'Phone')}:</span>

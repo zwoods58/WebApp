@@ -10,6 +10,7 @@ import { getNetworkStatus, testInternetConnectivity } from '@/lib/network-status
 export interface Business {
   id: string;
   phone_number: string;
+  email: string;
   business_name: string;
   country: string;
   industry: string;

@@ -276,23 +276,10 @@ export default function Login() {
   }
 
   return (
-    <div className="h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
-      {/* Compact logo at top */}
-      <div className="flex justify-center items-center pt-8 pb-2 flex-shrink-0">
-        <div className="relative">
-          <Image
-            src="/beezee-icon-192x192.png"
-            alt="BeeZee Icon"
-            width={64}
-            height={64}
-            className="rounded-xl shadow-lg"
-            priority
-          />
-        </div>
-      </div>
+    <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* Main content - no scrolling */}
-      <div className="flex-1 container mx-auto px-6 pb-6 flex items-center">
+      {/* Main content - content at bottom */}
+      <div className="flex-1 container mx-auto px-6 pb-6 flex flex-col justify-end">
         <div className="max-w-md mx-auto w-full">
           {/* Phone Step */}
           {loginStep === 'phone' && (

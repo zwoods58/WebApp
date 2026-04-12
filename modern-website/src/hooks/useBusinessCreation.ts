@@ -43,6 +43,7 @@ export function useBusinessCreation() {
       // Prepare business data with PIN for server-side hashing
       const businessData = {
         phoneNumber: signupData.phoneNumber,
+        email: signupData.email, // ADDED: Include email field for validation and database
         businessName: signupData.businessName || signupData.name + "'s Business",
         country: signupData.country.toUpperCase(),
         industry: signupData.industry,

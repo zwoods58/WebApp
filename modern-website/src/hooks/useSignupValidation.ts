@@ -90,6 +90,18 @@ const VALIDATION_RULES: ValidationRules = {
       return null;
     }
   },
+  email: {
+    required: true,
+    minLength: 5,
+    maxLength: 255,
+    custom: (value: string) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value.trim())) {
+        return 'Please enter a valid email address.';
+      }
+      return null;
+    }
+  },
   dailyTarget: {
     required: false,
     custom: (value: number) => {
@@ -198,12 +210,10 @@ export function useSignupValidation() {
     const stepFields: { [key: number]: (keyof SignupData)[] } = {
       1: [], // Welcome step - no validation needed
       2: ['country'],
-      3: ['industry'],
-      4: ['industrySector'],
-      5: ['name', 'phoneNumber'], // businessName is optional
-      6: ['pin'], // PIN setup step
-      7: ['dailyTarget'], // Daily target step
-      8: [] // Account summary - no validation needed
+      3: ['name', 'phoneNumber', 'email'], // Basic info step
+      4: ['pin'], // Security setup step (PIN + security questions)
+      5: ['dailyTarget'], // Daily target step
+      6: [] // Account summary - no validation needed
     };
 
     const fieldsToValidate = stepFields[step] || [];

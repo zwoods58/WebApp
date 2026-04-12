@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
-import BottomSheetContainer from './BottomSheetContainer';
+import { X } from 'lucide-react';
 
 const OrangeColors = {
   primary: '#FF6600',   // Orange - Official Orange Money color
@@ -102,119 +102,139 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, userData
   if (!isOpen) return null;
 
   return (
-    <BottomSheetContainer isOpen={isOpen} onClose={onClose} initialHeight="50vh" maxHeight="70vh">
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300"
+        onClick={onClose}
+      />
       
-      {/* Compact Header */}
-      <div style={{ backgroundColor: OrangeColors.primary }} className="-mx-4 -mt-4 px-4 py-3">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-lg font-bold text-white">{t.title}</h2>
-            <p className="text-xs text-orange-100">{t.subtitle}</p>
-          </div>
-          <button 
-            onClick={() => setLanguage(l => l === 'fr' ? 'en' : 'fr')}
-            className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
-          >
-            {language === 'fr' ? '🇬🇧' : '🇫🇷'}
-          </button>
-        </div>
-      </div>
-
-      {/* Compact Provider Badge */}
-      <div className="bg-orange-50 py-2 px-3 -mx-4 mt-2 border-b border-orange-100">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-lg">🍊</span>
-          <span className="text-sm font-semibold text-orange-800">Orange Money</span>
-          <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Hebdomadaire</span>
-        </div>
-      </div>
-
-      {/* Compact Price Section */}
-      <div className="py-3 text-center border-b">
-        <div className="text-xl font-bold">{t.price}</div>
-        <div className="text-xs text-gray-500 mt-0.5">{t.period}</div>
-        <div className="text-xs text-green-600 mt-1">✓ Frais inclus</div>
-      </div>
-
-      {step === 'form' && (
-        <>
-          {/* Compact Provider Selection */}
-          <div className="py-3 border-b">
-            <label className="block text-sm font-medium mb-2">{t.providerLabel}</label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setProvider('orange')}
-                className={`flex-1 p-3 border rounded-lg text-center transition ${
-                  provider === 'orange' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
-                }`}
-              >
-                <div className="text-lg mb-1">🍊</div>
-                <div className="text-xs font-semibold">Orange</div>
-              </button>
-              <button
-                onClick={() => setProvider('mtn')}
-                className={`flex-1 p-3 border rounded-lg text-center transition ${
-                  provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
-                }`}
-              >
-                <div className="text-lg mb-1">📱</div>
-                <div className="text-xs font-semibold">MTN</div>
-              </button>
+      {/* Full-screen Modal */}
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl w-full max-w-md overflow-hidden">
+          
+          {/* Header */}
+          <div style={{ backgroundColor: OrangeColors.primary }} className="px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-bold text-white">{t.title}</h2>
+                <p className="text-xs text-orange-100">{t.subtitle}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setLanguage(l => l === 'fr' ? 'en' : 'fr')}
+                  className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
+                >
+                  {language === 'fr' ? 'GB' : 'FR'}
+                </button>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  <X size={20} className="text-white" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Compact Phone Input */}
-          <div className="py-3 border-b">
-            <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
-            <div className="flex">
-              <span className="bg-gray-100 px-3 py-2.5 rounded-l-lg border text-gray-600 text-sm">+225</span>
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder={t.phonePlaceholder}
-                className="flex-1 px-3 py-2.5 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                required
-              />
+          {/* Provider Badge */}
+          <div className="bg-orange-50 py-3 px-4 border-b border-orange-100">
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-lg"></span>
+              <span className="text-sm font-semibold text-orange-800">Orange Money</span>
+              <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Hebdomadaire</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
           </div>
 
-          {/* Compact Submit Button */}
-          <div className="py-3">
-            <button
-              onClick={handleSubmit}
-              style={{ backgroundColor: OrangeColors.primary }}
-              className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold text-sm transition h-11"
-            >
-              {t.button}
-            </button>
+          {/* Price Section */}
+          <div className="py-4 text-center border-b">
+            <div className="text-2xl font-bold">{t.price}</div>
+            <div className="text-sm text-gray-500 mt-1">{t.period}</div>
+            <div className="text-sm text-green-600 mt-2"> Frais inclus</div>
           </div>
-        </>
-      )}
 
-      {/* Compact Waiting State */}
-      {step === 'waiting' && (
-        <div className="py-6 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-3"></div>
-          <p className="text-sm font-medium text-gray-900">{t.waiting}</p>
-          <p className="text-xs text-gray-500 mt-1">{t.waitingHint}</p>
-        </div>
-      )}
+          {/* Content */}
+          <div className="p-4">
+            {step === 'form' && (
+              <>
+                {/* Provider Selection */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-3">{t.providerLabel}</label>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setProvider('orange')}
+                      className={`flex-1 p-4 border rounded-lg text-center transition ${
+                        provider === 'orange' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-lg mb-2"></div>
+                      <div className="text-sm font-semibold">Orange</div>
+                    </button>
+                    <button
+                      onClick={() => setProvider('mtn')}
+                      className={`flex-1 p-4 border rounded-lg text-center transition ${
+                        provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-lg mb-2"></div>
+                      <div className="text-sm font-semibold">MTN</div>
+                    </button>
+                  </div>
+                </div>
 
-      {/* Compact Success State */}
-      {step === 'success' && (
-        <div className="py-6 text-center">
-          <div className="text-3xl mb-3">✅</div>
-          <p className="text-sm font-medium text-gray-900">{t.success}</p>
-          <p className="text-xs text-gray-500 mt-1">{t.successHint}</p>
+                {/* Phone Input */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
+                  <div className="flex">
+                    <span className="bg-gray-100 px-3 py-3 rounded-l-lg border text-gray-600 text-sm">+225</span>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder={t.phonePlaceholder}
+                      className="flex-1 px-3 py-3 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  onClick={handleSubmit}
+                  style={{ backgroundColor: OrangeColors.primary }}
+                  className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold transition"
+                >
+                  {t.button}
+                </button>
+              </>
+            )}
+
+            {/* Waiting State */}
+            {step === 'waiting' && (
+              <div className="py-8 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                <p className="text-lg font-medium text-gray-900">{t.waiting}</p>
+                <p className="text-sm text-gray-500 mt-2">{t.waitingHint}</p>
+              </div>
+            )}
+
+            {/* Success State */}
+            {step === 'success' && (
+              <div className="py-8 text-center">
+                <div className="text-4xl mb-4"></div>
+                <p className="text-lg font-medium text-gray-900">{t.success}</p>
+                <p className="text-sm text-gray-500 mt-2">{t.successHint}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Footer */}
+          <div className="py-3 text-center text-xs text-gray-400 border-t">
+            {t.footer}
+          </div>
         </div>
-      )}
-      
-      {/* Compact Footer */}
-      <div className="py-2 text-center text-xs text-gray-400 border-t mt-2">
-        {t.footer}
       </div>
-    </BottomSheetContainer>
+    </>
   );
 }

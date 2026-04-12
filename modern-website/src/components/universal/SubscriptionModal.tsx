@@ -7,7 +7,7 @@ import { useLanguage } from '@/hooks/LanguageContext';
 import { useParams } from 'next/navigation';
 import KenyaSubscriptionModal from './KenyaSubscriptionModal';
 import NigeriaSubscriptionModal from './NigeriaSubscriptionModal';
-import SouthAfricaSubscriptionModal from './SouthAfricaSubscriptionModal';
+// import SouthAfricaSubscriptionModal from './SouthAfricaSubscriptionModal'; // Hidden for now
 import GhanaSubscriptionModal from './GhanaSubscriptionModal';
 import CoteDIvoireSubscriptionModal from './CoteDIvoireSubscriptionModal';
 
@@ -43,26 +43,26 @@ const SUBSCRIPTION_PLANS = {
       '24/7 Customer Support'
     ]
   },
-  za: { 
-    name: 'South Africa', 
-    flag: 'BeeZee', 
-    currency: 'ZAR', 
-    price: 30, 
-    period: 'week',
-    planId: 'plan_za_weekly',
-    features: [
-      'All 6 Core Features',
-      'Business Tracking & Analytics',
-      'Zulu/Xhosa/Afrikaans Support',
-      'Performance Insights', 
-      '24/7 Customer Support'
-    ]
-  },
+  // za: { 
+  //   name: 'South Africa', 
+  //   flag: 'BeeZee', 
+  //   currency: 'ZAR', 
+  //   price: 30, 
+  //   period: 'week',
+  //   planId: 'plan_za_weekly',
+  //   features: [
+  //     'All 6 Core Features',
+  //     'Business Tracking & Analytics',
+  //     'Zulu/Xhosa/Afrikaans Support',
+  //     'Performance Insights', 
+  //     '24/7 Customer Support'
+  //   ]
+  // },
   gh: { 
     name: 'Ghana', 
     flag: 'BeeZee', 
     currency: 'GHS', 
-    price: 15, 
+    price: 20, 
     period: 'week',
     planId: 'plan_gh_weekly',
     features: [
@@ -125,9 +125,14 @@ interface SubscriptionModalProps {
   onClose: () => void;
   businessEmail?: string;
   onSubscribe?: (phoneNumber: string, paymentMethod: string, country: string, frequency: string, amount: number) => Promise<void>;
+  userData?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 }
 
-export default function SubscriptionModal({ isOpen, onClose, businessEmail, onSubscribe }: SubscriptionModalProps) {
+export default function SubscriptionModal({ isOpen, onClose, businessEmail, onSubscribe, userData }: SubscriptionModalProps) {
   const { t } = useLanguage();
   const params = useParams();
   const country = (params.country as string) || 'ke';
@@ -230,56 +235,56 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   if (!isOpen) return null;
 
   // Use Kenya-specific modal for Kenya users
-  if (country === 'ke' && onSubscribe) {
+  if (country === 'ke') {
     return (
       <KenyaSubscriptionModal
         isOpen={isOpen}
         onClose={onClose}
-        onSubscribe={onSubscribe}
+        onSuccess={onSubscribe ? () => onSubscribe(mpesaNumber, 'mobile_money', country, 'weekly', SUBSCRIPTION_PLANS.ke.price) : undefined}
       />
     );
   }
 
   // Use Nigeria-specific modal for Nigeria users
-  if (country === 'ng' && onSubscribe) {
+  if (country === 'ng') {
     return (
       <NigeriaSubscriptionModal
         isOpen={isOpen}
         onClose={onClose}
-        onSubscribe={onSubscribe}
+        userData={userData || { email: '', firstName: '', lastName: '' }}
       />
     );
   }
 
-  // Use South Africa-specific modal for South Africa users
-  if (country === 'za' && onSubscribe) {
-    return (
-      <SouthAfricaSubscriptionModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubscribe={onSubscribe}
-      />
-    );
-  }
+  // South Africa modal hidden for now
+  // if (country === 'za' && userData) {
+  //   return (
+  //     <SouthAfricaSubscriptionModal
+  //       isOpen={isOpen}
+  //       onClose={onClose}
+  //       userData={userData}
+  //     />
+  //   );
+  // }
 
   // Use Ghana-specific modal for Ghana users
-  if (country === 'gh' && onSubscribe) {
+  if (country === 'gh') {
     return (
       <GhanaSubscriptionModal
         isOpen={isOpen}
         onClose={onClose}
-        onSubscribe={onSubscribe}
+        userData={userData || { email: '', firstName: '', lastName: '' }}
       />
     );
   }
 
   // Use Cote D'Ivoire-specific modal for Cote D'Ivoire users
-  if (country === 'ci' && onSubscribe) {
+  if (country === 'ci') {
     return (
       <CoteDIvoireSubscriptionModal
         isOpen={isOpen}
         onClose={onClose}
-        onSubscribe={onSubscribe}
+        userData={userData || { email: '', firstName: '', lastName: '' }}
       />
     );
   }

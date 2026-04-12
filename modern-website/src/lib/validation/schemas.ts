@@ -23,6 +23,11 @@ export const pinSchema = z.string()
  */
 export const businessSignupSchema = z.object({
   phoneNumber: phoneNumberSchema,
+  email: z.string()
+    .email('Invalid email address')
+    .min(5, 'Email must be at least 5 characters')
+    .max(255, 'Email must not exceed 255 characters')
+    .trim(),
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must not exceed 100 characters')

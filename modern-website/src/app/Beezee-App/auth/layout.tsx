@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from 'react';
+import Image from 'next/image';
 
 export default function AuthLayout({
   children,
@@ -8,9 +9,25 @@ export default function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="auth-layout">
-      {children}
-      {/* Note: NO update modal in auth layout - updates only in authenticated app */}
+    <div className="auth-layout h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
+      {/* Header logo - consistent across all auth pages */}
+      <div className="flex justify-center items-center pt-2 pb-1 flex-shrink-0">
+        <div className="relative">
+          <Image
+            src="/beezee-icon-192x192.png"
+            alt="BeeZee Icon"
+            width={48}
+            height={48}
+            className="rounded-xl shadow-lg"
+            priority
+          />
+        </div>
+      </div>
+      
+      {/* Page content */}
+      <div className="flex-1 min-h-0">
+        {children}
+      </div>
     </div>
   );
 }

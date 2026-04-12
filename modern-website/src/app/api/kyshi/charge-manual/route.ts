@@ -15,7 +15,7 @@ async function callKyshiAPI(endpoint: string, method: string = 'POST', data?: an
   const response = await fetch(`${KYSHI_API_URL}${endpoint}`, {
     method,
     headers: {
-      'Authorization': `Bearer ${KYSHI_SECRET_KEY}`,
+      'x-api-key': KYSHI_SECRET_KEY,
       'Content-Type': 'application/json',
     },
     body: data ? JSON.stringify(data) : undefined,

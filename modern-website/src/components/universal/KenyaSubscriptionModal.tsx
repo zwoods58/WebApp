@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
-import BottomSheetContainer from './BottomSheetContainer';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const MpesaColors = {
   primary: '#1B5E20',  // Dark Green - Official M-Pesa color
@@ -13,14 +14,11 @@ const MpesaColors = {
 interface KenyaSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userData: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
+  onSuccess?: () => void;
 }
 
-export default function KenyaSubscriptionModal({ isOpen, onClose, userData }: KenyaSubscriptionModalProps) {
+export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
+  const { business } = useUnifiedAuth();
   const amount = COUNTRY_PAYMENT_METHODS.KE.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.KE.currency;
   
@@ -67,21 +65,62 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, userData }: Ke
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if email exists in business data
+    if (!business?.email) {
+      console.warn('No email found in business profile:', { business });
+      alert('Please add an email to your profile in Settings before subscribing.');
+      return;
+    }
+    
     setStep('waiting');
+    
     try {
-      // Get plan ID for Kenya
+      console.log(`Starting subscription for KE`);
+      
+      // Defensive check - ensure plans are loaded
+      const plans = await SubscriptionAPI.getPlans('KE');
+      if (!plans || plans.length === 0) {
+        console.error('No plans available. Plans data:', plans);
+        alert('No subscription plans available. Please refresh and try again.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
+      
+      // Get plan ID for the country
       const planId = await getPlanIdForCountry('KE', amount);
+      
+      if (!planId) {
+        console.error(`No plan ID found for KE`);
+        alert('Subscription plan not available for Kenya. Please contact support.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Found plan ID: ${planId}`);
+      
+      // Extract user name from business settings or business name
+      const userName = business.settings?.user_name || business.business_name || 'Customer';
       
       // Create subscription request
       const subscriptionRequest = {
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        email: business.email,
+        firstName: userName,
+        lastName: '', // Not stored in our current schema
         phone: `254${phoneNumber}`,
         countryCode: 'KE',
         planId,
         paymentMethod: paymentMethod === 'mobile_money' ? mobileProvider : paymentMethod
       };
+
+      console.log('Creating subscription with email:', {
+        email: business.email,
+        businessName: business.business_name,
+        userName,
+        phone: `254${phoneNumber}`
+      });
 
       const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
       
@@ -90,7 +129,12 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, userData }: Ke
         window.location.href = response.authorizationUrl;
       } else {
         setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+        setTimeout(() => { 
+          onSuccess?.(); 
+          onClose(); 
+          setStep('form'); 
+          setPhoneNumber(''); 
+        }, 5000);
       }
     } catch (error) {
       console.error('Subscription error:', error);
@@ -102,148 +146,170 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, userData }: Ke
   if (!isOpen) return null;
 
   return (
-    <BottomSheetContainer isOpen={isOpen} onClose={onClose} initialHeight="55vh" maxHeight="75vh">
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] transition-opacity duration-300"
+        onClick={onClose}
+      />
       
-      {/* Compact Header */}
-      <div style={{ backgroundColor: MpesaColors.primary }} className="-mx-4 -mt-4 px-4 py-3">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-lg font-bold text-white">{t.title}</h2>
-            <p className="text-xs text-green-100">{t.subtitle}</p>
-          </div>
-          <button 
-            onClick={() => setLanguage(l => l === 'en' ? 'sw' : 'en')}
-            className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
-          >
-            {language === 'en' ? '🇰🇪' : '🇬🇧'}
-          </button>
-        </div>
-      </div>
-
-      {/* Compact Provider Badge */}
-      <div className="bg-green-50 py-2 px-3 -mx-4 mt-2 border-b border-green-100">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-lg">📱</span>
-          <span className="text-sm font-semibold text-green-800">Lipa na M-Pesa</span>
-          <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Weekly</span>
-        </div>
-      </div>
-
-      {/* Compact Price Section */}
-      <div className="py-3 text-center border-b">
-        <div className="text-xl font-bold">{t.price}</div>
-        <div className="text-xs text-gray-500 mt-0.5">{t.period}</div>
-        <div className="text-xs text-green-600 mt-1">✓ VAT included • No hidden fees</div>
-      </div>
-
-      {step === 'form' && (
-        <form onSubmit={handleSubmit} className="space-y-4 mt-3">
-          {/* Compact Payment Method Selection */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Payment method</label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setPaymentMethod('mobile_money')}
-                className={`flex-1 p-2 border rounded-lg text-center transition ${
-                  paymentMethod === 'mobile_money' 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200'
-                }`}
-              >
-                <div className="text-base mb-0.5">📱</div>
-                <div className="text-xs font-medium">Mobile</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPaymentMethod('card')}
-                className={`flex-1 p-2 border rounded-lg text-center transition ${
-                  paymentMethod === 'card' 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200'
-                }`}
-              >
-                <div className="text-base mb-0.5">💳</div>
-                <div className="text-xs font-medium">Card</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Compact Mobile Provider Selection */}
-          {paymentMethod === 'mobile_money' && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Mobile provider</label>
-              <div className="flex gap-2">
-                {['m-pesa', 'airtel_money', 't-kash'].map(provider => (
-                  <button
-                    key={provider}
-                    type="button"
-                    onClick={() => setMobileProvider(provider)}
-                    className={`flex-1 p-2 border rounded-lg text-center transition ${
-                      mobileProvider === provider 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="text-xs font-medium capitalize">
-                      {provider.replace('_', ' ').replace('money', '')}
-                    </div>
-                  </button>
-                ))}
+      {/* Full-screen Modal */}
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl w-full max-w-md overflow-hidden">
+          
+          {/* Header */}
+          <div style={{ backgroundColor: MpesaColors.primary }} className="px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-lg font-bold text-white">{t.title}</h2>
+                <p className="text-xs text-green-100">{t.subtitle}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setLanguage(l => l === 'en' ? 'sw' : 'en')}
+                  className="text-xs bg-white/20 px-2 py-1 rounded-full text-white"
+                >
+                  {language === 'en' ? 'KE' : 'GB'}
+                </button>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  <X size={20} className="text-white" />
+                </button>
               </div>
             </div>
-          )}
-
-          {/* Compact Phone Input */}
-          <div>
-            <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
-            <div className="flex">
-              <span className="bg-gray-100 px-3 py-2.5 rounded-l-lg border border-r-0 text-gray-600 text-sm">+254</span>
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                placeholder={t.phonePlaceholder}
-                className="flex-1 px-3 py-2.5 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                required
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
           </div>
 
-          {/* Compact Submit Button */}
-          <button
-            type="submit"
-            style={{ backgroundColor: MpesaColors.primary }}
-            className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold text-sm transition h-11"
-          >
-            {t.button}
-          </button>
-        </form>
-      )}
+          {/* Provider Badge */}
+          <div className="bg-green-50 py-3 px-4 border-b border-green-100">
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-lg"></span>
+              <span className="text-sm font-semibold text-green-800">Lipa na M-Pesa</span>
+              <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">Weekly</span>
+            </div>
+          </div>
 
-      {/* Compact Waiting State */}
-      {step === 'waiting' && (
-        <div className="py-6 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-3"></div>
-          <p className="text-sm font-medium text-gray-900">{t.waiting}</p>
-          <p className="text-xs text-gray-500 mt-1">{t.waitingHint}</p>
-        </div>
-      )}
+          {/* Price Section */}
+          <div className="py-4 text-center border-b">
+            <div className="text-2xl font-bold">{t.price}</div>
+            <div className="text-sm text-gray-500 mt-1">{t.period}</div>
+            <div className="text-sm text-green-600 mt-2"> VAT included  No hidden fees</div>
+          </div>
 
-      {/* Compact Success State */}
-      {step === 'success' && (
-        <div className="py-6 text-center">
-          <div className="text-3xl mb-3">✅</div>
-          <p className="text-sm font-medium text-gray-900">{t.success}</p>
-          <p className="text-xs text-gray-500 mt-1">{t.successHint}</p>
+          {/* Content */}
+          <div className="p-4">
+            {step === 'form' && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Payment Method Selection */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Payment method</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('mobile_money')}
+                      className={`flex-1 p-3 border rounded-lg text-center transition ${
+                        paymentMethod === 'mobile_money' 
+                          ? 'border-green-500 bg-green-50' 
+                          : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-lg mb-1"></div>
+                      <div className="text-sm font-medium">Mobile</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('card')}
+                      className={`flex-1 p-3 border rounded-lg text-center transition ${
+                        paymentMethod === 'card' 
+                          ? 'border-green-500 bg-green-50' 
+                          : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-lg mb-1"></div>
+                      <div className="text-sm font-medium">Card</div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mobile Provider Selection */}
+                {paymentMethod === 'mobile_money' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Mobile provider</label>
+                    <div className="flex gap-2">
+                      {['m-pesa', 'airtel_money', 't-kash'].map(provider => (
+                        <button
+                          key={provider}
+                          type="button"
+                          onClick={() => setMobileProvider(provider)}
+                          className={`flex-1 p-3 border rounded-lg text-center transition ${
+                            mobileProvider === provider 
+                              ? 'border-green-500 bg-green-50' 
+                              : 'border-gray-200'
+                          }`}
+                        >
+                          <div className="text-sm font-medium capitalize">
+                            {provider.replace('_', ' ').replace('money', '')}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Phone Input */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">{t.phoneLabel}</label>
+                  <div className="flex">
+                    <span className="bg-gray-100 px-3 py-3 rounded-l-lg border border-r-0 text-gray-600 text-sm">+254</span>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                      placeholder={t.phonePlaceholder}
+                      className="flex-1 px-3 py-3 border rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{t.phoneHint}</p>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  style={{ backgroundColor: MpesaColors.primary }}
+                  className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold transition"
+                >
+                  {t.button}
+                </button>
+              </form>
+            )}
+
+            {/* Waiting State */}
+            {step === 'waiting' && (
+              <div className="py-8 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                <p className="text-lg font-medium text-gray-900">{t.waiting}</p>
+                <p className="text-sm text-gray-500 mt-2">{t.waitingHint}</p>
+              </div>
+            )}
+
+            {/* Success State */}
+            {step === 'success' && (
+              <div className="py-8 text-center">
+                <div className="text-4xl mb-4"></div>
+                <p className="text-lg font-medium text-gray-900">{t.success}</p>
+                <p className="text-sm text-gray-500 mt-2">{t.successHint}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Footer */}
+          <div className="py-3 text-center text-xs text-gray-400 border-t">
+            {t.footer}
+          </div>
         </div>
-      )}
-      
-      {/* Compact Footer */}
-      <div className="py-2 text-center text-xs text-gray-400 border-t mt-2">
-        {t.footer}
       </div>
-    </BottomSheetContainer>
+    </>
   );
 }
