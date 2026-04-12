@@ -13,17 +13,18 @@ import {
   Building,
   Globe,
   Share2,
-  Crown
+  Crown,
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import SubscriptionModal from '@/components/universal/SubscriptionModal';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useRouter } from 'next/navigation';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useServiceWorkerVersion } from '@/hooks/useServiceWorkerVersion';
@@ -59,6 +60,48 @@ export default function MorePage() {
   const { profile } = useBusinessProfile();
   const { version, isLoading: versionLoading } = useServiceWorkerVersion();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  
+  // Payment verification states
+  const searchParams = useSearchParams();
+  const [verifying, setVerifying] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error' | null>(null);
+
+  // Check for payment callback on page load
+  useEffect(() => {
+    const reference = searchParams.get('trxref') || searchParams.get('reference');
+    
+    if (reference && !verifying) {
+      setVerifying(true);
+      setVerificationStatus('loading');
+      
+      // Verify payment with backend
+      fetch('/api/kyshi/verify-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setVerificationStatus('success');
+            // Remove query params from URL
+            router.replace(window.location.pathname, { scroll: false });
+            setTimeout(() => {
+              setVerificationStatus(null);
+              window.location.reload(); // Refresh to show updated subscription status
+            }, 3000);
+          } else {
+            setVerificationStatus('error');
+            setTimeout(() => setVerificationStatus(null), 5000);
+          }
+        })
+        .catch(() => {
+          setVerificationStatus('error');
+          setTimeout(() => setVerificationStatus(null), 5000);
+        })
+        .finally(() => setVerifying(false));
+    }
+  }, [searchParams, router, verifying]);
 
   const handleSignOut = async () => {
     try {
@@ -145,13 +188,19 @@ export default function MorePage() {
 
   // Debug logging
   useEffect(() => {
-    console.log('🔍 More Page Debug:', {
+    console.log('More Page Debug:', {
       urlIndustry: industry,
       urlCountry: country,
       businessIndustry: business?.industry,
-      businessCountry: business?.country
+      businessCountry: business?.country,
+      businessName: business?.business_name,
+      userName: business?.settings?.user_name,
+      businessEmail: business?.email,
+      businessPhone: business?.phone_number,
+      profileName: profile?.businessName,
+      profilePhone: profile?.phoneNumber
     });
-  }, [industry, country, business]);
+  }, [industry, country, business, profile]);
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
@@ -174,12 +223,14 @@ export default function MorePage() {
               </div>
               <div className="flex-1">
                 <div className="font-bold text-[var(--text-1)] text-lg">
-                  {profile?.businessName || business?.business_name || 'Business Name'}
+                  {business?.settings?.user_name || profile?.businessName || business?.business_name || 'Business Name'}
                 </div>
-                <div className="text-sm text-[var(--text-2)] mt-0.5">
-                  {'email@example.com'}
+                <div className="flex items-center gap-1 text-sm text-[var(--text-2)] mt-0.5">
+                  <Mail size={12} />
+                  {business?.email || 'email@example.com'}
                 </div>
-                <div className="text-sm text-[var(--text-2)]">
+                <div className="flex items-center gap-1 text-sm text-[var(--text-2)]">
+                  <Phone size={12} />
                   {profile?.phoneNumber || business?.phone_number || '+254 700 000 000'}
                 </div>
                 <div className="flex items-center gap-2 mt-2">
@@ -351,13 +402,8 @@ export default function MorePage() {
                 body: JSON.stringify({
                   customerEmail: businessEmail,
                   planId: planId,
-                  paymentDetails: {
-                    identifier,
-                    paymentMethod,
-                    provider,
-                    country,
-                    amount
-                  }
+                  country: country,
+                  industry: industry
                 })
               });
               
@@ -369,12 +415,56 @@ export default function MorePage() {
               
               console.log('Kyshi subscription created:', result.subscription);
               
+              // If there's an authorization URL, redirect to it for payment
+              if (result.subscription?.authorizationUrl) {
+                console.log('Redirecting to payment URL:', result.subscription.authorizationUrl);
+                window.location.href = result.subscription.authorizationUrl;
+              } else {
+                console.log('Subscription activated without payment redirect');
+                // Close modal and refresh
+                setShowSubscriptionModal(false);
+              }
+              
             } catch (error) {
               console.error('Subscription creation failed:', error);
               throw error;
             }
           }}
         />
+      )}
+      
+      {/* Verification Status Overlay */}
+      {verificationStatus !== null && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 text-center max-w-sm mx-4">
+            {verificationStatus === 'loading' && (
+              <>
+                <Loader2 className="w-12 h-12 animate-spin text-[var(--powder-dark)] mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900">Verifying Payment...</h3>
+                <p className="text-sm text-gray-500 mt-2">Please wait while we confirm your subscription.</p>
+              </>
+            )}
+            
+            {verificationStatus === 'success' && (
+              <>
+                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900">Payment Successful!</h3>
+                <p className="text-sm text-gray-500 mt-2">Your subscription is now active.</p>
+                <p className="text-xs text-gray-400 mt-3">Redirecting you back...</p>
+              </>
+            )}
+            
+            {verificationStatus === 'error' && (
+              <>
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Verification Failed</h3>
+                <p className="text-sm text-gray-500 mt-2">Please contact support if you were charged.</p>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

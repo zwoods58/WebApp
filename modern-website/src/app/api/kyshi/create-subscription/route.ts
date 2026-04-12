@@ -12,7 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, firstName, lastName, phone, countryCode, planId } = body;
+    const { email, firstName, lastName, phone, countryCode, planId, industry = 'retail' } = body;
 
     // Validate required fields
     if (!email || !firstName || !countryCode || !planId) {
@@ -133,14 +133,31 @@ export async function POST(request: NextRequest) {
       'CI': ['card', 'mobile_money', 'bank_transfer']
     };
 
-    const kyshiSubscriptionData = {
+    // Get the base URL - supports both ngrok and production
+const getBaseUrl = () => {
+  // Check for ngrok URL first (for local development)
+  if (process.env.NGROK_URL) {
+    console.log('Using ngrok URL:', process.env.NGROK_URL);
+    return process.env.NGROK_URL;
+  }
+  // Fall back to production URL
+  const productionUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com';
+  console.log('Using production URL:', productionUrl);
+  return productionUrl;
+};
+
+const baseUrl = getBaseUrl();
+
+const kyshiSubscriptionData = {
       customer: email,
       planCode: plan.kyshi_plan_code,
       country: countryCode, // Pass country to Kyshi
+      callback_url: `${baseUrl}/api/kyshi/payment-success`,
       metadata: {
         country: countryCode,
         payment_channels: channelsMap[countryCode] || ['card'],
-        currency: plan.currency
+        currency: plan.currency,
+        return_url: `${baseUrl}/Beezee-App/app/${countryCode.toLowerCase()}/retail/more`
       }
     };
     
@@ -159,45 +176,7 @@ export async function POST(request: NextRequest) {
     const kyshiSubscriptionId = kyshiSubscription.id;
     let authorizationUrl = kyshiSubscription.authorizationUrl;
 
-    // WORKAROUND: Append country and payment channels to Paystack URL
-    if (authorizationUrl) {
-      const url = new URL(authorizationUrl);
-      
-      // Add currency based on country
-      const currencyMap: Record<string, string> = {
-        'KE': 'KES',
-        'GH': 'GHS', 
-        'NG': 'NGN',
-        'CI': 'XOF'
-      };
-      
-      // Add payment channels based on country
-      const channelsMap: Record<string, string[]> = {
-        'KE': ['card', 'mobile_money', 'bank_transfer'],
-        'GH': ['card', 'mobile_money', 'bank_transfer'],
-        'NG': ['card', 'bank_transfer', 'ussd'],
-        'CI': ['card', 'mobile_money', 'bank_transfer']
-      };
-      
-      // Set currency
-      if (currencyMap[countryCode]) {
-        url.searchParams.set('currency', currencyMap[countryCode]);
-      }
-      
-      // Add payment channels
-      if (channelsMap[countryCode]) {
-        channelsMap[countryCode].forEach(channel => {
-          url.searchParams.append('channels[]', channel);
-        });
-      }
-      
-      // Log the modified URL for debugging
-      console.log('Original authorization URL:', authorizationUrl);
-      console.log('Modified authorization URL:', url.toString());
-      
-      authorizationUrl = url.toString();
-    }
-
+    
     if (!kyshiSubscriptionId) {
       console.error('Failed to create subscription in Kyshi:', kyshiSubscription);
       return NextResponse.json({
