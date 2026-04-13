@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import MobileMoneySubscriptionCard from './MobileMoneySubscriptionCard';
 import { CalendarDays, DollarSign, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
-import { redirectToPayment } from '../../utils/paymentRedirect';
 
 interface Subscription {
   id: string;
@@ -87,13 +86,21 @@ const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({
         // Refresh subscription data
         await fetchSubscriptionData();
         
-        // If there's an authorization URL, redirect to it using PWA-aware function
+        // If there's an authorization URL, open it in new tab (PWA-safe)
         if (data.kyshiChargeResponse?.data?.authorizationUrl) {
-          console.log('=== INITIATING PWA-AWARE PAYMENT REDIRECT ===');
-          redirectToPayment(data.kyshiChargeResponse.data.authorizationUrl, (error: string) => {
-            setError(`Payment redirect failed: ${error}. Please try again.`);
-            console.error('Payment redirect error:', error);
-          });
+          console.log('=== OPENING PAYMENT IN NEW TAB ===');
+          const paymentWindow = window.open(data.kyshiChargeResponse.data.authorizationUrl, '_blank', 'noopener,noreferrer');
+          
+          if (!paymentWindow || paymentWindow.closed) {
+            setError('Payment window blocked. Please allow popups and try again.');
+            console.error('Payment window blocked');
+          } else {
+            console.log('Payment window opened successfully');
+            // Show success message to user
+            setTimeout(() => {
+              setError('Payment opened in new tab. Complete payment and check your subscription status.');
+            }, 1000);
+          }
         }
       } else {
         setError(data.message || 'Failed to renew subscription');
