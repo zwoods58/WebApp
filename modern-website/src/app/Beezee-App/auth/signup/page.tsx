@@ -171,7 +171,7 @@ function BeezeeSignupContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col">
       {/* Compact progress bar - only show for steps 2-6 */}
       {currentStep >= 2 && currentStep <= 6 && (
         <div className="flex-shrink-0 px-6 pb-2">
@@ -184,7 +184,7 @@ function BeezeeSignupContent() {
                 {Math.round(((currentStep - 1) / 5) * 100)}%
               </div>
             </div>
-            <div className="w-full h-1.5 bg-[var(--glass-bg)] rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-[var(--glass-bg)] rounded-full">
               <div
                 className="h-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] transition-all duration-300 ease-out"
                 style={{ width: `${((currentStep - 1) / 5) * 100}%` }}
@@ -219,7 +219,7 @@ function BeezeeSignupContent() {
 // Welcome Step Component - MATCHING LOGIN PAGE UI
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 mx-auto max-w-sm w-full mt-40">
+    <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 mx-auto max-w-sm w-full">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
             Welcome to BeeZee
@@ -339,7 +339,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
       </div>
 
       <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
-        <div className="space-y-2 max-h-[320px] overflow-y-auto">
+        <div className="space-y-2">
           {industries.map((industry) => (
             <button
               key={industry.id}
