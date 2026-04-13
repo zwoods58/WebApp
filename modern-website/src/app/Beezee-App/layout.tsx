@@ -1,5 +1,6 @@
 import { metadata } from './metadata';
 import BeezeeLayoutClient from './layout-client';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 export default function BeezeeLayout({
   children,
@@ -12,7 +13,9 @@ export default function BeezeeLayout({
         {/* Critical CSS is already included in globals.css */}
       </head>
       <body suppressHydrationWarning>
-        <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
+        <QueryProvider>
+          <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
+        </QueryProvider>
       </body>
     </html>
   );

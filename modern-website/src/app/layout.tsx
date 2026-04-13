@@ -1,4 +1,9 @@
 import './globals.css';
+import { QueryProvider } from '@/providers/QueryProvider';
+import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
+import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
+import { IndustryProvider } from '@/contexts/IndustryContext';
+import { ToastProvider } from '@/providers/ToastProvider';
 
 export default function RootLayout({
   children,
@@ -148,7 +153,17 @@ export default function RootLayout({
         }} />
       </head>
       <body style={{ margin: 0, padding: 0, backgroundColor: '#1e3c72' }}>
-        {children}
+        <QueryProvider>
+          <UnifiedAuthProvider>
+            <BusinessProfileProvider>
+              <IndustryProvider>
+                <ToastProvider>
+                  {children}
+                </ToastProvider>
+              </IndustryProvider>
+            </BusinessProfileProvider>
+          </UnifiedAuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
