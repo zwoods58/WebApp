@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // Step 2: Store transaction in database
     try {
       const { data: transaction, error } = await supabaseAdmin
-        .from('transactions')
+        .from('payment_link_transactions')
         .insert({
           reference: data.data.reference,
           payment_link_code: paymentLinkCode,

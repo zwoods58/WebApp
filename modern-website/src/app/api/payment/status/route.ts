@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     
     // Check local database first (webhook may have already updated)
     const { data: transaction, error } = await supabaseAdmin
-      .from('transactions')
+      .from('payment_link_transactions')
       .select('*')
       .eq('reference', reference)
       .single();
