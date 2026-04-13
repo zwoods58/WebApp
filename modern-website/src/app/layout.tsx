@@ -4,6 +4,7 @@ import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { IndustryProvider } from '@/contexts/IndustryContext';
 import { ToastProvider } from '@/providers/ToastProvider';
+import LayoutWrapper from './LayoutWrapper';
 
 export default function RootLayout({
   children,
@@ -158,7 +159,9 @@ export default function RootLayout({
             <BusinessProfileProvider>
               <IndustryProvider>
                 <ToastProvider>
-                  {children}
+                  <LayoutWrapper>
+                    {children}
+                  </LayoutWrapper>
                 </ToastProvider>
               </IndustryProvider>
             </BusinessProfileProvider>
