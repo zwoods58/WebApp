@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import MobileMoneySubscriptionCard from './MobileMoneySubscriptionCard';
 import { CalendarDays, DollarSign, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
-import { redirectToPayment } from '@/utils/paymentRedirect';
+import { redirectToPayment } from '../../utils/paymentRedirect';
 
 interface Subscription {
   id: string;
@@ -90,7 +90,7 @@ const SubscriptionDashboard: React.FC<SubscriptionDashboardProps> = ({
         // If there's an authorization URL, redirect to it using PWA-aware function
         if (data.kyshiChargeResponse?.data?.authorizationUrl) {
           console.log('=== INITIATING PWA-AWARE PAYMENT REDIRECT ===');
-          redirectToPayment(data.kyshiChargeResponse.data.authorizationUrl, (error) => {
+          redirectToPayment(data.kyshiChargeResponse.data.authorizationUrl, (error: string) => {
             setError(`Payment redirect failed: ${error}. Please try again.`);
             console.error('Payment redirect error:', error);
           });
