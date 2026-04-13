@@ -20,7 +20,6 @@ import { setBusinessContext } from '@/lib/supabaseContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useSignup } from '@/hooks/useSignup';
 import PINSetup from '@/components/auth/PINSetup';
-import SignupPWAInstallModal from '@/components/auth/SignupPWAInstallModal';
 import SecurityQuestionsSetup from '@/components/auth/SecurityQuestionsSetup';
 
 // Helper function to get flag emoji or fallback
@@ -57,17 +56,6 @@ function BeezeeSignupContent() {
   // Use the new signup hook
   const signup = useSignup();
   
-  // PWA Install Modal State
-  const [showPWAInstallModal, setShowPWAInstallModal] = useState(false);
-  const [hasSeenPWAInstallModal, setHasSeenPWAInstallModal] = useState(false);
-
-  // Check if user has already seen the PWA install modal
-  useEffect(() => {
-    const seenModal = localStorage.getItem('beezee_seen_pwa_install_modal');
-    if (seenModal) {
-      setHasSeenPWAInstallModal(true);
-    }
-  }, []);
 
   const {
     currentStep,
@@ -82,20 +70,9 @@ function BeezeeSignupContent() {
   } = signup;
 
   const handleNextStep = () => {
-    // Show PWA install modal after welcome step (step 1) if not seen before
-    if (currentStep === 1 && !hasSeenPWAInstallModal) {
-      setShowPWAInstallModal(true);
-      localStorage.setItem('beezee_seen_pwa_install_modal', 'true');
-      setHasSeenPWAInstallModal(true);
-    } else {
-      nextStep();
-    }
-  };
-
-  const handleContinueAfterPWA = () => {
-    setShowPWAInstallModal(false);
     nextStep();
   };
+
   
   const handleFinalComplete = async () => {
     // Redirect to dashboard after successful signup
@@ -206,12 +183,6 @@ function BeezeeSignupContent() {
         </div>
       </div>
 
-      {/* PWA Install Modal */}
-      <SignupPWAInstallModal
-        isOpen={showPWAInstallModal}
-        onClose={() => setShowPWAInstallModal(false)}
-        onContinue={handleContinueAfterPWA}
-      />
     </div>
   );
 }
