@@ -24,6 +24,8 @@ import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import SubscriptionModal from '@/components/universal/SubscriptionModal';
+import SubscriptionDashboard from '@/components/kyshi/SubscriptionDashboard';
+import CountryPaymentProviders from '@/components/kyshi/CountryPaymentProviders';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -60,6 +62,7 @@ export default function MorePage() {
   const { profile } = useBusinessProfile();
   const { version, isLoading: versionLoading } = useServiceWorkerVersion();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSubscriptionDashboard, setShowSubscriptionDashboard] = useState(false);
   
   // Payment verification states
   const searchParams = useSearchParams();
@@ -69,37 +72,65 @@ export default function MorePage() {
   // Check for payment callback on page load
   useEffect(() => {
     const reference = searchParams.get('trxref') || searchParams.get('reference');
+    const paymentStatus = searchParams.get('payment');
     
-    if (reference && !verifying) {
+    console.log('=== PAYMENT CALLBACK DETECTED ===');
+    console.log('URL params:', { reference, paymentStatus, verifying });
+    console.log('Full URL:', window.location.href);
+    
+    if (reference && paymentStatus === 'success' && !verifying) {
+      console.log('=== STARTING PAYMENT VERIFICATION ===');
       setVerifying(true);
       setVerificationStatus('loading');
       
-      // Verify payment with backend
-      fetch('/api/kyshi/verify-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reference })
-      })
-        .then(res => res.json())
-        .then(data => {
+      const verifyPayment = async (retryCount = 0) => {
+        try {
+          console.log(`Verification attempt ${retryCount + 1} for reference: ${reference}`);
+          
+          const response = await fetch('/api/kyshi/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reference })
+          });
+          
+          console.log('Verification response status:', response.status);
+          const data = await response.json();
+          console.log('Verification response data:', data);
+          
           if (data.success) {
+            console.log('=== PAYMENT VERIFICATION SUCCESS ===');
             setVerificationStatus('success');
-            // Remove query params from URL
+            // Remove query params from URL after successful verification
             router.replace(window.location.pathname, { scroll: false });
+            
+            // Show success message briefly, then refresh to show updated subscription
             setTimeout(() => {
               setVerificationStatus(null);
-              window.location.reload(); // Refresh to show updated subscription status
-            }, 3000);
+              console.log('Refreshing page to show updated subscription status...');
+              window.location.reload();
+            }, 2000);
+          } else if (data.requiresRetry && retryCount < 3) {
+            console.log('Payment still pending, retrying in 2 seconds...');
+            setTimeout(() => verifyPayment(retryCount + 1), 2000);
+          } else {
+            console.error('=== PAYMENT VERIFICATION FAILED ===', data.message);
+            setVerificationStatus('error');
+            setTimeout(() => setVerificationStatus(null), 5000);
+          }
+        } catch (error) {
+          console.error('=== VERIFICATION REQUEST FAILED ===', error);
+          if (retryCount < 2) {
+            console.log('Retrying verification in 2 seconds...');
+            setTimeout(() => verifyPayment(retryCount + 1), 2000);
           } else {
             setVerificationStatus('error');
             setTimeout(() => setVerificationStatus(null), 5000);
           }
-        })
-        .catch(() => {
-          setVerificationStatus('error');
-          setTimeout(() => setVerificationStatus(null), 5000);
-        })
-        .finally(() => setVerifying(false));
+        }
+      };
+      
+      // Start verification
+      verifyPayment();
     }
   }, [searchParams, router, verifying]);
 
@@ -169,6 +200,14 @@ export default function MorePage() {
           description: t('more.subscription_description', 'Upgrade to premium features'),
           onClick: () => setShowSubscriptionModal(true),
           color: 'text-teal-600 bg-teal-50'
+        } as ButtonMenuItem : null,
+        // Add subscription management for mobile money countries
+        ['ke', 'gh', 'ci'].includes(country.toLowerCase()) ? {
+          icon: Settings,
+          label: t('more.manage_subscription', 'Manage Subscription'),
+          description: t('more.manage_subscription_description', 'View and manage your mobile money subscription'),
+          onClick: () => setShowSubscriptionDashboard(true),
+          color: 'text-blue-600 bg-blue-50'
         } as ButtonMenuItem : null
       ]
     },
@@ -433,6 +472,46 @@ export default function MorePage() {
         />
       )}
       
+      {/* Subscription Dashboard Modal */}
+      {showSubscriptionDashboard && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">Subscription Management</h2>
+                  <p className="text-blue-100 mt-1">Manage your mobile money subscriptions</p>
+                </div>
+                <button
+                  onClick={() => setShowSubscriptionDashboard(false)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <SubscriptionDashboard
+                userEmail={business?.email || ''}
+                countryCode={country.toUpperCase()}
+              />
+              
+              {/* Country Payment Providers */}
+              <div className="mt-8">
+                <CountryPaymentProviders
+                  countryCode={country.toUpperCase()}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Verification Status Overlay */}
       {verificationStatus !== null && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -450,7 +529,7 @@ export default function MorePage() {
                 <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900">Payment Successful!</h3>
                 <p className="text-sm text-gray-500 mt-2">Your subscription is now active.</p>
-                <p className="text-xs text-gray-400 mt-3">Redirecting you back...</p>
+                <p className="text-xs text-gray-400 mt-3">Refreshing your dashboard...</p>
               </>
             )}
             
@@ -460,7 +539,13 @@ export default function MorePage() {
                   <span className="text-2xl">⚠️</span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">Verification Failed</h3>
-                <p className="text-sm text-gray-500 mt-2">Please contact support if you were charged.</p>
+                <p className="text-sm text-gray-500 mt-2">Unable to verify payment. Please try again or contact support if you were charged.</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-4 py-2 bg-[var(--powder-dark)] text-white rounded-lg text-sm font-medium hover:bg-[var(--powder-dark)]/90 transition-colors"
+                >
+                  Try Again
+                </button>
               </>
             )}
           </div>
