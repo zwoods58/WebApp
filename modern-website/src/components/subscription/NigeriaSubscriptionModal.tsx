@@ -87,7 +87,10 @@ export function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: Nigeria
       });
 
       if (result.authorizationUrl) {
-        window.location.href = result.authorizationUrl;
+        // Open payment URL in new tab (PWA-safe)
+        window.open(result.authorizationUrl, '_blank', 'noopener,noreferrer');
+        setStep('waiting');
+        showSuccess('Payment opened in new tab. Complete payment and return here.');
       } else if (result.success) {
         setStep('success');
         showSuccess('Weekly subscription activated!');
