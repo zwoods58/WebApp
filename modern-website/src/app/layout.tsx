@@ -1,173 +1,135 @@
-import './globals.css';
-import { QueryProvider } from '@/providers/QueryProvider';
-import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
-import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
-import { IndustryProvider } from '@/contexts/IndustryContext';
-import { ToastProvider } from '@/providers/ToastProvider';
-import LayoutWrapper from './LayoutWrapper';
+import type { Metadata } from "next";
+import { Inter_Tight, JetBrains_Mono } from "next/font/google"; // New fonts
+import "./globals.css";
+import BodyWrapper from "./components/BodyWrapper";
+
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // Regular, Medium, SemiBold, Bold
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"], // Regular, Medium
+});
+
+export const metadata: Metadata = {
+  title: "AtarWebb - Digital Solutions",
+  description: "Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools to help your business thrive in the digital age.",
+  keywords: "technology solutions, software development, web applications, digital transformation, business technology, custom software, innovation",
+  authors: [{ name: "AtarWebb" }],
+  creator: "AtarWebb",
+  publisher: "AtarWebb",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://atarwebb.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'en': '/en',
+      'x-default': '/',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    title: 'AtarWebb - Digital Solutions',
+    description: 'Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools to help your business thrive.',
+    siteName: 'AtarWebb',
+    images: [
+      {
+        url: '/atarwebb-favicon-white.png',
+        width: 512,
+        height: 512,
+        alt: 'AtarWebb Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AtarWebb - Digital Solutions',
+    description: 'Creating innovative technology solutions for businesses. We build custom software, web applications, and digital tools.',
+    images: ['/atarwebb-favicon-white.png'],
+    creator: '@atarwebb',
+    site: '@atarwebb',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    yandex: process.env.YANDEX_VERIFICATION,
+    yahoo: process.env.YAHOO_SITE_VERIFICATION,
+  },
+  icons: {
+    icon: [
+      { url: '/atarwebb-favicon-white.png', sizes: '32x32', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '192x192', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/atarwebb-favicon-white.png', sizes: '192x192', type: 'image/png' },
+      { url: '/atarwebb-favicon-white.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/atarwebb-favicon-white.png',
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/atarwebb-favicon-white.png',
+        sizes: '192x192',
+      },
+    ],
+  },
+  manifest: '/atarwebb-manifest.json',
+};
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
+  const bodyClassName = `${interTight.variable} ${jetbrainsMono.variable} antialiased`;
+
   return (
-    <html lang="en" style={{ backgroundColor: '#1e3c72', margin: 0, padding: 0 }}>
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        {/* Mobile-friendly Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
         
-        {/* CRITICAL: Set theme color to match background immediately */}
-        <meta name="theme-color" content="#1e3c72" />
-        <meta name="msapplication-navbutton-color" content="#1e3c72" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="mobile-web-app-capable" content="yes" />
+        {/* Additional Meta Tags */}
+        <meta name="theme-color" content="#4A8DB8" />
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
         
-        {/* CRITICAL: Inline CSS that executes before anything else */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            /* Reset everything - no margins, no padding, no white background */
-            * {
-              margin: 0 !important;
-              padding: 0 !important;
-              box-sizing: border-box !important;
-            }
-            
-            /* Force background color immediately - no white flash possible */
-            html, body, #__next, #root, main, div:first-child {
-              background: #1e3c72 !important;
-              background-color: #1e3c72 !important;
-              min-height: 100vh !important;
-              margin: 0 !important;
-              padding: 0 !important;
-            }
-            
-            /* Completely hide any browser-generated splash elements */
-            body::before,
-            body::after,
-            html::before,
-            html::after,
-            [class*="splash"],
-            [class*="loading"],
-            [class*="spinner"],
-            [id*="splash"],
-            [id*="loading"],
-            [id*="spinner"],
-            div[class*="load"],
-            div[id*="load"] {
-              display: none !important;
-              visibility: hidden !important;
-              opacity: 0 !important;
-              pointer-events: none !important;
-              position: absolute !important;
-              width: 0 !important;
-              height: 0 !important;
-              overflow: hidden !important;
-            }
-            
-            /* Hide any white background elements */
-            body > div:not(#__next):not(#root) {
-              display: none !important;
-              visibility: hidden !important;
-              opacity: 0 !important;
-            }
-          `
-        }} />
+        {/* Social Media Links */}
+        <meta property="fb:app_id" content="your-facebook-app-id" />
+        <meta property="linkedin:owner" content="your-linkedin-company-id" />
         
-        {/* CRITICAL: JavaScript to remove any remaining splash elements */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              // Immediate execution - remove any splash before DOM is ready
-              const destroyAllSplashElements = () => {
-                // Remove by selectors
-                const selectors = [
-                  '.splash', '.loading', '.spinner',
-                  '[class*="splash"]', '[class*="loading"]', '[class*="spinner"]',
-                  '[id*="splash"]', '[id*="loading"]', '[id*="spinner"]',
-                  '.native-splash', '.browser-splash', '.default-splash'
-                ];
-                
-                selectors.forEach(selector => {
-                  document.querySelectorAll(selector).forEach(el => {
-                    if (el && el.parentNode) {
-                      el.parentNode.removeChild(el);
-                    }
-                  });
-                });
-                
-                // Remove any text nodes that might contain loading text
-                const walker = document.createTreeWalker(
-                  document.body,
-                  NodeFilter.SHOW_TEXT,
-                  {
-                    acceptNode: function(node) {
-                      if (node.textContent && 
-                          (node.textContent.toLowerCase().includes('loading') ||
-                           node.textContent.toLowerCase().includes('splash'))) {
-                        return NodeFilter.FILTER_ACCEPT;
-                      }
-                      return NodeFilter.FILTER_REJECT;
-                    }
-                  }
-                );
-                
-                while(walker.nextNode()) {
-                  const node = walker.currentNode;
-                  if (node.parentNode) {
-                    node.parentNode.removeChild(node);
-                  }
-                }
-              };
-              
-              // Run immediately
-              if (document.body) {
-                destroyAllSplashElements();
-              }
-              
-              // Run again when DOM is ready
-              document.addEventListener('DOMContentLoaded', destroyAllSplashElements);
-              
-              // Run again after load
-              window.addEventListener('load', destroyAllSplashElements);
-              
-              // Mutation observer to catch dynamically added splash elements
-              const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                  if (mutation.addedNodes.length) {
-                    destroyAllSplashElements();
-                  }
-                });
-              });
-              
-              if (document.body) {
-                observer.observe(document.body, { childList: true, subtree: true });
-              }
-              
-              // Stop observing after 2 seconds (splash would have shown by then)
-              setTimeout(function() {
-                observer.disconnect();
-              }, 2000);
-            })();
-          `
-        }} />
+        {/* Favicon */}
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="32x32" />
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="192x192" />
+        <link rel="icon" href="/atarwebb-favicon-white.png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/atarwebb-favicon-white.png" />
       </head>
-      <body style={{ margin: 0, padding: 0, backgroundColor: '#1e3c72' }}>
-        <QueryProvider>
-          <UnifiedAuthProvider>
-            <BusinessProfileProvider>
-              <IndustryProvider>
-                <ToastProvider>
-                  <LayoutWrapper>
-                    {children}
-                  </LayoutWrapper>
-                </ToastProvider>
-              </IndustryProvider>
-            </BusinessProfileProvider>
-          </UnifiedAuthProvider>
-        </QueryProvider>
-      </body>
+      <BodyWrapper className={bodyClassName}>
+        {children}
+        {/* Modal portal root - renders above everything */}
+        <div id="modal-root" />
+      </BodyWrapper>
     </html>
   );
 }
