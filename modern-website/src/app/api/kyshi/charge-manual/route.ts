@@ -16,7 +16,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { subscriptionId } = body;
+    const { subscriptionId, redirectUrl = `https://beezee.app/payment/return` } = body;
 
     // Validate required fields
     if (!subscriptionId) {
@@ -27,6 +27,21 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`Manual charge for subscription: ${subscriptionId}`);
+
+    // Get the base URL - supports both ngrok and production
+const getBaseUrl = () => {
+  // Check for ngrok URL first (for local development)
+  if (process.env.NGROK_URL) {
+    console.log('Using ngrok URL:', process.env.NGROK_URL);
+    return process.env.NGROK_URL;
+  }
+  // Fall back to production URL
+  const productionUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com';
+  console.log('Using production URL:', productionUrl);
+  return productionUrl;
+};
+
+const baseUrl = getBaseUrl();
 
     // Get subscription from database
     const { data: subscription, error: subError } = await supabase

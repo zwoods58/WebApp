@@ -22,7 +22,7 @@ export default function PaymentReturnPage() {
     // If Kyshi passed status in URL, use it immediately
     if (status === 'success') {
       setPaymentStatus('success');
-      setTimeout(() => router.push('/Beezee-App/dashboard'), 2000);
+      setTimeout(() => router.push('/Beezee-App/app/ke/food/more/'), 2000);
       return;
     }
 
@@ -37,7 +37,7 @@ export default function PaymentReturnPage() {
         
         if (data.paid || data.status === 'success') {
           setPaymentStatus('success');
-          setTimeout(() => router.push('/Beezee-App/dashboard'), 3000);
+          setTimeout(() => router.push('/Beezee-App/app/ke/food/more/'), 3000);
         } else if (data.status === 'failed' || data.status === 'error') {
           setPaymentStatus('failed');
         } else if (checkingCount >= 10) { // Stop after 10 checks (30 seconds)

@@ -18,7 +18,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, firstName, lastName, phone, countryCode, planId, industry = 'retail' } = body;
+    const { email, firstName, lastName, phone, countryCode, planId, industry = 'retail', redirectUrl } = body;
 
     // Validate required fields
     if (!email || !firstName || !countryCode || !planId) {
@@ -163,7 +163,7 @@ const kyshiSubscriptionData = {
         payment_channels: paymentChannels,
         mobile_money_providers: mobileMoneyProviders.map(p => p.code),
         currency: plan.currency,
-        return_url: `${baseUrl}/Beezee-App/app/${countryCode.toLowerCase()}/retail/more`,
+        return_url: redirectUrl || `https://beezee.app/payment/return`,
         is_mobile_money_subscription: isMobileMoneySubscription
       }
     };

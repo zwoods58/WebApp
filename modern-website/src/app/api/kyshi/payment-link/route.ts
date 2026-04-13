@@ -52,7 +52,7 @@ export async function POST(request: Request) {
             lastName: customerLastName
           },
           localCurrency: localCurrency,
-          redirectUrl: redirectUrl  // Critical: Kyshi will redirect here after payment
+          redirectUrl: redirectUrl || `https://beezee.app/payment/return`  // Critical: Paystack will redirect here after payment
         })
       }
     );

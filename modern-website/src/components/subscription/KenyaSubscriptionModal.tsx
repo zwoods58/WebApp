@@ -5,6 +5,7 @@ import { SubscriptionAPI } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const MpesaColors = {
   primary: '#1B5E20',
@@ -93,6 +94,22 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
     }
   };
 
+  const handlePaymentSuccess = () => {
+    setStep('success');
+    showSuccess(currentTexts.success);
+    setTimeout(() => {
+      onSuccess?.();
+      onClose();
+      setStep('form');
+      setPhoneNumber('');
+    }, 3000);
+  };
+
+  const handlePaymentError = (error: string) => {
+    showError(error);
+    setStep('form');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -101,56 +118,12 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
       return;
     }
 
-    if (!planId) {
-      showError('Loading subscription plan. Please try again.');
-      return;
-    }
-
     if (!email || !email.includes('@')) {
       showError('Please enter a valid email address');
       return;
     }
 
-    setIsLoading(true);
-    setStep('waiting');
-
-    try {
-      const result = await SubscriptionAPI.createSubscription({
-        email: email,
-        firstName: userName,
-        lastName: 'Customer',
-        countryCode: 'KE',
-        planId: planId,
-        paymentMethod: 'mpesa',
-        phone: `254${phoneNumber}`,
-      });
-
-      console.log('Kyshi payment initiated:', result);
-
-      if (result.authorizationUrl) {
-        // Open payment URL in new tab (PWA-safe)
-        window.open(result.authorizationUrl, '_blank', 'noopener,noreferrer');
-        setStep('waiting');
-        showSuccess('Payment opened in new tab. Complete payment and return here.');
-      } else if (result.success) {
-        setStep('success');
-        showSuccess(currentTexts.success);
-        setTimeout(() => {
-          onSuccess?.();
-          onClose();
-          setStep('form');
-          setPhoneNumber('');
-        }, 3000);
-      } else {
-        throw new Error(result.message || 'Payment failed');
-      }
-    } catch (error) {
-      console.error('M-Pesa payment error:', error);
-      showError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
-      setStep('form');
-    } finally {
-      setIsLoading(false);
-    }
+    // Form validation passed - payment button will handle the rest
   };
 
   if (!isOpen) return null;
@@ -222,14 +195,20 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
               <p className="text-xs text-gray-500 mt-2">{currentTexts.phoneHint}</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{ backgroundColor: MpesaColors.primary }}
-              className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold text-lg transition disabled:opacity-50"
+            {/* Kyshi Payment Button with Popup */}
+            <KyshiPaymentButton
+              paymentLinkCode="KE_WEEKLY_SUBSCRIPTION" // This should match your Kyshi payment link code
+              customerEmail={email}
+              customerFirstName={userName.split(' ')[0]}
+              customerLastName={userName.split(' ')[1] || 'Customer'}
+              countryCode="KE"
+              redirectUrl={`https://beezee.app/payment/return`}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              className="w-full py-3 rounded-xl font-semibold text-lg"
             >
-              {isLoading ? 'Processing...' : currentTexts.button}
-            </button>
+              {currentTexts.button}
+            </KyshiPaymentButton>
           </form>
         )}
 

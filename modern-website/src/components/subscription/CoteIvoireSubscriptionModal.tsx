@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { SubscriptionAPI } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const OrangeColors = {
   primary: '#FF6600',
@@ -92,14 +93,27 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
     }
   };
 
-  const handleSubmit = async () => {
-    if (!phoneNumber || phoneNumber.length < 9) {
-      showError(currentTexts === texts.fr ? 'Veuillez entrer un numéro valide' : 'Please enter a valid number');
-      return;
-    }
+  const handlePaymentSuccess = () => {
+    setStep('success');
+    showSuccess(currentTexts.success);
+    setTimeout(() => {
+      onSuccess?.();
+      onClose();
+      setStep('form');
+      setPhoneNumber('');
+    }, 3000);
+  };
 
-    if (!planId) {
-      showError('Loading subscription plan. Please try again.');
+  const handlePaymentError = (error: string) => {
+    showError(error);
+    setStep('form');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!phoneNumber || phoneNumber.replace(/\s/g, '').length < 8) {
+      showError(currentTexts === texts.fr ? 'Veuillez entrer un numéro de téléphone valide' : 'Please enter a valid phone number');
       return;
     }
 
@@ -108,44 +122,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
       return;
     }
 
-    setIsLoading(true);
-    setStep('waiting');
-
-    try {
-      const result = await SubscriptionAPI.createSubscription({
-        email: email,
-        firstName: userName,
-        lastName: 'Customer',
-        countryCode: 'CI',
-        planId: planId,
-        paymentMethod: 'mobile_money',
-        phone: `225${phoneNumber.replace(/\s/g, '')}`,
-      });
-
-      if (result.authorizationUrl) {
-        // Open payment URL in new tab (PWA-safe)
-        window.open(result.authorizationUrl, '_blank', 'noopener,noreferrer');
-        setStep('waiting');
-        showSuccess('Payment opened in new tab. Complete payment and return here.');
-      } else if (result.success) {
-        setStep('success');
-        showSuccess(currentTexts.success);
-        setTimeout(() => {
-          onSuccess?.();
-          onClose();
-          setStep('form');
-          setPhoneNumber('');
-        }, 3000);
-      } else {
-        throw new Error(result.message || 'Payment failed');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      showError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
-      setStep('form');
-    } finally {
-      setIsLoading(false);
-    }
+    // Form validation passed - payment button will handle the rest
   };
 
   if (!isOpen) return null;
@@ -244,14 +221,20 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
             </div>
 
             <div className="p-6 pt-0">
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                style={{ backgroundColor: OrangeColors.primary }}
-                className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50"
+              {/* Kyshi Payment Button with Popup */}
+              <KyshiPaymentButton
+                paymentLinkCode="CI_WEEKLY_SUBSCRIPTION" // This should match your Kyshi payment link code
+                customerEmail={email}
+                customerFirstName={userName.split(' ')[0]}
+                customerLastName={userName.split(' ')[1] || 'Customer'}
+                countryCode="CI"
+                redirectUrl={`https://beezee.app/payment/return`}
+                onSuccess={handlePaymentSuccess}
+                onError={handlePaymentError}
+                className="w-full py-3 rounded-xl font-semibold text-lg"
               >
-                {isLoading ? 'Processing...' : currentTexts.button}
-              </button>
+                {currentTexts.button}
+              </KyshiPaymentButton>
             </div>
           </>
         )}
