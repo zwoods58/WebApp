@@ -1694,8 +1694,7 @@ html:not([data-theme="dark"]) {
 
 
 
-    scroll-behavior: auto !important;
-
+    
 
 
   }
@@ -2314,8 +2313,7 @@ body {
 
 
 
-  scroll-behavior: smooth;
-
+  
 
 
   height: auto; /* Allow dynamic height */
@@ -3087,8 +3085,7 @@ html, body {
 /* Smooth scrolling for modals */
 .overflow-y-auto {
   overflow-y: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 
@@ -3169,8 +3166,7 @@ input[type="time"] {
 /* Better scrolling on mobile */
 .overflow-y-auto {
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
-  overscroll-behavior: contain;
+    overscroll-behavior: contain;
 }
 
 /* Modal animations for PWA */
