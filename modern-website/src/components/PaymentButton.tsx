@@ -46,8 +46,9 @@ export function PaymentButton({
     setError(null);
     setStatus('initiated');
     
-    // Get return URL for this page (PWA-safe)
-    const returnUrl = `${window.location.origin}/payment/return`;
+    // Get return URL for this page (use Ngrok URL in development)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const returnUrl = `${baseUrl}/payment/return`;
     
     try {
       const response = await fetch('/api/kyshi/payment-link', {
