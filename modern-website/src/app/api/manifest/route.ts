@@ -25,7 +25,7 @@ function getVersion() {
     const gitCommitSha = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown';
     const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
     
-    let manifestVersion = '111'; // Updated to match current manifest version
+    let manifestVersion = '112'; // Updated to match current manifest version
     let shortCommitSha;
     let timestamp;
     
@@ -37,7 +37,7 @@ function getVersion() {
       console.log('[Manifest API] Using build-generated version:', buildVersion);
     } else {
       // Fallback to runtime generation
-      manifestVersion = '111'; // Match current manifest version
+      manifestVersion = '112'; // Match current manifest version
       shortCommitSha = gitCommitSha.substring(0, 7);
       timestamp = Date.now().toString();
       console.log('[Manifest API] Using runtime-generated version');
@@ -67,9 +67,9 @@ function getVersion() {
   } catch (error) {
     console.error('[Manifest API] Error:', error);
     return {
-      version: 'v111-error',
-      cleanVersion: 'v111',
-      manifestVersion: '111',
+      version: 'v112-error',
+      cleanVersion: 'v112',
+      manifestVersion: '112',
       deploymentId: 'error',
       gitCommitSha: 'unknown',
       environment: 'error',

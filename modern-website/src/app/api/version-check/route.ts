@@ -24,7 +24,7 @@ export async function GET() {
     const gitCommitSha = process.env.VERCEL_GIT_COMMIT_SHA || 'unknown';
     const environment = process.env.VERCEL_ENV || process.env.NODE_ENV || 'development';
     
-    let manifestVersion = '110';
+    let manifestVersion = '112';
     let shortCommitSha;
     let timestamp;
     
@@ -36,7 +36,7 @@ export async function GET() {
       console.log('[Version Check] Using build-generated version:', buildVersion);
     } else {
       // Fallback to runtime generation
-      manifestVersion = '110';
+      manifestVersion = '112';
       shortCommitSha = gitCommitSha.substring(0, 7);
       timestamp = Date.now().toString();
       console.log('[Version Check] Using runtime-generated version');
@@ -75,7 +75,7 @@ export async function GET() {
     return NextResponse.json(
       { 
         error: 'Failed to get version info',
-        version: 'v110-error'  // Fallback version
+        version: 'v112-error'  // Fallback version
       },
       { status: 500 }
     );
