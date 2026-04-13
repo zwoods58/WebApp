@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { kyshiApi } from '@/lib/kyshi';
+import { isMobileMoneyCountry } from '@/lib/mobile-money-config';
 
 // Configuration
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -10,24 +12,6 @@ const KYSHI_API_URL = process.env.KYSHI_API_URL || 'https://api.kyshi.co/v1';
 // Initialize Supabase client with service role key
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-// Helper function to make Kyshi API calls
-async function callKyshiAPI(endpoint: string, method: string = 'POST', data?: any) {
-  const response = await fetch(`${KYSHI_API_URL}${endpoint}`, {
-    method,
-    headers: {
-      'x-api-key': KYSHI_SECRET_KEY,
-      'Content-Type': 'application/json',
-    },
-    body: data ? JSON.stringify(data) : undefined,
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Kyshi API error: ${response.status} - ${errorText}`);
-  }
-
-  return response.json();
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -103,6 +87,8 @@ export async function POST(request: NextRequest) {
 
     // Create a pending transaction record first
     const reference = `manual_${Date.now()}_${subscriptionId}`;
+    const isMobileMoney = isMobileMoneyCountry(subscription.country_code);
+    
     const { data: transaction, error: transactionError } = await supabase
       .from('kyshi_transactions')
       .insert({
@@ -112,6 +98,9 @@ export async function POST(request: NextRequest) {
         currency: subscription.kyshi_plans.currency,
         customer_email: subscription.kyshi_customers.email,
         status: 'pending',
+        payment_method: isMobileMoney ? 'mobile_money' : 'card',
+        provider: isMobileMoney ? subscription.preferred_provider : null,
+        mobile_money_phone: subscription.payment_phone,
       })
       .select()
       .single();
@@ -129,14 +118,16 @@ export async function POST(request: NextRequest) {
     // Call Kyshi charge endpoint
     console.log(`Charging Kyshi subscription: ${subscription.kyshi_subscription_id}`);
     
-    const chargeData = {
-      subscriptionId: subscription.kyshi_subscription_id,
-      amount: subscription.kyshi_plans.amount,
-      reference: reference
-    };
-
-    // This endpoint may need to be adjusted based on Kyshi's actual charge API
-    const kyshiChargeResponse = await callKyshiAPI('/subscriptions/charge', 'POST', chargeData);
+    // Determine payment method based on country
+    const paymentMethod = isMobileMoneyCountry(subscription.country_code) ? "mobile_money" : "card";
+    
+    // Use the updated Kyshi API client
+    const kyshiChargeResponse = await kyshiApi().chargeSubscription(
+      subscription.kyshi_subscription_id,
+      paymentMethod,
+      subscription.kyshi_plans.amount,
+      reference
+    );
     
     console.log('Kyshi charge response:', kyshiChargeResponse);
 

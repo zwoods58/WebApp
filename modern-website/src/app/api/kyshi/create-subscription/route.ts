@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { kyshiApi, KyshiSubscription } from '@/lib/kyshi';
+import { 
+  isMobileMoneyCountry, 
+  getMobileMoneyProviders, 
+  getDefaultProvider,
+  getPaymentChannels 
+} from '@/lib/mobile-money-config';
 
 // Configuration
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -125,13 +131,11 @@ export async function POST(request: NextRequest) {
       kyshi_plan_code: plan.kyshi_plan_code
     });
     
-    // Define payment channels based on country
-    const channelsMap: Record<string, string[]> = {
-      'KE': ['card', 'mobile_money', 'bank_transfer'],
-      'GH': ['card', 'mobile_money', 'bank_transfer'],
-      'NG': ['card', 'bank_transfer', 'ussd'],
-      'CI': ['card', 'mobile_money', 'bank_transfer']
-    };
+    // Get mobile money configuration using centralized config
+    const isMobileMoneySubscription = isMobileMoneyCountry(countryCode);
+    const paymentChannels = getPaymentChannels(countryCode);
+    const mobileMoneyProviders = getMobileMoneyProviders(countryCode);
+    const defaultProvider = getDefaultProvider(countryCode);
 
     // Get the base URL - supports both ngrok and production
 const getBaseUrl = () => {
@@ -151,13 +155,16 @@ const baseUrl = getBaseUrl();
 const kyshiSubscriptionData = {
       customer: email,
       planCode: plan.kyshi_plan_code,
+      paymentMethod: isMobileMoneySubscription ? "mobile_money" : "card",
       country: countryCode, // Pass country to Kyshi
       callback_url: `${baseUrl}/api/kyshi/payment-success`,
       metadata: {
         country: countryCode,
-        payment_channels: channelsMap[countryCode] || ['card'],
+        payment_channels: paymentChannels,
+        mobile_money_providers: mobileMoneyProviders.map(p => p.code),
         currency: plan.currency,
-        return_url: `${baseUrl}/Beezee-App/app/${countryCode.toLowerCase()}/retail/more`
+        return_url: `${baseUrl}/Beezee-App/app/${countryCode.toLowerCase()}/retail/more`,
+        is_mobile_money_subscription: isMobileMoneySubscription
       }
     };
     
@@ -202,6 +209,9 @@ const kyshiSubscriptionData = {
         status: authorizationUrl ? 'pending' : 'active',
         current_period_start: today.toISOString().split('T')[0],
         current_period_end: nextWeek.toISOString().split('T')[0],
+        payment_method: isMobileMoneySubscription ? 'mobile_money' : 'card',
+        is_mobile_money_subscription: isMobileMoneySubscription,
+        preferred_provider: isMobileMoneySubscription ? defaultProvider?.code : null,
       })
       .select(`
         *,

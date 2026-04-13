@@ -51,10 +51,16 @@ export interface CreatePlanRequest {
 export interface CreateSubscriptionRequest {
   customer: string; // customer email
   planCode: string; // plan code from Kyshi
+  paymentMethod?: string; // 'card', 'mobile_money', 'bank_transfer', 'ussd'
   country?: string; // customer country code (e.g., 'KE', 'GH', 'NG', 'CI')
+  callback_url?: string; // webhook callback URL
   metadata?: {
     country?: string;
     payment_channels?: string[];
+    mobile_money_providers?: string[];
+    currency?: string;
+    return_url?: string;
+    is_mobile_money_subscription?: boolean;
     [key: string]: any;
   };
 }
@@ -191,9 +197,15 @@ class KyshiApiClient {
     return response.data;
   }
 
-  async chargeSubscription(subscriptionId: string): Promise<any> {
+  async chargeSubscription(subscriptionId: string, paymentMethod?: string, amount?: number, reference?: string): Promise<any> {
+    const payload: any = {};
+    if (paymentMethod) payload.paymentMethod = paymentMethod;
+    if (amount) payload.amount = amount;
+    if (reference) payload.reference = reference;
+    
     const response = await this.makeRequest<any>(`/subscriptions/${subscriptionId}/charge`, {
       method: 'POST',
+      body: JSON.stringify(payload),
     });
     return response.data;
   }
