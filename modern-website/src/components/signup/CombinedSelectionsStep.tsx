@@ -61,8 +61,7 @@ export function CombinedSelectionsStep({
   return (
     <div className="py-6 sm:py-8">
       <div className="animate-fade-in">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500/20 to-green-500/20 rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-          <Globe size={32} className="sm:size-40 text-[var(--powder-dark)]" />
+        <div className="text-center mb-6">
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-1)] mb-3 sm:mb-4 text-center">
           Set Up Your Business
@@ -162,31 +161,7 @@ export function CombinedSelectionsStep({
           </div>
         </div>
 
-        {/* Selection Summary */}
-        {allSelected && (
-          <div className="animate-fade-in">
-            <div className="bg-[var(--powder-light)] rounded-xl border border-[var(--powder-dark)]/30 p-4">
-              <div className="flex items-center justify-center gap-3 text-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{selectedCountryData?.flag}</span>
-                  <span className="font-medium text-[var(--text-1)]">{selectedCountryData?.name}</span>
-                </div>
-                <span className="text-[var(--text-3)]">·</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{selectedIndustryData?.icon}</span>
-                  <span className="font-medium text-[var(--text-1)]">{selectedIndustryData?.name}</span>
-                </div>
-                <span className="text-[var(--text-3)]">·</span>
-                <span className="font-medium text-[var(--text-1)]">{selectedSectorData?.name}</span>
               </div>
-              <div className="flex items-center justify-center mt-2">
-                <Check size={16} className="text-green-600 mr-1" />
-                <span className="text-sm text-green-600 font-medium">All selections complete</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Navigation Buttons */}
       <div className="flex gap-4 max-w-md mx-auto mt-8">

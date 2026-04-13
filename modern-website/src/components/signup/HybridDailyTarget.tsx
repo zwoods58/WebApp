@@ -101,13 +101,9 @@ export function HybridDailyTarget({
 
   return (
     <>
-      <div
-        className="text-center mb-6 fade-in"
-      >
-        <div className="w-12 h-12 bg-[var(--powder-light)]/30 rounded-2xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-3">
-          <span className="text-lg font-bold">$</span>
-        </div>
-        <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">
+      {/* Header Section */}
+      <div className="text-center mb-8 fade-in">
+        <h2 className="text-xl font-bold text-[var(--text-1)] mb-4">
           What is your daily goal?
         </h2>
         <p className="text-[var(--text-3)] text-xs">
@@ -115,46 +111,31 @@ export function HybridDailyTarget({
         </p>
       </div>
 
-      <div
-        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
-        style={{ animationDelay: '0.1s' }}
-      >
-
         {/* Quick Options */}
-        <div className="space-y-3 mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-6">
           {quickOptions.map((option, index) => (
             <button
               key={option.value}
               onClick={() => handleQuickOptionSelect(option.value)}
-              className={`p-3 rounded-lg border-2 transition-all animate-fade-in ${
+              className={`p-4 rounded-lg border-2 transition-all animate-fade-in ${
                 selectedTarget === option.value.toString() && !showCustomInput
                   ? 'border-[var(--powder-dark)] bg-[var(--powder-light)]/20'
                   : 'border-[var(--border)] hover:border-[var(--powder-mid)]'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-[var(--powder-dark)] font-bold text-sm">?</span>
-                  <div className="text-lg font-bold text-[var(--text-1)]">
-                    {formatOptionDisplay(option.value)}
-                  </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[var(--text-1)] mb-2">
+                  {formatOptionDisplay(option.value)}
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-[var(--text-1)]">{option.label}</div>
-                  <div className="text-xs text-[var(--text-3)]">{option.description}</div>
-                </div>
-                {selectedTarget === option.value.toString() && !showCustomInput && (
-                  <div className="flex justify-center animate-fade-in">
-                    <span className="text-[var(--powder-dark)] font-bold text-sm">✓</span>
-                  </div>
-                )}
+                <div className="text-sm font-medium text-[var(--text-1)]">{option.label}</div>
+                <div className="text-xs text-[var(--text-3)]">{option.description}</div>
               </div>
             </button>
           ))}
         </div>
 
         {/* Custom Input Option */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {!showCustomInput && !quickOptions.some(option => option.value.toString() === selectedTarget) && selectedTarget ? (
             <div className="animate-fade-in">
               <div className="flex items-center justify-between p-3 bg-[var(--powder-light)]/20 rounded-lg border border-[var(--powder-dark)]/30">
@@ -217,10 +198,10 @@ export function HybridDailyTarget({
             </div>
           </div>
         )}
-      </div>
+        </div>
 
         {/* Navigation */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-8">
           <button
             onClick={onPrev}
             className="flex-1 px-4 py-2.5 bg-[var(--glass-bg)] text-black font-medium rounded-lg hover:bg-[var(--glass-bg)] transition-all text-sm"
@@ -235,7 +216,6 @@ export function HybridDailyTarget({
             Next
           </button>
         </div>
-      </div>
     </>
   );
 }

@@ -152,7 +152,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       {/* Update Modal moved to app-specific layout - REMOVED from global */}
       
       {/* Main content area */}
-      <div key={pathname} className="pb-20">
+      <div key={pathname}>
         {children}
       </div>
       
@@ -161,13 +161,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
         <PWAInstallPrompt />
       </Suspense>
       
-      {/* Bottom Navigation - always show for app pages */}
-      {country && industry && (
-        <Suspense fallback={null}>
-          <BottomNav industry={industry} country={country} />
-        </Suspense>
-      )}
-      
+            
       {/* Scroll to Top Button */}
       <Suspense fallback={null}>
         <ScrollToTop />

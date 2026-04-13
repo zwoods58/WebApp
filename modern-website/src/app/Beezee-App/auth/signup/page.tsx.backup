@@ -194,12 +194,12 @@ function BeezeeSignupContent() {
         </div>
       )}
 
-      {/* Main content - allow full height */}
-      <div className="flex-1 container mx-auto px-6 py-6 flex flex-col">
+      {/* Main content - content at bottom like login page */}
+      <div className="flex-1 container mx-auto px-6 pb-6 flex flex-col justify-end">
         <div className="max-w-md mx-auto w-full">
           <div
             key={currentStep}
-            className="w-full overflow-y-auto max-h-[calc(100vh-250px)]"
+            className="w-full"
           >
             {renderStep()}
           </div>
@@ -219,7 +219,7 @@ function BeezeeSignupContent() {
 // Welcome Step Component - MATCHING LOGIN PAGE UI
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl px-5 pt-5 mx-auto max-w-sm w-full">
+    <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl px-5 pt-5 mx-auto max-w-sm w-full">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
             Welcome to BeeZee
@@ -259,7 +259,7 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
   const selectedCountry = countries.find(c => c.code === selected);
   
   return (
-    <div className="fade-in">
+    <div>
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">
           Select Your Country
@@ -269,7 +269,7 @@ function CountrySelection({ selected, onSelect, onNext, onPrev }: {
         </p>
       </div>
 
-      <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
+      <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
         <div className="space-y-4">
           <div className="relative">
             <select
@@ -328,7 +328,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="fade-in">
+    <div>
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">
           Choose Your Industry
@@ -338,7 +338,7 @@ function IndustrySelection({ selected, onSelect, onNext, onPrev }: {
         </p>
       </div>
 
-      <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
+      <div className="" bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5>
         <div className="space-y-2">
           {industries.map((industry) => (
             <button
@@ -389,7 +389,7 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
   onPrev: () => void; 
 }) {
   return (
-    <div className="fade-in">
+    <div>
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">
           Tell us about yourself
@@ -399,7 +399,7 @@ function BasicInfo({ formData, onChange, onNext, onPrev }: {
         </p>
       </div>
 
-      <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
+      <div className="" bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5>
         <form className="space-y-4">
           <div>
             <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">

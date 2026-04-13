@@ -174,15 +174,12 @@ export function CombinedSecurityStep({
       </div>
 
       <div
-        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
         style={{ animationDelay: '0.1s' }}
       >
         {/* PIN Setup Section */}
         <div className="animate-fade-in">
           <div className="text-center mb-4 sm:mb-6">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <Lock size={24} className="sm:size-32 text-white" />
-            </div>
             <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-1)] mb-2">Create Your PIN</h2>
             <p className="text-sm sm:text-base text-[var(--text-2)]">Choose a 6-digit PIN for secure access to your account</p>
           </div>
@@ -215,7 +212,7 @@ export function CombinedSecurityStep({
                       onChange={(e) => handlePinChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       onPaste={(e) => handlePaste(e)}
-                      className="w-11 h-11 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 border-[var(--border)] rounded-lg focus:border-[var(--powder-dark)] focus:ring-2 focus:ring-[var(--powder-dark)]/20 transition-colors"
+                      className="w-8 h-8 sm:w-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 border-[var(--border)] rounded-lg focus:border-[var(--powder-dark)] focus:ring-2 focus:ring-[var(--powder-dark)]/20 transition-colors"
                       disabled={isLoading}
                     />
                   ))}
@@ -247,7 +244,7 @@ export function CombinedSecurityStep({
                       onChange={(e) => handlePinChange(index, e.target.value, true)}
                       onKeyDown={(e) => handleKeyDown(index, e, true)}
                       onPaste={(e) => handlePaste(e, true)}
-                      className={`w-11 h-11 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold border-2 rounded-lg focus:ring-2 transition-colors ${
+                      className={`w-8 h-8 sm:w-10 sm:h-12 text-center text-lg sm:text-xl font-bold border-2 rounded-lg focus:ring-2 transition-colors ${
                         digit ? 'border-[var(--powder-dark)] ring-2 ring-[var(--powder-dark)]/20' : 'border-[var(--border)]'
                       } ${!pinsMatch && isConfirmPinFilled ? 'border-red-500 ring-2 ring-red-200' : ''}`}
                       disabled={isLoading}
@@ -279,10 +276,7 @@ export function CombinedSecurityStep({
         {/* Security Questions Section */}
         <div className="animate-fade-in">
           <div className="text-center mb-4 sm:mb-6">
-            <div className="w-16 h-16 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-4">
-              <Shield size={40} strokeWidth={1.5} />
-            </div>
-            <h2 className="text-2xl font-bold text-[var(--text-1)] mb-2">Security Question</h2>
+            <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">Question</h2>
             <p className="text-sm text-[var(--text-2)] mb-2">Choose a security question to help recover your account</p>
             <p className="text-sm text-[var(--text-3)]">You'll need to answer this question to reset your PIN</p>
           </div>

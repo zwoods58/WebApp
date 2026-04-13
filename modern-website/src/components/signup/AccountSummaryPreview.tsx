@@ -65,9 +65,6 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
       <div
         className="text-center mb-6 fade-in"
       >
-        <div className="w-12 h-12 bg-[var(--powder-light)]/30 rounded-2xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-3">
-          <span className="text-lg font-bold">?</span>
-        </div>
         <h2 className="text-xl font-bold text-[var(--text-1)] mb-2">
           Review Your Business Profile
         </h2>
@@ -88,7 +85,7 @@ export function AccountSummaryPreview({ formData, onComplete, onPrev, isLoading 
       </div>
 
       <div
-        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 max-h-80 overflow-y-auto"
+        className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
         style={{ animationDelay: '0.1s' }}
       >
 
