@@ -163,7 +163,7 @@ const kyshiSubscriptionData = {
         payment_channels: paymentChannels,
         mobile_money_providers: mobileMoneyProviders.map(p => p.code),
         currency: plan.currency,
-        return_url: redirectUrl || `https://atarwebb.com/Beezee-App/app/${countryCode.toLowerCase()}/food/more/`,
+        return_url: redirectUrl || `${baseUrl}/Beezee-App/app/${countryCode.toLowerCase()}/food/more/`,
         is_mobile_money_subscription: isMobileMoneySubscription,
         // Enhanced business data
         business_type: 'small_business',
