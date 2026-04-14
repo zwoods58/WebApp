@@ -29,34 +29,19 @@ export async function POST(request: NextRequest) {
     console.log(`Manual charge for subscription: ${subscriptionId}`);
 
     // Get the base URL - supports both ngrok and production
-const getBaseUrl = () => {
-  // Check for ngrok URL first (for local development)
-  if (process.env.NGROK_URL) {
-    console.log('Using ngrok URL:', process.env.NGROK_URL);
-    return process.env.NGROK_URL;
-  }
-  // Fall back to production URL
-  const productionUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com';
-  console.log('Using production URL:', productionUrl);
-  return productionUrl;
-};
+    const getBaseUrl = () => {
+      // Check for ngrok URL first (for local development)
+      if (process.env.NGROK_URL) {
+        console.log('Using ngrok URL:', process.env.NGROK_URL);
+        return process.env.NGROK_URL;
+      }
+      // Fall back to production URL
+      const productionUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com';
+      console.log('Using production URL:', productionUrl);
+      return productionUrl;
+    };
 
-const baseUrl = getBaseUrl();
-
-    // Get the base URL - supports both ngrok and production
-const getBaseUrl = () => {
-  // Check for ngrok URL first (for local development)
-  if (process.env.NGROK_URL) {
-    console.log('Using ngrok URL:', process.env.NGROK_URL);
-    return process.env.NGROK_URL;
-  }
-  // Fall back to production URL
-  const productionUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourdomain.com';
-  console.log('Using production URL:', productionUrl);
-  return productionUrl;
-};
-
-const baseUrl = getBaseUrl();
+    const baseUrl = getBaseUrl();
 
     // Get subscription from database
     const { data: subscription, error: subError } = await supabase
