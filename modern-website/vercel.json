@@ -117,10 +117,5 @@
       "path": "/api/cron/charge-due-subscriptions",
       "schedule": "0 * * * *"
     }
-  ],
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_SITE_URL": "https://web-app1-dsvkfjaqz-zwoods58s-projects.vercel.app"
-    }
-  }
+  ]
 }
