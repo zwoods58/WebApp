@@ -5,6 +5,7 @@ import { SubscriptionAPI } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
+import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const OrangeColors = {
   primary: '#FF6600',
@@ -228,7 +229,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
                 customerFirstName={userName.split(' ')[0]}
                 customerLastName={userName.split(' ')[1] || 'Customer'}
                 countryCode="CI"
-                redirectUrl={`https://beezee.app/payment/return`}
+                redirectUrl={`https://jonathon-precognizable-contestably.ngrok-free.dev/payment/return`}
                 onSuccess={handlePaymentSuccess}
                 onError={handlePaymentError}
                 className="w-full py-3 rounded-xl font-semibold text-lg"

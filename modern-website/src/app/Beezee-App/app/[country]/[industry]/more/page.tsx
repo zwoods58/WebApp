@@ -249,9 +249,6 @@ export default function MorePage() {
       {/* Main Content - Dynamic scrolling */}
       <main className="flex-1">
         <div className="p-5 max-w-md mx-auto pb-32">
-        <h1 className="text-2xl font-bold text-[var(--text-1)] mb-6 spring-enter">
-          {t('nav.more', 'More')}
-        </h1>
 
         {/* Profile Card */}
         <div className="fade-in mt-8">

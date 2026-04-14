@@ -726,10 +726,6 @@ export default function ServicesPage() {
       <Header industry={industry} country={country} />
       
       <div className="p-4 max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 spring-enter">
-          {pageTitle}
-        </h1>
-
         {/* Tab Slider - Only show for industries that have services */}
         {shouldShowServicesTab && (
           <div className="fade-in mt-8">

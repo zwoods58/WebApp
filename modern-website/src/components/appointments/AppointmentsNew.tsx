@@ -234,10 +234,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
       
       <div className="container mx-auto px-4 py-6 pb-20">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {t('appointments.title', 'Appointments')}
-          </h1>
+        <div className="flex items-center justify-end mb-6">
           <button
             onClick={() => setShowCreateSheet(true)}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

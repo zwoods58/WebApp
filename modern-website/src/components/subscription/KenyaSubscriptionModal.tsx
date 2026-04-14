@@ -6,6 +6,7 @@ import { useToastContext } from '@/providers/ToastProvider';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
+import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const MpesaColors = {
   primary: '#1B5E20',
@@ -92,6 +93,22 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
     } catch (error) {
       console.error('Failed to load plan:', error);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    setStep('success');
+    showSuccess(currentTexts.success);
+    setTimeout(() => {
+      onSuccess?.();
+      onClose();
+      setStep('form');
+      setPhoneNumber('');
+    }, 3000);
+  };
+
+  const handlePaymentError = (error: string) => {
+    showError(error);
+    setStep('form');
   };
 
   const handlePaymentSuccess = () => {
@@ -202,7 +219,7 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
               customerFirstName={userName.split(' ')[0]}
               customerLastName={userName.split(' ')[1] || 'Customer'}
               countryCode="KE"
-              redirectUrl={`https://beezee.app/payment/return`}
+              redirectUrl={`https://jonathon-precognizable-contestably.ngrok-free.dev/payment/return`}
               onSuccess={handlePaymentSuccess}
               onError={handlePaymentError}
               className="w-full py-3 rounded-xl font-semibold text-lg"

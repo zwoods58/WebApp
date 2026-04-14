@@ -163,7 +163,7 @@ const kyshiSubscriptionData = {
         payment_channels: paymentChannels,
         mobile_money_providers: mobileMoneyProviders.map(p => p.code),
         currency: plan.currency,
-        return_url: redirectUrl || `https://beezee.app/payment/return`,
+        return_url: redirectUrl || `https://jonathon-precognizable-contestably.ngrok-free.dev/Beezee-App/app/${countryCode.toLowerCase()}/food/more/`,
         is_mobile_money_subscription: isMobileMoneySubscription
       }
     };
