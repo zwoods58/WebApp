@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     });
     
     // Step 1: Verify webhook signature (security)
-    const webhookSecret = 'c4accdbb6b2f49608ef729cd9afed411';
+    const webhookSecret = process.env.KYSHI_WEBHOOK_SECRET;
     if (webhookSecret && signature) {
       const expectedSignature = crypto
         .createHmac('sha256', webhookSecret)
@@ -182,88 +182,49 @@ async function handleSuccessfulPayment(reference: string, data: {
   customerEmail?: string;
   customerName?: string;
 }) {
-  console.log(`=== PROCESSING SUCCESSFUL PAYMENT ===`);
-  console.log(`Reference: ${reference}`);
-  console.log(`Amount: ${data.amount} ${data.currency}`);
-  console.log(`Customer: ${data.customerEmail || data.customerName || 'Unknown'}`);
-  
-  // Business logic for Kyshi subscriptions:
-  // - Activate subscription in kyshi_subscriptions table
-  // - Link transaction to subscription
-  // - Update subscription period
-  
+  console.log(`=== PROCESSING SUCCESSFUL PAYMENT: ${reference} ===`);
+
   try {
-    if (data.customerEmail) {
-      // Find customer by email and activate their subscription
-      const { data: customer, error: customerError } = await supabaseAdmin
-        .from('kyshi_customers')
-        .select('*')
-        .eq('email', data.customerEmail)
-        .single();
-      
-      if (!customerError && customer) {
-        console.log(`Found customer ${customer.id}, finding subscription`);
-        
-        // Find the subscription that matches this transaction reference
-        const { data: subscription, error: subscriptionError } = await supabaseAdmin
-          .from('kyshi_subscriptions')
-          .select('*')
-          .eq('customer_id', customer.id)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-        
-        if (!subscriptionError && subscription) {
-          console.log(`Found subscription ${subscription.id}, activating`);
-          
-          // Calculate new billing period (7 days from now)
-          const subscriptionDays = getSubscriptionDuration(data.currency);
-          const today = new Date();
-          const nextWeek = new Date(today.getTime() + subscriptionDays * 24 * 60 * 60 * 1000);
-          
-          // Update subscription status to active
-          const { error: updateError } = await supabaseAdmin
-            .from('kyshi_subscriptions')
-            .update({
-              status: 'active',
-              current_period_start: today.toISOString().split('T')[0],
-              current_period_end: nextWeek.toISOString().split('T')[0],
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', subscription.id);
-          
-          if (updateError) {
-            console.error('Error updating subscription:', updateError);
-          } else {
-            console.log(`Subscription ${subscription.id} activated successfully`);
-            console.log(`New billing period: ${today.toISOString().split('T')[0]} to ${nextWeek.toISOString().split('T')[0]}`);
-          }
-        } else {
-          console.log('No pending subscription found for customer');
-          console.log('SubscriptionError:', subscriptionError);
-        }
-        
-        // Link transaction to subscription if we have both
-        if (subscription) {
-          try {
-            await supabaseAdmin
-              .from('kyshi_transactions')
-              .update({ subscription_id: subscription.id })
-              .eq('kyshi_reference', reference);
-            
-            console.log(`Transaction ${reference} linked to subscription ${subscription.id}`);
-          } catch (linkError) {
-            console.error('Error linking transaction to subscription:', linkError);
-          }
-        }
-        
-      } else {
-        console.log(`Customer not found for email ${data.customerEmail}`);
-        console.log('CustomerError:', customerError);
-      }
+    // Look up transaction first — it now has subscription_id on it
+    const { data: transaction, error: txError } = await supabaseAdmin
+      .from('kyshi_transactions')
+      .select('*, kyshi_subscriptions(*)')
+      .eq('kyshi_reference', reference)
+      .single();
+
+    if (txError || !transaction) {
+      console.error('Transaction not found for reference:', reference, txError);
+      return;
     }
-    
+
+    const subscription = transaction.kyshi_subscriptions;
+
+    if (!subscription) {
+      console.error('No subscription linked to transaction:', reference);
+      return;
+    }
+
+    console.log(`Found subscription ${subscription.id}, activating...`);
+
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    const { error: updateError } = await supabaseAdmin
+      .from('kyshi_subscriptions')
+      .update({
+        status: 'active',
+        current_period_start: today.toISOString().split('T')[0],
+        current_period_end: nextWeek.toISOString().split('T')[0],
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', subscription.id);
+
+    if (updateError) {
+      console.error('Error activating subscription:', updateError);
+    } else {
+      console.log(`✅ Subscription ${subscription.id} activated`);
+    }
+
     console.log(`=== PAYMENT PROCESSING COMPLETE ===`);
     
     // Step 6: Send customer data to Kyshi dashboard

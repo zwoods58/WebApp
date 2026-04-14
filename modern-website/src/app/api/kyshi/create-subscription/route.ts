@@ -184,6 +184,7 @@ const kyshiSubscriptionData = {
     console.log('Kyshi subscription response:', {
       id: kyshiSubscription.id,
       code: kyshiSubscription.code,
+      reference: kyshiSubscription.reference,
       authorizationUrl: kyshiSubscription.authorizationUrl,
       isActive: kyshiSubscription.isActive,
       plan: kyshiSubscription.plan
@@ -191,6 +192,7 @@ const kyshiSubscriptionData = {
     
     const kyshiSubscriptionId = kyshiSubscription.id;
     let authorizationUrl = kyshiSubscription.authorizationUrl;
+    const kyshiReference = kyshiSubscription.reference;
 
     
     if (!kyshiSubscriptionId) {
@@ -248,6 +250,29 @@ const kyshiSubscriptionData = {
     }
 
     console.log(`Created subscription: ${subscription.id}`);
+
+    // Create initial transaction record using the reference from Kyshi
+    if (kyshiReference) {
+      console.log(`Creating transaction with reference: ${kyshiReference}`);
+      const { error: txInsertError } = await supabase
+        .from('kyshi_transactions')
+        .insert({
+          kyshi_reference: kyshiReference,
+          subscription_id: subscription.id,
+          amount: plan.amount,
+          currency: plan.currency,
+          customer_email: email,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        });
+
+      if (txInsertError) {
+        console.error('Error creating transaction record:', txInsertError);
+        // Don't fail the whole flow - webhook will create it if missing
+      } else {
+        console.log(`Transaction record created for reference: ${kyshiReference}`);
+      }
+    }
 
     // Send additional customer data to Kyshi after subscription creation
     try {
