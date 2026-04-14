@@ -1,0 +1,12 @@
+NEXT_PUBLIC_APP_URL=https://atarwebb.com
+NEXT_PUBLIC_SITE_URL=https://atarwebb.com
+NGROK_URL=https://atarwebb.com
+ALLOWED_ORIGINS=https://www.atarwebb.com,https://atarwebb.com,http://localhost:3000,https://localhost:3000
+KYSHI_SECRET_KEY=sk_test_3dd6532c95634d1da5888520b9bf96c8
+KYSHI_WEBHOOK_SECRET=c4accdbb6b2f49608ef729cd9afed411
+KYSHI_PUBLIC_KEY=pk_test_da16574203b943fd82c04964eeffa7d5
+KYSHI_API_URL=https://api.kyshi.co/v1
+KYSHI_BASE_URL=https://api.kyshi.co/v1
+SUPABASE_URL=https://zruprmhkcqhgzydjfhrk.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://zruprmhkcqhgzydjfhrk.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpydXBybWhrY3FoZ3p5ZGpmaHJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTczMjg1MCwiZXhwIjoyMDg3MzA4ODUwfQ.GI-gSw_lna1O-O3Dad0M898_h0b9xgA2ILYQ_DcdVNo

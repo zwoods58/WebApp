@@ -111,11 +111,5 @@
         }
       ]
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/charge-due-subscriptions",
-      "schedule": "0 * * * *"
-    }
   ]
 }
