@@ -8,16 +8,9 @@ export default function BeezeeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Critical CSS is already included in globals.css */}
-      </head>
-      <body suppressHydrationWarning>
-        <QueryProvider>
-          <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
-        </QueryProvider>
-      </body>
-    </html>
+    <QueryProvider>
+      <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
+    </QueryProvider>
   );
 }
 

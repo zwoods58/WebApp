@@ -31,7 +31,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <UnifiedAuthProvider>
         <RefreshProvider>
-          {children}
+          <div className="min-h-screen overflow-y-auto">
+            {children}
+          </div>
         </RefreshProvider>
       </UnifiedAuthProvider>
     </ErrorBoundary>

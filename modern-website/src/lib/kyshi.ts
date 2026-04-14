@@ -197,6 +197,34 @@ class KyshiApiClient {
     return response.data;
   }
 
+  async getSubscriptionByCode(subscriptionCode: string): Promise<KyshiSubscription> {
+    const response = await this.makeRequest<KyshiSubscription>(`/subscriptions/${subscriptionCode}`);
+    return response.data;
+  }
+
+  async verifyTransaction(reference: string): Promise<any> {
+    const response = await this.makeRequest<any>(`/subscriptions/${reference}`);
+    return response.data;
+  }
+
+  async getTransactionStatus(reference: string): Promise<{ status: string; paid: boolean; data?: any }> {
+    try {
+      const subscriptionData = await this.verifyTransaction(reference);
+      return {
+        status: subscriptionData.isActive ? 'success' : 'pending',
+        paid: subscriptionData.isActive || false,
+        data: subscriptionData
+      };
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+      return {
+        status: 'error',
+        paid: false,
+        data: null
+      };
+    }
+  }
+
   async chargeSubscription(subscriptionId: string, paymentMethod?: string, amount?: number, reference?: string): Promise<any> {
     const payload: any = {};
     if (paymentMethod) payload.paymentMethod = paymentMethod;

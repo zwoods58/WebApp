@@ -9,7 +9,23 @@ import { swManager } from '@/lib/serviceWorker';
 import { syncProcessor } from '@/lib/sync-processor';
 import { syncManager } from '@/lib/sync-manager';
 
-type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'beehive' | 'targets' | 'appointments';
+// Helper function to generate UUID with fallback for Service Worker environments
+const generateUUID = (): string => {
+  // Check if crypto.randomUUID is available
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  
+  // Fallback for older environments or Service Workers
+  // Using Math.random() as fallback - not cryptographically secure but works for IDs
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
+type TableName = 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'beehive' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
 
 export const useIndustryDataNew = ({
   industry,
@@ -82,6 +98,16 @@ export const useIndustryDataNew = ({
             break;
           case 'targets':
             cachedData = await db.targets.where('business_id').equals(businessId).toArray();
+            break;
+          case 'beehive':
+          case 'beehive_requests':
+            cachedData = await db.beehive_requests.where('business_id').equals(businessId).toArray();
+            break;
+          case 'beehive_votes':
+            cachedData = await db.beehive_votes.where('business_id').equals(businessId).toArray();
+            break;
+          case 'beehive_comments':
+            cachedData = await db.beehive_comments.where('business_id').equals(businessId).toArray();
             break;
           default:
             cachedData = await db.table(table as any).where('business_id').equals(businessId).toArray().catch(() => []);
@@ -216,6 +242,44 @@ export const useIndustryDataNew = ({
           freshData = tgtData || [];
           error = tgtError;
           break;
+        case 'beehive':
+        case 'beehive_requests':
+          // Filter by industry and country for beehive requests
+          let beehiveQuery = supabase
+            .from('beehive_requests')
+            .select('*')
+            .eq('business_id', businessId);
+          
+          if (industry) {
+            beehiveQuery = beehiveQuery.eq('industry', industry);
+          }
+          if (country) {
+            beehiveQuery = beehiveQuery.eq('country', country);
+          }
+          
+          const { data: bhData, error: bhError } = await beehiveQuery
+            .order('created_at', { ascending: false });
+          freshData = bhData || [];
+          error = bhError;
+          break;
+        case 'beehive_votes':
+          const { data: vData, error: vError } = await supabase
+            .from('beehive_votes')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('created_at', { ascending: false });
+          freshData = vData || [];
+          error = vError;
+          break;
+        case 'beehive_comments':
+          const { data: cData, error: cError } = await supabase
+            .from('beehive_comments')
+            .select('*')
+            .eq('business_id', businessId)
+            .order('created_at', { ascending: false });
+          freshData = cData || [];
+          error = cError;
+          break;
         default:
           const { data: gData, error: gError } = await supabase
             .from(table)
@@ -253,7 +317,7 @@ export const useIndustryDataNew = ({
     mutationFn: async (newData: any) => {
       if (!businessId) throw new Error('Business ID required for create operation');
       
-      const operationId = crypto.randomUUID();
+      const operationId = generateUUID();
       
       const dataToStore = {
         ...newData,
@@ -271,7 +335,7 @@ export const useIndustryDataNew = ({
         table: table as any,
         data: dataToStore,
         timestamp: Date.now(),
-        idempotencyKey: crypto.randomUUID(),
+        idempotencyKey: generateUUID(),
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
@@ -362,7 +426,7 @@ export const useIndustryDataNew = ({
         ? { ...existingRecord, ...data, updated_at: new Date().toISOString() }
         : { ...data, id, updated_at: new Date().toISOString() };
       
-      const operationId = crypto.randomUUID();
+      const operationId = generateUUID();
       
       // Add to offline queue
       const operation: QueuedOperation = {
@@ -372,7 +436,7 @@ export const useIndustryDataNew = ({
         entityId: id,
         data: mergedData,
         timestamp: Date.now(),
-        idempotencyKey: crypto.randomUUID(),
+        idempotencyKey: generateUUID(),
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
@@ -431,7 +495,7 @@ export const useIndustryDataNew = ({
       
       console.log(`🗑️ [Hard Delete ${table}] Starting delete for item:`, id);
       
-      const operationId = crypto.randomUUID();
+      const operationId = generateUUID();
       
       // Add to offline queue
       const operation: QueuedOperation = {
@@ -441,7 +505,7 @@ export const useIndustryDataNew = ({
         entityId: id,
         data: null,
         timestamp: Date.now(),
-        idempotencyKey: crypto.randomUUID(),
+        idempotencyKey: generateUUID(),
         status: 'pending',
         retryCount: 0,
         businessId: businessId,
@@ -511,6 +575,16 @@ export const useIndustryDataNew = ({
         case 'targets':
           await db.targets.put(data);
           break;
+        case 'beehive':
+        case 'beehive_requests':
+          await db.beehive_requests.put(data);
+          break;
+        case 'beehive_votes':
+          await db.beehive_votes.put(data);
+          break;
+        case 'beehive_comments':
+          await db.beehive_comments.put(data);
+          break;
         default:
           await db.table(tableName as any).put(data);
       }
@@ -544,6 +618,16 @@ export const useIndustryDataNew = ({
           break;
         case 'targets':
           await db.targets.delete(id);
+          break;
+        case 'beehive':
+        case 'beehive_requests':
+          await db.beehive_requests.delete(id);
+          break;
+        case 'beehive_votes':
+          await db.beehive_votes.delete(id);
+          break;
+        case 'beehive_comments':
+          await db.beehive_comments.delete(id);
           break;
         default:
           await db.table(tableName as any).delete(id);

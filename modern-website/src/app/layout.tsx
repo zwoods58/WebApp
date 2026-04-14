@@ -125,11 +125,13 @@ export default function RootLayout({
         <link rel="icon" href="/atarwebb-favicon-white.png" sizes="512x512" />
         <link rel="apple-touch-icon" href="/atarwebb-favicon-white.png" />
       </head>
-      <BodyWrapper className={bodyClassName}>
-        {children}
-        {/* Modal portal root - renders above everything */}
-        <div id="modal-root" />
-      </BodyWrapper>
+      <body className={bodyClassName}>
+        <BodyWrapper>
+          {children}
+          {/* Modal portal root - renders above everything */}
+          <div id="modal-root" />
+        </BodyWrapper>
+      </body>
     </html>
   );
 }

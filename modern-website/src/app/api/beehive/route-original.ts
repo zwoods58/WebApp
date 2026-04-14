@@ -28,49 +28,33 @@ async function beehiveHandler(request: NextRequest) {
 
     switch (action) {
       case 'addRequest':
-        // Validate business_id exists in businesses table
-        let validBusinessId = data.business_id;
+        // Use userId as business_id for beehive operations (standardized authentication)
+        const requestBusinessId = userId;
         
-        if (data.business_id) {
+        // Validate business_id exists in businesses table
+        let validBusinessId = requestBusinessId;
+        
+        if (requestBusinessId) {
           const { data: businessExists } = await supabaseAdmin
             .from('businesses')
             .select('id')
-            .eq('id', data.business_id)
+            .eq('id', requestBusinessId)
             .single();
           
           if (!businessExists) {
-            console.log('Business ID does not exist, setting to null:', data.business_id);
+            console.log('Business ID does not exist, setting to null:', requestBusinessId);
             validBusinessId = null;
           }
         }
         
-        // Validate user_id exists in users table (or set to null if no users table)
-        let validUserId = userId;
-        
-        // Check if there's a users table and if user_id exists
-        try {
-          const { data: userExists } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('id', userId)
-            .single();
-          
-          if (!userExists) {
-            console.log('User ID does not exist in users table, setting to null:', userId);
-            validUserId = null;
-          }
-        } catch (error) {
-          // If users table doesn't exist, we'll allow the user_id as-is
-          console.log('Users table may not exist, allowing user_id as-is');
-        }
-        
-        // Insert with validated IDs
+        // Insert with business_id (no user_id validation needed)
         const { data: requestData, error: addError } = await supabaseAdmin
           .from('beehive_requests')
           .insert([{
             ...data,
             business_id: validBusinessId,
-            user_id: validUserId
+            country: country || 'ke', // Ensure country is set
+            industry: industry || 'retail' // Ensure industry is set
           }])
           .select()
           .single();
@@ -100,39 +84,36 @@ async function beehiveHandler(request: NextRequest) {
       case 'voteOnRequest':
         const { requestId, voteType } = data;
         
+        console.log('🗳️ API: Vote request received:', { requestId, voteType, userId });
+        
         // Convert voteType to database format
         const dbVoteType = voteType === 'up' ? 'upvote' : 'downvote';
         
-        // Validate user_id exists in users table (or set to null if no users table)
-        let validVoteUserId = userId;
+        // Use userId as business_id for beehive operations
+        const voteBusinessId = userId;
         
-        try {
-          const { data: userExists } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('id', userId)
-            .single();
-          
-          if (!userExists) {
-            console.log('User ID does not exist in users table, setting to null:', userId);
-            validVoteUserId = null;
-          }
-        } catch (error) {
-          // If users table doesn't exist, we'll allow the user_id as-is
-          console.log('Users table may not exist, allowing user_id as-is');
+        if (!voteBusinessId) {
+          console.error('❌ No business ID provided for vote');
+          return NextResponse.json({ error: 'Business ID required' }, { status: 400 });
         }
         
         // Check for existing vote
-        const { data: existingVote } = await supabaseAdmin
+        const { data: existingVote, error: voteCheckError } = await supabaseAdmin
           .from('beehive_votes')
           .select('*')
           .eq('request_id', requestId)
-          .eq('user_id', validVoteUserId)
+          .eq('business_id', voteBusinessId)
           .single();
+          
+        if (voteCheckError && voteCheckError.code !== 'PGRST116') {
+          console.error('❌ Error checking existing vote:', voteCheckError);
+        }
 
         if (existingVote) {
+          console.log('🔄 Existing vote found:', existingVote);
           if (existingVote.vote_type === dbVoteType) {
             // Remove vote
+            console.log('➖ Removing vote');
             await supabaseAdmin
               .from('beehive_votes')
               .delete()
@@ -147,13 +128,16 @@ async function beehiveHandler(request: NextRequest) {
             
             if (request) {
               const updateField = voteType === 'up' ? 'upvotes_count' : 'downvotes_count';
+              const newCount = Math.max(0, request[updateField] - 1);
+              console.log(`📊 Updating ${updateField}: ${request[updateField]} → ${newCount}`);
               await supabaseAdmin
                 .from('beehive_requests')
-                .update({ [updateField]: Math.max(0, request[updateField] - 1) })
+                .update({ [updateField]: newCount })
                 .eq('id', requestId);
             }
           } else {
             // Change vote type
+            console.log('🔄 Changing vote type');
             await supabaseAdmin
               .from('beehive_votes')
               .update({ vote_type: dbVoteType })
@@ -169,24 +153,33 @@ async function beehiveHandler(request: NextRequest) {
             if (request) {
               const incrementField = voteType === 'up' ? 'upvotes_count' : 'downvotes_count';
               const decrementField = voteType === 'up' ? 'downvotes_count' : 'upvotes_count';
+              const newIncrement = request[incrementField] + 1;
+              const newDecrement = Math.max(0, request[decrementField] - 1);
+              console.log(`📊 Updating counts: ${incrementField} ${request[incrementField]} → ${newIncrement}, ${decrementField} ${request[decrementField]} → ${newDecrement}`);
               await supabaseAdmin
                 .from('beehive_requests')
                 .update({
-                  [incrementField]: request[incrementField] + 1,
-                  [decrementField]: Math.max(0, request[decrementField] - 1)
+                  [incrementField]: newIncrement,
+                  [decrementField]: newDecrement
                 })
                 .eq('id', requestId);
             }
           }
         } else {
           // Create new vote
-          await supabaseAdmin
+          console.log('➕ Creating new vote');
+          const { error: insertError } = await supabaseAdmin
             .from('beehive_votes')
             .insert([{
               request_id: requestId,
-              user_id: validVoteUserId,
+              business_id: voteBusinessId,
               vote_type: dbVoteType
             }]);
+            
+          if (insertError) {
+            console.error('❌ Error inserting vote:', insertError);
+            throw insertError;
+          }
 
           // Update vote count
           const { data: request } = await supabaseAdmin
@@ -197,9 +190,11 @@ async function beehiveHandler(request: NextRequest) {
           
           if (request) {
             const updateField = voteType === 'up' ? 'upvotes_count' : 'downvotes_count';
+            const newCount = request[updateField] + 1;
+            console.log(`📊 Updating ${updateField}: ${request[updateField]} → ${newCount}`);
             await supabaseAdmin
               .from('beehive_requests')
-              .update({ [updateField]: request[updateField] + 1 })
+              .update({ [updateField]: newCount })
               .eq('id', requestId);
           }
         }
@@ -209,20 +204,14 @@ async function beehiveHandler(request: NextRequest) {
       case 'addComment':
         const { requestId: commentRequestId, comment_text } = data;
         
-        // Validate business_id exists in businesses table
-        let validCommentBusinessId = userId;
+        console.log('💬 API: Add comment request:', { commentRequestId, comment_text, userId });
         
-        if (userId) {
-          const { data: businessExists } = await supabaseAdmin
-            .from('businesses')
-            .select('id')
-            .eq('id', userId)
-            .single();
-          
-          if (!businessExists) {
-            console.log('Business ID does not exist, setting to null:', userId);
-            validCommentBusinessId = null;
-          }
+        // Use userId as business_id for beehive operations
+        const commentBusinessId = userId;
+        
+        if (!commentBusinessId) {
+          console.error('❌ No business ID provided for comment');
+          return NextResponse.json({ error: 'Business ID required' }, { status: 400 });
         }
         
         // Add comment
@@ -230,11 +219,18 @@ async function beehiveHandler(request: NextRequest) {
           .from('beehive_comments')
           .insert([{
             request_id: commentRequestId,
-            business_id: validCommentBusinessId,
+            business_id: commentBusinessId,
             comment_text: comment_text
           }])
           .select()
           .single();
+          
+        if (commentError) {
+          console.error('❌ Error inserting comment:', commentError);
+          throw commentError;
+        }
+        
+        console.log('✅ Comment inserted successfully:', commentData);
 
         if (commentError) throw commentError;
 
@@ -331,11 +327,11 @@ async function beehiveHandler(request: NextRequest) {
       case 'getUserVotes':
         const { requestIds } = data;
         
-        // Get user's votes for specific requests
+        // Get business's votes for specific requests
         let votesQuery = supabaseAdmin
           .from('beehive_votes')
           .select('*')
-          .eq('user_id', userId);
+          .eq('business_id', userId);
           
         if (requestIds && requestIds.length > 0) {
           votesQuery = votesQuery.in('request_id', requestIds);

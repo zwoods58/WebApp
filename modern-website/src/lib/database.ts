@@ -121,11 +121,88 @@ export interface StoredAppointment {
   _deletedAt?: number;
 }
 
+// Credit items interface (for credit line items)
+export interface StoredCreditItem {
+  id: string;
+  credit_id: string;
+  item_name: string;
+  quantity: number;
+  unit_price: number;
+  total_amount: number;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  _offlineId?: string;
+  _pendingUpdate?: string;
+  _deleted?: boolean;
+  _deletedAt?: number;
+}
+
 // Offline operation queue
+// BeeHive table interfaces matching Supabase schema
+export interface StoredBeehiveRequest {
+  id: string;
+  business_id: string;
+  user_id?: string;
+  country: string;
+  industry: string;
+  title: string;
+  description: string;
+  category?: string;
+  status: 'open' | 'in_progress' | 'completed' | 'closed';
+  upvotes_count: number;
+  downvotes_count: number;
+  comments_count: number;
+  is_featured: boolean;
+  priority: 'low' | 'medium' | 'high';
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  deleted_by?: string;
+  created_by?: string;
+  updated_by?: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  _offlineId?: string;
+  _pendingUpdate?: string;
+  _deleted?: boolean;
+  _deletedAt?: number;
+}
+
+export interface StoredBeehiveVote {
+  id: string;
+  request_id: string;
+  business_id: string;
+  vote_type: 'upvote' | 'downvote';
+  created_at: string;
+  updated_at: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  _offlineId?: string;
+  _pendingUpdate?: string;
+  _deleted?: boolean;
+  _deletedAt?: number;
+}
+
+export interface StoredBeehiveComment {
+  id: string;
+  request_id: string;
+  business_id: string;
+  comment_text: string;
+  parent_comment_id?: string;
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  deleted_by?: string;
+  syncStatus: 'synced' | 'pending' | 'conflict';
+  _offlineId?: string;
+  _pendingUpdate?: string;
+  _deleted?: boolean;
+  _deletedAt?: number;
+}
+
 export interface QueuedOperation {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
-  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'appointments';
+  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
   entityId?: string;
   data: any;
   timestamp: number;
@@ -141,10 +218,14 @@ export class BeezeeDatabase extends Dexie {
   transactions!: Table<StoredTransaction, string>;
   inventory!: Table<StoredInventory, string>;
   credit!: Table<StoredCredit, string>;
+  credit_items!: Table<StoredCreditItem, string>;
   expenses!: Table<StoredExpense, string>;
   targets!: Table<StoredTarget, string>;
   services!: Table<StoredService, string>;
   appointments!: Table<StoredAppointment, string>;
+  beehive_requests!: Table<StoredBeehiveRequest, string>;
+  beehive_votes!: Table<StoredBeehiveVote, string>;
+  beehive_comments!: Table<StoredBeehiveComment, string>;
   operations_queue!: Table<QueuedOperation, string>;
   sync_metadata!: Table<any, string>;
 
@@ -321,7 +402,7 @@ export class BeezeeDatabase extends Dexie {
       sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     });
 
-    // ✅ Version 9: Complete appointment schema alignment with Supabase
+    // Version 9: Complete appointment schema alignment with Supabase
     this.version(9).stores({
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
@@ -330,6 +411,23 @@ export class BeezeeDatabase extends Dexie {
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       appointments: 'id, business_id, appointment_date, start_time, end_time, status, service_id, syncStatus',
+      operations_queue: 'id, type, table, status, timestamp, businessId',
+      sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
+    });
+
+    // Version 10: Add BeeHive tables for feature requests and community voting
+    this.version(10).stores({
+      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      inventory: 'id, business_id, item_name, category, syncStatus',
+      credit: 'id, business_id, customer_name, status, syncStatus',
+      credit_items: 'id, credit_id, item_name, quantity, unit_price, total_amount, syncStatus',
+      expenses: 'id, business_id, expense_date, category, syncStatus',
+      targets: 'id, business_id, target_type, syncStatus',
+      services: 'id, business_id, service_name, syncStatus',
+      appointments: 'id, business_id, appointment_date, start_time, end_time, status, service_id, syncStatus',
+      beehive_requests: 'id, business_id, country, industry, status, category, priority, syncStatus, created_at',
+      beehive_votes: 'id, request_id, business_id, vote_type, syncStatus, created_at',
+      beehive_comments: 'id, request_id, business_id, syncStatus, created_at',
       operations_queue: 'id, type, table, status, timestamp, businessId',
       sync_metadata: '++id, lastSyncTime, syncStatus, pendingCount'
     });

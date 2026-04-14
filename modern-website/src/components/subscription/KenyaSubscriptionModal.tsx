@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubscriptionAPI } from '@/lib/subscription-api';
+import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
-import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const MpesaColors = {
   primary: '#1B5E20',
@@ -23,9 +21,9 @@ interface KenyaSubscriptionModalProps {
 export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
   const { t } = useLanguage();
   const { showSuccess, showError } = useToastContext();
-  const { user } = useUnifiedAuth();
-  const amount = 200;
-  const currency = 'KES';
+  const { business } = useUnifiedAuth();
+  const amount = COUNTRY_PAYMENT_METHODS.KE.defaultAmount;
+  const currency = COUNTRY_PAYMENT_METHODS.KE.currency;
   
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -34,7 +32,7 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
   const [isLoading, setIsLoading] = useState(false);
   const [planId, setPlanId] = useState<string | null>(null);
 
-  const userName = user?.business_name || 'Customer';
+  const userName = business?.settings?.user_name || business?.business_name || 'Customer';
 
   const texts = {
     en: {
@@ -103,22 +101,7 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
       onClose();
       setStep('form');
       setPhoneNumber('');
-    }, 3000);
-  };
-
-  const handlePaymentError = (error: string) => {
-    showError(error);
-    setStep('form');
-  };
-
-  const handlePaymentSuccess = () => {
-    setStep('success');
-    showSuccess(currentTexts.success);
-    setTimeout(() => {
-      onSuccess?.();
-      onClose();
-      setStep('form');
-      setPhoneNumber('');
+      setEmail('');
     }, 3000);
   };
 
@@ -130,17 +113,87 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check if email exists in business data
+    if (!business?.email) {
+      console.warn('No email found in business profile:', { business });
+      showError('Please add an email to your profile in Settings before subscribing.');
+      return;
+    }
+    
     if (!phoneNumber || phoneNumber.length < 9) {
       showError('Please enter a valid phone number');
       return;
     }
 
-    if (!email || !email.includes('@')) {
-      showError('Please enter a valid email address');
-      return;
-    }
+    setStep('waiting');
+    setIsLoading(true);
+    
+    try {
+      console.log(`Starting subscription for KE`);
+      
+      // Defensive check - ensure plans are loaded
+      const plans = await SubscriptionAPI.getPlans('KE');
+      if (!plans || plans.length === 0) {
+        console.error('No plans available. Plans data:', plans);
+        showError('No subscription plans available. Please refresh and try again.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
+      
+      // Get plan ID for the country
+      const planId = await getPlanIdForCountry('KE', amount);
+      
+      if (!planId) {
+        console.error(`No plan ID found for KE`);
+        showError('Subscription plan not available for Kenya. Please contact support.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Found plan ID: ${planId}`);
+      
+      // Create subscription request
+      const subscriptionRequest = {
+        email: business.email,
+        firstName: userName,
+        lastName: '', // Not stored in our current schema
+        phone: `254${phoneNumber}`,
+        countryCode: 'KE',
+        planId,
+        paymentMethod: 'mobile_money'
+      };
 
-    // Form validation passed - payment button will handle the rest
+      console.log('Creating subscription with email:', {
+        email: business.email,
+        businessName: business.business_name,
+        userName,
+        phone: `254${phoneNumber}`
+      });
+
+      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
+      
+      if (response.success && response.authorizationUrl) {
+        // Redirect to payment URL
+        window.location.href = response.authorizationUrl;
+      } else {
+        setTimeout(() => setStep('success'), 2000);
+        setTimeout(() => { 
+          onSuccess?.(); 
+          onClose(); 
+          setStep('form'); 
+          setPhoneNumber(''); 
+          setEmail('');
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      showError('Payment failed. Please try again.');
+      setStep('form');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -212,20 +265,15 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
               <p className="text-xs text-gray-500 mt-2">{currentTexts.phoneHint}</p>
             </div>
 
-            {/* Kyshi Payment Button with Popup */}
-            <KyshiPaymentButton
-              paymentLinkCode="KE_WEEKLY_SUBSCRIPTION" // This should match your Kyshi payment link code
-              customerEmail={email}
-              customerFirstName={userName.split(' ')[0]}
-              customerLastName={userName.split(' ')[1] || 'Customer'}
-              countryCode="KE"
-              redirectUrl={`https://jonathon-precognizable-contestably.ngrok-free.dev/payment/return`}
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-              className="w-full py-3 rounded-xl font-semibold text-lg"
+            {/* Submit Button */}
+            <button
+              type="submit"
+              style={{ backgroundColor: MpesaColors.primary }}
+              className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold text-lg disabled:opacity-50"
+              disabled={isLoading}
             >
-              {currentTexts.button}
-            </KyshiPaymentButton>
+              {isLoading ? 'Processing...' : currentTexts.button}
+            </button>
           </form>
         )}
 

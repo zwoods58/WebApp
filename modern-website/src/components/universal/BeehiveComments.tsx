@@ -5,7 +5,6 @@ import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { supabase } from '@/lib/supabase';
-import { onlineManager } from '@tanstack/react-query';
 
 interface Comment {
   id: string;
@@ -17,154 +16,56 @@ interface Comment {
 
 interface BeehiveCommentsProps {
   requestId: string;
-  onCommentAdded?: () => void; // Callback to refresh parent data
+  onCommentAdded?: () => void;
 }
-
-// Helper function to get current user ID from our custom auth
-const getCurrentUserId = (): string | null => {
-  try {
-    // Try beezee_business_auth first (our new business auth system)
-    const businessAuth = localStorage.getItem('beezee_business_auth');
-    if (businessAuth) {
-      try {
-        const authData = JSON.parse(businessAuth);
-        const businessId = authData.business?.id || authData.session?.businessId;
-        if (businessId) {
-          console.log('✅ Using business ID as user ID in comments:', businessId);
-          return businessId;
-        }
-      } catch (e) {
-        console.log('❌ Failed to parse beezee_business_auth:', e);
-      }
-    }
-
-    // Try beezee-business-profile
-    const businessProfile = localStorage.getItem('beezee-business-profile');
-    if (businessProfile) {
-      try {
-        const profileData = JSON.parse(businessProfile);
-        const userId = profileData?.userId || profileData?.id || profileData?.user_id;
-        if (userId) return userId;
-      } catch (e) {
-        console.log('❌ Failed to parse beezee-business-profile:', e);
-      }
-    }
-
-    // Try beezee-user-data
-    const beezeeUserData = localStorage.getItem('beezee-user-data');
-    if (beezeeUserData) {
-      try {
-        const userData = JSON.parse(beezeeUserData);
-        const userId = userData?.userId || userData?.id || userData?.sub;
-        if (userId) return userId;
-      } catch (e) {
-        console.log('❌ Failed to parse beezee-user-data:', e);
-      }
-    }
-
-    // Try beezee-auth
-    const beezeeAuth = localStorage.getItem('beezee-auth');
-    if (beezeeAuth) {
-      try {
-        const authData = JSON.parse(beezeeAuth);
-        const userId = authData?.userId || authData?.id || authData?.sub;
-        if (userId) return userId;
-      } catch (e) {
-        console.log('❌ Failed to parse beezee-auth:', e);
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('❌ Error in getCurrentUserId():', error);
-    return null;
-  }
-};
 
 export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCommentsProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth(); // Use UnifiedAuth instead of localStorage
-  const isOnline = onlineManager.isOnline();
-  const addPendingOperation = async (type: string, action: string, data: any) => {
-    console.log('Stub: addPendingOperation called', type, action, data);
-  };
+  const { business, user } = useUnifiedAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
-  // Get current user ID from UnifiedAuth - simple and reliable
-  const getCurrentUserId = (): string | null => {
-    const businessId = business?.id || null;
-    console.log('🔍 Getting user ID from UnifiedAuth:', { businessId, hasBusiness: !!business });
+  // Get current business ID from UnifiedAuth
+  const getCurrentBusinessId = (): string | null => {
+    const businessId = business?.id || user?.id || null;
     return businessId;
   };
 
-  useEffect(() => {
-    fetchComments();
-    subscribeToComments();
-  }, [requestId]);
-
+  // Simplified fetching without real-time subscriptions
   const fetchComments = async () => {
     try {
       setLoading(true);
       
-      // Try API route first (bypasses RLS and foreign key issues)
-      try {
-        const response = await fetch('/api/beehive', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'listComments',
-            data: { requestId }
-          })
-        });
+      // Use simple API call
+      const response = await fetch('/api/beehive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'listComments',
+          data: { requestId }
+        })
+      });
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('✅ Fetched comments via API route:', result.data?.length || 0);
-          setComments(result.data || []);
-          return;
-        } else {
-          console.log('⚠️ API route failed, trying direct database');
-        }
-      } catch (apiError: any) {
-        console.log('⚠️ API route error:', apiError.message);
-      }
-
-      // Fallback to direct database query
-      const { data, error } = await supabase
-        .from('beehive_comments')
-        .select('*')
-        .eq('request_id', requestId)
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.log('⚠️ RLS error fetching comments, trying alternative approach');
-        console.log('Error details:', error);
-        
-        // If RLS blocks us, try to get all comments and filter client-side
-        const { data: allComments, error: allError } = await supabase
+      if (response.ok) {
+        const result = await response.json();
+        setComments(result.data || []);
+      } else {
+        // Fallback to direct database query
+        const { data, error } = await supabase
           .from('beehive_comments')
           .select('*')
+          .eq('request_id', requestId)
           .order('created_at', { ascending: true });
-          
-        if (allError) {
-          throw allError;
+
+        if (error) {
+          console.error('Error fetching comments:', error);
+        } else {
+          setComments(data || []);
         }
-        
-        // Filter comments client-side
-        const filteredComments = allComments?.filter(comment => 
-          comment.request_id === requestId
-        ) || [];
-        
-        console.log('✅ Fetched comments via client-side filtering:', filteredComments.length);
-        setComments(filteredComments);
-      } else {
-        console.log('✅ Fetched comments via direct query:', data?.length || 0);
-        setComments(data || []);
       }
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -173,98 +74,47 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
     }
   };
 
-  const subscribeToComments = () => {
-    const channel = supabase
-      .channel(`comments_${requestId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'beehive_comments',
-          filter: `request_id=eq.${requestId}`
-        },
-        () => {
-          fetchComments();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
+  useEffect(() => {
+    fetchComments();
+  }, [requestId]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!newComment.trim()) return;
 
+    const businessId = getCurrentBusinessId();
+    if (!businessId) {
+      console.error('Business not authenticated');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const userId = getCurrentUserId();
-      if (!userId) throw new Error('User not authenticated');
-
-      // Create optimistic comment for immediate UI feedback
-      const optimisticComment: Comment = {
-        id: `00000000-0000-0000-0000-000000000000`, // Valid UUID placeholder for optimistic updates
-        request_id: requestId,
-        business_id: userId,
-        comment_text: newComment.trim(),
-        created_at: new Date().toISOString()
-      };
-
-      if (isOnline) {
-        // Online: Try to sync immediately
-        try {
-          const response = await fetch('/api/beehive', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action: 'addComment',
-              userId,
-              data: {
-                requestId,
-                comment_text: newComment.trim()
-              }
-            })
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Failed to add comment');
+      // Use existing API for now
+      const response = await fetch('/api/beehive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'addComment',
+          userId: businessId,
+          data: {
+            requestId,
+            comment_text: newComment.trim()
           }
+        })
+      });
 
-          // If successful, refresh comments and notify parent
-          await fetchComments();
-          onCommentAdded?.(); // Refresh parent data to update comment count
-        } catch (error) {
-          console.error('Online sync failed, queuing for offline:', error);
-          // Queue for offline sync if online sync fails
-          await addPendingOperation('beehive_comments', 'create', {
-            request_id: requestId,
-            comment_text: newComment.trim(),
-            business_id: userId
-          });
-          
-          // Show optimistic comment
-          setComments(prev => [optimisticComment, ...prev]);
-        }
+      if (response.ok) {
+        setNewComment('');
+        await fetchComments(); // Simple refresh
+        onCommentAdded?.();
       } else {
-        // Offline: Queue operation and show optimistic comment
-        await addPendingOperation('beehive_comments', 'create', {
-          request_id: requestId,
-          comment_text: newComment.trim(),
-          business_id: userId
-        });
-        
-        // Show optimistic comment immediately
-        setComments(prev => [optimisticComment, ...prev]);
+        const error = await response.json();
+        console.error('Failed to add comment:', error.error);
       }
-
-      setNewComment('');
     } catch (error) {
       console.error('Error adding comment:', error);
     } finally {
@@ -273,11 +123,11 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    try {
-      const userId = getCurrentUserId();
-      if (!userId) throw new Error('User not authenticated');
+    const businessId = getCurrentBusinessId();
+    if (!businessId) return;
 
-      // Use API route to bypass RLS and handle foreign key constraints
+    try {
+      // Use existing API for now
       const response = await fetch('/api/beehive', {
         method: 'POST',
         headers: {
@@ -285,17 +135,17 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
         },
         body: JSON.stringify({
           action: 'deleteComment',
-          userId,
+          userId: businessId,
           data: { commentId }
         })
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        await fetchComments(); // Simple refresh
+      } else {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to delete comment');
+        console.error('Failed to delete comment:', error.error);
       }
-
-      await fetchComments(); // Refresh comments
     } catch (error) {
       console.error('Error deleting comment:', error);
     }
@@ -315,7 +165,7 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
 
   return (
     <div className="mt-4 pt-4 border-t border-gray-200">
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3 sticky top-0 bg-white z-10 py-2">
         <MessageSquare size={16} className="text-gray-500" />
         <h4 className="text-sm font-semibold text-gray-900">
           {t('beehive.comments', 'Comments')} ({comments.length})
@@ -323,68 +173,68 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
       </div>
 
       {/* Comments List */}
-      {loading ? (
-        <div className="text-sm text-gray-500 py-4">
-          {t('common.loading', 'Loading...')}
-        </div>
-      ) : comments.length === 0 ? (
-        <div className="text-sm text-gray-500 py-4">
-          {t('beehive.no_comments', 'No comments yet. Be the first to comment!')}
-        </div>
-      ) : (
-        <div className="space-y-3 mb-4">
-          
-            {comments.map((comment) => (
-              <div key={comment.id} className="fade-in">
-                <div className="flex items-start justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs">
-                      👤
-                    </div>
-                    <span className="text-xs font-medium text-gray-900">
-                      {t('beehive.community_member', 'Community Member')}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {formatTimeAgo(comment.created_at)}
-                    </span>
+      <div className="max-h-64 overflow-y-auto space-y-3 mb-4">
+        {loading ? (
+          <div className="text-sm text-gray-500 py-4">
+            {t('common.loading', 'Loading...')}
+          </div>
+        ) : comments.length === 0 ? (
+          <div className="text-sm text-gray-500 py-4">
+            {t('beehive.no_comments', 'No comments yet. Be the first to comment!')}
+          </div>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} className="fade-in bg-gray-50 rounded-lg p-3">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs">
+                    👤
                   </div>
-                  {getCurrentUserId() === comment.business_id && (
-                    <button
-                      onClick={() => handleDeleteComment(comment.id)}
-                      className="p-1 rounded hover:bg-red-50 text-red-600 transition-colors"
-                      title={t('common.delete', 'Delete')}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  )}
+                  <span className="text-xs font-medium text-gray-900">
+                    {t('beehive.community_member', 'Community Member')}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {formatTimeAgo(comment.created_at)}
+                  </span>
                 </div>
-                <p className="text-sm text-gray-700 ml-8">
-                  {comment.comment_text}
-                </p>
+                {getCurrentBusinessId() === comment.business_id && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="p-1 rounded hover:bg-red-50 text-red-600 transition-colors"
+                    title={t('common.delete', 'Delete')}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
               </div>
-            ))}
-          
-        </div>
-      )}
+              <p className="text-sm text-gray-700 break-words">
+                {comment.comment_text}
+              </p>
+            </div>
+          ))
+        )}
+      </div>
 
       {/* Add Comment Form */}
-      <form onSubmit={handleAddComment} className="flex items-start gap-2">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder={t('beehive.add_comment', 'Add a comment...')}
-          rows={2}
-          className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          disabled={submitting}
-        />
-        <button
-          type="submit"
-          disabled={!newComment.trim() || submitting}
-          className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send size={18} />
-        </button>
-      </form>
+      <div className="sticky bottom-0 bg-white pt-2 border-t border-gray-100">
+        <form onSubmit={handleAddComment} className="flex items-start gap-2">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder={t('beehive.add_comment', 'Add a comment...')}
+            rows={2}
+            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            disabled={submitting}
+          />
+          <button
+            type="submit"
+            disabled={!newComment.trim() || submitting}
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <Send size={18} />
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

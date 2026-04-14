@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubscriptionAPI } from '@/lib/subscription-api';
+import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
-import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
 
 const OrangeColors = {
   primary: '#FF6600',
@@ -20,8 +18,8 @@ interface CoteIvoireSubscriptionModalProps {
 
 export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: CoteIvoireSubscriptionModalProps) {
   const { showSuccess, showError } = useToastContext();
-  const { user } = useUnifiedAuth();
-  const amount = 1000;
+  const { business } = useUnifiedAuth();
+  const amount = COUNTRY_PAYMENT_METHODS.CI.defaultAmount;
   
   const [provider, setProvider] = useState<'orange' | 'mtn'>('orange');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -31,7 +29,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
   const [language, setLanguage] = useState<'fr' | 'en'>('fr');
   const [planId, setPlanId] = useState<string | null>(null);
 
-  const userName = user?.business_name || 'Customer';
+  const userName = business?.settings?.user_name || business?.business_name || 'Customer';
 
   const texts = {
     fr: {
@@ -113,17 +111,87 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check if email exists in business data
+    if (!business?.email) {
+      console.warn('No email found in business profile:', { business });
+      showError(currentTexts === texts.fr ? 'Veuillez ajouter un e-mail à votre profil avant de vous abonner.' : 'Please add an email to your profile in Settings before subscribing.');
+      return;
+    }
+    
     if (!phoneNumber || phoneNumber.replace(/\s/g, '').length < 8) {
       showError(currentTexts === texts.fr ? 'Veuillez entrer un numéro de téléphone valide' : 'Please enter a valid phone number');
       return;
     }
 
-    if (!email || !email.includes('@')) {
-      showError(currentTexts === texts.fr ? 'Veuillez entrer une adresse e-mail valide' : 'Please enter a valid email address');
-      return;
-    }
+    setStep('waiting');
+    setIsLoading(true);
+    
+    try {
+      console.log(`Starting subscription for CI`);
+      
+      // Defensive check - ensure plans are loaded
+      const plans = await SubscriptionAPI.getPlans('CI');
+      if (!plans || plans.length === 0) {
+        console.error('No plans available. Plans data:', plans);
+        showError(currentTexts === texts.fr ? 'Aucun plan d\'abonnement disponible. Veuillez rafraîchir et réessayer.' : 'No subscription plans available. Please refresh and try again.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
+      
+      // Get plan ID for the country
+      const planId = await getPlanIdForCountry('CI', amount);
+      
+      if (!planId) {
+        console.error(`No plan ID found for CI`);
+        showError(currentTexts === texts.fr ? 'Plan d\'abonnement non disponible pour la Côte d\'Ivoire. Veuillez contacter le support.' : 'Subscription plan not available for Côte d\'Ivoire. Please contact support.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Found plan ID: ${planId}`);
+      
+      // Create subscription request
+      const subscriptionRequest = {
+        email: business.email,
+        firstName: userName,
+        lastName: '', // Not stored in our current schema
+        phone: `225${phoneNumber}`,
+        countryCode: 'CI',
+        planId,
+        paymentMethod: 'mobile_money'
+      };
 
-    // Form validation passed - payment button will handle the rest
+      console.log('Creating subscription with email:', {
+        email: business.email,
+        businessName: business.business_name,
+        userName,
+        phone: `225${phoneNumber}`
+      });
+
+      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
+      
+      if (response.success && response.authorizationUrl) {
+        // Redirect to payment URL
+        window.location.href = response.authorizationUrl;
+      } else {
+        setTimeout(() => setStep('success'), 2000);
+        setTimeout(() => { 
+          onSuccess?.(); 
+          onClose(); 
+          setStep('form'); 
+          setPhoneNumber(''); 
+          setEmail('');
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      showError(currentTexts === texts.fr ? 'Paiement échoué. Veuillez réessayer.' : 'Payment failed. Please try again.');
+      setStep('form');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -163,7 +231,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
         </div>
 
         {step === 'form' && (
-          <>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="p-6 border-b">
               <label className="block text-sm font-medium mb-2">{currentTexts.emailLabel}</label>
               <input
@@ -182,6 +250,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
               <label className="block text-sm font-medium mb-3">{currentTexts.providerLabel}</label>
               <div className="flex gap-4">
                 <button
+                  type="button"
                   onClick={() => setProvider('orange')}
                   className={`flex-1 p-4 border rounded-xl text-center transition ${
                     provider === 'orange' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'
@@ -192,6 +261,7 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
                   <div className="text-xs text-gray-500">Jusqu'à 1M FCFA</div>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setProvider('mtn')}
                   className={`flex-1 p-4 border rounded-xl text-center transition ${
                     provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
@@ -222,22 +292,17 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
             </div>
 
             <div className="p-6 pt-0">
-              {/* Kyshi Payment Button with Popup */}
-              <KyshiPaymentButton
-                paymentLinkCode="CI_WEEKLY_SUBSCRIPTION" // This should match your Kyshi payment link code
-                customerEmail={email}
-                customerFirstName={userName.split(' ')[0]}
-                customerLastName={userName.split(' ')[1] || 'Customer'}
-                countryCode="CI"
-                redirectUrl={`https://jonathon-precognizable-contestably.ngrok-free.dev/payment/return`}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-                className="w-full py-3 rounded-xl font-semibold text-lg"
+              {/* Submit Button */}
+              <button
+                type="submit"
+                style={{ backgroundColor: OrangeColors.primary }}
+                className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold text-lg disabled:opacity-50"
+                disabled={isLoading}
               >
-                {currentTexts.button}
-              </KyshiPaymentButton>
+                {isLoading ? 'Processing...' : currentTexts.button}
+              </button>
             </div>
-          </>
+          </form>
         )}
 
         {step === 'waiting' && (

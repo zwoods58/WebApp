@@ -57,20 +57,13 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
   const isBeezeePage = pathname?.startsWith('/Beezee-App');
 
   return (
-    <>
-      <QueryProvider>
-        <body 
-          className={`${className} ${isClient ? 'hydrated' : ''}`}
-          suppressHydrationWarning
-        >
-          <AppLayout>
-            {children}
-          </AppLayout>
-          
-          {/* Custom Splash Screen - shows only on initial startup */}
-          <SplashScreen onFinish={handleSplashFinish} />
-        </body>
-      </QueryProvider>
-    </>
+    <QueryProvider>
+      <AppLayout>
+        {children}
+      </AppLayout>
+      
+      {/* Custom Splash Screen - shows only on initial startup */}
+      {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
+    </QueryProvider>
   );
 }

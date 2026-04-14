@@ -14,7 +14,6 @@ export { useInventoryTanStack } from './useInventoryTanStack';
 export { useServicesTanStack } from './useServicesTanStack';
 export { useAppointmentsTanStack } from './useAppointmentsTanStack';
 export { useTargetsTanStack } from './useTargetsTanStack';
-export { useBeehiveTanStack } from './useBeehiveTanStack';
 
 // Backward compatibility aliases - redirect old hook names to new TanStack versions
 export { useServicesTanStack as useServices } from './useServicesTanStack';

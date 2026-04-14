@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
 import { X } from 'lucide-react';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const PagaColors = {
   primary: '#F26522',   // Dark Orange - Official Paga color
@@ -13,14 +14,11 @@ const PagaColors = {
 interface NigeriaSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userData: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
+  onSuccess?: () => void;
 }
 
-export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: NigeriaSubscriptionModalProps) {
+export default function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: NigeriaSubscriptionModalProps) {
+  const { business } = useUnifiedAuth();
   const amount = COUNTRY_PAYMENT_METHODS.NG.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.NG.currency;
   
@@ -35,22 +33,64 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: 
     { id: 'card', name: 'Card', icon: 'ð³', description: 'Visa, Mastercard, Verve', color: '#1E3A5F' }
   ];
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Check if email exists in business data
+    if (!business?.email) {
+      console.warn('No email found in business profile:', { business });
+      alert('Please add an email to your profile in Settings before subscribing.');
+      return;
+    }
+    
     setStep('waiting');
+    
     try {
-      // Get plan ID for Nigeria
+      console.log(`Starting subscription for NG`);
+      
+      // Defensive check - ensure plans are loaded
+      const plans = await SubscriptionAPI.getPlans('NG');
+      if (!plans || plans.length === 0) {
+        console.error('No plans available. Plans data:', plans);
+        alert('No subscription plans available. Please refresh and try again.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
+      
+      // Get plan ID for the country
       const planId = await getPlanIdForCountry('NG', amount);
+      
+      if (!planId) {
+        console.error(`No plan ID found for NG`);
+        alert('Subscription plan not available for Nigeria. Please contact support.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Found plan ID: ${planId}`);
+      
+      // Extract user name from business settings or business name
+      const userName = business.settings?.user_name || business.business_name || 'Customer';
       
       // Create subscription request
       const subscriptionRequest = {
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        email: business.email,
+        firstName: userName,
+        lastName: '', // Not stored in our current schema
         phone: identifier,
         countryCode: 'NG',
         planId,
         paymentMethod
       };
+
+      console.log('Creating subscription with email:', {
+        email: business.email,
+        businessName: business.business_name,
+        userName,
+        phone: identifier
+      });
 
       const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
       
@@ -59,7 +99,12 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: 
         window.location.href = response.authorizationUrl;
       } else {
         setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { onClose(); setStep('form'); setIdentifier(''); }, 5000);
+        setTimeout(() => { 
+          onSuccess?.(); 
+          onClose(); 
+          setStep('form'); 
+          setIdentifier(''); 
+        }, 5000);
       }
     } catch (error) {
       console.error('Subscription error:', error);
@@ -117,14 +162,15 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: 
           {/* Content */}
           <div className="p-4">
             {step === 'form' && (
-              <>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Payment Method Selection */}
-                <div className="mb-4">
+                <div>
                   <label className="block text-sm font-medium mb-3">Select payment method</label>
                   <div className="grid grid-cols-2 gap-3">
                     {paymentMethods.map(method => (
                       <button
                         key={method.id}
+                        type="button"
                         onClick={() => setPaymentMethod(method.id)}
                         className={`p-4 border rounded-lg text-left transition ${
                           paymentMethod === method.id 
@@ -141,7 +187,7 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: 
                 </div>
 
                 {/* Input Field */}
-                <div className="mb-4">
+                <div>
                   <label className="block text-sm font-medium mb-2">
                     {paymentMethod === 'paga' && 'Paga ID or Phone Number'}
                     {paymentMethod === 'opay' && 'OPay Account Number'}
@@ -168,13 +214,13 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, userData }: 
 
                 {/* Submit Button */}
                 <button
-                  onClick={handleSubmit}
+                  type="submit"
                   style={{ backgroundColor: PagaColors.primary }}
                   className="w-full hover:opacity-90 text-white py-3 rounded-lg font-semibold transition"
                 >
                   Pay ₦{amount} via {paymentMethods.find(m => m.id === paymentMethod)?.name}
                 </button>
-              </>
+              </form>
             )}
 
             {/* Waiting State */}

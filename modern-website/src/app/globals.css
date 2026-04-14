@@ -3144,6 +3144,27 @@ body.modal-open {
     position: fixed;
     width: 100%;
   }
+  
+  /* Fix Beehive page scrolling */
+  .min-h-screen.overflow-y-auto {
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Ensure comments section scrolls properly */
+  .max-h-64.overflow-y-auto {
+    max-height: 16rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .max-h-96.overflow-y-auto {
+    max-height: 24rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Improve touch targets for mobile */

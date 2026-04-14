@@ -16,7 +16,8 @@ import {
   Star,
   Send,
   Edit,
-  Trash2
+  Trash2,
+  RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -24,13 +25,12 @@ import { useParams } from 'next/navigation';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/LanguageContext';
-import { useBeehiveTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import BeehiveRequestModal, { RequestFormData } from '@/components/universal/BeehiveRequestModal';
 import BeehiveComments from '@/components/universal/BeehiveComments';
 
-// Type definitions - matching the useBeehiveTanStack hook interface
+// Type definitions
 interface BeehiveRequest {
   id: string;
   business_id: string;
@@ -56,130 +56,83 @@ export default function BeehivePage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
-  const { user } = useUnifiedAuth();
+  const { user, business } = useUnifiedAuth();
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
   
+  // Simplified state management
+  const [requests, setRequests] = useState<BeehiveRequest[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'new_feature' | 'improvement' | 'bug_fix' | 'integration'>('all');
   const [showModal, setShowModal] = useState(false);
   const [editingRequest, setEditingRequest] = useState<any>(null);
   const [expandedComments, setExpandedComments] = useState<string | null>(null);
+  const [votingLoading, setVotingLoading] = useState<Record<string, boolean>>({});
 
-  // Use Supabase hook for BeeHive data filtered by industry and country
-  const { data: requests, isLoading, addRequest: createRequest, deleteRequest, refetch: refetchRequests } = useBeehiveTanStack({ industry, country });
-  const [myVotes, setMyVotes] = useState<any[]>([]);
-  const loading = isLoading;
-  
-  // Fetch user votes when component mounts or when requests change
-  useEffect(() => {
-    const fetchUserVotes = async () => {
-      if (!user?.id) return;
-      
-      try {
-        const response = await fetch('/api/beehive', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'getUserVotes',
-            userId: user.id,
-            data: { requestIds: requests.map(r => r.id) }
-          })
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          setMyVotes(result.data || []);
-        }
-      } catch (error) {
-        console.error('Error fetching user votes:', error);
-      }
-    };
-
-    if (requests.length > 0) {
-      fetchUserVotes();
-    }
-  }, [user?.id, requests]);
-  
-  // Simple online/offline status using TanStack Query
-  const [isOnline, setIsOnline] = useState(true);
-  const { showSuccess, showError, showWarning, showInfo } = useToast();
-
-  // Helper functions to match the interface expected by the page
-  const addRequest = createRequest;
-  
-  const voteOnRequest = async (requestId: string, voteType: 'up' | 'down') => {
+  // Simplified data fetching with polling
+  const fetchRequests = async () => {
     try {
-      const userId = user?.id;
-      if (!userId) {
-        showWarning('Please login to vote');
-        return;
-      }
-
-      const response = await fetch('/api/beehive', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'voteOnRequest',
-          userId,
-          data: { requestId, voteType }
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to vote');
-      }
-
-      // Update local votes state immediately for better UX
-      const existingVoteIndex = myVotes.findIndex(v => v.request_id === requestId);
-      const existingVote = existingVoteIndex >= 0 ? myVotes[existingVoteIndex] : null;
+      const params = new URLSearchParams({ country, industry });
+      if (selectedFilter !== 'all') params.append('category', selectedFilter);
+      if (searchTerm) params.append('search', searchTerm);
       
-      let updatedVotes;
-      if (existingVote) {
-        if (existingVote.vote_type === (voteType === 'up' ? 'upvote' : 'downvote')) {
-          // Remove vote
-          updatedVotes = myVotes.filter((_, index) => index !== existingVoteIndex);
-        } else {
-          // Change vote type
-          updatedVotes = [...myVotes];
-          updatedVotes[existingVoteIndex] = { ...existingVote, vote_type: voteType === 'up' ? 'upvote' : 'downvote' };
-        }
+      const res = await fetch(`/api/requests?${params}`);
+      const data = await res.json();
+      
+      if (data.success) {
+        setRequests(data.data);
       } else {
-        // Add new vote
-        updatedVotes = [...myVotes, { request_id: requestId, vote_type: voteType === 'up' ? 'upvote' : 'downvote' }];
+        throw new Error(data.error);
       }
-      
-      setMyVotes(updatedVotes);
-
-      // Refresh requests to get updated vote counts
-      await refetchRequests();
-      showSuccess('Vote recorded successfully');
     } catch (error) {
-      console.error('Error voting:', error);
-      showError('Failed to record vote');
+      console.error('Failed to fetch requests:', error);
+      showError('Failed to load requests');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getUserVote = (requestId: string) => {
-    const vote = myVotes.find(v => v.request_id === requestId);
-    return {
-      voted: !!vote,
-      voteType: vote?.vote_type === 'upvote' ? 'up' : vote?.vote_type === 'downvote' ? 'down' : null
-    };
-  };
-
-  const filteredRequests = requests.filter((request: BeehiveRequest) => {
-    const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === 'all' || request.category === selectedFilter;
-    return matchesSearch && matchesFilter;
-  });
+  // Polling effect
+  useEffect(() => {
+    fetchRequests();
+    const interval = setInterval(fetchRequests, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, [country, industry, selectedFilter, searchTerm]);
 
   const handleVote = async (requestId: string, voteType: 'up' | 'down') => {
-    await voteOnRequest(requestId, voteType);
+    const businessId = business?.id || user?.id;
+    if (!businessId) {
+      showWarning('Please login to vote');
+      return;
+    }
+
+    // Set loading state for this specific request
+    setVotingLoading(prev => ({ ...prev, [requestId]: true }));
+
+    try {
+      const res = await fetch('/api/votes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          requestId, 
+          voteType, 
+          business_id: businessId 
+        })
+      });
+      
+      if (res.ok) {
+        await fetchRequests(); // Simple refresh - no complex state
+        showSuccess('Vote recorded!');
+      } else {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to vote');
+      }
+    } catch (error) {
+      console.error('Failed to vote:', error);
+      showError('Failed to record vote');
+    } finally {
+      setVotingLoading(prev => ({ ...prev, [requestId]: false }));
+    }
   };
 
   const handleAddRequest = () => {
@@ -187,41 +140,73 @@ export default function BeehivePage() {
     setShowModal(true);
   };
 
-  const handleEditRequest = (request: any) => {
-    setEditingRequest(request);
-    setShowModal(true);
-  };
-
   const handleSubmitRequest = async (data: RequestFormData) => {
     try {
-      if (editingRequest) {
-        // Simplified - no update function in TanStack version yet
-        showInfo('Editing requests not available in current version');
-      } else {
-        await addRequest(data);
+      const businessId = business?.id || user?.id;
+      if (!businessId) {
+        showWarning('Please login to create a request');
+        return;
       }
-      setShowModal(false);
-      setEditingRequest(null);
+
+      const res = await fetch('/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          business_id: businessId,
+          country,
+          industry
+        })
+      });
+
+      if (res.ok) {
+        await fetchRequests();
+        setShowModal(false);
+        showSuccess('Request created successfully!');
+      } else {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to create request');
+      }
     } catch (error) {
-      console.error('Failed to submit request:', error);
-      showError('Failed to submit request');
+      console.error('Failed to create request:', error);
+      showError('Failed to create request');
     }
   };
 
   const handleDeleteRequest = async () => {
     if (!editingRequest) return;
+    
+    const businessId = business?.id || user?.id;
+    if (!businessId) return;
+
     try {
-      await deleteRequest(editingRequest.id);
-      setShowModal(false);
-      setEditingRequest(null);
+      const res = await fetch('/api/requests', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestId: editingRequest.id,
+          business_id: businessId
+        })
+      });
+
+      if (res.ok) {
+        await fetchRequests();
+        setShowModal(false);
+        setEditingRequest(null);
+        showSuccess('Request deleted successfully!');
+      } else {
+        const error = await res.json();
+        throw new Error(error.error || 'Failed to delete request');
+      }
     } catch (error) {
       console.error('Failed to delete request:', error);
-      throw error;
+      showError('Failed to delete request');
     }
   };
 
   const isRequestOwner = (request: any): boolean => {
-    return user?.id === request.user_id;
+    const businessId = business?.id || user?.id;
+    return businessId === request.business_id;
   };
 
   const toggleComments = (requestId: string) => {
@@ -256,14 +241,31 @@ export default function BeehivePage() {
     }
   };
 
+  const filteredRequests = requests.filter((request: BeehiveRequest) => {
+    const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         request.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = selectedFilter === 'all' || request.category === selectedFilter;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20 overflow-y-auto">
       <Header industry={industry} country={country} />
 
       <div className="p-4 max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 fade-in">
-          {t('beehive.title', 'BeeHive Community')}
-        </h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 fade-in">
+            {t('beehive.title', 'BeeHive Community')}
+          </h1>
+          <button
+            onClick={fetchRequests}
+            disabled={loading}
+            className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
         
         <p className="text-gray-600 mb-6 fade-in">
           {t('beehive.description', 'Share ideas and help improve BeeZee for everyone')}
@@ -317,7 +319,7 @@ export default function BeehivePage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="fade-in mt-6">
+        <div className="fade-in mt-6 grid grid-cols-3 gap-3">
           <div className="bg-white rounded-xl p-3 text-center border border-gray-200">
             <div className="text-lg font-bold text-blue-600">{requests.length}</div>
             <div className="text-xs text-gray-600">{t('beehive.total_requests', 'Total')}</div>
@@ -333,123 +335,131 @@ export default function BeehivePage() {
         </div>
 
         {/* Requests List */}
-        <div className="fade-in mt-8 space-y-4">
-          {filteredRequests.map((request: BeehiveRequest, index: number) => {
-            const userVote = getUserVote(request.id);
-            const timeAgo = new Date(request.created_at).toLocaleDateString();
-            
-            return (
-              <div key={request.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
-                      ?
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{t('beehive.community_member', 'Community Member')}</div>
-                      <div className="text-xs text-gray-500">{timeAgo}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {isRequestOwner(request) && (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleEditRequest(request)}
-                          className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
-                          title={t('common.edit', 'Edit')}
-                        >
-                          <Edit size={16} />
-                        </button>
+        <div className="fade-in mt-8 space-y-4 mb-8">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-gray-500 mt-2">Loading requests...</p>
+            </div>
+          ) : filteredRequests.length === 0 ? (
+            <div className="fade-in">
+              <Users size={48} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {t('beehive.no_requests', 'No requests found')}
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {t('beehive.no_requests_description', 'Be the first to share an idea!')}
+              </p>
+              <button
+                onClick={handleAddRequest}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+              >
+                {t('beehive.add_first_request', 'Add First Request')}
+              </button>
+            </div>
+          ) : (
+            filteredRequests.map((request: BeehiveRequest, index: number) => {
+              const timeAgo = new Date(request.created_at).toLocaleDateString();
+              
+              return (
+                <div key={request.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-lg">
+                        ?
                       </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                      {getStatusIcon(request.status)}
-                      <span className={`text-xs font-medium ${getCategoryColor(request.category || 'general')} px-2 py-1 rounded-lg`}>
-                        {t(`beehive.${request.category || 'general'}`, (request.category || 'general').replace('_', ' '))}
-                      </span>
+                      <div>
+                        <div className="font-medium text-gray-900">{t('beehive.community_member', 'Community Member')}</div>
+                        <div className="text-xs text-gray-500">{timeAgo}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {isRequestOwner(request) && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => {
+                              setEditingRequest(request);
+                              setShowModal(true);
+                            }}
+                            className="p-2 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                            title={t('common.edit', 'Edit')}
+                          >
+                            <Edit size={16} />
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        {getStatusIcon(request.status)}
+                        <span className={`text-xs font-medium ${getCategoryColor(request.category || 'general')} px-2 py-1 rounded-lg`}>
+                          {t(`beehive.${request.category || 'general'}`, (request.category || 'general').replace('_', ' '))}
+                        </span>
+                      </div>
                     </div>
                   </div>
+
+                  <h3 className="font-semibold text-gray-900 mb-2">{request.title}</h3>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{request.description}</p>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleVote(request.id, 'up')}
+                        disabled={votingLoading[request.id]}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors text-xs ${
+                          votingLoading[request.id]
+                            ? 'bg-gray-100 text-gray-400'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        <ThumbsUp size={14} />
+                        <span className="font-medium">{request.upvotes_count || 0}</span>
+                      </button>
+                      <button
+                        onClick={() => handleVote(request.id, 'down')}
+                        disabled={votingLoading[request.id]}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors text-xs ${
+                          votingLoading[request.id]
+                            ? 'bg-gray-100 text-gray-400'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        <ThumbsDown size={14} />
+                        <span className="font-medium">{request.downvotes_count || 0}</span>
+                      </button>
+                      <button
+                        onClick={() => toggleComments(request.id)}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors text-xs ${
+                          expandedComments === request.id
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        <MessageSquare size={14} />
+                        <span>{request.comments_count || 0}</span>
+                      </button>
+                    </div>
+                    <div className={`text-xs font-medium ${getPriorityColor(request.priority)}`}>
+                      {t(`beehive.${request.priority}`, request.priority)}
+                    </div>
+                  </div>
+
+                  {/* Comments Section */}
+                  {expandedComments === request.id && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 max-h-96 overflow-y-auto">
+                      <BeehiveComments
+                        requestId={request.id}
+                        onCommentAdded={() => {
+                          console.log('Refreshing beehive data after comment added');
+                          fetchRequests();
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-
-                <h3 className="font-semibold text-gray-900 mb-2">{request.title}</h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{request.description}</p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => handleVote(request.id, 'up')}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-colors ${
-                        userVote.voted && userVote.voteType === 'up'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      <ThumbsUp size={16} />
-                      <span className="text-sm font-medium">{request.upvotes_count}</span>
-                    </button>
-                    <button
-                      onClick={() => handleVote(request.id, 'down')}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-colors ${
-                        userVote.voted && userVote.voteType === 'down'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      <ThumbsDown size={16} />
-                      <span className="text-sm font-medium">{request.downvotes_count}</span>
-                    </button>
-                    <button
-                      onClick={() => toggleComments(request.id)}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-colors ${
-                        expandedComments === request.id
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      <MessageSquare size={16} />
-                      <span className="text-sm">{request.comments_count || 0}</span>
-                    </button>
-                  </div>
-                  <div className={`text-xs font-medium ${getPriorityColor(request.priority)}`}>
-                    {t(`beehive.${request.priority}`, request.priority)}
-                  </div>
-                </div>
-
-                {/* Comments Section */}
-                {expandedComments === request.id && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <BeehiveComments
-                      requestId={request.id}
-                      onCommentAdded={() => {
-                        console.log('?? Refreshing beehive data after comment added');
-                        refetchRequests();
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
-
-        {/* Empty State */}
-        {filteredRequests.length === 0 && (
-          <div className="fade-in">
-            <Users size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {t('beehive.no_requests', 'No requests found')}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {t('beehive.no_requests_description', 'Be the first to share an idea!')}
-            </p>
-            <button
-              onClick={handleAddRequest}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
-            >
-              {t('beehive.add_first_request', 'Add First Request')}
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Request Modal */}

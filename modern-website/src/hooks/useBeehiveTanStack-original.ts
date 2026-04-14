@@ -65,7 +65,7 @@ export function useBeehiveTanStack(options: UseBeehiveOptions = {}) {
     useIndustryDataNew({
       industry,
       country,
-      table: 'beehive',
+      table: 'beehive_requests',
       select: options.select,
     })
 

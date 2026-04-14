@@ -163,8 +163,17 @@ const kyshiSubscriptionData = {
         payment_channels: paymentChannels,
         mobile_money_providers: mobileMoneyProviders.map(p => p.code),
         currency: plan.currency,
-        return_url: redirectUrl || `https://jonathon-precognizable-contestably.ngrok-free.dev/Beezee-App/app/${countryCode.toLowerCase()}/food/more/`,
-        is_mobile_money_subscription: isMobileMoneySubscription
+        return_url: redirectUrl || `https://atarwebb.com/Beezee-App/app/${countryCode.toLowerCase()}/food/more/`,
+        is_mobile_money_subscription: isMobileMoneySubscription,
+        // Enhanced business data
+        business_type: 'small_business',
+        industry: industry || 'general',
+        customer_name: `${firstName} ${lastName}`,
+        customer_phone: phone,
+        source: 'beezee_platform',
+        plan_name: plan.name,
+        plan_amount: plan.amount,
+        created_at: new Date().toISOString()
       }
     };
     
@@ -239,6 +248,49 @@ const kyshiSubscriptionData = {
     }
 
     console.log(`Created subscription: ${subscription.id}`);
+
+    // Send additional customer data to Kyshi after subscription creation
+    try {
+      console.log('Sending enhanced customer data to Kyshi...');
+      
+      const customerUpdateResponse = await fetch(`${baseUrl}/api/kyshi/update-customer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          businessData: {
+            business_type: 'small_business',
+            industry: industry || 'general',
+            customer_name: `${firstName} ${lastName}`,
+            customer_phone: phone,
+            plan_name: plan.name,
+            plan_amount: plan.amount,
+            subscription_id: subscription.id,
+            kyshi_subscription_id: kyshiSubscriptionId
+          },
+          industry: industry || 'general',
+          businessType: 'small_business',
+          additionalMetadata: {
+            payment_channels: paymentChannels,
+            mobile_money_providers: mobileMoneyProviders.map(p => p.code),
+            is_mobile_money_subscription: isMobileMoneySubscription,
+            source: 'beezee_platform_subscription_flow'
+          }
+        })
+      });
+
+      if (customerUpdateResponse.ok) {
+        const customerUpdateResult = await customerUpdateResponse.json();
+        console.log('Customer data sent to Kyshi successfully:', customerUpdateResult);
+      } else {
+        console.error('Failed to send customer data to Kyshi:', await customerUpdateResponse.text());
+      }
+    } catch (customerUpdateError) {
+      console.error('Error sending customer data to Kyshi:', customerUpdateError);
+      // Don't fail the subscription creation if customer update fails
+    }
 
     const response: {
       success: boolean;

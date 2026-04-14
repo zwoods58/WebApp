@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
 import { X } from 'lucide-react';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const MtnColors = { primary: '#EAB308', secondary: '#000000' };
 const VodafoneColors = { primary: '#DC2626', secondary: '#FFFFFF' };
@@ -11,14 +12,11 @@ const AirtelTigoColors = { primary: '#DC2626', secondary: '#FFFFFF' };
 interface GhanaSubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userData: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
+  onSuccess?: () => void;
 }
 
-export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: GhanaSubscriptionModalProps) {
+export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubscriptionModalProps) {
+  const { business } = useUnifiedAuth();
   const amount = COUNTRY_PAYMENT_METHODS.GH.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.GH.currency;
   
@@ -35,22 +33,64 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
 
   const currentProvider = providers[provider as keyof typeof providers];
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Check if email exists in business data
+    if (!business?.email) {
+      console.warn('No email found in business profile:', { business });
+      alert('Please add an email to your profile in Settings before subscribing.');
+      return;
+    }
+    
     setStep('waiting');
+    
     try {
-      // Get plan ID for Ghana
+      console.log(`Starting subscription for GH`);
+      
+      // Defensive check - ensure plans are loaded
+      const plans = await SubscriptionAPI.getPlans('GH');
+      if (!plans || plans.length === 0) {
+        console.error('No plans available. Plans data:', plans);
+        alert('No subscription plans available. Please refresh and try again.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
+      
+      // Get plan ID for the country
       const planId = await getPlanIdForCountry('GH', amount);
+      
+      if (!planId) {
+        console.error(`No plan ID found for GH`);
+        alert('Subscription plan not available for Ghana. Please contact support.');
+        setStep('form');
+        return;
+      }
+      
+      console.log(`Found plan ID: ${planId}`);
+      
+      // Extract user name from business settings or business name
+      const userName = business.settings?.user_name || business.business_name || 'Customer';
       
       // Create subscription request
       const subscriptionRequest = {
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        email: business.email,
+        firstName: userName,
+        lastName: '', // Not stored in our current schema
         phone: `233${phoneNumber}`,
         countryCode: 'GH',
         planId,
         paymentMethod: paymentMethod === 'mobile_money' ? provider : paymentMethod
       };
+
+      console.log('Creating subscription with email:', {
+        email: business.email,
+        businessName: business.business_name,
+        userName,
+        phone: `233${phoneNumber}`
+      });
 
       const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
       
@@ -59,7 +99,12 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
         window.location.href = response.authorizationUrl;
       } else {
         setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { onClose(); setStep('form'); setPhoneNumber(''); }, 5000);
+        setTimeout(() => { 
+          onSuccess?.(); 
+          onClose(); 
+          setStep('form'); 
+          setPhoneNumber(''); 
+        }, 5000);
       }
     } catch (error) {
       console.error('Subscription error:', error);
@@ -121,12 +166,13 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
           {/* Content */}
           <div className="p-4">
             {step === 'form' && (
-              <>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Provider Selection */}
-                <div className="mb-4">
+                <div>
                   <label className="block text-sm font-medium mb-3">Choose your network</label>
                   <div className="space-y-3">
                     <button
+                      type="button"
                       onClick={() => setProvider('mtn')}
                       className={`w-full p-4 border rounded-lg flex items-center gap-3 transition ${
                         provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
@@ -141,6 +187,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => setProvider('vodafone')}
                       className={`w-full p-4 border rounded-lg flex items-center gap-3 transition ${
                         provider === 'vodafone' ? 'border-red-500 bg-red-50' : 'border-gray-200'
@@ -155,6 +202,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => setProvider('airteltigo')}
                       className={`w-full p-4 border rounded-lg flex items-center gap-3 transition ${
                         provider === 'airteltigo' ? 'border-red-500 bg-red-50' : 'border-gray-200'
@@ -171,7 +219,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
                 </div>
 
                 {/* Phone Input */}
-                <div className="mb-4">
+                <div>
                   <label className="block text-sm font-medium mb-2">Mobile Money Number</label>
                   <div className="flex">
                     <span className="bg-gray-100 px-3 py-3 rounded-l-lg border text-gray-600 text-sm">+233</span>
@@ -191,15 +239,15 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, userData }: Gh
 
                 {/* Submit Button */}
                 <button
+                  type="submit"
                   style={{ backgroundColor: currentProvider.color }}
                   className={`w-full hover:opacity-90 py-3 rounded-lg font-semibold transition ${
                     currentProvider.textColor === 'white' ? 'text-white' : 'text-black'
                   }`}
-                  onClick={handleSubmit}
                 >
                   Pay ¢{amount} via {currentProvider.short}
                 </button>
-              </>
+              </form>
             )}
 
             {/* Waiting State */}
