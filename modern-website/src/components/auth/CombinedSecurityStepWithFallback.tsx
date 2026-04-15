@@ -23,7 +23,9 @@ export default function CombinedSecurityStepWithFallback({
   isLoading = false, 
   error 
 }: CombinedSecurityStepProps) {
-  const { questions, loading: questionsLoading, error: questionsError } = useSignup();
+  const { creationState } = useSignup();
+  const questionsLoading = creationState.loading;
+  const questionsError = creationState.error;
   const [useFallback, setUseFallback] = useState(false);
 
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function CombinedSecurityStepWithFallback({
       <SecurityQuestionsSetupWithFallback
         onComplete={onSecurityQuestionsComplete}
         isLoading={false}
-        error={null}
+        error={undefined}
       />
     );
   }
