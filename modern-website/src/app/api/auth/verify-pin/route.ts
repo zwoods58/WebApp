@@ -55,6 +55,13 @@ async function verifyPinHandler(request: NextRequest) {
     if (businesses && businesses.length > 0) {
       business = businesses[0]; // Use most recent
       console.log('🔍 [API] Found multiple businesses with phone:', phoneNumber, 'using most recent:', business.business_name);
+      
+      // Log warning for potential data issue
+      console.warn('⚠️ [API] Multiple businesses found with phone:', {
+        phone: phoneNumber,
+        count: businesses.length,
+        businesses: businesses.map(b => ({ id: b.id, name: b.business_name }))
+      });
     } else if (businesses && businesses.length === 1) {
       business = businesses[0];
     }
