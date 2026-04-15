@@ -21,6 +21,8 @@ import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useSignup } from '@/hooks/useSignup';
 import PINSetup from '@/components/auth/PINSetup';
 import SecurityQuestionsSetup from '@/components/auth/SecurityQuestionsSetup';
+import CombinedSecurityStepWithFallback from '@/components/auth/CombinedSecurityStepWithFallback';
+import SecurityQuestionsSetupWithFallback from '@/components/auth/SecurityQuestionsSetupWithFallback';
 
 // Helper function to get flag emoji or fallback
 const getFlagDisplay = (country: { code: string; name: string; flag: string }) => {
@@ -109,7 +111,7 @@ function BeezeeSignupContent() {
         />;
       case 4:
         return (
-          <CombinedSecurityStep
+          <CombinedSecurityStepWithFallback
             onPINComplete={handlePINSetup}
             onSecurityQuestionsComplete={(data) => {
               console.log('Security question data received:', data);
