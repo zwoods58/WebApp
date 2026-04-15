@@ -34,11 +34,30 @@ async function verifyPinHandler(request: NextRequest) {
     console.log('🔐 [API] Verifying PIN for phone:', phoneNumber);
 
     // Find business by phone number
-    const { data: business, error: findError } = await supabaseAdmin
+    const { data: businesses, error: findError } = await supabaseAdmin
       .from('businesses')
       .select('*')
       .eq('phone_number', phoneNumber)
-      .single();
+      .order('created_at', { ascending: false }); // Get most recent first
+
+    let business = null;
+    
+    if (findError) {
+      console.log('❌ [API] Database error:', findError.message);
+      return NextResponse.json({
+        success: false,
+        error: 'Database error occurred',
+        business: null
+      }, { status: 500 });
+    }
+
+    // Handle multiple businesses with same phone number
+    if (businesses && businesses.length > 0) {
+      business = businesses[0]; // Use most recent
+      console.log('🔍 [API] Found multiple businesses with phone:', phoneNumber, 'using most recent:', business.business_name);
+    } else if (businesses && businesses.length === 1) {
+      business = businesses[0];
+    }
 
     if (findError || !business) {
       console.log('❌ [API] No business found for phone:', phoneNumber);
