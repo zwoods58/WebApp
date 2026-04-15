@@ -79,13 +79,34 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: K
     try {
       console.log(`Starting subscription for KE`);
       
-      // Kyshi API removed - show error message
-      alert('Payment system temporarily unavailable. Please contact support for subscription assistance.');
-      setStep('form');
-      return;
+      // Call subscription API
+      const response = await fetch('/api/subscription/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: business.id,
+          user_email: business.email,
+          user_phone: phoneNumber,
+          country: 'Kenya',
+          full_name: business.business_name || 'Business User',
+          business_id: business.id,
+          industry: business.industry
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.paymentUrl) {
+        // Redirect to payment URL
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error(data.error || 'Failed to create subscription');
+      }
     } catch (error) {
       console.error('Subscription error:', error);
-      alert('Payment failed. Please try again.');
+      alert(error instanceof Error ? error.message : 'Payment failed. Please try again.');
       setStep('form');
     }
   };

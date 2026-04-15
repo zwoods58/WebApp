@@ -51,7 +51,34 @@ export function PaymentButton({
     const returnUrl = `${baseUrl}/payment/return`;
     
     try {
-      throw new Error('Payment system temporarily unavailable. Please contact support.');
+      // Create payment link using Kyshi API
+      const response = await fetch('/api/payment/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentLinkCode,
+          customerEmail,
+          customerName,
+          amount,
+          currency,
+          returnUrl
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.paymentUrl) {
+        setPaymentUrl(data.paymentUrl);
+        setReference(data.reference);
+        setStatus('initiated');
+        // Open payment URL in new window
+        window.open(data.paymentUrl, '_blank', 'noopener,noreferrer');
+        onSuccess?.();
+      } else {
+        throw new Error(data.error || 'Failed to initiate payment');
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Network error. Please try again.';
       setError(errorMessage);
