@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
+// Kyshi API functions removed - no longer available
 import { X } from 'lucide-react';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
@@ -48,64 +49,10 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
     try {
       console.log(`Starting subscription for GH`);
       
-      // Defensive check - ensure plans are loaded
-      const plans = await SubscriptionAPI.getPlans('GH');
-      if (!plans || plans.length === 0) {
-        console.error('No plans available. Plans data:', plans);
-        alert('No subscription plans available. Please refresh and try again.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
-      
-      // Get plan ID for the country
-      const planId = await getPlanIdForCountry('GH', amount);
-      
-      if (!planId) {
-        console.error(`No plan ID found for GH`);
-        alert('Subscription plan not available for Ghana. Please contact support.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Found plan ID: ${planId}`);
-      
-      // Extract user name from business settings or business name
-      const userName = business.settings?.user_name || business.business_name || 'Customer';
-      
-      // Create subscription request
-      const subscriptionRequest = {
-        email: business.email,
-        firstName: userName,
-        lastName: '', // Not stored in our current schema
-        phone: `233${phoneNumber}`,
-        countryCode: 'GH',
-        planId,
-        paymentMethod: paymentMethod === 'mobile_money' ? provider : paymentMethod
-      };
-
-      console.log('Creating subscription with email:', {
-        email: business.email,
-        businessName: business.business_name,
-        userName,
-        phone: `233${phoneNumber}`
-      });
-
-      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
-      
-      if (response.success && response.authorizationUrl) {
-        // Redirect to payment URL
-        window.location.href = response.authorizationUrl;
-      } else {
-        setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { 
-          onSuccess?.(); 
-          onClose(); 
-          setStep('form'); 
-          setPhoneNumber(''); 
-        }, 5000);
-      }
+      // Kyshi API removed - show error message
+      alert('Payment system temporarily unavailable. Please contact support for subscription assistance.');
+      setStep('form');
+      return;
     } catch (error) {
       console.error('Subscription error:', error);
       alert('Payment failed. Please try again.');
@@ -135,7 +82,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
                   {currentProvider.name}
                 </h2>
                 <p className={`text-xs ${currentProvider.textColor === 'white' ? 'text-white/70' : 'text-black/70'}`}>
-                  Powered by Kyshi  MoMo approved
+                  Secure payment processing  MoMo approved
                 </p>
               </div>
               <button
@@ -181,7 +128,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
                       <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold text-sm">M</div>
                       <div className="flex-1 text-left">
                         <div className="text-sm font-semibold">MTN Mobile Money</div>
-                        <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
+                        <div className="text-xs text-gray-500">Instant payment processing</div>
                       </div>
                       {provider === 'mtn' && <div className="text-yellow-600 text-sm"></div>}
                     </button>
@@ -196,7 +143,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
                       <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">V</div>
                       <div className="flex-1 text-left">
                         <div className="text-sm font-semibold">Vodafone Cash</div>
-                        <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
+                        <div className="text-xs text-gray-500">Instant payment processing</div>
                       </div>
                       {provider === 'vodafone' && <div className="text-red-600 text-sm"></div>}
                     </button>
@@ -211,7 +158,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
                       <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm">A</div>
                       <div className="flex-1 text-left">
                         <div className="text-sm font-semibold">AirtelTigo Money</div>
-                        <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
+                        <div className="text-xs text-gray-500">Instant payment processing</div>
                       </div>
                       {provider === 'airteltigo' && <div className="text-red-600 text-sm"></div>}
                     </button>
@@ -271,7 +218,7 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
           
           {/* Footer */}
           <div className="py-3 text-center text-xs text-gray-400 border-t">
-            Secured by Kyshi  Ghana MoMo approved
+            Secure payment processing  Ghana MoMo approved
           </div>
         </div>
       </div>

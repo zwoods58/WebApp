@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
+// Kyshi API functions removed - no longer available
 import { X } from 'lucide-react';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
@@ -30,7 +31,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSucces
   const texts = {
     fr: {
       title: 'Orange Money',
-      subtitle: 'Propulsé par Kyshi',
+      subtitle: 'Traitement sécurisé des paiements',
       price: '1000 FCFA',
       period: 'abonnement hebdomadaire \u2022 renouvellement automatique tous les 7 jours',
       providerLabel: 'Choisissez votre opérateur',
@@ -42,11 +43,11 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSucces
       waitingHint: 'Entrez votre code PIN Orange Money',
       success: 'Abonnement hebdomadaire activé !',
       successHint: 'Vous serez débité de 1000 FCFA toutes les 7 jours',
-      footer: 'Sécurisé par Kyshi \u2022 Transactions instantanées'
+      footer: 'Traitement sécurisé • Transactions instantanées'
     },
     en: {
       title: 'Orange Money',
-      subtitle: 'Powered by Kyshi',
+      subtitle: 'Secure payment processing',
       price: '1000 FCFA',
       period: 'weekly subscription \u2022 auto-renews every 7 days',
       providerLabel: 'Choose your network',
@@ -58,7 +59,7 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSucces
       waitingHint: 'Enter your Orange Money PIN',
       success: 'Weekly subscription activated!',
       successHint: 'You will be charged 1000 FCFA every 7 days',
-      footer: 'Secured by Kyshi \u2022 Instant transactions'
+      footer: 'Secure payment processing • Instant transactions'
     }
   };
 
@@ -79,64 +80,10 @@ export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSucces
     try {
       console.log(`Starting subscription for CI`);
       
-      // Defensive check - ensure plans are loaded
-      const plans = await SubscriptionAPI.getPlans('CI');
-      if (!plans || plans.length === 0) {
-        console.error('No plans available. Plans data:', plans);
-        alert(language === 'fr' ? 'Aucun plan d\'abonnement disponible. Veuillez rafraîchir et réessayer.' : 'No subscription plans available. Please refresh and try again.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
-      
-      // Get plan ID for the country
-      const planId = await getPlanIdForCountry('CI', amount);
-      
-      if (!planId) {
-        console.error(`No plan ID found for CI`);
-        alert(language === 'fr' ? 'Plan d\'abonnement non disponible pour la Côte d\'Ivoire. Veuillez contacter le support.' : 'Subscription plan not available for Côte d\'Ivoire. Please contact support.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Found plan ID: ${planId}`);
-      
-      // Extract user name from business settings or business name
-      const userName = business.settings?.user_name || business.business_name || 'Customer';
-      
-      // Create subscription request
-      const subscriptionRequest = {
-        email: business.email,
-        firstName: userName,
-        lastName: '', // Not stored in our current schema
-        phone: phoneNumber,
-        countryCode: 'CI',
-        planId,
-        paymentMethod: paymentMethod === 'mobile_money' ? provider : paymentMethod
-      };
-
-      console.log('Creating subscription with email:', {
-        email: business.email,
-        businessName: business.business_name,
-        userName,
-        phone: phoneNumber
-      });
-
-      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
-      
-      if (response.success && response.authorizationUrl) {
-        // Redirect to payment URL
-        window.location.href = response.authorizationUrl;
-      } else {
-        setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { 
-          onSuccess?.(); 
-          onClose(); 
-          setStep('form'); 
-          setPhoneNumber(''); 
-        }, 5000);
-      }
+      // Kyshi API removed - show error message
+      alert(language === 'fr' ? 'Système de paiement temporairement indisponible. Veuillez contacter le support pour l\'abonnement.' : 'Payment system temporarily unavailable. Please contact support for subscription assistance.');
+      setStep('form');
+      return;
     } catch (error) {
       console.error('Subscription error:', error);
       alert(language === 'fr' ? 'Paiement échoué. Veuillez réessayer.' : 'Payment failed. Please try again.');

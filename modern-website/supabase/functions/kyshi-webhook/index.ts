@@ -1,29 +1,39 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { createHmac } from 'node:crypto';
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createHmac } from 'https://deno.land/std@0.168.0/crypto/mod.ts';
 
-export async function POST(request: Request) {
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
-    const body = await request.text();
-    const signature = request.headers.get('x-kyshi-signature');
-    const webhookSecret = process.env.KYSHI_WEBHOOK_SECRET;
-
+    // Verify webhook signature
+    const signature = req.headers.get('x-kyshi-signature');
+    const webhookSecret = Deno.env.get('KYSHI_WEBHOOK_SECRET');
+    
     if (!signature || !webhookSecret) {
-      return NextResponse.json(
-        { error: 'Missing signature or webhook secret' },
-        { status: 401 }
+      return new Response(
+        JSON.stringify({ error: 'Missing signature or webhook secret' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Verify webhook signature
-    const expectedSignature = createHmac('sha256', webhookSecret)
-      .update(body, 'utf8')
-      .digest('hex');
+    const body = await req.text();
+    const expectedSignature = await createHmac('SHA-256', webhookSecret)
+      .update(body)
+      .toString('hex');
 
     if (!signature.includes(expectedSignature)) {
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
+      return new Response(
+        JSON.stringify({ error: 'Invalid signature' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -32,8 +42,8 @@ export async function POST(request: Request) {
 
     // Initialize Supabase client
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     // Handle different event types
@@ -62,44 +72,34 @@ export async function POST(request: Request) {
         console.log('Unhandled event type:', event.event);
     }
 
-    return NextResponse.json({ received: true });
+    return new Response(
+      JSON.stringify({ received: true }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
     console.error('Webhook error:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'Internal server error' 
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
-}
+});
 
 async function handleSubscriptionCreated(supabase: any, data: any) {
   console.log('Subscription created:', data);
   
-  // Update subscription status in database with complete information
-  const updateData: any = {
-    status: 'pending',
-    kyshi_subscription_id: data.id,
-    kyshi_subscription_code: data.code,
-    updated_at: new Date().toISOString(),
-  };
-
-  // Add additional data if available
-  if (data.amount) updateData.amount = data.amount;
-  if (data.currency) updateData.currency = data.currency;
-  if (data.paymentMethod) updateData.payment_method = data.paymentMethod;
-  if (data.plan) {
-    updateData.plan_name = data.plan.name;
-    updateData.plan_interval = data.plan.interval;
-  }
-  if (data.customer) {
-    updateData.customer_email = data.customer.email;
-    updateData.customer_phone = data.customer.phone;
-  }
-  
+  // Update subscription status in database
   await supabase
     .from('subscriptions')
-    .update(updateData)
+    .update({
+      status: 'pending',
+      kyshi_subscription_id: data.id,
+      kyshi_subscription_code: data.code,
+      updated_at: new Date().toISOString(),
+    })
     .eq('kyshi_subscription_id', data.id);
 }
 
@@ -152,7 +152,7 @@ async function handlePaymentSucceeded(supabase: any, data: any) {
       created_at: new Date().toISOString(),
     });
 
-  // Update subscription next charge date
+  // Update next charge date
   await supabase
     .from('subscriptions')
     .update({

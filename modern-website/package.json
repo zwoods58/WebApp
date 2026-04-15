@@ -12,9 +12,7 @@
     "test:run": "vitest run",
     "generate:logos": "node scripts/generate-logo-sizes.js",
     "generate-version": "node scripts/generate-version.js",
-    "seed:kyshi": "node -r dotenv/config scripts/seed-kyshi-plans.ts",
-    "seed:beezee-plans": "npx ts-node scripts/seed-beezee-plans.ts",
-    "test:kyshi": "npx ts-node -r dotenv/config scripts/test-kyshi-connection.ts"
+    "seed:beezee-plans": "npx ts-node scripts/seed-beezee-plans.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

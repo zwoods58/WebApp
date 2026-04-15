@@ -1,4 +1,6 @@
-// Kyshi Subscription API integration for modals
+// Subscription API integration with Kyshi
+import { kyshiAPI, COUNTRY_CONFIGS } from './kyshi';
+import { supabase } from './supabase';
 
 export interface SubscriptionRequest {
   email: string;
@@ -6,7 +8,7 @@ export interface SubscriptionRequest {
   lastName: string;
   phone?: string;
   countryCode: string;
-  planId: string;
+  planId?: string;
   paymentMethod?: string;
   industry?: string;
 }
@@ -15,28 +17,62 @@ export interface SubscriptionResponse {
   success: boolean;
   message: string;
   subscription?: any;
-  kyshiSubscriptionId?: string;
   authorizationUrl?: string;
+  paymentUrl?: string;
+  checkoutUrl?: string;
+  subscriptionId?: string;
+  amount?: number;
+  currency?: string;
+  redirectBehavior?: 'modal' | 'external';
+  mobileMoneyProvider?: string;
 }
 
 export class SubscriptionAPI {
-  private static baseUrl = '/api/kyshi';
-
-  // Helper function to validate plan data
-  private static validatePlans(plans: any[]): plans is any[] {
-    if (!Array.isArray(plans)) return false;
-    
-    for (const plan of plans) {
-      if (!plan.id || !plan.country_code || !plan.amount) {
-        console.warn('Invalid plan structure:', plan);
-        return false;
+  // Get available plans for a country
+  static async getPlans(countryCode: string): Promise<any[]> {
+    try {
+      console.log(`Getting plans for country: ${countryCode}`);
+      const plans = await kyshiAPI.listPlans(countryCode);
+      console.log(`Found ${plans.length} plans from Kyshi API`);
+      
+      const mappedPlans = plans.map(plan => ({
+        id: plan.id,
+        name: plan.name,
+        country_code: plan.country,
+        amount: plan.amount,
+        currency: plan.currency,
+        interval: plan.interval,
+        planCode: plan.planCode,
+        isActive: plan.isActive,
+      }));
+      
+      console.log(`Mapped ${mappedPlans.length} plans`);
+      return mappedPlans;
+    } catch (error) {
+      console.error('Failed to get plans from Kyshi API:', error);
+      console.log('Falling back to default plans');
+      
+      // Return default plans if Kyshi API fails
+      const config = COUNTRY_CONFIGS[countryCode as keyof typeof COUNTRY_CONFIGS];
+      if (config) {
+        const defaultPlan = {
+          id: `default-${countryCode}`,
+          name: `Weekly ${countryCode} Plan`,
+          country_code: countryCode,
+          amount: config.amount,
+          currency: config.currency,
+          interval: 'weekly',
+          planCode: config.planCode,
+          isActive: true,
+        };
+        console.log('Returning default plan:', defaultPlan);
+        return [defaultPlan];
       }
+      return [];
     }
-    
-    return true;
   }
 
-  // Helper function to get plan by country with fallback
+  // Get plan by country code
   static async getPlanByCountry(countryCode: string): Promise<any | null> {
     const plans = await this.getPlans(countryCode);
     
@@ -56,131 +92,177 @@ export class SubscriptionAPI {
     return plan;
   }
 
+  // Helper function to get plan ID for country
+  static async getPlanIdForCountry(countryCode: string, amount?: number): Promise<string | null> {
+    const plan = await this.getPlanByCountry(countryCode);
+    return plan ? plan.id : null;
+  }
+
+  // Helper function to get plan code for country
+  static async getPlanCodeForCountry(countryCode: string): Promise<string | null> {
+    const config = COUNTRY_CONFIGS[countryCode as keyof typeof COUNTRY_CONFIGS];
+    return config ? config.planCode : null;
+  }
+
+  // Helper function to get banks for Nigeria
+  static async getBanksForNigeria(): Promise<any[]> {
+    try {
+      const response = await kyshiAPI.getBanks('Nigeria');
+      return response || [];
+    } catch (error) {
+      console.error('Error fetching Nigeria banks:', error);
+      return [];
+    }
+  }
+
+  // Create subscription
   static async createSubscription(request: SubscriptionRequest): Promise<SubscriptionResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/create-subscription`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
+      const config = COUNTRY_CONFIGS[request.countryCode as keyof typeof COUNTRY_CONFIGS];
+      
+      if (!config) {
+        throw new Error(`Unsupported country: ${request.countryCode}`);
+      }
+
+      // Get plan code
+      const planCode = await this.getPlanCodeForCountry(request.countryCode);
+      if (!planCode) {
+        throw new Error(`No plan available for ${request.countryCode}`);
+      }
+
+      // Create subscription request for Kyshi
+      const subscriptionData = {
+        planCode,
+        customer: request.email,
+        paymentMethod: config.paymentMethod,
+        redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/subscription/callback?user_email=${request.email}&country=${request.countryCode}`,
+      };
+
+      // Add mobile money provider for specific countries
+      if ('mobileMoneyProvider' in config && config.mobileMoneyProvider) {
+        (subscriptionData as any).mobileMoneyProvider = config.mobileMoneyProvider;
+      }
+
+      // Call Supabase Edge Function instead of direct Kyshi API
+      const { data, error } = await supabase.functions.invoke('create-subscription', {
+        body: {
+          user_id: 'temp-user-id', // This should come from auth context
+          user_email: request.email,
+          user_phone: request.phone,
+          country: request.countryCode,
+          full_name: `${request.firstName} ${request.lastName}`.trim()
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create subscription');
+      if (error) {
+        throw new Error(error.message);
       }
 
-      return await response.json();
+      // Log activity
+      console.log('Subscription created via Edge Function:', {
+        email: request.email,
+        country: request.countryCode,
+        planCode,
+        subscriptionId: data.subscriptionId,
+      });
+
+      return {
+        success: true,
+        message: 'Subscription created successfully',
+        subscription: data.subscription,
+        authorizationUrl: data.paymentUrl,
+        paymentUrl: data.paymentUrl,
+        checkoutUrl: data.paymentUrl,
+        subscriptionId: data.subscriptionId,
+        amount: data.amount,
+        currency: data.currency,
+        redirectBehavior: data.redirectBehavior,
+        mobileMoneyProvider: data.mobileMoneyProvider,
+      };
     } catch (error) {
-      console.error('Subscription API Error:', error);
-      throw error;
+      console.error('Failed to create subscription:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to create subscription',
+      };
     }
   }
 
-  static async getPlans(countryCode?: string): Promise<any[]> {
-    try {
-      // Build URL with optional country filter
-      const url = countryCode 
-        ? `${this.baseUrl}/plans?country=${countryCode}` 
-        : `${this.baseUrl}/plans`;
-        
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      console.log('Plans API response:', data); // Debug log
-      
-      // Handle your API's response format: { success: true, plans: [...] }
-      let plansArray: any[] = [];
-      
-      if (data.success && Array.isArray(data.plans)) {
-        // Format 1: { success: true, plans: [...] }
-        plansArray = data.plans;
-        console.log(`Retrieved ${plansArray.length} plans from success.plans format`);
-      } 
-      else if (Array.isArray(data)) {
-        // Format 2: Direct array
-        plansArray = data;
-        console.log(`Retrieved ${plansArray.length} plans from direct array format`);
-      } 
-      else if (data.data && Array.isArray(data.data)) {
-        // Format 3: { data: [...] }
-        plansArray = data.data;
-        console.log(`Retrieved ${plansArray.length} plans from data.data format`);
-      } 
-      else if (data.plans && Array.isArray(data.plans)) {
-        // Format 4: { plans: [...] } without success flag
-        plansArray = data.plans;
-        console.log(`Retrieved ${plansArray.length} plans from plans field`);
-      } 
-      else {
-        console.error('Unexpected plans response format:', data);
-        throw new Error('Invalid plans response format');
-      }
-      
-      // Optional: Filter by country if not already filtered by API
-      if (countryCode && !url.includes('country=')) {
-        const beforeCount = plansArray.length;
-        plansArray = plansArray.filter(plan => plan.country_code === countryCode.toUpperCase());
-        console.log(`Filtered plans by country ${countryCode}: ${beforeCount} -> ${plansArray.length}`);
-      }
-      
-      if (plansArray.length === 0) {
-        console.warn('No plans found for country:', countryCode || 'all');
-      }
-      
-      return plansArray;
-      
-    } catch (error) {
-      console.error('Plans API Error:', error);
-      throw error;
-    }
-  }
-
+  // Get subscription status
   static async getSubscriptionStatus(subscriptionId: string): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/subscription-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ subscriptionId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get subscription status');
-      }
-
-      return await response.json();
+      const subscription = await kyshiAPI.getSubscription(subscriptionId);
+      return {
+        success: true,
+        subscription,
+        isActive: subscription.isActive,
+        status: subscription.status,
+        nextPaymentDate: subscription.nextPaymentDate,
+      };
     } catch (error) {
-      console.error('Subscription Status API Error:', error);
-      throw error;
+      console.error('Failed to get subscription status:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to get subscription status',
+      };
     }
   }
 
+  // Cancel subscription
   static async cancelSubscription(subscriptionId: string): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/cancel-subscription`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ subscriptionId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel subscription');
-      }
-
-      return await response.json();
+      const subscription = await kyshiAPI.manageSubscription(subscriptionId, 'cancel');
+      return {
+        success: true,
+        message: 'Subscription cancelled successfully',
+        subscription,
+      };
     } catch (error) {
-      console.error('Cancel Subscription API Error:', error);
-      throw error;
+      console.error('Failed to cancel subscription:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to cancel subscription',
+      };
+    }
+  }
+
+  // Charge subscription (manual charge)
+  static async chargeSubscription(subscriptionId: string, amount?: number): Promise<any> {
+    try {
+      const transaction = await kyshiAPI.chargeSubscription({
+        subscriptionId,
+        amount,
+      });
+      
+      return {
+        success: true,
+        message: 'Subscription charged successfully',
+        transaction,
+      };
+    } catch (error) {
+      console.error('Failed to charge subscription:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to charge subscription',
+      };
+    }
+  }
+
+  // Verify transaction
+  static async verifyTransaction(reference: string): Promise<any> {
+    try {
+      const transaction = await kyshiAPI.verifyTransaction(reference);
+      return {
+        success: true,
+        transaction,
+        status: transaction.status,
+      };
+    } catch (error) {
+      console.error('Failed to verify transaction:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to verify transaction',
+      };
     }
   }
 }
@@ -219,83 +301,5 @@ export const COUNTRY_PAYMENT_METHODS = {
   // }
 };
 
-// Helper function to get plan ID based on country and amount
-export async function getPlanIdForCountry(countryCode: string, amount: number): Promise<string> {
-  try {
-    const plans = await SubscriptionAPI.getPlans(countryCode);
-    
-    console.log(`Found ${plans.length} plans for ${countryCode}:`, plans);
-    
-    // Find plan by amount and country_code (database now includes country_code)
-    const plan = plans.find((p: any) => {
-      const planAmount = p.amount || 0;
-      const planCountry = (p.country_code || '').toUpperCase();
-      const expectedCountry = countryCode.toUpperCase();
-      
-      return planAmount === amount && planCountry === expectedCountry;
-    });
-    
-    if (!plan) {
-      console.warn(`No plan found for ${countryCode} with amount ${amount}`, { 
-        availablePlans: plans.map(p => ({ 
-          id: p.id, 
-          amount: p.amount, 
-          country_code: p.country_code,
-          currency: p.localCurrency || p.currency,
-          code: p.code,
-          name: p.name
-        }))
-      });
-      throw new Error(`No plan found for ${countryCode} with amount ${amount}`);
-    }
-    
-    console.log(`Found plan for ${countryCode}:`, { 
-      planId: plan.id, 
-      amount: plan.amount, 
-      country_code: plan.country_code,
-      name: plan.name
-    });
-    return plan.id;
-  } catch (error) {
-    console.error('Error finding plan:', error);
-    throw error;
-  }
-}
-
-// Enhanced version: Get plan ID by country only (as specified in the plan)
-export async function getPlanIdForCountryOnly(country: string): Promise<string | null> {
-  try {
-    console.log(`Looking for plan ID for country: ${country}`);
-    
-    // Use the static method from SubscriptionAPI
-    const plans = await SubscriptionAPI.getPlans(country);
-    
-    if (!plans || plans.length === 0) {
-      console.error(`No plans found for country: ${country}`);
-      return null;
-    }
-    
-    // Find the plan matching the country
-    const plan = plans.find(p => p.country_code === country.toUpperCase());
-    
-    if (!plan) {
-      console.error(`No plan found with country_code: ${country}`, { 
-        availableCountries: plans.map(p => p.country_code) 
-      });
-      return null;
-    }
-    
-    console.log(`Found plan for ${country}:`, { 
-      id: plan.id, 
-      name: plan.name, 
-      amount: plan.amount,
-      currency: plan.localCurrency || plan.currency 
-    });
-    
-    return plan.id;
-    
-  } catch (error) {
-    console.error(`Error finding plan for ${country}:`, error);
-    return null;
-  }
-}
+// Kyshi plan functions removed - no longer available
+// Use StartButton payment system instead

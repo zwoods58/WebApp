@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import KyshiPaymentButton from '@/components/kyshi/KyshiPaymentButton';
+// Kyshi payment removed
 
 const MpesaColors = {
   primary: '#1B5E20',
@@ -55,7 +55,7 @@ export function KenyaSubscriptionModalPopup({ isOpen, onClose, onSuccess }: Keny
             <span className="text-2xl font-bold text-green-600">M</span>
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Lipa na M-Pesa</h2>
-          <p className="text-sm text-gray-600">Powered by Kyshi</p>
+          <p className="text-sm text-gray-600">Secure payment processing</p>
           <div className="mt-4 p-3 bg-green-50 rounded-lg">
             <p className="text-2xl font-bold text-green-800">KES {amount}</p>
             <p className="text-xs text-green-600">Weekly subscription • Auto-renews every 7 days</p>
@@ -93,19 +93,14 @@ export function KenyaSubscriptionModalPopup({ isOpen, onClose, onSuccess }: Keny
             <p className="text-xs text-gray-500 mt-2">You will receive payment prompt on this number</p>
           </div>
 
-          {/* Kyshi Payment Button with Popup */}
-          <KyshiPaymentButton
-            paymentLinkCode="KE_WEEKLY_SUBSCRIPTION" // This should match your Kyshi payment link code
-            customerEmail={email}
-            customerFirstName={userName.split(' ')[0]}
-            customerLastName={userName.split(' ')[1] || ''}
-            countryCode="KE"
-            onSuccess={handlePaymentSuccess}
-            onError={handlePaymentError}
-            className="w-full py-3 rounded-xl font-semibold text-lg"
+          {/* Payment Button - Kyshi removed */}
+          <button
+            type="submit"
+            disabled
+            className="w-full py-3 bg-gray-400 text-white rounded-xl font-semibold text-lg cursor-not-allowed"
           >
-            Pay KES {amount}
-          </KyshiPaymentButton>
+            Payment System Unavailable
+          </button>
         </form>
 
         {/* Footer */}

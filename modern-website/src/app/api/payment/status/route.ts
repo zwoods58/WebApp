@@ -28,17 +28,17 @@ export async function GET(request: Request) {
     if (error) {
       console.error('Database error checking transaction:', error);
       
-      // If transaction not found, check if it exists in the kyshi_transactions table
+      // Check if it exists in the Kyshi transactions table
       const { data: kyshiTransaction, error: kyshiError } = await supabaseAdmin
-        .from('kyshi_transactions')
+        .from('transactions')
         .select('*')
         .eq('kyshi_reference', reference)
         .single();
       
       if (!kyshiError && kyshiTransaction) {
-        console.log('Found transaction in kyshi_transactions table');
+        console.log('Found transaction in Kyshi transactions table');
         return NextResponse.json({
-          status: kyshiTransaction.status === 'success' ? 'success' : 'pending',
+          status: kyshiTransaction.status === 'success' ? 'success' : kyshiTransaction.status,
           paid: kyshiTransaction.status === 'success',
           amount: kyshiTransaction.amount,
           currency: kyshiTransaction.currency,
@@ -71,44 +71,7 @@ export async function GET(request: Request) {
       });
     }
     
-    // Optionally call Kyshi API to check status if webhook hasn't updated yet
-    // This would require implementing Kyshi's status check endpoint
-    try {
-      console.log('Checking Kyshi API for latest status...');
-      const kyshiResponse = await fetch(`https://api.kyshi.co/v1/payments/${reference}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (kyshiResponse.ok) {
-        const kyshiData = await kyshiResponse.json();
-        console.log('Kyshi API response:', kyshiData);
-        
-        // Update local database with latest status
-        if (kyshiData.status && kyshiData.status !== transaction.status) {
-          await supabaseAdmin
-            .from('transactions')
-            .update({
-              status: kyshiData.status === 'successful' ? 'SUCCESSFUL' : kyshiData.status.toUpperCase(),
-              updated_at: new Date().toISOString()
-            })
-            .eq('reference', reference);
-        }
-        
-        return NextResponse.json({
-          status: kyshiData.status === 'successful' ? 'success' : kyshiData.status,
-          paid: kyshiData.status === 'successful',
-          amount: kyshiData.amount || transaction.amount,
-          currency: kyshiData.currency || transaction.local_currency,
-          reference,
-          source: 'kyshi_api'
-        });
-      }
-    } catch (apiError) {
-      console.log('Kyshi API check failed, using local database status:', apiError);
-    }
+    // Kyshi API check removed - no longer available
     
     // Return current status from database
     return NextResponse.json({

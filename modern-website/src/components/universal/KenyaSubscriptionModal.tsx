@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
+// Kyshi API functions removed - no longer available
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const MpesaColors = {
@@ -31,7 +32,7 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: K
   const texts = {
     en: {
       title: 'Lipa na M-Pesa',
-      subtitle: 'Powered by Kyshi',
+      subtitle: 'Secure payment processing',
       price: `KES ${amount}`,
       period: 'weekly subscription \u2022 auto-renews every 7 days',
       phoneLabel: 'M-Pesa Phone Number',
@@ -42,11 +43,11 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: K
       waitingHint: 'Enter your M-Pesa PIN to complete',
       success: 'Weekly subscription activated!',
       successHint: `You will be charged KES ${amount} every 7 days`,
-      footer: 'Secured by Kyshi \u2022 Protected by Safaricom'
+      footer: 'Secure payment processing • Protected by Safaricom'
     },
     sw: {
       title: 'Lipa kwa M-Pesa',
-      subtitle: 'Inaendeshwa na Kyshi',
+      subtitle: 'Usindikaji salama wa malipo',
       price: `KES ${amount}`,
       period: 'usajili wa kila wiki \u2022 hujirudia kila siku 7',
       phoneLabel: 'Nambari ya Simu ya M-Pesa',
@@ -57,7 +58,7 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: K
       waitingHint: 'Weka PIN yako ya M-Pesa kukamilisha',
       success: 'Usajili wa wiki umeanzishwa!',
       successHint: `Utatozwa KES ${amount} kila baada ya siku 7`,
-      footer: 'Imelindwa na Kyshi \u2022 Safaricom'
+      footer: 'Usindikaji salama • Safaricom'
     }
   };
 
@@ -78,64 +79,10 @@ export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: K
     try {
       console.log(`Starting subscription for KE`);
       
-      // Defensive check - ensure plans are loaded
-      const plans = await SubscriptionAPI.getPlans('KE');
-      if (!plans || plans.length === 0) {
-        console.error('No plans available. Plans data:', plans);
-        alert('No subscription plans available. Please refresh and try again.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
-      
-      // Get plan ID for the country
-      const planId = await getPlanIdForCountry('KE', amount);
-      
-      if (!planId) {
-        console.error(`No plan ID found for KE`);
-        alert('Subscription plan not available for Kenya. Please contact support.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Found plan ID: ${planId}`);
-      
-      // Extract user name from business settings or business name
-      const userName = business.settings?.user_name || business.business_name || 'Customer';
-      
-      // Create subscription request
-      const subscriptionRequest = {
-        email: business.email,
-        firstName: userName,
-        lastName: '', // Not stored in our current schema
-        phone: `254${phoneNumber}`,
-        countryCode: 'KE',
-        planId,
-        paymentMethod: paymentMethod === 'mobile_money' ? mobileProvider : paymentMethod
-      };
-
-      console.log('Creating subscription with email:', {
-        email: business.email,
-        businessName: business.business_name,
-        userName,
-        phone: `254${phoneNumber}`
-      });
-
-      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
-      
-      if (response.success && response.authorizationUrl) {
-        // Redirect to payment URL
-        window.location.href = response.authorizationUrl;
-      } else {
-        setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { 
-          onSuccess?.(); 
-          onClose(); 
-          setStep('form'); 
-          setPhoneNumber(''); 
-        }, 5000);
-      }
+      // Kyshi API removed - show error message
+      alert('Payment system temporarily unavailable. Please contact support for subscription assistance.');
+      setStep('form');
+      return;
     } catch (error) {
       console.error('Subscription error:', error);
       alert('Payment failed. Please try again.');

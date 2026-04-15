@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
+import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
+// Kyshi API functions removed - no longer available
 import { X } from 'lucide-react';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
@@ -48,64 +49,10 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }:
     try {
       console.log(`Starting subscription for NG`);
       
-      // Defensive check - ensure plans are loaded
-      const plans = await SubscriptionAPI.getPlans('NG');
-      if (!plans || plans.length === 0) {
-        console.error('No plans available. Plans data:', plans);
-        alert('No subscription plans available. Please refresh and try again.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Available plans:`, plans.map(p => ({ id: p.id, country: p.country_code, amount: p.amount })));
-      
-      // Get plan ID for the country
-      const planId = await getPlanIdForCountry('NG', amount);
-      
-      if (!planId) {
-        console.error(`No plan ID found for NG`);
-        alert('Subscription plan not available for Nigeria. Please contact support.');
-        setStep('form');
-        return;
-      }
-      
-      console.log(`Found plan ID: ${planId}`);
-      
-      // Extract user name from business settings or business name
-      const userName = business.settings?.user_name || business.business_name || 'Customer';
-      
-      // Create subscription request
-      const subscriptionRequest = {
-        email: business.email,
-        firstName: userName,
-        lastName: '', // Not stored in our current schema
-        phone: identifier,
-        countryCode: 'NG',
-        planId,
-        paymentMethod
-      };
-
-      console.log('Creating subscription with email:', {
-        email: business.email,
-        businessName: business.business_name,
-        userName,
-        phone: identifier
-      });
-
-      const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
-      
-      if (response.success && response.authorizationUrl) {
-        // Redirect to payment URL
-        window.location.href = response.authorizationUrl;
-      } else {
-        setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { 
-          onSuccess?.(); 
-          onClose(); 
-          setStep('form'); 
-          setIdentifier(''); 
-        }, 5000);
-      }
+      // Kyshi API removed - show error message
+      alert('Payment system temporarily unavailable. Please contact support for subscription assistance.');
+      setStep('form');
+      return;
     } catch (error) {
       console.error('Subscription error:', error);
       alert('Payment failed. Please try again.');

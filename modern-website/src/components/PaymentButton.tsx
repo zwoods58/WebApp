@@ -51,42 +51,7 @@ export function PaymentButton({
     const returnUrl = `${baseUrl}/payment/return`;
     
     try {
-      const response = await fetch('/api/kyshi/payment-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentLinkCode,
-          customerEmail,
-          customerFirstName: customerName.split(' ')[0],
-          customerLastName: customerName.split(' ').slice(1).join(' ') || 'Customer',
-          countryCode,
-          redirectUrl: returnUrl
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Payment initialization failed');
-      }
-      
-      if (data.authorizationUrl) {
-        setPaymentUrl(data.authorizationUrl);
-        setReference(data.reference);
-        
-        // Open payment page in new tab (PWA-safe)
-        const newWindow = window.open(data.authorizationUrl, '_blank', 'noopener,noreferrer');
-        
-        if (!newWindow || newWindow.closed) {
-          // Popup blocked - show manual link
-          setError('Popup blocked. Please click the payment link below.');
-        } else {
-          // Success - payment window opened
-          setStatus('checking');
-        }
-      } else {
-        throw new Error('No payment URL received');
-      }
+      throw new Error('Payment system temporarily unavailable. Please contact support.');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Network error. Please try again.';
       setError(errorMessage);
@@ -247,7 +212,7 @@ export function PaymentButton({
       
       {loading && (
         <div className="mt-4 text-sm text-gray-500">
-          Initializing payment with Kyshi...
+          Processing payment...
         </div>
       )}
       

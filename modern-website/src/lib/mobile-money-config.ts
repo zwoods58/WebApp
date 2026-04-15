@@ -170,7 +170,7 @@ export const getPaymentMethod = (countryCode: string): string => {
   return isMobileMoneyCountry(countryCode) ? 'mobile_money' : 'card';
 };
 
-// Channel configurations for Kyshi API
+// Channel configurations for payment processing
 export const getPaymentChannels = (countryCode: string): string[] => {
   if (isMobileMoneyCountry(countryCode)) {
     return ['mobile_money'];

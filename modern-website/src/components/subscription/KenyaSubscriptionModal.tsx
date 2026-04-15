@@ -174,18 +174,21 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
 
       const response = await SubscriptionAPI.createSubscription(subscriptionRequest);
       
-      if (response.success && response.authorizationUrl) {
-        // Redirect to payment URL
-        window.location.href = response.authorizationUrl;
+      if (response.success && response.paymentUrl) {
+        // Handle modal vs external redirect
+        if (response.redirectBehavior === 'modal') {
+          // For modal behavior, we would show a WebView or iframe
+          // For now, we'll redirect to the payment URL
+          window.location.href = response.paymentUrl;
+        } else {
+          // External redirect
+          window.location.href = response.paymentUrl;
+        }
       } else {
-        setTimeout(() => setStep('success'), 2000);
-        setTimeout(() => { 
-          onSuccess?.(); 
-          onClose(); 
-          setStep('form'); 
-          setPhoneNumber(''); 
-          setEmail('');
-        }, 5000);
+        // Handle error
+        const errorMessage = response.error || 'Payment failed. Please try again.';
+        showError(errorMessage);
+        setStep('form');
       }
     } catch (error) {
       console.error('Subscription error:', error);

@@ -24,8 +24,7 @@ import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import SubscriptionModal from '@/components/universal/SubscriptionModal';
-import SubscriptionDashboard from '@/components/kyshi/SubscriptionDashboard';
-import CountryPaymentProviders from '@/components/kyshi/CountryPaymentProviders';
+// Kyshi components removed - no longer available
 import { useLanguage } from '@/hooks/LanguageContext';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
@@ -62,7 +61,7 @@ export default function MorePage() {
   const { profile } = useBusinessProfile();
   const { version, isLoading: versionLoading } = useServiceWorkerVersion();
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [showSubscriptionDashboard, setShowSubscriptionDashboard] = useState(false);
+  // Subscription dashboard removed - Kyshi functionality no longer available
   
   // Payment verification states
   const searchParams = useSearchParams();
@@ -201,15 +200,7 @@ export default function MorePage() {
           onClick: () => setShowSubscriptionModal(true),
           color: 'text-teal-600 bg-teal-50'
         } as ButtonMenuItem : null,
-        // Add subscription management for mobile money countries
-        ['ke', 'gh', 'ci'].includes(country.toLowerCase()) ? {
-          icon: Settings,
-          label: t('more.manage_subscription', 'Manage Subscription'),
-          description: t('more.manage_subscription_description', 'View and manage your mobile money subscription'),
-          onClick: () => setShowSubscriptionDashboard(true),
-          color: 'text-blue-600 bg-blue-50'
-        } as ButtonMenuItem : null
-      ]
+        ]
     },
     {
       title: t('more.community_support', 'Community & Support'),
@@ -469,45 +460,7 @@ export default function MorePage() {
         />
       )}
       
-      {/* Subscription Dashboard Modal */}
-      {showSubscriptionDashboard && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">Subscription Management</h2>
-                  <p className="text-blue-100 mt-1">Manage your mobile money subscriptions</p>
-                </div>
-                <button
-                  onClick={() => setShowSubscriptionDashboard(false)}
-                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              <SubscriptionDashboard
-                userEmail={business?.email || ''}
-                countryCode={country.toUpperCase()}
-              />
-              
-              {/* Country Payment Providers */}
-              <div className="mt-8">
-                <CountryPaymentProviders
-                  countryCode={country.toUpperCase()}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Subscription Dashboard removed - Kyshi functionality no longer available */}
       
       {/* Verification Status Overlay */}
       {verificationStatus !== null && (
