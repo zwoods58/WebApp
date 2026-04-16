@@ -73,7 +73,7 @@ const UniversalLanguageSelector: React.FC<UniversalLanguageSelectorProps> = ({
         ]
       };
 
-      return countryLanguages[country || 'KE'] || [{ code: 'en', name: 'English', nativeName: 'English', flag: '??' }];
+      return countryLanguages[country || 'KE'] || [{ code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' }];
     };
 
     setAvailableLanguages(getCountryLanguages());

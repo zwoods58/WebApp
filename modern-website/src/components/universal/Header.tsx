@@ -101,7 +101,7 @@ export default function Header({ industry, country }: HeaderProps) {
 
     // Convert country to uppercase for proper matching
     const upperCountry = (country || '').toUpperCase();
-    return countryLanguages[upperCountry] || [{ code: 'en', name: 'English', nativeName: 'English', flag: '??' }];
+    return countryLanguages[upperCountry] || [{ code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' }];
   };
 
   const availableLanguages = getCountryLanguages();
