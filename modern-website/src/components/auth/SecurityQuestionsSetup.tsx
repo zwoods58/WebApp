@@ -85,7 +85,7 @@ export default function SecurityQuestionsSetup({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div class="fade-in">
+      <div className="fade-in">
         <div className="w-20 h-20 bg-[var(--powder-light)] rounded-3xl flex items-center justify-center text-[var(--powder-dark)] mx-auto mb-6">
           <Shield size={40} strokeWidth={1.5} />
         </div>
@@ -100,7 +100,7 @@ export default function SecurityQuestionsSetup({
         </p>
       </div>
 
-      <div class="fade-in">
+      <div className="fade-in">
         {(error || validationError) && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-start gap-2">
             <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
