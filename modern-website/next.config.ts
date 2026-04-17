@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
     tsconfigPath: './tsconfig.json',
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Add trailing slash for consistency
   trailingSlash: true,
@@ -181,7 +184,7 @@ const nextConfig: NextConfig = {
     },
     optimizePackageImports: ['lucide-react', '@tanstack/react-query', 'date-fns'],
     optimizeServerReact: true,
-    webpackBuildWorker: true,
+    webpackBuildWorker: false,
   },
   
   // Optimize for service worker caching

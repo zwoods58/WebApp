@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { useLanguageSafe } from '@/hooks/useLanguageSafe';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const BeezeeHero = () => {
-    const { t } = useLanguageSafe();
+    const { t } = useLanguage();
     const [hoveredDemo, setHoveredDemo] = useState(false);
     const [showCoachTip, setShowCoachTip] = useState(true);
 

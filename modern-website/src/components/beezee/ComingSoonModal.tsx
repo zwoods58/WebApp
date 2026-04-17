@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Lock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { useLanguageSafe } from '@/hooks/useLanguageSafe';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ComingSoonModalProps {
     isOpen: boolean;
@@ -12,7 +12,7 @@ interface ComingSoonModalProps {
 }
 
 const ComingSoonModal: React.FC<ComingSoonModalProps> = ({ isOpen, onClose }) => {
-    const { t } = useLanguageSafe();
+    const { t } = useLanguage();
     return (
         <AnimatePresence>
             {isOpen && (

@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { Mic, Camera, Calendar, Package, Home, FileText, Users, Settings, X } from 'lucide-react';
-import { useLanguageSafe } from '@/hooks/useLanguageSafe';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const BeezeeAppHero = () => {
-    const { t } = useLanguageSafe();
+    const { t } = useLanguage();
     const [showCoachTip, setShowCoachTip] = useState(true);
 
     return (

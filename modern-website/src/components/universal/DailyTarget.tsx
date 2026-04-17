@@ -3,7 +3,7 @@
 import React from 'react';
 import { Target, TrendingUp } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
-import { useLanguageSafe } from '@/hooks/useLanguageSafe';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface DailyTargetProps {
   industry: string;
@@ -13,7 +13,7 @@ interface DailyTargetProps {
 }
 
 export default function DailyTarget({ industry, country, today_total, daily_target }: DailyTargetProps) {
-  const { t } = useLanguageSafe();
+  const { t } = useLanguage();
   const percentage = (today_total / daily_target) * 100;
   const remaining = daily_target - today_total;
   const isTargetMet = percentage >= 100;
