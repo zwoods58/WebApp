@@ -5,6 +5,7 @@ import { Plus, List, Calendar as CalendarIcon, Search, Filter } from 'lucide-rea
 import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack, useTransactionsTanStack } from '@/hooks';
+import type { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, getCurrency } from '@/utils/currency';
@@ -16,7 +17,6 @@ import CalendarView from './CalendarView';
 import AppointmentCard from './AppointmentCard';
 import CreateAppointmentSheet from './CreateAppointmentSheet';
 import AppointmentDetailsSheet from './AppointmentDetailsSheet';
-import { Appointment } from './types';
 
 interface AppointmentsNewProps {
   industry: string;
@@ -79,7 +79,8 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
         await addTransaction({
           business_id: business?.id,
           industry,
-          amount: appointmentData.metadata.price,
+          type: 'money_in',
+          amount: appointmentData.metadata?.price,
           currency: getCurrency(country),
           category: 'appointment_booking',
           description: `Appointment: ${appointmentData.service_name} - ${appointmentData.customer_name}`,
@@ -116,13 +117,10 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
 
       console.log('🔄 Completing appointment:', appointmentId);
 
-      await updateAppointment({ 
-        id: appointmentId, 
-        data: { 
-          status: 'completed',
-          updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
-          updated_by: business.id
-        }
+      await updateAppointment(appointmentId, { 
+        status: 'completed',
+        updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        updated_by: business.id
       });
       
       await queryClient.invalidateQueries({ queryKey: ['appointments', business.id] });
@@ -132,6 +130,7 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
         await addTransaction({
           business_id: business.id,
           industry,
+          type: 'money_in',
           amount: appointment.metadata.price,
           currency: getCurrency(country),
           category: 'service_payment',
@@ -165,13 +164,10 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
     try {
       console.log('🔄 Cancelling appointment:', appointmentId);
 
-      await updateAppointment({ 
-        id: appointmentId, 
-        data: { 
-          status: 'cancelled',
-          updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
-          updated_by: business?.id
-        }
+      await updateAppointment(appointmentId, { 
+        status: 'cancelled',
+        updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        updated_by: business?.id
       });
       
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });
@@ -191,13 +187,10 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
     try {
       console.log('🔄 Deleting appointment:', appointmentId);
 
-      await updateAppointment({ 
-        id: appointmentId, 
-        data: { 
-          deleted_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
-          deleted_by: business?.id,
-          updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z'
-        }
+      await updateAppointment(appointmentId, { 
+        deleted_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z',
+        deleted_by: business?.id,
+        updated_at: isClient() ? new Date().toISOString() : '2024-01-01T00:00:00.000Z'
       });
       
       await queryClient.invalidateQueries({ queryKey: ['appointments', business?.id] });

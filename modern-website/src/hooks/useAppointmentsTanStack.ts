@@ -4,15 +4,27 @@ import { supabase } from '@/lib/supabase';
 export interface Appointment {
   id: string;
   business_id: string;
+  industry: string;
   customer_name: string;
-  service_type?: string;
+  customer_contact?: string;
+  service_id?: string;
+  service_name?: string;
   appointment_date: string;
   appointment_time: string;
-  duration?: number;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  start_time?: string;
+  end_time?: string;
+  duration: number;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'no-show';
   notes?: string;
+  reminder_sent?: boolean;
+  metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  deleted_at?: string;
+  created_by?: string;
+  updated_by?: string;
+  deleted_by?: string;
+  syncStatus?: 'synced' | 'pending' | 'conflict';
 }
 
 export interface UseAppointmentsTanStackProps {
@@ -28,6 +40,7 @@ export interface UseAppointmentsTanStackReturn {
   updateAppointment: (id: string, updates: Partial<Appointment>) => Promise<void>;
   deleteAppointment: (id: string) => Promise<void>;
   refetch: () => void;
+  isOffline: boolean;
 }
 
 export function useAppointmentsTanStack({ businessId, industry }: UseAppointmentsTanStackProps = {}): UseAppointmentsTanStackReturn {
@@ -117,5 +130,6 @@ export function useAppointmentsTanStack({ businessId, industry }: UseAppointment
     updateAppointment,
     deleteAppointment,
     refetch: () => queryClient.invalidateQueries({ queryKey: ['appointments'] }),
+    isOffline: !navigator.onLine,
   };
 }

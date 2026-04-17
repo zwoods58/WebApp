@@ -4,10 +4,14 @@ import { supabase } from '@/lib/supabase';
 export interface Transaction {
   id: string;
   business_id: string;
+  industry?: string;
   type: 'money_in' | 'money_out';
   amount: number;
   description: string;
   category?: string;
+  currency?: string;
+  customer_name?: string;
+  payment_method?: string;
   transaction_date: string;
   metadata?: Record<string, any>;
   created_at: string;
