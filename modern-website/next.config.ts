@@ -4,9 +4,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   basePath: '/Beezee-App',
   assetPrefix: '/Beezee-App',
-  turbopack: {
-    root: __dirname,
-  },
   reactCompiler: true,
   
   // Enable optimizations for faster loading
