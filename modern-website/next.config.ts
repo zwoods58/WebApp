@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  basePath: '/Beezee-App',
-  assetPrefix: '/Beezee-App',
   reactCompiler: true,
   
   // Enable optimizations for faster loading
@@ -147,18 +145,18 @@ const nextConfig: NextConfig = {
   
   async rewrites() {
     return [
-      // Redirect ALL legacy static builds to unified PWA (eliminates separate desktop/tablet version)
+      // Redirect country-specific routes to app routes
       {
         source: '/kenya/app/:path*',
-        destination: '/Beezee-App/app/ke/:path*'
+        destination: '/app/ke/:path*'
       },
       {
         source: '/nigeria/app/:path*',
-        destination: '/Beezee-App/app/ng/:path*'
+        destination: '/app/ng/:path*'
       },
       {
         source: '/south-africa/app/:path*',
-        destination: '/Beezee-App/app/za/:path*'
+        destination: '/app/za/:path*'
       },
       // Ensure service worker is accessible from all paths
       {
