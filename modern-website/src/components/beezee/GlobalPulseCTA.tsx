@@ -41,7 +41,7 @@ const GlobalPulseCTA = () => {
     const router = useRouter();
 
     const handleGetStarted = () => {
-        router.push('/Beezee-App/auth/signup');
+        router.push('/Beezee-App/auth');
     };
 
     return (

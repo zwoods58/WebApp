@@ -71,11 +71,11 @@ const ComingSoonModal: React.FC<ComingSoonModalProps> = ({ isOpen, onClose }) =>
 
                                 <div className="space-y-3">
                                     <Link
-                                        href="/Beezee-App/auth/signup"
+                                        href="/Beezee-App/auth"
                                         onClick={onClose}
                                         className="w-full py-4 bg-system-blue text-pure-white font-bold rounded-2xl hover:bg-system-blue/90 transition-all active:scale-[0.98] shadow-lg shadow-system-blue/20 flex items-center justify-center gap-2"
                                     >
-                                        {t('modal.gain_access', 'GAIN ACCESS')}
+                                        {t('modal.gain_access', 'SIGN IN')}
                                         <ArrowRight size={18} />
                                     </Link>
                                     

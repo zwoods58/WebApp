@@ -17,9 +17,9 @@ const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClose }) =>
   const handleInstall = async () => {
     const success = await install();
     if (success) {
-      // Installation successful, redirect to signup after a short delay
+      // Installation successful, redirect to auth gateway after a short delay
       setTimeout(() => {
-        window.location.href = '/Beezee-App/auth/signup';
+        window.location.href = '/Beezee-App/auth';
       }, 2000);
     }
   };
@@ -31,8 +31,8 @@ const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClose }) =>
 
   const handleDirectSignup = () => {
     onClose();
-    // Direct navigation to signup
-    window.location.href = '/Beezee-App/auth/signup';
+    // Direct navigation to auth gateway
+    window.location.href = '/Beezee-App/auth';
   };
 
   if (!canInstall && isOpen) {
@@ -146,7 +146,7 @@ const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClose }) =>
                     onClick={handleSkip}
                     className="w-full py-4 bg-mist-gray text-obsidian font-bold rounded-2xl hover:bg-mist-gray/80 transition-all active:scale-[0.98]"
                   >
-                    SKIP, CONTINUE TO SIGNUP
+                    SKIP, CONTINUE TO LOGIN
                   </button>
                 </div>
 
