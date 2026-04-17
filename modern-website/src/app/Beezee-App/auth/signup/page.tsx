@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, User, Mail, Phone, Building, Globe, Lock, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, User, UserPlus, Mail, Phone, Building, Globe, Lock, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
@@ -542,6 +542,39 @@ export default function Signup() {
                 </Link>
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer with Create Account and Go Back buttons */}
+      <div className="container mx-auto px-6 py-8 mt-auto">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+            {/* Go Back Button */}
+            <Link 
+              href="/Beezee-App/get-started"
+              className="group bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-xl p-4 hover:shadow-xl hover:shadow-[var(--border)]/20 transition-all duration-300"
+            >
+              <div className="flex items-center gap-2 text-[var(--text-1)] font-semibold group-hover:gap-3 transition-all">
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                Go Back
+              </div>
+            </Link>
+
+            {/* Create Account Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const element = document.getElementById('signup-form');
+                element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="group bg-gradient-to-r from-[var(--powder-light)]/20 to-[var(--powder-mid)]/20 to-[var(--powder-dark)]/20 border border-[var(--border)]/30 rounded-xl p-4 hover:shadow-xl hover:shadow-[var(--powder-mid)]/20 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-center gap-2 text-[var(--text-1)] font-semibold">
+                <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
+                Create Account
+              </div>
+            </button>
           </div>
         </div>
       </div>
