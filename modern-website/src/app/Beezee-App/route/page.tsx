@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from 'react';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { QueryProvider } from "@/providers/QueryProvider";
 import { Loader2, CheckCircle } from 'lucide-react';
 
 // Industry configurations
@@ -63,7 +67,7 @@ function RoutePageContent() {
 
   useEffect(() => {
     // Get user data from localStorage or URL params
-    const userData = localStorage.getItem('beezee_user_data');
+    const userData = typeof window !== 'undefined' ? localStorage.getItem('beezee_user_data') : null;
     const countryParam = searchParams.get('country');
     const industryParam = searchParams.get('industry');
 
@@ -96,40 +100,40 @@ function RoutePageContent() {
 
   if (!countryConfig || !industryConfig) {
     return (
-      <div className="min-h-screen bg-studio-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-system-blue" />
-          <p className="text-obsidian">Loading...</p>
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-900">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-studio-white flex items-center justify-center">
-      <div class="fade-in">
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="opacity-100 transition-opacity duration-500">
         <div className="mb-8">
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6"
                style={{ backgroundColor: `${industryConfig.color}20` }}>
             <span className="text-4xl">{countryConfig.flag}</span>
           </div>
           
-          <h1 className="text-2xl font-bold text-obsidian mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Setting up your {industryConfig.name} dashboard
           </h1>
-          <p className="text-obsidian/60 mb-6">
-            {countryConfig.name} • {countryConfig.currency}
+          <p className="text-gray-600 mb-6">
+            {countryConfig.name} · {countryConfig.currency}
           </p>
         </div>
 
         <div className="space-y-4 mb-8">
           <div className="text-left">
-            <h3 className="font-semibold text-obsidian mb-3">Your 5 Business Pillars:</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">Your 5 Business Pillars:</h3>
             <div className="space-y-2">
               {industryConfig.pillars.map((pillar, index) => (
-                <div class="fade-in">
+                <div className="opacity-100 transition-opacity duration-500">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-obsidian">{pillar}</span>
+                  <span className="text-sm text-gray-900">{pillar}</span>
                 </div>
               ))}
             </div>
@@ -139,13 +143,13 @@ function RoutePageContent() {
         <div className="flex items-center justify-center gap-2">
           {isRouting ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin text-system-blue" />
-              <span className="text-obsidian/60">Preparing your dashboard...</span>
+              <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+              <span className="text-gray-600">Preparing your dashboard...</span>
             </>
           ) : (
             <>
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-obsidian">Ready! Redirecting...</span>
+              <span className="text-gray-900">Ready! Redirecting...</span>
             </>
           )}
         </div>
@@ -156,16 +160,18 @@ function RoutePageContent() {
 
 export default function RoutePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-studio-white flex items-center justify-center">
+    <QueryProvider>
+      <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-system-blue" />
-          <p className="text-obsidian">Loading...</p>
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-900">Loading...</p>
         </div>
       </div>
     }>
       <RoutePageContent />
     </Suspense>
+    </QueryProvider>
   );
 }
 

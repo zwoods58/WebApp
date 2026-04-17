@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, UserCheck, UserX, TrendingUp, Globe, Activity } from 'lucide-react';

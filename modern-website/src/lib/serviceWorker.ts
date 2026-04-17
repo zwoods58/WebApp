@@ -20,3 +20,10 @@ export function notifyServiceWorker(country: string, industry: string): Promise<
   return Promise.resolve();
 }
 
+// Service Worker Manager for backward compatibility
+export const swManager = {
+  notify: notifyServiceWorker,
+  register: registerServiceWorker,
+  unregister: unregisterServiceWorker
+};
+

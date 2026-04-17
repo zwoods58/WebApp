@@ -3,6 +3,7 @@ import { Inter_Tight, JetBrains_Mono } from "next/font/google"; // New fonts
 import "./globals.css";
 import BodyWrapper from "./components/BodyWrapper";
 import { PWAProvider } from "next-pwa-pack";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 // Service Worker Debug Component
 function ServiceWorkerDebug() {
@@ -164,13 +165,15 @@ export default function RootLayout({
       </head>
       <body className={bodyClassName}>
         <ServiceWorkerDebug />
-        <PWAProvider>
-          <BodyWrapper>
-            {children}
-            {/* Modal portal root - renders above everything */}
-            <div id="modal-root" />
-          </BodyWrapper>
-        </PWAProvider>
+        <QueryProvider>
+          <PWAProvider>
+            <BodyWrapper>
+              {children}
+              {/* Modal portal root - renders above everything */}
+              <div id="modal-root" />
+            </BodyWrapper>
+          </PWAProvider>
+        </QueryProvider>
       </body>
     </html>
   );

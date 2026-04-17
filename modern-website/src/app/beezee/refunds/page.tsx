@@ -1,3 +1,8 @@
+"use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import LegalLayout from "@/components/ui/LegalLayout";
 
 export default function BeezeeRefundPage() {

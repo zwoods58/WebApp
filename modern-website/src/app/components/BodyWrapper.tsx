@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks';
-import { QueryProvider } from '@/providers/QueryProvider';
 import SplashScreen from '@/components/SplashScreen';
 
 interface BodyWrapperProps {
@@ -38,14 +37,14 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
   const isBeezeePage = pathname?.startsWith('/Beezee-App');
 
   return (
-    <QueryProvider>
+    <>
       <AppLayout>
         {children}
       </AppLayout>
       
       {/* Custom Splash Screen - shows only on initial startup */}
       {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
-    </QueryProvider>
+    </>
   );
 }
 

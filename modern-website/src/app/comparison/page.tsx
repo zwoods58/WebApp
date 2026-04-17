@@ -1,10 +1,15 @@
 'use client';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react';
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export default function ComparisonPage() {
     return (
-        <div className="min-h-screen bg-gray-900 p-4">
+        <QueryProvider>
+            <div className="min-h-screen bg-gray-900 p-4">
             <div className="max-w-[98vw] mx-auto">
                 <h1 className="text-white text-3xl font-bold mb-6 text-center">Hero Banner Comparison</h1>
 
@@ -46,6 +51,7 @@ export default function ComparisonPage() {
                 </div>
             </div>
         </div>
+        </QueryProvider>
     );
 }
 

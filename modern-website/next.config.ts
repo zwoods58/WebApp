@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   
+  // Disable static generation for problematic pages
+  trailingSlash: false,
+  
+  // Force all pages to be dynamically rendered
+  generateEtags: false,
+  
   // Enable optimizations for faster loading
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -19,7 +25,6 @@ const nextConfig: NextConfig = {
   },
   
   // Add trailing slash for consistency
-  trailingSlash: true,
   
   // Enhanced service worker and PWA support
   async headers() {
@@ -182,7 +187,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    optimizePackageImports: ['lucide-react', '@tanstack/react-query', 'date-fns'],
+    optimizePackageImports: ['lucide-react', 'date-fns'],
     optimizeServerReact: true,
     webpackBuildWorker: false,
   },
@@ -191,10 +196,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   
   // Ensure proper handling of service worker scope
-  generateEtags: false,
   
   // Configure image optimization
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080],
     minimumCacheTTL: 60,

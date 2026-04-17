@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AdminAuth } from './lib/auth';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -41,7 +42,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     return (
-        <div className="min-h-screen bg-studio-white font-sans text-obsidian flex overflow-hidden">
+        <QueryProvider>
+            <div className="min-h-screen bg-studio-white font-sans text-obsidian flex overflow-hidden">
             {/* Sidebar */}
             <AnimatePresence mode="wait">
                 {isSidebarOpen && (
@@ -130,6 +132,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
             </main>
         </div>
+        </QueryProvider>
     );
 }
 

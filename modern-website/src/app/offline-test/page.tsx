@@ -1,13 +1,17 @@
 'use client'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react'
-import { useTransactionsTanStack } from '@/hooks';
-import { ConnectionStatus } from '@/components/ConnectionStatus'
+import { useTransactionsTanStack } from '@/hooks'
 import { PendingBadge } from '@/components/PendingBadge'
+import { ConnectionStatus } from '@/components/ConnectionStatus'
 
 export default function OfflineTestPage() {
   const [testCount, setTestCount] = useState(0)
   const transactions = useTransactionsTanStack({ 
+    businessId: 'test-business-id', 
     industry: 'retail', 
     country: 'ke' 
   })
@@ -16,11 +20,13 @@ export default function OfflineTestPage() {
     const newCount = testCount + 1
     setTestCount(newCount)
     transactions.addTransaction({
+      business_id: 'test-business-id',
+      type: 'money_in' as const,
       amount: Math.floor(Math.random() * 1000) + 100,
       description: `Test Transaction #${newCount}`,
-      customer_name: 'Offline Test Customer',
       transaction_date: new Date().toISOString(),
-      category: 'test'
+      category: 'test',
+      metadata: { customer_name: 'Offline Test Customer' }
     })
   }
 
@@ -41,8 +47,8 @@ export default function OfflineTestPage() {
             <div className={`p-3 rounded ${transactions.isLoading ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
               Loading: {transactions.isLoading ? 'Yes' : 'No'}
             </div>
-            <div className={`p-3 rounded ${transactions.isPaused ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-600'}`}>
-              Paused: {transactions.isPaused ? 'Yes' : 'No'}
+            <div className={`p-3 rounded ${transactions.isOffline ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-600'}`}>
+              Offline: {transactions.isOffline ? 'Yes' : 'No'}
             </div>
             <div className={`p-3 rounded ${transactions.isAdding ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}`}>
               Adding: {transactions.isAdding ? 'Yes' : 'No'}
@@ -98,7 +104,7 @@ export default function OfflineTestPage() {
                     <div>
                       <p className="font-medium">{transaction.description}</p>
                       <p className="text-sm text-gray-600">
-                        {transaction.customer_name} • ${transaction.amount}
+                        {transaction.metadata?.customer_name || 'Unknown'} • ${transaction.amount}
                       </p>
                       <p className="text-xs text-gray-500">
                         {new Date(transaction.transaction_date).toLocaleString()}

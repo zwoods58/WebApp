@@ -1,8 +1,15 @@
+"use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import LegalLayout from "@/components/ui/LegalLayout";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export default function TermsPage() {
     return (
-        <LegalLayout title="Terms of Service" lastUpdated="January 21, 2026">
+        <QueryProvider>
+            <LegalLayout title="Terms of Service" lastUpdated="January 21, 2026">
             <section>
                 <h2>1. Acceptance of Terms</h2>
                 <p>By accessing atarwebb.com ("Website"), you agree to these Terms of Service. If you do not agree, please do not use the Website.</p>
@@ -53,6 +60,7 @@ export default function TermsPage() {
                 <p>For questions about these Terms, contact us at: admin@atarwebb.com</p>
             </section>
         </LegalLayout>
+        </QueryProvider>
     );
 }
 

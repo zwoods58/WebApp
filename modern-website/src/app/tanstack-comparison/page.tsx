@@ -10,10 +10,10 @@ export default function TanStackComparisonPage() {
   const country = 'ke'
 
   // Old system (now using TanStack as alias)
-  const oldHook = useTransactions({ businessId, industry, country })
+  const oldHook = useTransactionsTanStack({ businessId, industry, country })
   
   // New TanStack Query system (same as old now)
-  const newHook = useTransactions({ businessId, industry, country })
+  const newHook = useTransactionsTanStack({ businessId, industry, country })
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
@@ -50,7 +50,7 @@ export default function TanStackComparisonPage() {
           
           <div className="space-y-2 mb-4">
             <p>Loading: {newHook.isLoading ? 'Yes' : 'No'}</p>
-            <p>Paused (Offline): {newHook.isPaused ? 'Yes' : 'No'}</p>
+            <p>Offline: {newHook.isOffline ? 'Yes' : 'No'}</p>
             <p>Transactions: {newHook.data.length}</p>
             <PendingBadge show={newHook.isAdding} />
           </div>
@@ -58,10 +58,12 @@ export default function TanStackComparisonPage() {
           <div className="space-y-2 mb-4">
             <button 
               onClick={() => newHook.addTransaction({
+                business_id: 'test-business-id',
+                type: 'money_in' as const,
                 amount: Math.floor(Math.random() * 1000),
                 description: 'Test transaction from TanStack',
-                customer_name: 'Test Customer',
-                transaction_date: new Date().toISOString()
+                transaction_date: new Date().toISOString(),
+                metadata: { customer_name: 'Test Customer' }
               })}
               className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
             >

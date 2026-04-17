@@ -7,11 +7,18 @@ import { supabase } from '../../../lib/supabase';
 function SubscriptionCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
   const [message, setMessage] = useState('');
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const reference = searchParams.get('reference');
     const paymentStatus = searchParams.get('status');
     const userEmail = searchParams.get('user_email') || undefined;
@@ -20,7 +27,7 @@ function SubscriptionCallbackContent() {
     if (paymentStatus === 'success' && reference) {
       handlePaymentSuccess(reference, userEmail, country);
     } else if (paymentStatus === 'failed') {
-      handlePaymentFailed(reference);
+      handlePaymentFailed(reference || undefined);
     } else {
       // Default to loading if no status
       setTimeout(() => {
@@ -28,7 +35,7 @@ function SubscriptionCallbackContent() {
         setMessage('No payment status received. Please contact support.');
       }, 5000);
     }
-  }, [searchParams]);
+  }, [searchParams, isClient]);
 
   const handlePaymentSuccess = async (reference: string, userEmail?: string, country?: string) => {
     try {

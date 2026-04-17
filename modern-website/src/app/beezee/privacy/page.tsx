@@ -1,8 +1,15 @@
+"use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import LegalLayout from "@/components/ui/LegalLayout";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export default function BeezeePrivacyPage() {
     return (
-        <LegalLayout
+        <QueryProvider>
+            <LegalLayout
             title="Beezee Privacy Policy"
             lastUpdated="January 21, 2026"
             homeLink="/beezee"
@@ -94,6 +101,7 @@ export default function BeezeePrivacyPage() {
                 <p><strong>Support Email:</strong> support@beezee.app</p>
             </section>
         </LegalLayout>
+        </QueryProvider>
     );
 }
 

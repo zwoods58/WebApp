@@ -1,8 +1,15 @@
+"use client";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import LegalLayout from "@/components/ui/LegalLayout";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export default function BeezeeTermsPage() {
     return (
-        <LegalLayout
+        <QueryProvider>
+            <LegalLayout
             title="Beezee Terms of Service"
             lastUpdated="January 21, 2026"
             homeLink="/beezee"
@@ -124,6 +131,7 @@ export default function BeezeeTermsPage() {
                 <p>For questions or concerns: support@beezee.app</p>
             </section>
         </LegalLayout>
+        </QueryProvider>
     );
 }
 

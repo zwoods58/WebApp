@@ -116,3 +116,31 @@ export function useCreditItems({ businessId, industry }: UseCreditItemsProps = {
     refetch: () => queryClient.invalidateQueries({ queryKey: ['credit-items'] }),
   };
 }
+
+// Calculate total amount owed from credit items
+export function calculateTotalOwed(items: CreditItem[]): number {
+  return items.reduce((total, item) => total + item.price, 0);
+}
+
+// Apply payment using FIFO (First In, First Out) method
+export function applyPaymentFIFO(items: CreditItem[], paymentAmount: number): CreditItem[] {
+  let remainingPayment = paymentAmount;
+  const updatedItems = [...items];
+
+  for (let i = 0; i < updatedItems.length && remainingPayment > 0; i++) {
+    const item = updatedItems[i];
+    const itemPrice = item.price;
+
+    if (remainingPayment >= itemPrice) {
+      // Pay off this item completely
+      updatedItems[i] = { ...item, price: 0 };
+      remainingPayment -= itemPrice;
+    } else {
+      // Partial payment
+      updatedItems[i] = { ...item, price: itemPrice - remainingPayment };
+      remainingPayment = 0;
+    }
+  }
+
+  return updatedItems;
+}

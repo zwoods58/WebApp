@@ -3,6 +3,8 @@ export { useToast } from './useToast';
 export { useLanguage } from './useLanguage';
 export { useServiceWorkerVersion } from './useServiceWorkerVersion';
 export { usePersistentStorage } from './usePersistentStorage';
+export { useGlobalRefresh } from './useGlobalRefresh';
+export { useServices } from './useServices';
 
 // TanStack hooks
 export { 
@@ -28,6 +30,8 @@ export {
 
 export { 
   useCreditItems, 
+  calculateTotalOwed,
+  applyPaymentFIFO,
   type CreditItem, 
   type UseCreditItemsProps, 
   type UseCreditItemsReturn 
