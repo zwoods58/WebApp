@@ -234,7 +234,7 @@ export default function Signup() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form id="signup-form" onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-[var(--text-1)] mb-4">Personal Information</h3>
