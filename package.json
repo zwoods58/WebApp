@@ -4,7 +4,6 @@
   "description": "BeeZee Finance - Multi-country financial management platform",
   "private": true,
   "scripts": {
-    "install": "cd modern-website && npm install",
     "dev": "cd modern-website && npm run dev",
     "build": "cd modern-website && npm run build",
     "start": "cd modern-website && npm run start"

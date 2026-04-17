@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd modern-website && npm install && npm run build",
-  "outputDirectory": "modern-website/.next",
-  "installCommand": "cd modern-website && npm install"
-}

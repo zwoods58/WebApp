@@ -16,8 +16,8 @@ export default function BeezeeAppRoot() {
         const industry = user.industry || 'retail';
         router.replace(`/Beezee-App/app/${country}/${industry}`);
       } else {
-        // Redirect unauthenticated users to get started page
-        router.replace('/Beezee-App/get-started');
+        // Redirect unauthenticated users to login
+        router.replace('/Beezee-App/auth/login');
       }
     }
   }, [isAuthenticated, user, loading, router]);
