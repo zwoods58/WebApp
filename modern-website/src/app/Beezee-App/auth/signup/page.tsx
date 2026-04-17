@@ -193,23 +193,33 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="container mx-auto px-6 pt-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
-              Create Your Business Account
-            </h1>
-            <p className="text-[var(--text-3)] text-xs">
-              Join thousands of African entrepreneurs managing their business with ease.
-            </p>
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)]" style={{ scrollBehavior: 'smooth' }}>
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-10 bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)]">
+        <div className="container mx-auto px-6 pt-6 pb-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
+                Create Your Business Account
+              </h1>
+              <p className="text-[var(--text-3)] text-xs">
+                Join thousands of African entrepreneurs managing their business with ease.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 container mx-auto px-6 pb-6 overflow-y-auto">
+      {/* Scrollable Main content */}
+      <div 
+        className="container mx-auto px-6 pb-8 scroll-smooth" 
+        style={{ 
+          maxHeight: 'calc(100vh - 140px)', 
+          overflowY: 'auto',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch' // for iOS momentum scrolling
+        }}
+      >
         <div className="max-w-2xl mx-auto">
           <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-6">
             {/* General Error */}
