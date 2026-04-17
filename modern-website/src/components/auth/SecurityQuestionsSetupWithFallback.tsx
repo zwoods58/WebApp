@@ -92,26 +92,38 @@ export default function SecurityQuestionsSetupWithFallback({
       try {
         console.log('🔄 [Fallback] Fetching security questions from API...');
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
         const response = await fetch('/api/auth/security-questions', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId); // Clear timeout if request completes
 
         if (response.ok) {
           const data = await response.json();
           console.log('✅ [Fallback] API success - questions loaded:', data.questions?.length || 0);
           setQuestions(data.questions || []);
+          setFetchError(null);
         } else {
-          console.warn('⚠️ [Fallback] API failed, using fallback questions');
+          console.warn('⚠️ [Fallback] API failed (status:', response.status, '), using fallback questions');
           setQuestions(FALLBACK_QUESTIONS);
-          setFetchError('Using temporary security questions due to API issue');
+          setFetchError(`API unavailable (${response.status}). Using temporary questions.`);
         }
-      } catch (error) {
-        console.error('❌ [Fallback] Fetch error:', error);
+      } catch (error: unknown) {
+        console.error('Fallback Fetch error:', error);
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.warn('Request timeout, using fallback questions');
+          setFetchError('Request timed out. Using temporary questions.');
+        } else {
+          setFetchError('Network error. Using temporary questions.');
+        }
         setQuestions(FALLBACK_QUESTIONS);
-        setFetchError('Failed to load security questions');
       } finally {
         setLoading(false);
       }
@@ -171,9 +183,16 @@ export default function SecurityQuestionsSetupWithFallback({
   return (
     <div className="space-y-4">
       {fetchError && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle size={16} className="text-red-600" />
-          <span className="text-sm text-red-800">{fetchError}</span>
+        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <AlertCircle size={16} className="text-yellow-600" />
+          <span className="text-sm text-yellow-800">{fetchError}</span>
+        </div>
+      )}
+      
+      {!fetchError && questions.length === 0 && (
+        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <AlertCircle size={16} className="text-blue-600" />
+          <span className="text-sm text-blue-800">Loading security questions...</span>
         </div>
       )}
       
@@ -183,7 +202,7 @@ export default function SecurityQuestionsSetupWithFallback({
           Security Questions
         </h3>
         
-        {questions.map((question, index) => (
+        {questions.length > 0 && questions.map((question, index) => (
           <div key={question.id} className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)]">
               <input
