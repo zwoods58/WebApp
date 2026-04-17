@@ -43,6 +43,7 @@
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
     "next": "15.1.4",
+    "next-pwa-pack": "^2.0.0",
     "node-fetch": "^2.7.0",
     "otplib": "^12.0.1",
     "react": "^18.3.1",

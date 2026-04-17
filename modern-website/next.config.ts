@@ -85,6 +85,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/offline.html',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache',
+          },
+        ],
+      },
+      {
         source: '/favicon.ico',
         headers: [
           {

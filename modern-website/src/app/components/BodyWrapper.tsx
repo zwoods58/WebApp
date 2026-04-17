@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import AppLayout from '@/components/global/AppLayout';
 import { useGlobalRefresh } from '@/hooks/useGlobalRefresh';
 import { QueryProvider } from '@/providers/QueryProvider';
-import { swManager } from '@/lib/serviceWorker';
 import SplashScreen from '@/components/SplashScreen';
 
 interface BodyWrapperProps {
@@ -21,25 +20,7 @@ export default function BodyWrapper({ children, className = '' }: BodyWrapperPro
 
   useEffect(() => {
     setIsClient(true);
-    
-    // Only register service worker on BeeZee app pages
-    const isAppPath = pathname?.startsWith('/Beezee-App/');
-    
-    if ('serviceWorker' in navigator && isAppPath) {
-      console.log('[App] Registering service worker for BeeZee app');
-      swManager.register().then(success => {
-        if (success) {
-          console.log('[App] ✅ Service worker registered successfully');
-        } else {
-          console.warn('[App] ⚠️ Service worker registration failed');
-        }
-      }).catch(err => {
-        console.error('[App] ❌ Service worker registration error:', err);
-      });
-    } else if (!isAppPath) {
-      console.log('[App] Skipping SW registration - not on BeeZee app path');
-    }
-  }, [pathname]);
+  }, []);
 
   const handleGlobalRefresh = async () => {
     await performGlobalRefresh({

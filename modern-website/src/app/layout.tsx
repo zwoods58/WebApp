@@ -2,6 +2,43 @@ import type { Metadata } from "next";
 import { Inter_Tight, JetBrains_Mono } from "next/font/google"; // New fonts
 import "./globals.css";
 import BodyWrapper from "./components/BodyWrapper";
+import { PWAProvider } from "next-pwa-pack";
+
+// Service Worker Debug Component
+function ServiceWorkerDebug() {
+  if (typeof window === 'undefined') return null;
+  
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+              console.log('PWA Debug: SW Active:', registration.active?.state);
+              console.log('PWA Debug: SW Script URL:', registration.active?.scriptURL);
+              console.log('PWA Debug: SW Scope:', registration.scope);
+              
+              // Listen for updates
+              registration.addEventListener('updatefound', () => {
+                console.log('PWA Debug: Update found');
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    console.log('PWA Debug: New SW state:', newWorker.state);
+                  });
+                }
+              });
+            }).catch(err => {
+              console.error('PWA Debug: SW Error:', err);
+            });
+          } else {
+            console.log('PWA Debug: Service Worker not supported');
+          }
+        `,
+      }}
+    />
+  );
+}
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
@@ -126,11 +163,14 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/atarwebb-favicon-white.png" />
       </head>
       <body className={bodyClassName}>
-        <BodyWrapper>
-          {children}
-          {/* Modal portal root - renders above everything */}
-          <div id="modal-root" />
-        </BodyWrapper>
+        <ServiceWorkerDebug />
+        <PWAProvider>
+          <BodyWrapper>
+            {children}
+            {/* Modal portal root - renders above everything */}
+            <div id="modal-root" />
+          </BodyWrapper>
+        </PWAProvider>
       </body>
     </html>
   );
