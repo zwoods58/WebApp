@@ -366,3 +366,4 @@ class LocalStorageManager {
 
 export const localStorageManager = new LocalStorageManager();
 export default LocalStorageManager;
+

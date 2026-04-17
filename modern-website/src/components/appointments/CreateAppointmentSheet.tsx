@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, AlertCircle } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { useServicesTanStack } from '@/hooks';
@@ -548,3 +548,4 @@ export default function CreateAppointmentSheet({
     portalRoot
   );
 }
+

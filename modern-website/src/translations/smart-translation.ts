@@ -146,3 +146,4 @@ export default function smartTranslate(
     return defaultText || key;
   }
 }
+

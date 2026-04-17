@@ -23,9 +23,15 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useServicesTanStack } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { 
+  useTransactionsTanStack, 
+  useExpensesTanStack, 
+  useCreditTanStack, 
+  useInventoryTanStack, 
+  useServicesTanStack 
+} from '@/hooks/index';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useLanguage } from '@/hooks/index';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { getDailySalesHistory, formatDisplayDate, calculateAchievementPercentage } from '@/utils/dailyTargetHelpers';
@@ -42,12 +48,12 @@ export default function ReportsPage() {
   const [isExporting, setIsExporting] = useState(false);
   
   // Use TanStack Query hooks for data
-  const { business } = useUnifiedAuth();
-  const { data: transactions } = useTransactionsTanStack({ industry });
-  const { data: expenses } = useExpensesTanStack({ industry });
-  const { data: credit } = useCreditTanStack({ industry });
-  const { data: inventory } = useInventoryTanStack({ industry });
-  const { data: services } = useServicesTanStack({ industry });
+  const { business } = useSupabaseAuth();
+  const { data: transactions } = useTransactionsTanStack({ businessId: business?.id, industry });
+  const { data: expenses } = useExpensesTanStack({ businessId: business?.id, industry });
+  const { data: credit } = useCreditTanStack({ businessId: business?.id, industry });
+  const { inventory } = useInventoryTanStack();
+  const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
   
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [selectedReport, setSelectedReport] = useState<'overview' | 'sales' | 'expenses' | 'inventory' | 'services' | 'customers' | 'daily'>('overview');
@@ -66,7 +72,7 @@ export default function ReportsPage() {
     const periodStart = getPeriodStart(now, selectedPeriod);
     
     const periodTransactions = transactions.filter(t => 
-      new Date(t.transaction_date) >= periodStart
+      new Date(t.transaction_date || t.created_at) >= periodStart
     );
     const periodExpenses = expenses.filter((e: any) => 
       new Date(e.expense_date) >= periodStart

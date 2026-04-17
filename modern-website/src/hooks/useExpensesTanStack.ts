@@ -1,128 +1,134 @@
-import { useIndustryDataNew } from './useIndustryDataNew'
-import { getNetworkStatus } from '@/lib/network-status'
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export interface Expense {
   id: string;
   business_id: string;
-  industry: string;
   amount: number;
-  currency: string;
-  amount_home?: number;
-  exchange_rate?: number;
-  category: string;
-  description?: string;
-  supplier?: string; // Changed from vendor_name to match database
-  payment_method?: string; // Note: does not exist in database
+  description: string;
+  category?: string;
   expense_date: string;
-  receipt_url?: string; // Note: does not exist in database
-  is_recurring?: boolean; // Note: does not exist in database
-  recurring_period?: 'daily' | 'weekly' | 'monthly' | 'yearly'; // Note: does not exist in database
-  metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
 
-export interface UseExpensesOptions {
+export interface UseExpensesTanStackProps {
   businessId?: string;
   industry?: string;
   country?: string;
-  category?: string;
-  vendorName?: string; // Note: field is supplier in database
-  paymentMethod?: string; // Note: does not exist in database
-  isRecurring?: boolean; // Note: does not exist in database
-  startDate?: string;
-  endDate?: string;
-  select?: string;
-  filters?: Record<string, any>;
-  orderBy?: { column: string; ascending?: boolean };
-  limit?: number;
 }
 
-export function useExpensesTanStack(options: UseExpensesOptions = {}) {
-  // Default to Kenya and retail if not specified
-  const industry = options.industry || 'retail'
-  const country = options.country || 'ke'
-  
-  // Network status detection
-  const [isOffline, setIsOffline] = useState(() => !getNetworkStatus());
-  
-  useEffect(() => {
-    const handleOnline = () => {
-      console.log('[Expenses] Network status: ONLINE');
-      setIsOffline(false);
-    };
-    
-    const handleOffline = () => {
-      console.log('[Expenses] Network status: OFFLINE');
-      setIsOffline(true);
-    };
-    
-    // Set initial state
-    setIsOffline(!getNetworkStatus());
-    
-    // Add event listeners
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-  
-  // Use the new TanStack Query hook with updated API
-  const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, error, refetch } = 
-    useIndustryDataNew({
-      industry,
-      country,
-      table: 'expenses',
-      select: options.select,
-      businessId: options.businessId,
-    })
+export interface UseExpensesTanStackReturn {
+  data: Expense[];
+  isLoading: boolean;
+  error: Error | null;
+  addExpense: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addExpenseAsync: (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => Promise<{ data?: any; error?: any }>;
+  updateExpense: (id: string, updates: Partial<Expense>) => Promise<void>;
+  deleteExpense: (id: string) => Promise<void>;
+  refetch: () => void;
+  isOffline: boolean;
+  isPending: boolean;
+}
 
-  // Filter data based on options (basic implementation)
-  let filteredData = data || []
-  
-  if (options.category) {
-    filteredData = filteredData.filter((e: any) => e.category === options.category)
-  }
-  
-  if (options.vendorName) {
-    filteredData = filteredData.filter((e: any) => 
-      e.supplier?.toLowerCase().includes(options.vendorName!.toLowerCase())
-    )
-  }
-  
-  if (options.paymentMethod) {
-    filteredData = filteredData.filter((e: any) => e.payment_method === options.paymentMethod)
-  }
-  
-  if (options.isRecurring !== undefined) {
-    filteredData = filteredData.filter((e: any) => e.is_recurring === options.isRecurring)
-  }
-  
-  if (options.startDate) {
-    filteredData = filteredData.filter((e: any) => 
-      new Date(e.expense_date) >= new Date(options.startDate!)
-    )
-  }
-  
-  if (options.endDate) {
-    filteredData = filteredData.filter((e: any) => 
-      new Date(e.expense_date) <= new Date(options.endDate!)
-    )
-  }
+export function useExpensesTanStack({ businessId, industry }: UseExpensesTanStackProps = {}): UseExpensesTanStackReturn {
+  const queryClient = useQueryClient();
+
+  const { data = [], isLoading, error, isPending } = useQuery({
+    queryKey: ['expenses', businessId, industry],
+    queryFn: async () => {
+      if (!businessId) return [];
+      
+      const { data, error } = await supabase
+        .from('expenses')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!businessId,
+  });
+
+  const addExpenseMutation = useMutation({
+    mutationFn: async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('expenses')
+        .insert(expense)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+    },
+  });
+
+  const updateExpenseMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Expense> }) => {
+      const { data, error } = await supabase
+        .from('expenses')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+    },
+  });
+
+  const deleteExpenseMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('expenses')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+    },
+  });
+
+  const addExpense = async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
+    await addExpenseMutation.mutateAsync(expense);
+  };
+
+  const addExpenseAsync = async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const data = await addExpenseMutation.mutateAsync(expense);
+      return { data, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
+
+  const updateExpense = async (id: string, updates: Partial<Expense>) => {
+    await updateExpenseMutation.mutateAsync({ id, updates });
+  };
+
+  const deleteExpense = async (id: string) => {
+    await deleteExpenseMutation.mutateAsync(id);
+  };
 
   return {
-    data: filteredData as Expense[],
+    data,
     isLoading,
-    isOffline,
-    addExpense: create,
-    addExpenseAsync: createAsync,
-    deleteExpense: deleteItem,
-    isPending: isCreating,
     error,
-    refetch,
-  }
+    addExpense,
+    addExpenseAsync,
+    updateExpense,
+    deleteExpense,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['expenses'] }),
+    isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
+    isPending: addExpenseMutation.status === 'pending',
+  };
 }

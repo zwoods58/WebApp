@@ -533,3 +533,4 @@ export function getDataManager(config: DataManagerConfig): DataManager {
 export function clearDataManager(): void {
   dataManagerInstance = null;
 }
+

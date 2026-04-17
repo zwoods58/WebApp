@@ -22,3 +22,4 @@ export const ADMIN_CREDENTIALS = {
     country: 'KE',
     industry: 'system'
 };
+

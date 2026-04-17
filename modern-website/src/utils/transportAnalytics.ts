@@ -61,3 +61,4 @@ export function analyzeTransportTransactions(transactions: Transaction[]): Trans
     avgTripRevenue
   };
 }
+

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { X, ArrowRight, ArrowLeft, Target, TrendingUp, Users, Package, FileText, DollarSign, MoreHorizontal, Home, Plus, Minus } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TourContextType {
   isTourActive: boolean;
@@ -600,3 +600,4 @@ function TourTooltip({
     </>
   );
 }
+

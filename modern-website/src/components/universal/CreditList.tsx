@@ -3,7 +3,7 @@
 import React from 'react';
 import { Users, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 // Simple inline components to replace missing UI components
 const PendingItemBadge = ({ children, size, showIcon }: { children: React.ReactNode; size?: string; showIcon?: boolean }) => (
@@ -200,3 +200,4 @@ export default function CreditList({ industry, country, credit }: CreditListProp
     </div>
   );
 }
+

@@ -313,3 +313,4 @@ export const validateDatabaseConfig = (config: DatabaseConfig): string[] => {
 };
 
 export default defaultDatabaseConfig;
+

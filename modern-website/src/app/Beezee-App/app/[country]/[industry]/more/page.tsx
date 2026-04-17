@@ -22,10 +22,10 @@ import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 // SubscriptionModal removed - no longer needed
 // Kyshi components removed - no longer available
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useServiceWorkerVersion } from '@/hooks/useServiceWorkerVersion';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useServiceWorkerVersion } from '@/hooks/index';
 
 // Type definitions for menu items
 interface MenuItem {
@@ -43,9 +43,9 @@ export default function MorePage() {
   const industry = (params.industry as string) || 'retail';
   const router = useRouter();
 
-  const { business, loading, signOut } = useUnifiedAuth();
+  const { business, signOut } = useSupabaseAuth();
   const { profile } = useBusinessProfile();
-  const { version, isLoading: versionLoading } = useServiceWorkerVersion();
+  const { version, isUpdateAvailable, isSupported } = useServiceWorkerVersion();
   // Subscription modal state removed - no longer needed
   // Subscription dashboard removed - Kyshi functionality no longer available
   
@@ -232,7 +232,7 @@ export default function MorePage() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-[var(--text-1)]">{t('app.name', 'BeeZee App')}</h3>
             <span className="text-xs bg-[var(--color-success-light)] text-[var(--color-success)] font-bold px-2.5 py-1 rounded-lg">
-              {versionLoading ? 'Loading...' : version}
+              {!isSupported ? 'Unsupported' : version}
             </span>
           </div>
           <div className="space-y-2 text-sm text-[var(--text-2)]">

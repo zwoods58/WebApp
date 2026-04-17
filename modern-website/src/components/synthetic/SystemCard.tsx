@@ -42,3 +42,4 @@ const SystemCard: React.FC<SystemCardProps> = ({
 };
 
 export default SystemCard;
+

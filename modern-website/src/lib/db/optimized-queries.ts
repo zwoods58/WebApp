@@ -420,3 +420,4 @@ export class OptimizedQueries {
 
 // Singleton instance
 export const optimizedQueries = new OptimizedQueries();
+

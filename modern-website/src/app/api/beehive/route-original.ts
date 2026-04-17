@@ -374,3 +374,4 @@ export const POST = withRateLimit(beehiveHandler, {
   },
   isProgressive: false,
 });
+

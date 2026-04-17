@@ -1,88 +1,120 @@
-import { useIndustryDataNew } from './useIndustryDataNew'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export interface Target {
   id: string;
   business_id: string;
-  industry: string;
-  target_type: 'sales' | 'revenue' | 'customers' | 'profit' | 'custom';
-  target_name: string;
-  target_value: number;
-  current_value: number;
-  period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-  start_date: string;
-  end_date: string;
-  status: 'active' | 'completed' | 'paused' | 'cancelled';
+  type: 'sales' | 'daily' | 'weekly' | 'monthly';
+  period?: 'daily' | 'weekly' | 'monthly';
+  amount: number;
   description?: string;
-  metric_unit?: string;
-  metadata?: Record<string, any>;
+  start_date: string;
+  end_date?: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface UseTargetsOptions {
+export interface UseTargetsTanStackProps {
   businessId?: string;
   industry?: string;
-  country?: string;
-  targetType?: 'sales' | 'revenue' | 'customers' | 'profit' | 'custom';
-  status?: 'active' | 'completed' | 'paused' | 'cancelled';
-  period?: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-  startDate?: string;
-  endDate?: string;
-  select?: string;
-  filters?: Record<string, any>;
-  orderBy?: { column: string; ascending?: boolean };
-  limit?: number;
 }
 
-export function useTargetsTanStack(options: UseTargetsOptions = {}) {
-  // Default to Kenya and retail if not specified
-  const industry = options.industry || 'retail'
-  const country = options.country || 'ke'
-  
-  // Use the new TanStack Query hook with updated API
-  const { data, isLoading, create, delete: deleteItem, isCreating, error, refetch } = 
-    useIndustryDataNew({
-      industry,
-      country,
-      table: 'targets',
-      select: options.select,
-    })
+export interface UseTargetsTanStackReturn {
+  data: Target[];
+  isLoading: boolean;
+  error: Error | null;
+  addTarget: (target: Omit<Target, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateTarget: (id: string, updates: Partial<Target>) => Promise<void>;
+  deleteTarget: (id: string) => Promise<void>;
+  refetch: () => void;
+}
 
-  // Filter data based on options (basic implementation)
-  let filteredData = data || []
-  
-  if (options.targetType) {
-    filteredData = filteredData.filter((t: any) => t.target_type === options.targetType)
-  }
-  
-  if (options.status) {
-    filteredData = filteredData.filter((t: any) => t.status === options.status)
-  }
-  
-  if (options.period) {
-    filteredData = filteredData.filter((t: any) => t.period === options.period)
-  }
-  
-  if (options.startDate) {
-    filteredData = filteredData.filter((t: any) => 
-      new Date(t.start_date) >= new Date(options.startDate!)
-    )
-  }
-  
-  if (options.endDate) {
-    filteredData = filteredData.filter((t: any) => 
-      new Date(t.end_date) <= new Date(options.endDate!)
-    )
-  }
+export function useTargetsTanStack({ businessId, industry }: UseTargetsTanStackProps = {}): UseTargetsTanStackReturn {
+  const queryClient = useQueryClient();
+
+  const { data = [], isLoading, error } = useQuery({
+    queryKey: ['targets', businessId, industry],
+    queryFn: async () => {
+      if (!businessId) return [];
+      
+      const { data, error } = await supabase
+        .from('targets')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!businessId,
+  });
+
+  const addTargetMutation = useMutation({
+    mutationFn: async (target: Omit<Target, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('targets')
+        .insert(target)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+    },
+  });
+
+  const updateTargetMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Target> }) => {
+      const { data, error } = await supabase
+        .from('targets')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+    },
+  });
+
+  const deleteTargetMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('targets')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['targets'] });
+    },
+  });
+
+  const addTarget = async (target: Omit<Target, 'id' | 'created_at' | 'updated_at'>) => {
+    await addTargetMutation.mutateAsync(target);
+  };
+
+  const updateTarget = async (id: string, updates: Partial<Target>) => {
+    await updateTargetMutation.mutateAsync({ id, updates });
+  };
+
+  const deleteTarget = async (id: string) => {
+    await deleteTargetMutation.mutateAsync(id);
+  };
 
   return {
-    data: filteredData as Target[],
+    data,
     isLoading,
-    isOffline: !isLoading && data.length === 0,
-    addTarget: create,
-    deleteTarget: deleteItem,
-    isPending: isCreating,
     error,
-    refetch,
-  }
+    addTarget,
+    updateTarget,
+    deleteTarget,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['targets'] }),
+  };
 }

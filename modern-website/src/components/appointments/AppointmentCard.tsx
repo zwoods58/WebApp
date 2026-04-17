@@ -4,7 +4,7 @@ import React from 'react';
 import { Clock, User, CheckCircle, XCircle, Eye, RefreshCw, AlertCircle } from 'lucide-react';
 import { Appointment } from './types';
 import { formatDate, formatCurrency, getCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -185,3 +185,4 @@ export default function AppointmentCard({
     </div>
   );
 }
+

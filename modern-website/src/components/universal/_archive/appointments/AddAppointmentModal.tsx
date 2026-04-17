@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';  // ADD THIS IMPORT
 import { AlertCircle, X } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';

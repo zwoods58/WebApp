@@ -43,3 +43,4 @@ export function useAutoRefresh({ enabled = true, onRefresh, interval }: UseAutoR
 
   return { refresh };
 }
+

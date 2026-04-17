@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -149,3 +149,4 @@ export default function ConfirmModal({
     </AnimatePresence>
   );
 }
+

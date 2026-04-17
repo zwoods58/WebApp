@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PullToRefresh from '@/components/common/PullToRefresh';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface TranslatedPullToRefreshProps {
   children: React.ReactNode;
@@ -30,3 +30,4 @@ export default function TranslatedPullToRefresh({
     </PullToRefresh>
   );
 }
+

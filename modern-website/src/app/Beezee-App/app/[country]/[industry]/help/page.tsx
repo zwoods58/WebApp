@@ -22,7 +22,7 @@ import { useParams } from 'next/navigation';
 
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function HelpPage() {
   const params = useParams();

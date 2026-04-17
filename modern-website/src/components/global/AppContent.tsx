@@ -27,3 +27,4 @@ export default function AppContent({ children }: AppContentProps) {
     </div>
   );
 }
+

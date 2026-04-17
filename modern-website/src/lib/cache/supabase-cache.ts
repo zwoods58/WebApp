@@ -391,3 +391,4 @@ class SupabaseCacheManager {
 // Export singleton instance
 export const supabaseCache = new SupabaseCacheManager();
 export default supabaseCache;
+

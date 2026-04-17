@@ -486,3 +486,4 @@ export class CachedDatabaseQueries {
 // Export singleton instance
 export const cachedQueries = new CachedDatabaseQueries();
 export default cachedQueries;
+

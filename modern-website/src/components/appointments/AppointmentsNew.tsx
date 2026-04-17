@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, List, Calendar as CalendarIcon, Search, Filter } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack, useTransactionsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
@@ -431,3 +431,4 @@ export default function AppointmentsNew({ industry, country }: AppointmentsNewPr
     </div>
   );
 }
+

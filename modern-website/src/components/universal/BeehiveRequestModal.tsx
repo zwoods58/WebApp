@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Send, Trash2, AlertCircle } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface BeehiveRequestModalProps {
   isOpen: boolean;
@@ -436,3 +436,4 @@ export default function BeehiveRequestModal({
     </div>
   );
 }
+

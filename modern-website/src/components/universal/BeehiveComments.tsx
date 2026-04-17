@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { supabase } from '@/lib/supabase';
 
@@ -238,3 +238,4 @@ export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCo
     </div>
   );
 }
+

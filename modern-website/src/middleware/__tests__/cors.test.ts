@@ -260,3 +260,4 @@ describe('CORS Integration Tests', () => {
     expect(actualResponse.headers.get('Access-Control-Allow-Origin')).toBe('http://localhost:3000');
   });
 });
+

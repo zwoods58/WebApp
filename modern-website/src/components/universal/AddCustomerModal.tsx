@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Users } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface AddCustomerModalProps {
   isOpen: boolean;
@@ -164,3 +164,4 @@ export default function AddCustomerModal({ isOpen, onClose, onAddCustomer, count
     </>
   );
 }
+

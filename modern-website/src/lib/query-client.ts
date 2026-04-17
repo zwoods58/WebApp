@@ -40,3 +40,4 @@ if (typeof window !== 'undefined') {
   // Connection monitoring is now handled by connection-manager.ts
   // This prevents duplicate event listeners and conflicts
 }
+

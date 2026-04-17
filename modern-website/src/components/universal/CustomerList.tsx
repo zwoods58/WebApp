@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Users, Plus, DollarSign, Calendar } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency, formatDate } from '@/utils/currency';
 
 interface CustomerListProps {
@@ -115,3 +115,4 @@ export default function CustomerList({
     </div>
   );
 }
+

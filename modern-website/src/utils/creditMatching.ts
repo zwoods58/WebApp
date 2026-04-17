@@ -115,3 +115,4 @@ export function calculateCreditStatus(lineItems: any[]): 'outstanding' | 'partia
     return 'outstanding';
   }
 }
+

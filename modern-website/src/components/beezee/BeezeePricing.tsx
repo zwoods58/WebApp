@@ -228,3 +228,4 @@ const FlagDisplay = ({ flagEmoji, flagImage, countryName }: {
 };
 
 export default BeezeePricing;
+

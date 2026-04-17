@@ -81,3 +81,4 @@ export function parseBusinessId(businessId: string): {
   const [country, industry, number] = businessId.split('-');
   return { country, industry, number };
 }
+

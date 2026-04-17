@@ -132,3 +132,4 @@ const BeezeeAppHero = () => {
 };
 
 export default BeezeeAppHero;
+

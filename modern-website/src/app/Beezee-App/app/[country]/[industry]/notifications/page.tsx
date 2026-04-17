@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { ArrowLeft, Bell, Check, X, Search, Filter, DollarSign, TrendingDown, Package, Clock, Star, Settings, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useNotifications, NotificationType, type Notification as AppNotification } from '@/hooks';
-import { useToastContext } from '@/providers/ToastProvider';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useNotifications, NotificationType, type Notification as AppNotification } from '@/hooks/index';
+import { useToast } from '@/hooks/index';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 const notificationIcons = {
   money_in: DollarSign,
@@ -41,7 +41,7 @@ const typeLabels = {
 export default function NotificationsPage() {
   const { t } = useLanguage();
   const router = useRouter();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { 
     notifications, 
     loading, 
@@ -50,7 +50,7 @@ export default function NotificationsPage() {
     deleteNotification,
     unreadCount 
   } = useNotifications();
-  const { showInfo, showSuccess, showError } = useToastContext();
+  const { showInfo, showSuccess, showError } = useToast();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<NotificationType | 'all'>('all');
@@ -154,7 +154,7 @@ export default function NotificationsPage() {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-            {unreadCount > 0 && (
+            {(unreadCount || 0) > 0 && (
               <p className="text-sm text-gray-500">{unreadCount} unread</p>
             )}
           </div>
@@ -163,12 +163,12 @@ export default function NotificationsPage() {
 
         {/* Actions */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {unreadCount > 0 && (
+          {(unreadCount || 0) > 0 && (
             <button
               onClick={handleMarkAllAsRead}
               className="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
             >
-              Mark All Read ({unreadCount})
+              Mark All Read ({unreadCount || 0})
             </button>
           )}
           
@@ -207,7 +207,7 @@ export default function NotificationsPage() {
                     : 'bg-white text-gray-700 border border-gray-200'
                 }`}
               >
-                {type === 'all' ? 'All' : typeLabels[type as NotificationType]}
+                {type === 'all' ? 'All' : typeLabels[type]}
               </button>
             ))}
           </div>
@@ -260,7 +260,7 @@ export default function NotificationsPage() {
               const isSelected = selectedNotifications.includes(notification.id);
               
               return (
-                <div class="fade-in">
+                <div className="fade-in">
                   <div className="flex items-start gap-3">
                     <input
                       type="checkbox"

@@ -58,3 +58,4 @@ export const IndustryProvider: React.FC<IndustryProviderProps> = ({ children }) 
     </IndustryContext.Provider>
   );
 };
+

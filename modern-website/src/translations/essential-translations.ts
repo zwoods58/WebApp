@@ -82,3 +82,4 @@ const essentialTranslations = {
 };
 
 export default essentialTranslations;
+

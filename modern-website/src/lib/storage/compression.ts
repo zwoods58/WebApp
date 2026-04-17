@@ -36,3 +36,4 @@ export function decompressFallback(compressed: string): string {
 
 // Auto-detect best method
 export const useNativeCompression = typeof CompressionStream !== 'undefined';
+

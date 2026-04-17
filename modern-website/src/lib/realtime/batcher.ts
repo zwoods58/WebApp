@@ -258,3 +258,4 @@ export const realtimeBatcher = new RealtimeBatcher();
 
 // Export class for testing
 export { RealtimeBatcher };
+

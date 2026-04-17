@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import AppointmentsNew from '@/components/appointments/AppointmentsNew';
 
 export default function AppointmentsPage() {

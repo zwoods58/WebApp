@@ -7,10 +7,10 @@ import { useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useCreditItems } from '@/hooks';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useToast } from '@/hooks/useToast';
+import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useCreditItems } from '@/hooks/index';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useToast } from '@/hooks/index';
 import { 
   Header, 
   BottomNav,
@@ -29,10 +29,10 @@ export default function CashPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
-  const { business, loading: authLoading } = useUnifiedAuth();
+  const { business, loading: authLoading } = useSupabaseAuth();
   const businessId = business?.id;
   const queryClient = useQueryClient();
-  const creditHook = useCreditTanStack({ businessId: businessId, industry: business?.industry || industry, country: country });
+  const creditHook = useCreditTanStack({ businessId: businessId, industry: business?.industry || industry });
   const creditItemsHook = useCreditItems({ businessId: businessId, industry: business?.industry || industry });
   
   // ✅ STEP 2: Network status detection (for UI indicator only, NOT to block)
@@ -59,13 +59,11 @@ export default function CashPage() {
   // ✅ STEP 4: Data hooks - ALWAYS called
   const transactionsHook = useTransactionsTanStack({ 
     businessId: businessId,
-    industry: business?.industry || industry,
-    country: country
+    industry: business?.industry || industry
   });
   const expensesHook = useExpensesTanStack({ 
     businessId: businessId,
-    industry: business?.industry || industry,
-    country: country
+    industry: business?.industry || industry
   });
   
   // ✅ STEP 5: Safely extract data with fallbacks
@@ -74,7 +72,7 @@ export default function CashPage() {
   const isTransactionsOffline = transactionsHook?.isOffline || false;
   const isExpensesOffline = expensesHook?.isOffline || false;
   const isTransactionsPending = transactionsHook?.isAdding || false;
-  const isExpensesPending = expensesHook?.isPending || false;
+  const isExpensesPending = expensesHook?.isLoading || false;
   const addTransaction = transactionsHook?.addTransaction || (() => Promise.resolve());
   const addExpense = expensesHook?.addExpense || (() => Promise.resolve());
   const isTransactionsLoading = transactionsHook?.isLoading || false;
@@ -82,7 +80,15 @@ export default function CashPage() {
   
   // Credit data extraction
   const { data: credit, addCredit, updateCredit, refetch: refetchCredit } = creditHook;
-  const { addCreditItemAsync } = creditItemsHook;
+  const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
+  const addCreditItemAsync = async (item: any) => {
+    try {
+      await addCreditItem(item);
+      return { data: item, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
   
   // ✅ STEP 6: Derived state
   const isOffline = isTransactionsOffline || isExpensesOffline || isNetworkOffline;
@@ -140,7 +146,7 @@ export default function CashPage() {
             amount: transactionData.amount,
             paid_amount: 0,
             currency: transactionData.currency || getCurrency(country),
-            status: 'outstanding',
+            status: 'pending',
             due_date: transactionData.due_date,
             date_given: transactionData.transaction_date,
             created_at: new Date().toISOString(),
@@ -149,14 +155,11 @@ export default function CashPage() {
           
           // Update credit account totals
           const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, transactionData.amount);
-          await updateCredit({
-            id: existingCredit.id,
-            data: {
+          await updateCredit(existingCredit.id, {
               amount: newTotalAmount,
               due_date: transactionData.due_date, // Update to latest due date
               updated_at: new Date().toISOString()
-            }
-          });
+            });
           
           console.log(' Credit line item added successfully:', {
             customer: existingCredit.customer_name,
@@ -168,16 +171,11 @@ export default function CashPage() {
           console.log('Creating new credit account for:', transactionData.customer_name);
           const newCredit: any = await addCredit({
             business_id: businessId,
-            industry,
             customer_name: transactionData.customer_name,
             amount: transactionData.amount,
-            currency: transactionData.currency || getCurrency(country),
             due_date: transactionData.due_date,
-            date_given: transactionData.transaction_date,
-            status: 'outstanding',
-            type: 'receivable', // Money In = receivable
-            paid_amount: 0,
-            created_at: new Date().toISOString()
+            description: transactionData.description,
+            status: 'pending'
           });
           
           const creditId = newCredit?.id;
@@ -192,7 +190,7 @@ export default function CashPage() {
               amount: transactionData.amount,
               paid_amount: 0,
               currency: transactionData.currency || getCurrency(country),
-              status: 'outstanding',
+              status: 'pending',
               due_date: transactionData.due_date,
               date_given: transactionData.transaction_date,
               created_at: new Date().toISOString(),
@@ -264,7 +262,7 @@ export default function CashPage() {
             amount: expenseData.amount,
             paid_amount: 0,
             currency: expenseData.currency || getCurrency(country),
-            status: 'outstanding',
+            status: 'pending',
             due_date: expenseData.due_date,
             date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
             created_at: new Date().toISOString(),
@@ -273,29 +271,21 @@ export default function CashPage() {
           
           // Update credit account totals
           const newTotalAmount = existingCredit.amount + expenseData.amount;
-          await updateCredit({
-            id: existingCredit.id,
-            data: {
+          await updateCredit(existingCredit.id, {
               amount: newTotalAmount,
               due_date: expenseData.due_date, // Update to latest due date
               updated_at: new Date().toISOString()
-            }
-          });
+            });
         } else {
           // New supplier - create credit account and first line item
           console.log('Creating new payable credit account for:', expenseData.customer_name);
           const newCredit: any = await addCredit({
             business_id: businessId,
-            industry,
             customer_name: expenseData.customer_name, // Using customer_name field for supplier
             amount: expenseData.amount,
-            currency: expenseData.currency || getCurrency(country),
             due_date: expenseData.due_date,
-            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-            status: 'outstanding',
-            type: 'payable', // Money Out = payable
-            paid_amount: 0,
-            created_at: new Date().toISOString()
+            description: expenseData.description,
+            status: 'pending'
           });
           
           creditId = newCredit?.id;
@@ -310,7 +300,7 @@ export default function CashPage() {
               amount: expenseData.amount,
               paid_amount: 0,
               currency: expenseData.currency || getCurrency(country),
-              status: 'outstanding',
+              status: 'pending',
               due_date: expenseData.due_date,
               date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
               created_at: new Date().toISOString(),

@@ -5,7 +5,7 @@ import { Wifi, WifiOff, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react
 import { db } from '@/lib/database';
 import { syncManager } from '@/lib/sync-manager';
 import { getNetworkStatus } from '@/lib/network-status';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface SyncStatusIndicatorProps {
   businessId?: string;
@@ -123,3 +123,4 @@ export default function SyncStatusIndicator({ businessId }: { businessId?: strin
     </div>
   );
 }
+

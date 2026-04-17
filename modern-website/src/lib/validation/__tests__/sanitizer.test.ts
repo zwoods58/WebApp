@@ -484,3 +484,4 @@ describe('Null Byte Injection Prevention', () => {
     expect(result.email).not.toContain('\0');
   });
 });
+

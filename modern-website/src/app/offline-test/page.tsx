@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTransactionsTanStack } from '@/hooks/useTransactionsTanStack'
+import { useTransactionsTanStack } from '@/hooks';
 import { ConnectionStatus } from '@/components/ConnectionStatus'
 import { PendingBadge } from '@/components/PendingBadge'
 
@@ -136,3 +136,4 @@ export default function OfflineTestPage() {
     </div>
   )
 }
+

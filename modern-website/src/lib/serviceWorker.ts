@@ -19,3 +19,4 @@ export function notifyServiceWorker(country: string, industry: string): Promise<
   console.log('[PWA] Service worker communication handled by next-pwa-pack');
   return Promise.resolve();
 }
+

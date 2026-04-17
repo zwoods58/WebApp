@@ -23,10 +23,10 @@ import { useParams } from 'next/navigation';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useServicesTanStack, useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useToast } from '@/hooks/useToast';
+import { useServicesTanStack, useInventoryTanStack, useTransactionsTanStack } from '@/hooks/index';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useLanguage } from '@/hooks/index';
+import { useToast } from '@/hooks/index';
 import { usePersistentStorage } from '@/hooks/usePersistentStorage';
 import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
@@ -77,7 +77,7 @@ export default function ServicesPage() {
     };
   }, [industry, country]);
   
-  const { business, loading: businessLoading } = useUnifiedAuth();
+  const { business, loading: businessLoading } = useSupabaseAuth();
   
   // Persistent storage backup for services and inventory
   const [persistentServices, setPersistentServices] = usePersistentStorage<any[]>(

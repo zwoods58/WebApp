@@ -124,3 +124,4 @@ export function KenyaSubscriptionModalPopup({ isOpen, onClose, onSuccess }: Keny
     </div>
   );
 }
+

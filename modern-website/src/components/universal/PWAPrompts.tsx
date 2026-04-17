@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Download, X } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export const PWAInstallPrompt: React.FC = () => {
   const { t } = useLanguage();
@@ -98,3 +98,4 @@ export const PWAInstallPrompt: React.FC = () => {
     </>
   );
 };
+

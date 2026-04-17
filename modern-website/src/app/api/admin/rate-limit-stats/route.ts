@@ -286,3 +286,4 @@ function getIdentifierType(identifier: string): string {
     return 'unknown';
   }
 }
+

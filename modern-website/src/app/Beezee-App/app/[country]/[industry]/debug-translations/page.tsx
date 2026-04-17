@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function DebugTranslations() {
   const { t } = useLanguage();

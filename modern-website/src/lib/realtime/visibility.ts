@@ -282,3 +282,4 @@ export const realtimeVisibilityHandler = new RealtimeVisibilityHandler();
 
 // Export class for testing
 export { RealtimeVisibilityHandler };
+

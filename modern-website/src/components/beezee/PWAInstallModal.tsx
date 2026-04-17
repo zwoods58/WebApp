@@ -166,3 +166,4 @@ const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClose }) =>
 };
 
 export default PWAInstallModal;
+

@@ -184,3 +184,4 @@ export const getPaymentChannels = (countryCode: string): string[] => {
       return ['card'];
   }
 };
+

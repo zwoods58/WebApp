@@ -18,13 +18,13 @@ import {
   Search
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack, useTransactionsTanStack, useServicesTanStack } from '@/hooks';
 import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToast } from '@/hooks/useToast';
-import { usePersistentStorage } from '@/hooks/usePersistentStorage';
+import { usePersistentStorage } from '@/utils/persistentStorage';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import { getStableDateString, getStableDisplayDate, isClient, getStableId } from '@/utils/stableDates';
 import Header from '../../Header';
@@ -1116,3 +1116,5 @@ export default function Appointments({ industry, country }: AppointmentsProps) {
     </div>
   );
 }
+
+

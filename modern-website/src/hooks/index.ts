@@ -1,51 +1,105 @@
-// Export all hooks from a single index file
-// Old hooks removed - replaced with TanStack Query versions
-
-// Core hooks
-export { useLanguageSafe } from './useLanguageSafe';
-export { useUnifiedAuth } from '../contexts/UnifiedAuthContext';
-
-// New TanStack Query hooks
-export { useTransactionsTanStack } from './useTransactionsTanStack';
-export { useExpensesTanStack } from './useExpensesTanStack';
-export { useCreditTanStack } from './useCreditTanStack';
-export { useCreditItems, applyPaymentFIFO, calculateCreditStatus, calculateTotalOwed, getEarliestDueDate } from './useCreditItems';
-export { useInventoryTanStack } from './useInventoryTanStack';
-export { useServicesTanStack } from './useServicesTanStack';
-export { useAppointmentsTanStack } from './useAppointmentsTanStack';
-export { useTargetsTanStack } from './useTargetsTanStack';
-
-// Backward compatibility aliases - redirect old hook names to new TanStack versions
-export { useServicesTanStack as useServices } from './useServicesTanStack';
-export { useCreditTanStack as useCredit } from './useCreditTanStack';
-export { useInventoryTanStack as useInventory } from './useInventoryTanStack';
-export { useTransactionsTanStack as useTransactions } from './useTransactionsTanStack';
-export { useExpensesTanStack as useExpenses } from './useExpensesTanStack';
-
-// Missing hooks - create stub exports to prevent build errors
-// These hooks don't exist anymore but components are still importing them
-export const useOffline = () => ({ isOnline: true, isOffline: false });
-export const useTransactionsOld = () => ({ data: [], isLoading: false, error: null });
-
-// Signup hooks
-export { useSignup } from './useSignup';
-export { useSignupValidation } from './useSignupValidation';
-export { useBusinessCreation } from './useBusinessCreation';
-
-// Real-time hooks
-export { 
-  useRealtime, 
-  useTransactionsRealtime, 
-  useInventoryRealtime, 
-  useCreditRealtime, 
-  useTargetsRealtime, 
-  useBusinessRealtime 
-} from './useRealtime';
-
-// Utility hooks
+// Export all hooks from a central location
 export { useToast } from './useToast';
-export { useTourTrigger } from './useTourTrigger';
-export { usePullToRefresh } from './usePullToRefresh';
-export { useGlobalRefresh } from './useGlobalRefresh';
-export { useIndustryDataNew } from './useIndustryDataNew';
-export { useNotifications, type Notification, type NotificationType } from './useNotifications';
+export { useLanguage } from './useLanguage';
+export { useServiceWorkerVersion } from './useServiceWorkerVersion';
+export { usePersistentStorage } from './usePersistentStorage';
+
+// TanStack hooks
+export { 
+  useTransactionsTanStack, 
+  type Transaction, 
+  type UseTransactionsTanStackProps, 
+  type UseTransactionsTanStackReturn 
+} from './useTransactionsTanStack';
+
+export { 
+  useExpensesTanStack, 
+  type Expense, 
+  type UseExpensesTanStackProps, 
+  type UseExpensesTanStackReturn 
+} from './useExpensesTanStack';
+
+export { 
+  useCreditTanStack, 
+  type Credit, 
+  type UseCreditTanStackProps, 
+  type UseCreditTanStackReturn 
+} from './useCreditTanStack';
+
+export { 
+  useCreditItems, 
+  type CreditItem, 
+  type UseCreditItemsProps, 
+  type UseCreditItemsReturn 
+} from './useCreditItems';
+
+export { 
+  useTargetsTanStack, 
+  type Target, 
+  type UseTargetsTanStackProps, 
+  type UseTargetsTanStackReturn 
+} from './useTargetsTanStack';
+
+export { 
+  useServicesTanStack, 
+  type Service, 
+  type UseServicesTanStackProps, 
+  type UseServicesTanStackReturn 
+} from './useServicesTanStack';
+
+export { 
+  useAppointmentsTanStack, 
+  type Appointment, 
+  type UseAppointmentsTanStackProps, 
+  type UseAppointmentsTanStackReturn 
+} from './useAppointmentsTanStack';
+
+export { 
+  useInventoryTanStack, 
+  type Inventory, 
+  type UseInventoryTanStackProps, 
+  type UseInventoryTanStackReturn 
+} from './useInventoryTanStack';
+
+// Notification types and hook
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+  business_id: string;
+}
+
+export type NotificationType = 
+  | 'money_in' 
+  | 'money_out' 
+  | 'low_inventory' 
+  | 'credit_due' 
+  | 'target_achieved' 
+  | 'business_setup';
+
+export interface UseNotificationsReturn {
+  notifications: Notification[];
+  loading: boolean;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
+  refreshNotifications: () => Promise<void>;
+  unreadCount?: number;
+}
+
+// Mock notification hook - replace with actual implementation
+export function useNotifications(): UseNotificationsReturn {
+  return {
+    notifications: [],
+    loading: false,
+    markAsRead: async (id: string) => {},
+    markAllAsRead: async () => {},
+    deleteNotification: async (id: string) => {},
+    refreshNotifications: async () => {},
+    unreadCount: 0
+  };
+}
+

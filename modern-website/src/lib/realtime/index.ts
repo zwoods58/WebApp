@@ -42,3 +42,4 @@ export const realtimeOptimization = {
     // Components are auto-initialized via constructors
   }
 };
+

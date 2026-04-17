@@ -1,17 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Phone, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import ForgotPINFlow from '@/components/auth/ForgotPINFlow';
-
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import PINVerification from '@/components/auth/PINVerification';
-import PINLockout from '@/components/auth/PINLockout';
-import { formatPhoneNumber } from '@/utils/phoneUtils';
+import Link from 'next/link';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 // Helper function to detect standalone mode and navigate accordingly
 function navigatePWAAware(path: string, router: any) {
@@ -19,11 +14,9 @@ function navigatePWAAware(path: string, router: any) {
                        window.matchMedia('(display-mode: standalone)').matches;
   
   if (isStandalone) {
-    // In standalone PWA mode, use window.location.href
     console.log('[Auth] Standalone mode detected, using window.location.href');
     window.location.href = path;
   } else {
-    // In browser mode, use Next.js router
     console.log('[Auth] Browser mode detected, using router.push');
     router.push(path);
   }
@@ -31,240 +24,81 @@ function navigatePWAAware(path: string, router: any) {
 
 export default function Login() {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState({
-    phone: '',
-    pin: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [pendingSignup, setPendingSignup] = useState<any>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [loginStep, setLoginStep] = useState<'phone' | 'pin' | 'locked'>('phone');
-  const [businessData, setBusinessData] = useState<any>(null);
-  const [pinError, setPinError] = useState('');
-  const [remainingAttempts, setRemainingAttempts] = useState(3);
-  const [lockoutTime, setLockoutTime] = useState(0);
-  const [showPin, setShowPin] = useState(false);
-  const [hasUserIntent, setHasUserIntent] = useState(false); // Track if user is actively trying to login
-  const [showForgotPIN, setShowForgotPIN] = useState(false);
+  const { signIn, isAuthenticated, user, business, loading, error } = useSupabaseAuth();
+  const { showError, showSuccess } = useToast();
   
-  const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   const router = useRouter();
-  const { signInDirect, signInWithPIN, isAuthenticated, user, loading: authLoading, validatePhone } = useUnifiedAuth();
-  const { showInfo, showSuccess } = useToast();
 
   // Check if user is already authenticated and redirect
   useEffect(() => {
-    if (!authLoading && !isRedirecting) {
-      setIsCheckingAuth(false);
+    if (!loading && isAuthenticated && business && !isRedirecting) {
+      console.log('🔄 User already authenticated, redirecting to dashboard...');
+      setIsRedirecting(true);
       
-      const isOnline = navigator.onLine;
+      const country = business.country.toLowerCase();
+      const industry = business.industry.toLowerCase();
       
-      // Only redirect if user is authenticated AND hasn't shown intent to login
-      // Don't redirect if user is actively trying to re-authenticate
-      // Don't redirect during the brief moment when ProtectedRoute is checking auth
-      // This prevents the redirect loop: Dashboard -> Login -> Dashboard
-      if (isAuthenticated && user && !window.location.pathname.includes('/app/') && !hasUserIntent) {
-        if (!isOnline) {
-          console.log('🔌 Offline - skipping auto-redirect');
-          return;
-        }
-        console.log('🔄 User already authenticated and no login intent, redirecting to dashboard...');
-        // Add a small delay to ensure this isn't just a transient state during page refresh
-        const redirectTimer = setTimeout(() => {
-          setIsRedirecting(true);
-          handleLoginSuccess(user);
-        }, 150); // Small delay to avoid race condition with ProtectedRoute
-        
-        return () => clearTimeout(redirectTimer);
-      } else if (isAuthenticated && user && hasUserIntent) {
-        console.log('🔐 User is authenticated but has login intent - staying on login page');
-      }
+      // Add a small delay to ensure auth state is set before redirect
+      const redirectTimer = setTimeout(() => {
+        navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
+      }, 150);
+      
+      return () => clearTimeout(redirectTimer);
     }
-  }, [isAuthenticated, user, authLoading, isRedirecting, hasUserIntent]);
-
-  const handleLoginSuccess = (business: any) => {
-    console.log('🎯 handleLoginSuccess called with:', business);
-    
-    if (!business) {
-      console.error('❌ No business data provided to handleLoginSuccess');
-      setError('Login failed: No business data received');
-      return;
-    }
-    
-    // Route to user's actual country and industry from database
-    const country = (business?.country || business?.business?.country || 'ke').toLowerCase();
-    const industry = (business?.industry || business?.business?.industry || 'retail').toLowerCase();
-    console.log('🎯 Redirecting to:', { country, industry, business });
-    console.log('🔍 Business data check:', { 
-      businessIndustry: business?.industry, 
-      businessCountry: business?.country
-    });
-    
-    // Add a small delay to ensure auth state is set before redirect
-    setTimeout(() => {
-      navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
-    }, 100);
-  };
+  }, [isAuthenticated, business, loading, isRedirecting, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Set user intent when they start typing
-    if (!hasUserIntent) {
-      setHasUserIntent(true);
-      console.log('🎯 User intent detected - preventing automatic redirect');
-    }
-    
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     }));
-  };
-
-  const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const value = e.target.value;
-    
-    // Set user intent when they start typing PIN
-    if (!hasUserIntent) {
-      setHasUserIntent(true);
-      console.log('🎯 User intent detected via PIN input - preventing automatic redirect');
-    }
-    
-    // Only allow digits
-    if (value && !/^\d$/.test(value)) return;
-    
-    const currentPin = formData.pin || '';
-    const newPin = currentPin.split('');
-    newPin[index] = value;
-    const updatedPin = newPin.join('');
-    
-    setFormData(prev => ({
-      ...prev,
-      pin: updatedPin
-    }));
-    
-    // Auto-focus next input
-    if (value && index < 5) {
-      pinRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handlePinKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    const currentPin = formData.pin || '';
-    if (e.key === 'Backspace' && !currentPin[index] && index > 0) {
-      // Move to previous input on backspace if current is empty
-      pinRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowLeft' && index > 0) {
-      // Move to previous input on arrow left
-      pinRefs.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index < 5) {
-      // Move to next input on arrow right
-      pinRefs.current[index + 1]?.focus();
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    setIsSubmitting(true);
 
-    // Validate phone number
-    if (!formData.phone || formData.phone.length < 10) {
-      setError('Please enter a valid phone number');
-      setIsLoading(false);
+    // Validate form
+    if (!formData.email || !formData.password) {
+      showError('Please fill in all fields');
+      setIsSubmitting(false);
       return;
     }
 
-    // Validate PIN
-    if (!formData.pin || formData.pin.length !== 6) {
-      setError('Please enter a 6-digit PIN');
-      setIsLoading(false);
+    if (!formData.email.includes('@')) {
+      showError('Please enter a valid email address');
+      setIsSubmitting(false);
       return;
     }
 
-    // Format phone number using the enhanced formatting utility
-    const phoneNumber = formatPhoneNumber(formData.phone);
-    
-    console.log('📱 Formatted phone number:', {
-      original: formData.phone,
-      formatted: phoneNumber
-    });
-    
-    // Validate that the formatted number is in a supported format
-    const phoneValidation = validatePhone(phoneNumber);
-    if (!phoneValidation.valid) {
-      setError('Invalid phone format. Côte d\'Ivoire numbers must have 8 digits after +225 (e.g., +22507778899). Other formats: Kenya (+254...), Nigeria (+234...), Ghana (+233...), Uganda (+256...), Rwanda (+250...), Tanzania (+255...), South Africa (+27...)');
-      setIsLoading(false);
-      return;
-    }
-    
-    // Use phone and PIN authentication
     try {
-      const result = await signInWithPIN(phoneNumber, formData.pin);
+      const result = await signIn(formData.email, formData.password);
       
       if (result.error) {
-        setError(result.error.message);
-      } else if (result.data && result.data.business) {
-        // Login successful - show caching progress
-        console.log('✅ Login successful, business data:', result.data.business);
-        
-        // Show caching progress indicator
-        showInfo('📦 Preparing for offline use...');
-        
-        // Wait a bit for caching to start (service worker notification happens in signInWithPIN)
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Show success message
-        showSuccess('✅ Ready for offline use!');
-        
-        handleLoginSuccess(result.data.business);
+        showError(result.error.message);
       } else {
-        console.error('❌ Unexpected response structure:', result);
-        setError('Login failed: Invalid response from server');
+        showSuccess('Login successful!');
+        // Redirect will be handled by useEffect hook
       }
     } catch (error) {
-      setError('Login failed. Please try again.');
+      showError('Login failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    setIsLoading(false);
-  };
-
-  // Stub function - PIN verification is no longer functional
-  const handlePINSubmit = async (pin: string) => {
-    console.log('🔐 PIN input received (non-functional):', pin);
-    // PIN verification is disabled - always succeed for UI purposes
-    setIsLoading(false);
-  };
-
-  const handleBackToPhone = () => {
-    setLoginStep('phone');
-    setBusinessData(null);
-    setPinError('');
-    setError('');
-  };
-
-  const handleLockoutExpired = () => {
-    setLoginStep('pin');
-    setLockoutTime(0);
-    setRemainingAttempts(3);
-    setPinError('');
-  };
-
-  // Utility function to clear all auth sessions (for debugging)
-  const clearAllSessions = () => {
-    console.log('🧹 Clearing all authentication sessions...');
-    localStorage.removeItem('beezee_unified_auth');
-    localStorage.removeItem('beezee_business_auth');
-    localStorage.removeItem('beezee_direct_auth');
-    localStorage.removeItem('sessionData');
-    localStorage.removeItem('userProfile');
-    localStorage.removeItem('beezee_simple_auth');
-    console.log('✅ All sessions cleared');
   };
 
   // Show loading spinner while checking authentication
-  if (isCheckingAuth) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex items-center justify-center">
         <div className="text-center">
@@ -277,154 +111,144 @@ export default function Login() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-
-      {/* Main content - content at bottom */}
+      {/* Main content */}
       <div className="flex-1 container mx-auto px-6 pb-6 flex flex-col justify-end">
         <div className="max-w-md mx-auto w-full">
-          {/* Phone Step */}
-          {loginStep === 'phone' && (
-            <>
-              <div
-                className="text-center mb-6 fade-in"
-              >
-                <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
-                  {t('auth.welcome_back', 'Welcome Back')}
-                </h1>
-                <p className="text-[var(--text-3)] text-xs">
-                  Just like mobile banking - secure and simple
+          <div className="text-center mb-6 fade-in">
+            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
+              {t('auth.welcome_back', 'Welcome Back')}
+            </h1>
+            <p className="text-[var(--text-3)] text-xs">
+              Sign in to manage your business
+            </p>
+          </div>
+
+          <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5">
+            {/* Error Display */}
+            {(error || (typeof window !== 'undefined' && window.location.search.includes('error'))) && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-3 rounded-lg text-xs mb-4 flex items-start gap-2">
+                <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Authentication Error</p>
+                  <p className="text-red-600 mt-1">
+                    {error || 'Please check your email and password and try again.'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Success Message for Email Confirmation */}
+            {typeof window !== 'undefined' && window.location.search.includes('confirmed') && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-3 py-3 rounded-lg text-xs mb-4">
+                <p className="font-medium">Email Confirmed!</p>
+                <p className="text-green-600 mt-1">
+                  Your email has been confirmed. You can now sign in.
                 </p>
               </div>
+            )}
 
-              <div
-                className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5"
-                style={{ animationDelay: '0.1s' }}
-              >
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-xs mb-4">
-                    {error}
-                  </div>
-                )}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Email Field */}
+              <div>
+                <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+                  <Mail size={14} />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email address"
+                  className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
+                  disabled={isSubmitting}
+                  autoComplete="email"
+                  required
+                />
+              </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
-                      <Phone size={14} />
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="Enter phone number (e.g., +254712345678)"
-                      value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
-                      <Lock size={14} />
-                      Enter Your PIN
-                    </label>
-                    <div className="flex justify-center gap-2 mb-3">
-                      {[0, 1, 2, 3, 4, 5].map((index) => (
-                        <input
-                          key={index}
-                          type={showPin ? "text" : "password"}
-                          maxLength={1}
-                          value={formData.pin[index] || ''}
-                          onChange={(e) => handlePinChange(e, index)}
-                          onKeyDown={(e) => handlePinKeyDown(e, index)}
-                          className="w-10 h-10 text-center text-base font-semibold bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] transition-all"
-                          disabled={isLoading}
-                          ref={(input) => {
-                            if (input) pinRefs.current[index] = input;
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="text-xs text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
-                    >
-                      {showPin ? 'Hide' : 'Show'} PIN
-                    </button>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isLoading || !formData.phone}
-                    className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                  >
-                    {isLoading ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-                    ) : (
-                      'Access Business'
-                    )}
-                  </button>
-                </form>
-
-                <div className="mt-4 text-center space-y-2">
-                  <p className="text-[var(--text-3)] text-xs">
-                    Don't have an account?{' '}
-                    <button
-                      onClick={() => window.location.href = '/Beezee-App/auth/signup'}
-                      className="text-[var(--powder-dark)] hover:underline font-medium bg-transparent border-none cursor-pointer"
-                    >
-                      Sign up
-                    </button>
-                  </p>
-                  
+              {/* Password Field */}
+              <div>
+                <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5">
+                  <Lock size={14} />
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm pr-10"
+                    disabled={isSubmitting}
+                    autoComplete="current-password"
+                    required
+                  />
                   <button
                     type="button"
-                    onClick={() => setShowForgotPIN(true)}
-                    className="text-xs text-[var(--powder-dark)] hover:underline font-medium"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
                   >
-                    Forgot PIN?
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
-            </>
-          )}
 
-          {/* PIN Step */}
-          {loginStep === 'pin' && (
-            <PINVerification
-              onPINSubmit={handlePINSubmit}
-              onCancel={handleBackToPhone}
-              isLoading={isLoading}
-              error={pinError}
-              remainingAttempts={remainingAttempts}
-              lockoutTime={lockoutTime}
-            />
-          )}
+              {/* Remember Me */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-[var(--powder-dark)] bg-[var(--glass-bg)] border-[var(--border)] rounded focus:ring-[var(--powder-dark)]"
+                />
+                <label htmlFor="rememberMe" className="text-xs text-[var(--text-2)]">
+                  Remember me
+                </label>
+              </div>
 
-          {/* Lockout Step */}
-          {loginStep === 'locked' && (
-            <PINLockout
-              lockoutTime={lockoutTime}
-              onTimeExpired={handleLockoutExpired}
-              onContactSupport={() => window.open('mailto:support@beezee.app')}
-            />
-          )}
-        </div>
-      </div>
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting || !formData.email || !formData.password}
+                className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {isSubmitting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
 
-      {/* Forgot PIN Modal/Flow */}
-      {showForgotPIN && (
-        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-4">
-          <div className="bg-[var(--bg)] rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
-            <ForgotPINFlow
-              onSuccess={() => {
-                setShowForgotPIN(false);
-                // Optionally show a success message or redirect to login
-              }}
-              onCancel={() => setShowForgotPIN(false)}
-            />
+            {/* Links */}
+            <div className="mt-4 text-center space-y-2">
+              <p className="text-[var(--text-3)] text-xs">
+                <Link
+                  href="/Beezee-App/auth/forgot-password"
+                  className="text-[var(--powder-dark)] hover:underline font-medium"
+                >
+                  Forgot your password?
+                </Link>
+              </p>
+              
+              <p className="text-[var(--text-3)] text-xs">
+                Don't have an account?{' '}
+                <Link
+                  href="/Beezee-App/auth/signup"
+                  className="text-[var(--powder-dark)] hover:underline font-medium"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
+

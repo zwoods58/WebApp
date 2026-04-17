@@ -1,67 +1,74 @@
+"use client";
+
 import { useState, useCallback } from 'react';
-import { ToastType } from '@/components/universal/Toast';
 
 export interface Toast {
   id: string;
-  type: ToastType;
+  type: 'success' | 'error' | 'warning' | 'info';
   title?: string;
   message: string;
   duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 export interface UseToastReturn {
   toasts: Toast[];
   showToast: (toast: Omit<Toast, 'id'>) => void;
-  showSuccess: (message: string, title?: string, duration?: number) => void;
-  showError: (message: string, title?: string, duration?: number) => void;
-  showWarning: (message: string, title?: string, duration?: number) => void;
-  showInfo: (message: string, title?: string, duration?: number) => void;
+  showSuccess: (message: string, title?: string) => void;
+  showError: (message: string, title?: string) => void;
+  showWarning: (message: string, title?: string) => void;
+  showInfo: (message: string, title?: string) => void;
   removeToast: (id: string) => void;
-  clearAll: () => void;
+  clearAllToasts: () => void;
 }
 
 export function useToast(): UseToastReturn {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const generateId = () => {
-    return `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  };
+  const generateId = () => `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   const showToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = generateId();
     const newToast: Toast = {
       ...toast,
       id,
+      duration: toast.duration || 5000
     };
 
-    setToasts(prev => {
-      // Keep only the last 3 toasts to prevent overflow
-      const filtered = prev.slice(-2);
-      return [...filtered, newToast];
-    });
+    setToasts(prev => [...prev, newToast]);
+
+    // Auto-remove toast after duration
+    if (newToast.duration && newToast.duration > 0) {
+      setTimeout(() => {
+        removeToast(id);
+      }, newToast.duration);
+    }
   }, []);
 
-  const showSuccess = useCallback((message: string, title?: string, duration?: number) => {
-    showToast({ type: 'success', message, title, duration });
+  const showSuccess = useCallback((message: string, title?: string) => {
+    showToast({ type: 'success', message, title });
   }, [showToast]);
 
-  const showError = useCallback((message: string, title?: string, duration?: number) => {
-    showToast({ type: 'error', message, title, duration });
+  const showError = useCallback((message: string, title?: string) => {
+    showToast({ type: 'error', message, title, duration: 8000 });
   }, [showToast]);
 
-  const showWarning = useCallback((message: string, title?: string, duration?: number) => {
-    showToast({ type: 'warning', message, title, duration });
+  const showWarning = useCallback((message: string, title?: string) => {
+    showToast({ type: 'warning', message, title });
   }, [showToast]);
 
-  const showInfo = useCallback((message: string, title?: string, duration?: number) => {
-    showToast({ type: 'info', message, title, duration });
+  const showInfo = useCallback((message: string, title?: string) => {
+    showToast({ type: 'info', message, title });
   }, [showToast]);
 
   const removeToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
-  const clearAll = useCallback(() => {
+  const clearAllToasts = useCallback(() => {
     setToasts([]);
   }, []);
 
@@ -73,6 +80,7 @@ export function useToast(): UseToastReturn {
     showWarning,
     showInfo,
     removeToast,
-    clearAll,
+    clearAllToasts
   };
 }
+

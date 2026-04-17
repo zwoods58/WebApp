@@ -381,3 +381,4 @@ export const requestBatcher = new RequestBatcher();
 
 // Export class for testing
 export { RequestBatcher };
+

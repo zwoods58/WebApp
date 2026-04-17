@@ -31,7 +31,7 @@ import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeCon
 
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export default function SettingsPage() {

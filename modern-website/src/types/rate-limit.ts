@@ -112,3 +112,4 @@ export const DEFAULT_RATE_LIMITS: Record<RateLimitType, RateLimitConfig> = {
     progressive: false,
   },
 };
+

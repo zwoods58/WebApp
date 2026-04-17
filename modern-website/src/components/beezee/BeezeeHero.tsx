@@ -69,3 +69,4 @@ const BeezeeHero = () => {
 };
 
 export default BeezeeHero;
+

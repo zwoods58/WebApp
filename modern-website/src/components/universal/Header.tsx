@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
@@ -223,3 +223,4 @@ export default function Header({ industry, country }: HeaderProps) {
     </>
   );
 }
+

@@ -1,106 +1,143 @@
-import { useIndustryDataNew } from './useIndustryDataNew'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export interface Credit {
   id: string;
   business_id: string;
-  industry: string;
   customer_name: string;
-  customer_phone?: string;
   amount: number;
-  currency: string;
-  amount_home?: number;
-  exchange_rate?: number;
   due_date: string;
-  date_given: string; // Required field from database
-  status: 'outstanding' | 'partial' | 'paid' | 'overdue'; // Changed from 'pending' to 'outstanding'
-  paid_amount?: number; // Amount paid so far for partial payments (defaults to 0)
-  type?: 'receivable' | 'payable'; // receivable = customer owes us, payable = we owe supplier
-  notes?: string;
-  metadata?: Record<string, any>;
+  description?: string;
+  status: 'pending' | 'partial' | 'paid' | 'overdue';
   created_at: string;
   updated_at: string;
 }
 
-export interface UseCreditOptions {
+export interface UseCreditTanStackProps {
   businessId?: string;
   industry?: string;
-  country?: string;
-  status?: 'outstanding' | 'partial' | 'paid' | 'overdue'; // Changed from 'pending' to 'outstanding'
-  customerName?: string;
-  customerPhone?: string;
-  startDate?: string;
-  endDate?: string;
-  select?: string;
-  filters?: Record<string, any>;
-  orderBy?: { column: string; ascending?: boolean };
-  limit?: number;
 }
 
-export function useCreditTanStack(options: UseCreditOptions = {}) {
-  // Default to Kenya and retail if not specified
-  const industry = options.industry || 'retail'
-  const country = options.country || 'ke'
-  
-  // Use the new TanStack Query hook with updated API
-  const { 
-    data, 
-    isLoading, 
-    create,
-    createAsync,
-    delete: deleteItem, 
-    update,
-    updateAsync,
-    isCreating,
-    error,
-    refetch
-  } = useIndustryDataNew({
-    industry,
-    country,
-    table: 'credit',
-    select: options.select,
-    businessId: options.businessId,
-  })
+export interface UseCreditTanStackReturn {
+  data: Credit[];
+  isLoading: boolean;
+  error: Error | null;
+  addCredit: (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addCreditAsync: (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => Promise<{ data?: any; error?: any }>;
+  updateCredit: (id: string, updates: Partial<Credit>) => Promise<void>;
+  updateCreditAsync: (id: string, updates: Partial<Credit>) => Promise<{ data?: any; error?: any }>;
+  deleteCredit: (id: string) => Promise<void>;
+  refetch: () => void;
+  isOffline: boolean;
+}
 
-  // Filter data based on options (basic implementation)
-  let filteredData = data || []
-  
-  if (options.status) {
-    filteredData = filteredData.filter((c: any) => c.status === options.status)
-  }
-  
-  if (options.customerName) {
-    filteredData = filteredData.filter((c: any) => 
-      c.customer_name?.toLowerCase().includes(options.customerName!.toLowerCase())
-    )
-  }
-  
-  if (options.customerPhone) {
-    filteredData = filteredData.filter((c: any) => c.customer_phone === options.customerPhone)
-  }
-  
-  if (options.startDate) {
-    filteredData = filteredData.filter((c: any) => 
-      new Date(c.due_date) >= new Date(options.startDate!)
-    )
-  }
-  
-  if (options.endDate) {
-    filteredData = filteredData.filter((c: any) => 
-      new Date(c.due_date) <= new Date(options.endDate!)
-    )
-  }
+export function useCreditTanStack({ businessId, industry }: UseCreditTanStackProps = {}): UseCreditTanStackReturn {
+  const queryClient = useQueryClient();
+
+  const { data = [], isLoading, error } = useQuery({
+    queryKey: ['credit', businessId, industry],
+    queryFn: async () => {
+      if (!businessId) return [];
+      
+      const { data, error } = await supabase
+        .from('credit')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!businessId,
+  });
+
+  const addCreditMutation = useMutation({
+    mutationFn: async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('credit')
+        .insert(credit)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credit'] });
+    },
+  });
+
+  const updateCreditMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Credit> }) => {
+      const { data, error } = await supabase
+        .from('credit')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credit'] });
+    },
+  });
+
+  const deleteCreditMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('credit')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['credit'] });
+    },
+  });
+
+  const addCredit = async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
+    await addCreditMutation.mutateAsync(credit);
+  };
+
+  const addCreditAsync = async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const data = await addCreditMutation.mutateAsync(credit);
+      return { data, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
+
+  const updateCredit = async (id: string, updates: Partial<Credit>) => {
+    await updateCreditMutation.mutateAsync({ id, updates });
+  };
+
+  const updateCreditAsync = async (id: string, updates: Partial<Credit>) => {
+    try {
+      const data = await updateCreditMutation.mutateAsync({ id, updates });
+      return { data, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
+
+  const deleteCredit = async (id: string) => {
+    await deleteCreditMutation.mutateAsync(id);
+  };
 
   return {
-    data: filteredData as Credit[],
+    data,
     isLoading,
-    isOffline: !isLoading && data.length === 0,
-    addCredit: create,
-    addCreditAsync: createAsync,
-    deleteCredit: deleteItem,
-    updateCredit: update,
-    updateCreditAsync: updateAsync,
-    isPending: isCreating,
     error,
-    refetch
-  }
+    addCredit,
+    addCreditAsync,
+    updateCredit,
+    updateCreditAsync,
+    deleteCredit,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['credit'] }),
+    isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
+  };
 }

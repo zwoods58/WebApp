@@ -10,3 +10,4 @@ export async function revalidatePWA(urls: string[]) {
   });
   return res.json();
 }
+

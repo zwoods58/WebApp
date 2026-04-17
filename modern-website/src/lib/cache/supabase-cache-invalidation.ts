@@ -356,3 +356,4 @@ export class SupabaseCacheInvalidationService {
 // Export singleton instance
 export const supabaseCacheInvalidation = new SupabaseCacheInvalidationService();
 export default supabaseCacheInvalidation;
+

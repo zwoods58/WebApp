@@ -146,3 +146,4 @@ export function calculateAchievementPercentage(sales: number, target: number): n
   if (target === 0) return 0;
   return Math.round((sales / target) * 100);
 }
+

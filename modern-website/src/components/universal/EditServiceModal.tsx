@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 
 interface EditServiceModalProps {
@@ -192,3 +192,4 @@ export default function EditServiceModal({
     </>
   );
 }
+

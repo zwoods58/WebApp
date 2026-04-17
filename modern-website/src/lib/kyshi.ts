@@ -430,3 +430,4 @@ export const COUNTRY_CONFIGS = {
 export type CountryConfig = typeof COUNTRY_CONFIGS[keyof typeof COUNTRY_CONFIGS];
 
 export default kyshiAPI;
+

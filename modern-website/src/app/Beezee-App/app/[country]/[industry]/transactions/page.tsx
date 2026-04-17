@@ -14,7 +14,7 @@ import BottomNav from '@/components/universal/BottomNav';
 import MoneyInButton from '@/components/universal/MoneyInButton';
 import ReceiptGenerator from '@/components/universal/ReceiptGenerator';
 import WhatsAppShare from '@/components/universal/WhatsAppShare';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function TransactionsPage() {
   const { t } = useLanguage();

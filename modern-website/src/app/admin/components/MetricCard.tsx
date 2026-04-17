@@ -84,3 +84,4 @@ export function MetricCard({
     </motion.div>
   );
 }
+

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, Check, Crown, CreditCard, Calendar, Shield, Star, Phone } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useParams } from 'next/navigation';
 import KenyaSubscriptionModal from './KenyaSubscriptionModal';
 import NigeriaSubscriptionModal from './NigeriaSubscriptionModal';
@@ -488,3 +488,4 @@ const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
     </>
   );
 }
+

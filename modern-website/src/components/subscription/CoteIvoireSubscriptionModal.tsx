@@ -328,3 +328,4 @@ export function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: Cote
     </div>
   );
 }
+

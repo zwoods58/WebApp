@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, ArrowLeft, Target, TrendingUp, Users, Package, FileText, DollarSign } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface WelcomeTourProps {
   isOpen: boolean;
@@ -270,3 +270,4 @@ export function useWelcomeTour() {
     skipTour
   };
 }
+

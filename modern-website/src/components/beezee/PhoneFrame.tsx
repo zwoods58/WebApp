@@ -67,3 +67,4 @@ const PhoneFrame = ({ children, className = "", animate = true }: PhoneFrameProp
 };
 
 export default PhoneFrame;
+

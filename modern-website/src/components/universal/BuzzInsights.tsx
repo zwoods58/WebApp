@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface InsightCard {
   id: string;
@@ -446,3 +446,4 @@ export default function BuzzInsights({
     </div>
   );
 }
+

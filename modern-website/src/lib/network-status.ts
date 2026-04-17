@@ -19,3 +19,4 @@ export function isOffline(): boolean {
 export async function testInternetConnectivity(): Promise<boolean> {
   return typeof window !== 'undefined' ? navigator.onLine : true;
 }
+

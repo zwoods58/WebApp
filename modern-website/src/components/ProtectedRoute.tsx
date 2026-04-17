@@ -117,3 +117,4 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
 
     return <>{children}</>;
 }
+

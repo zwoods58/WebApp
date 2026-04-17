@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Package, AlertTriangle, TrendingDown, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useInventoryTanStack } from '@/hooks';
 
 interface InventoryListProps {
@@ -223,3 +223,4 @@ export default function InventoryList({ industry, country, items, businessId }: 
     </div>
   );
 }
+

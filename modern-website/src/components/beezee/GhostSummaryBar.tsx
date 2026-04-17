@@ -95,3 +95,4 @@ const GhostSummaryBar = () => {
 };
 
 export default GhostSummaryBar;
+

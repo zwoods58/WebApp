@@ -260,3 +260,4 @@ export class CacheInvalidationService {
 // Export singleton instance
 export const cacheInvalidation = new CacheInvalidationService();
 export default cacheInvalidation;
+

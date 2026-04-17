@@ -1,98 +1,121 @@
-import { useIndustryDataNew } from './useIndustryDataNew'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export interface Inventory {
   id: string;
   business_id: string;
-  industry: string;
-  item_name: string; // Changed from product_name to match database
-  sku?: string; // Note: does not exist in database
-  description?: string; // Note: does not exist in database
-  category?: string; // Note: does not exist in database
-  quantity: number; // Changed from current_stock to match database
-  threshold: number; // Changed from minimum_stock to match database
-  maximum_stock?: number; // Note: does not exist in database
-  cost_price?: number; // Cost price of the item
-  selling_price?: number; // Selling price of the item
-  currency?: string; // Note: does not exist in database
-  supplier_name?: string; // Note: does not exist in database
-  supplier_phone?: string; // Note: does not exist in database
-  last_restocked?: string; // Note: does not exist in database
-  metadata?: Record<string, any>;
+  item_name: string;
+  quantity: number;
+  threshold?: number;
+  unit?: string;
+  cost_price?: number;
+  selling_price?: number;
+  category?: string;
   created_at: string;
   updated_at: string;
 }
 
-export interface UseInventoryOptions {
+export interface UseInventoryTanStackProps {
   businessId?: string;
   industry?: string;
-  country?: string;
-  category?: string;
-  supplierName?: string;
-  lowStock?: boolean; // Filter for items below minimum stock
-  outOfStock?: boolean; // Filter for items with zero stock
-  select?: string;
-  filters?: Record<string, any>;
-  orderBy?: { column: string; ascending?: boolean };
-  limit?: number;
 }
 
-export function useInventoryTanStack(options: UseInventoryOptions = {}) {
-  // Default to Kenya and retail if not specified
-  const industry = options.industry || 'retail'
-  const country = options.country || 'ke'
-  
-  // Use the new TanStack Query hook with updated API
-  const { 
-    data, 
-    isLoading, 
-    create,
-    createAsync,
-    delete: deleteItem, 
-    update,
-    updateAsync,
-    isCreating,
-    error,
-    refetch
-  } = useIndustryDataNew({
-    industry,
-    country,
-    table: 'inventory',
-    select: options.select,
-    businessId: options.businessId,
-  })
+export interface UseInventoryTanStackReturn {
+  data: Inventory[];
+  isLoading: boolean;
+  error: Error | null;
+  addInventory: (inventory: Omit<Inventory, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateInventory: (id: string, updates: Partial<Inventory>) => Promise<void>;
+  deleteInventory: (id: string) => Promise<void>;
+  refetch: () => void;
+}
 
-  // Filter data based on options (basic implementation)
-  let filteredData = data || []
-  
-  if (options.category) {
-    filteredData = filteredData.filter((i: any) => i.category === options.category)
-  }
-  
-  if (options.supplierName) {
-    filteredData = filteredData.filter((i: any) => 
-      i.supplier_name?.toLowerCase().includes(options.supplierName!.toLowerCase())
-    )
-  }
-  
-  if (options.lowStock) {
-    filteredData = filteredData.filter((i: any) => i.quantity <= i.threshold)
-  }
-  
-  if (options.outOfStock) {
-    filteredData = filteredData.filter((i: any) => i.quantity === 0)
-  }
+export function useInventoryTanStack({ businessId, industry }: UseInventoryTanStackProps = {}): UseInventoryTanStackReturn {
+  const queryClient = useQueryClient();
+
+  const { data = [], isLoading, error } = useQuery({
+    queryKey: ['inventory', businessId, industry],
+    queryFn: async () => {
+      if (!businessId) return [];
+      
+      const { data, error } = await supabase
+        .from('inventory')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!businessId,
+  });
+
+  const addInventoryMutation = useMutation({
+    mutationFn: async (inventory: Omit<Inventory, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('inventory')
+        .insert(inventory)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+
+  const updateInventoryMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Inventory> }) => {
+      const { data, error } = await supabase
+        .from('inventory')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+
+  const deleteInventoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('inventory')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+
+  const addInventory = async (inventory: Omit<Inventory, 'id' | 'created_at' | 'updated_at'>) => {
+    await addInventoryMutation.mutateAsync(inventory);
+  };
+
+  const updateInventory = async (id: string, updates: Partial<Inventory>) => {
+    await updateInventoryMutation.mutateAsync({ id, updates });
+  };
+
+  const deleteInventory = async (id: string) => {
+    await deleteInventoryMutation.mutateAsync(id);
+  };
 
   return {
-    data: filteredData as Inventory[],
+    data,
     isLoading,
-    isOffline: !isLoading && data.length === 0,
-    addInventory: create,
-    addInventoryAsync: createAsync,
-    deleteInventory: deleteItem,
-    updateInventory: update,
-    updateInventoryAsync: updateAsync,
-    isPending: isCreating,
     error,
-    refetch
-  }
+    addInventory,
+    updateInventory,
+    deleteInventory,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['inventory'] }),
+  };
 }

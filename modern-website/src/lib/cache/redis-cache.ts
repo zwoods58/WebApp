@@ -375,3 +375,4 @@ class RedisCacheManager {
 // Export singleton instance
 export const cache = new RedisCacheManager();
 export default cache;
+

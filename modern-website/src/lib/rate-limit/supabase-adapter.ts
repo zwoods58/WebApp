@@ -196,3 +196,4 @@ export class SupabaseRateLimitAdapter {
     return data?.limit_multiplier || 1;
   }
 }
+

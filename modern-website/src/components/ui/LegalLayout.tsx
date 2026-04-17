@@ -54,3 +54,4 @@ const LegalLayout: React.FC<LegalLayoutProps> = ({
 };
 
 export default LegalLayout;
+

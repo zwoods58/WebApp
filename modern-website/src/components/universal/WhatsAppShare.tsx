@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Send, AlertCircle } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface WhatsAppShareProps {
   message: string;
@@ -177,3 +177,4 @@ export default function WhatsAppShare({
     </>
   );
 }
+

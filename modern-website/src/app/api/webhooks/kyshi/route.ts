@@ -181,3 +181,4 @@ async function handlePaymentFailed(supabase: any, data: any) {
       created_at: new Date().toISOString(),
     });
 }
+

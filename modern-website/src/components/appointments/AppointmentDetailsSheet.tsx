@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, Clock, User, Calendar, FileText, Trash2 } from 'lucide-react';
 import { Appointment } from './types';
 import { formatDate, getCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface AppointmentDetailsSheetProps {
   isOpen: boolean;
@@ -286,3 +286,4 @@ export default function AppointmentDetailsSheet({
     portalRoot
   );
 }
+

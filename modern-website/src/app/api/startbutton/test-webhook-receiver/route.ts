@@ -72,3 +72,4 @@ export async function GET() {
     testPlan: 'Nigeria Plan (3b0ee2ed7602) - 500 NGN'
   });
 }
+

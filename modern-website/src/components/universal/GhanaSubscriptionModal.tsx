@@ -246,3 +246,4 @@ export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: G
     </>
   );
 }
+

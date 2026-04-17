@@ -1,111 +1,136 @@
-import { useIndustryDataNew } from './useIndustryDataNew'
-import { getNetworkStatus } from '@/lib/network-status'
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 export interface Transaction {
   id: string;
   business_id: string;
-  industry: string;
+  type: 'money_in' | 'money_out';
   amount: number;
+  description: string;
   category?: string;
-  description?: string;
-  customer_name?: string;
-  payment_method?: string;
   transaction_date: string;
   metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
-  status?: 'active' | 'cancelled';
 }
 
-export interface UseTransactionsOptions {
+export interface UseTransactionsTanStackProps {
   businessId?: string;
   industry?: string;
   country?: string;
-  category?: string;
-  paymentMethod?: string;
-  startDate?: string;
-  endDate?: string;
-  select?: string;
-  filters?: Record<string, any>;
-  orderBy?: { column: string; ascending?: boolean };
-  limit?: number;
 }
 
-export function useTransactionsTanStack(options: UseTransactionsOptions = {}) {
-  // Default to Kenya and retail if not specified
-  const industry = options.industry || 'retail'
-  const country = options.country || 'ke'
-  
-  // Network status detection
-  const [isOffline, setIsOffline] = useState(() => !getNetworkStatus());
-  
-  useEffect(() => {
-    const handleOnline = () => {
-      console.log('[Transactions] Network status: ONLINE');
-      setIsOffline(false);
-    };
-    
-    const handleOffline = () => {
-      console.log('[Transactions] Network status: OFFLINE');
-      setIsOffline(true);
-    };
-    
-    // Set initial state
-    setIsOffline(!getNetworkStatus());
-    
-    // Add event listeners
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-  
-  // Use the new TanStack Query hook with updated API
-  const { data, isLoading, create, createAsync, delete: deleteItem, isCreating, isDeleting, error, refetch } = 
-    useIndustryDataNew({
-      industry,
-      country,
-      table: 'transactions',
-      select: options.select,
-      businessId: options.businessId,
-    })
+export interface UseTransactionsTanStackReturn {
+  data: Transaction[];
+  isLoading: boolean;
+  error: Error | null;
+  addTransaction: (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addTransactionAsync: (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => Promise<{ data?: any; error?: any }>;
+  updateTransaction: (id: string, updates: Partial<Transaction>) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
+  refetch: () => void;
+  isOffline: boolean;
+  isAdding: boolean;
+}
 
-  // Filter data based on options (basic implementation)
-  let filteredData = data || []
-  
-  if (options.category) {
-    filteredData = filteredData.filter((t: any) => t.category === options.category)
-  }
-  
-  if (options.paymentMethod) {
-    filteredData = filteredData.filter((t: any) => t.payment_method === options.paymentMethod)
-  }
-  
-  if (options.startDate) {
-    filteredData = filteredData.filter((t: any) => 
-      new Date(t.transaction_date) >= new Date(options.startDate!)
-    )
-  }
-  
-  if (options.endDate) {
-    filteredData = filteredData.filter((t: any) => 
-      new Date(t.transaction_date) <= new Date(options.endDate!)
-    )
-  }
+export function useTransactionsTanStack({ businessId, industry }: UseTransactionsTanStackProps = {}): UseTransactionsTanStackReturn {
+  const queryClient = useQueryClient();
+
+  const { data = [], isLoading, error } = useQuery({
+    queryKey: ['transactions', businessId, industry],
+    queryFn: async () => {
+      if (!businessId) return [];
+      
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('business_id', businessId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!businessId,
+  });
+
+  const addTransactionMutation = useMutation({
+    mutationFn: async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert(transaction)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+
+  const updateTransactionMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Transaction> }) => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+
+  const deleteTransactionMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    },
+  });
+
+  const addTransaction = async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
+    await addTransactionMutation.mutateAsync(transaction);
+  };
+
+  const addTransactionAsync = async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const data = await addTransactionMutation.mutateAsync(transaction);
+      return { data, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
+
+  const updateTransaction = async (id: string, updates: Partial<Transaction>) => {
+    await updateTransactionMutation.mutateAsync({ id, updates });
+  };
+
+  const deleteTransaction = async (id: string) => {
+    await deleteTransactionMutation.mutateAsync(id);
+  };
 
   return {
-    data: filteredData as Transaction[],
+    data,
     isLoading,
-    isOffline,
-    addTransaction: create,
-    addTransactionAsync: createAsync,
-    deleteTransaction: deleteItem,
-    isAdding: isCreating || isDeleting, // Combined pending state
     error,
-    refetch,
-  }
+    addTransaction,
+    addTransactionAsync,
+    updateTransaction,
+    deleteTransaction,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+    isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
+    isAdding: addTransactionMutation.status === 'pending',
+  };
 }

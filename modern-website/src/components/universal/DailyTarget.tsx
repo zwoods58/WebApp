@@ -73,3 +73,4 @@ export default function DailyTarget({ industry, country, today_total, daily_targ
     </div>
   );
 }
+

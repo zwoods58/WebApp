@@ -44,3 +44,4 @@ export function RefreshButton({ onRefresh, loading = false, lastUpdated }: Refre
     </div>
   );
 }
+

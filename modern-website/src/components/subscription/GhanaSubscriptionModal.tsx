@@ -261,3 +261,4 @@ export function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubs
     </div>
   );
 }
+

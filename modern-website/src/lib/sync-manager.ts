@@ -158,3 +158,4 @@ class SyncManager {
 
 // Export singleton instance
 export const syncManager = SyncManager.getInstance();
+

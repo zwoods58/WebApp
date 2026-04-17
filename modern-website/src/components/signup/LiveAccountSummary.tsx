@@ -145,3 +145,4 @@ export function LiveAccountSummary({ data, currentStep, isVisible }: LiveAccount
     </div>
   );
 }
+

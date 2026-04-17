@@ -143,3 +143,4 @@ export const CURRENCY_MAP: Record<string, string> = {
   RW: 'RWF',
   TZ: 'TZS',
 };
+

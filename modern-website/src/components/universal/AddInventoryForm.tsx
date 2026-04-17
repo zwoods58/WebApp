@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Package } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 
 interface AddInventoryFormProps {
@@ -221,3 +221,4 @@ export default function AddInventoryForm({ isOpen, onClose, onSubmit, country, i
     </>
   );
 }
+

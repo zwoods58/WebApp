@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { RefreshProvider } from '@/contexts/RefreshContext';
-import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
+import { SupabaseAuthProvider } from '@/contexts/SupabaseAuthContext';
 import { ErrorBoundary } from 'react-error-boundary';
 
 interface AppLayoutProps {
@@ -29,13 +29,14 @@ function ErrorFallback({ error, resetErrorBoundary }: any) {
 export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <UnifiedAuthProvider>
+      <SupabaseAuthProvider>
         <RefreshProvider>
           <div className="min-h-screen overflow-y-auto">
             {children}
           </div>
         </RefreshProvider>
-      </UnifiedAuthProvider>
+      </SupabaseAuthProvider>
     </ErrorBoundary>
   );
 }
+

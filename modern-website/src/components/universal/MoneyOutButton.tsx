@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { getCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { getPayableCustomers, addCreditUnified, CreditCustomer } from '@/app/Beezee-App/services/creditService';
 
@@ -405,3 +405,4 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
     </>
   );
 }
+

@@ -64,3 +64,4 @@ export function BeehiveCard({ request, index }: BeehiveCardProps) {
     </motion.div>
   );
 }
+

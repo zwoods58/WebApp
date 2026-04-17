@@ -257,3 +257,4 @@ export const logError = (category: LogCategory, message: string, error?: Error, 
   logger.error(category, message, error, metadata);
 export const logCritical = (category: LogCategory, message: string, error?: Error, metadata?: Record<string, any>) => 
   logger.critical(category, message, error, metadata);
+

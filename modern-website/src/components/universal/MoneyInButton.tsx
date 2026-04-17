@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useServices } from '@/hooks';
 import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 

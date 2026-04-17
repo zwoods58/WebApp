@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTransactionsTanStack as useTransactions } from '@/hooks/useTransactionsTanStack'
+import { useTransactionsTanStack } from '@/hooks';
 import { PendingBadge } from '@/components/PendingBadge'
 
 export default function TanStackComparisonPage() {
@@ -110,3 +110,4 @@ export default function TanStackComparisonPage() {
     </div>
   )
 }
+

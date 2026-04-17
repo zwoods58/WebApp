@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, ChevronRight, Users } from 'lucide-react';
 import Link from 'next/link';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack } from '@/hooks';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { formatDate } from '@/utils/currency';
@@ -244,3 +244,4 @@ export default function HomepageCalendar({ industry, country }: HomepageCalendar
     </div>
   );
 }
+

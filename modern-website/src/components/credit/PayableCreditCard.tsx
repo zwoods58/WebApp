@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Calendar, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useCreditItems } from '@/hooks/useCreditItems';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/useToast';
 import { makePaymentOnLineItem } from '@/app/Beezee-App/services/creditService';
 import PaymentModal from './PaymentModal';
@@ -343,3 +343,4 @@ export default function PayableCreditCard({
     </div>
   );
 }
+

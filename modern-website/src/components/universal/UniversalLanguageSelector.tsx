@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface UniversalLanguageSelectorProps {
   industry?: string;
@@ -197,3 +197,4 @@ const UniversalLanguageSelector: React.FC<UniversalLanguageSelectorProps> = ({
 };
 
 export default UniversalLanguageSelector;
+

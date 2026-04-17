@@ -85,3 +85,4 @@ export const resetDateCaches = (): void => {
   cachedTimeString = null;
   idCounter = 0;
 };
+

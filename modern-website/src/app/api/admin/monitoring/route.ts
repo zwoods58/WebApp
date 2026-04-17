@@ -496,3 +496,4 @@ async function clearBlocks(params: any): Promise<NextResponse> {
     );
   }
 }
+

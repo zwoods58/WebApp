@@ -2,8 +2,9 @@
 
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { LanguageProvider } from '@/hooks/LanguageContext';
-import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { LanguageProvider } from '@/hooks/useLanguage';
+import { SupabaseAuthProvider, useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { IndustryProvider, useIndustry } from '@/contexts/IndustryContext';
 import { ToastProvider } from '@/providers/ToastProvider';
@@ -38,7 +39,7 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { business } = useUnifiedAuth();
+  const { user, business } = useSupabaseAuth();
   
   // Add custom styles for animations (client-side only)
   useEffect(() => {
@@ -109,8 +110,6 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
 
   // Prefetch critical routes for faster navigation (NO API CALLS)
   useEffect(() => {
-    if (!business?.id) return;
-    
     // Extract country and industry from pathname for route prefetching
     const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
     const country = pathMatch?.[1] || '';

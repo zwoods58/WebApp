@@ -62,3 +62,4 @@ const CapabilitiesBar = () => {
 };
 
 export default CapabilitiesBar;
+

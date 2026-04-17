@@ -20,3 +20,4 @@ export default function ClientWrapper({ children, fallback = null }: ClientWrapp
 
   return <>{children}</>;
 }
+

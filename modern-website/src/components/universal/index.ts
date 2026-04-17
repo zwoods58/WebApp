@@ -16,7 +16,9 @@ export { default as WhatsAppShare } from './WhatsAppShare';
 export { default as ReceiptGenerator } from './ReceiptGenerator';
 export { default as BuzzInsights } from './BuzzInsights';
 export { default as ShareBanner } from './ShareBanner';
+export { default as QuickActions } from './QuickActions';
 export { default as PageLoading, InlineLoading, PageLoadingBar } from './PageLoading';
 export { OfflineFallback } from './OfflineFallback';
 export * from './Skeletons';
+
 

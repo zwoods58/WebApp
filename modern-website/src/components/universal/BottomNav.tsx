@@ -4,16 +4,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, DollarSign, Package, FileText, MoreHorizontal, Calendar, MapPin, WifiOff } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { isClient } from '@/utils/stableDates';
 
 interface BottomNavProps {
   industry: string;
   country: string;
 }
-
-// Industries that have appointments functionality
-const APPOINTMENTS_INDUSTRIES = ['salon', 'tailor', 'freelance', 'repairs'];
 
 export default function BottomNav({ industry, country }: BottomNavProps) {
   const { t } = useLanguage();
@@ -30,7 +27,7 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
       `${basePath}`,
       `${basePath}/cash`,
       `${basePath}/credit`,
-      `${basePath}/services`,
+      `${basePath}/more`,
     ];
     
     routes.forEach(route => {
@@ -50,44 +47,13 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
     setTimeout(() => setNavigationError(null), 3000);
   };
 
-  // Memoize navigation items to prevent recreation on every render
-  const navItems = useMemo(() => {
-    // Determine inventory/services path based on industry
-    const inventoryPath = (industry === 'retail' || industry === 'food') ? '/stock' : '/services';
-    const inventoryLabel = (industry === 'retail' || industry === 'food') ? 'nav.inventory' : 'nav.services';
-    
-    // Transport industry has special navigation
-    if (industry === 'transport') {
-      return [
-        { nameKey: 'nav.home', icon: Home, path: '' },
-        { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-        { nameKey: 'nav.services', icon: Package, path: '/services' },
-        { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
-        { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-      ];
-    }
-    
-    // Industries with appointments feature
-    if (APPOINTMENTS_INDUSTRIES.includes(industry)) {
-      return [
-        { nameKey: 'nav.home', icon: Home, path: '' },
-        { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-        { nameKey: 'nav.appointments', icon: Calendar, path: '/appointments' },
-        { nameKey: inventoryLabel, icon: Package, path: inventoryPath },
-        { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
-        { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-      ];
-    }
-    
-    // Default navigation for industries without appointments
-    return [
-      { nameKey: 'nav.home', icon: Home, path: '' },
-      { nameKey: 'nav.transactions', icon: DollarSign, path: '/cash' },
-      { nameKey: inventoryLabel, icon: Package, path: inventoryPath },
-      { nameKey: 'nav.customers', icon: FileText, path: '/credit' },
-      { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
-    ];
-  }, [industry]);
+  // Fixed 4-item navigation for all industries
+  const navItems = useMemo(() => [
+    { nameKey: 'nav.home', icon: Home, path: '' },
+    { nameKey: 'nav.cash', icon: DollarSign, path: '/cash' },
+    { nameKey: 'nav.credit', icon: FileText, path: '/credit' },
+    { nameKey: 'nav.more', icon: MoreHorizontal, path: '/more' }
+  ], []);
 
   // Memoize isActive function to prevent recreation on every render
   const isActive = useMemo(() => {
@@ -190,3 +156,4 @@ export default function BottomNav({ industry, country }: BottomNavProps) {
     </>
   );
 }
+

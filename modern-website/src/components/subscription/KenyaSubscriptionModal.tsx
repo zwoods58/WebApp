@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS, getPlanIdForCountry } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 const MpesaColors = {
@@ -304,3 +304,4 @@ export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubs
     </div>
   );
 }
+

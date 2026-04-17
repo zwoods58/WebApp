@@ -22,3 +22,4 @@ global.console = {
   // Keep error for debugging
   error: console.error,
 };
+

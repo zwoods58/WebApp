@@ -14,3 +14,4 @@ export default function SimplePhoneMockup({ children }: { children: React.ReactN
         </div>
     );
 }
+

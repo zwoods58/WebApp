@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, DollarSign, CheckCircle, Clock, AlertCircle, Calendar, Plus, History } from 'lucide-react';
 import { formatCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useCreditItems, applyPaymentFIFO, calculateTotalOwed } from '@/hooks/useCreditItems';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
@@ -498,3 +498,4 @@ export default function PaymentModal({ isOpen, onClose, customer, country, indus
     
   );
 }
+

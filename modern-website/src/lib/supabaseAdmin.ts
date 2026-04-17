@@ -28,3 +28,4 @@ const adminClient = supabaseServiceKey
     : supabase; // Fallback to regular client if no service key
 
 export const supabaseAdmin = adminClient;
+

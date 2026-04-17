@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Plus } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { useCreditItems } from '@/hooks/useCreditItems';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { getCurrency } from '@/utils/currency';
@@ -176,3 +176,4 @@ export default function AddCreditLineItemModal({
     </div>
   );
 }
+

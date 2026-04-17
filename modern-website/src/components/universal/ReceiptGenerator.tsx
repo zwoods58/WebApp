@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, Copy, Check, FileText } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency } from '@/utils/currency';
 import WhatsAppShare from './WhatsAppShare';
 
@@ -204,3 +204,4 @@ export default function ReceiptGenerator({
     </div>
   );
 }
+

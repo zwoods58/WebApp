@@ -95,3 +95,4 @@ export const getSectorById = (industryId: string, sectorId: string): IndustrySec
   const sectors = getSectorsByIndustry(industryId);
   return sectors.find(sector => sector.id === sectorId);
 };
+

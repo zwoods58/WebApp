@@ -176,3 +176,4 @@ export const createLazyComponent = <T extends React.ComponentType<any>>(
 ) => {
   return React.lazy(importFunc);
 };
+

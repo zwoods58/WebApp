@@ -343,3 +343,4 @@ export class SupabaseCachedDatabaseQueries {
 // Export singleton instance
 export const supabaseCachedQueries = new SupabaseCachedDatabaseQueries();
 export default supabaseCachedQueries;
+

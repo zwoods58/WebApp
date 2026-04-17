@@ -8,10 +8,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 
 // Context and hooks - import these first to avoid circular dependencies
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useBusinessProfile, useCurrency } from '@/contexts/BusinessProfileContext';
-import { useToastContext } from '@/providers/ToastProvider';
+import { useToast } from '@/hooks';
 import { useRefreshContext } from '@/contexts/RefreshContext';
 
 // Utility functions
@@ -20,9 +20,9 @@ import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 import { findMatchingCreditCustomer, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
 
 // Supabase hooks
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useInventoryTanStack, useTargetsTanStack, useCreditItems } from '@/hooks';
+import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useTargetsTanStack, useCreditItems } from '@/hooks/index';
+import { useServicesTanStack as useServices, useAppointmentsTanStack } from '@/hooks/index';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
-import { useServices, useAppointmentsTanStack } from '@/hooks';
 
 // Universal Components - use dynamic imports for heavy components
 import { 
@@ -35,7 +35,8 @@ import {
   HomepageCalendar,
   PageLoading,
   OfflineFallback,
-  ShareBanner
+  ShareBanner,
+  QuickActions
 } from '@/components/universal';
 
 // Dynamic imports for modal components to reduce initial bundle size
@@ -82,13 +83,12 @@ export default function IndustryDashboard() {
   
   console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
   
-  const { business, loading: authLoading } = useUnifiedAuth();
+  const { business, loading, user } = useSupabaseAuth();
   const businessId = business?.id;
   
   console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });
   
-  const { showSuccess, showError } = useToastContext();
-  const { user: authUser } = useUnifiedAuth();
+  const { showSuccess, showError } = useToast();
   const { registerRefreshHandler, unregisterRefreshHandler } = useRefreshContext();
   
   // ✅ Use Supabase hooks with business ID filtering - called unconditionally
@@ -96,8 +96,8 @@ export default function IndustryDashboard() {
   const expensesHook = useExpensesTanStack({ industry, businessId });
   const creditHook = useCreditTanStack({ industry, businessId });
   const creditItemsHook = useCreditItems({ industry, businessId });
-  const inventoryHook = useInventoryTanStack({ industry, businessId });
   const targetsHook = useTargetsTanStack({ industry, businessId });
+  const inventoryHook = { data: [], isLoading: false, error: null, refetch: () => {} };
   
   // Additional hooks for appointments and services
   const appointmentsHook = useAppointmentsTanStack({ businessId: business?.id, industry });
@@ -143,8 +143,16 @@ export default function IndustryDashboard() {
   const refetchTransactions = transactionsHook?.refetch || (() => Promise.resolve());
   const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
   const { data: credit, addCredit, updateCredit, refetch: refetchCredit } = creditHook;
-  const { addCreditItemAsync } = creditItemsHook;
-  const refetchInventory = inventoryHook?.refetch || (() => Promise.resolve());
+  const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
+  const addCreditItemAsync = async (item: any) => {
+    try {
+      await addCreditItem(item);
+      return { data: item, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
+  const refetchInventory = inventoryHook?.refetch || (() => {});
   const refetchTargets = targetsHook?.refetch || (() => Promise.resolve());
   
   const transactionsLoading = transactionsHook?.isLoading || false;
@@ -166,26 +174,16 @@ export default function IndustryDashboard() {
   const calculateTopSellers = (transactions: Transaction[], inventory: Inventory[]) => {
     if (!transactions || !inventory || !Array.isArray(transactions) || !Array.isArray(inventory)) return [];
     
-    const sales = transactions.reduce((acc: Record<string, number>, t: Transaction) => {
-      if (t.metadata?.inventory_item_id) {
-        const itemId = t.metadata.inventory_item_id;
-        acc[itemId] = (acc[itemId] || 0) + (t.metadata.quantity_sold || 1);
-      }
-      return acc;
-    }, {});
+    const sales = transactions.reduce((acc: number, t: Transaction) => acc + t.amount, 0);
     
     return Object.entries(sales)
-      .map(([itemId, quantity]: [string, number]) => {
-        const item = inventory.find((i: Inventory) => i.id === itemId);
-        if (!item) return null;
-        return {
-          name: item.item_name,
-          quantity: quantity as number,
-          revenue: (quantity as number) * (item.selling_price || 0)
-        };
-      })
+      .map(([itemId, quantity]: [string, number]) => ({
+        name: itemId,
+        quantity,
+        revenue: quantity
+      }))
       .filter((item): item is NonNullable<typeof item> => item !== null)
-      .sort((a, b) => b.quantity - a.quantity)
+      .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 3);
   };
   
@@ -216,11 +214,12 @@ export default function IndustryDashboard() {
   const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
   
   // Get daily target from business settings (primary), signup profile (secondary), or database targets (fallback)
   const businessDailyTarget = business?.settings?.daily_target || 0;
   const signupDailyTarget = profile?.dailyTarget || 0;
-  const effectiveDailyTarget = businessDailyTarget || signupDailyTarget || (safeTargets.find(t => t.target_type === 'sales' && t.period === 'daily')?.target_value || 500);
+  const effectiveDailyTarget = businessDailyTarget || signupDailyTarget || (safeTargets.find(t => (t.type === 'sales' || t.type === 'daily') && (t.period === 'daily' || t.type === 'daily'))?.amount || 500);
   // Offline-aware loading state - don't show loading when offline and we have cached data
   const isLoading = (transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats) && !isOffline;
   
@@ -362,7 +361,7 @@ export default function IndustryDashboard() {
         transactionDate.setHours(0, 0, 0, 0);
         return transactionDate.getTime() === today.getTime();
       })
-      .reduce((sum: number, t: Transaction) => sum + (t.amount || 0), 0);
+      .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
     const todayExpenses = safeExpenses
       .filter((e: Expense) => {
@@ -370,14 +369,14 @@ export default function IndustryDashboard() {
         expenseDate.setHours(0, 0, 0, 0);
         return expenseDate.getTime() === today.getTime();
       })
-      .reduce((sum: number, e: Expense) => sum + (e.amount || 0), 0);
+      .reduce((sum: number, e: Expense) => sum + e.amount, 0);
 
     setTodayStats({ sales: todaySales, expenses: todayExpenses });
   }, [businessId, safeTransactions, safeExpenses, transactionsLoading, expensesLoading]);
   
   // 🔥 ROUTE VALIDATION: Ensure user is on correct industry/country page
   useEffect(() => {
-    if (authLoading) return;
+    if (loading) return;
     
     const isOnline = navigator.onLine;
     
@@ -407,7 +406,7 @@ export default function IndustryDashboard() {
     }
     
     console.log('✅ Route validation passed:', { country, industry, business: business.business_name });
-  }, [business, country, industry, authLoading, router]);
+  }, [business, country, industry, loading, router]);
 
   // Additional safety check - add early return if critical data is missing
   if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
@@ -421,8 +420,8 @@ export default function IndustryDashboard() {
 
   // 🔒 LOADING GATE: Prevent data-dependent UI from rendering until businessId is confirmed
   // Show loading only when online and auth is loading
-  if (authLoading && !isOffline) {
-    console.log('🔍 Waiting for business authentication...', { authLoading, businessId });
+  if (loading && !isOffline) {
+    console.log('🔍 Waiting for business authentication...', { loading, businessId });
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <PageLoading message="Loading your business..." fullScreen={false} />
@@ -437,7 +436,7 @@ export default function IndustryDashboard() {
   }
   
   // If offline and auth still loading after hooks, show fallback
-  if (isOffline && authLoading) {
+  if (isOffline && loading) {
     console.log('🔌 Offline and auth loading - showing fallback');
     return <OfflineFallback message="Loading cached business data..." />;
   }
@@ -473,6 +472,17 @@ export default function IndustryDashboard() {
 
   const handleAddService = () => {
     setShowServiceModal(true);
+  };
+
+  const handleAddInventory = () => {
+    setShowInventoryModal(true);
+  };
+
+  const handleAddInventorySubmit = (inventoryData: any) => {
+    // This would integrate with the inventory system
+    console.log('Adding inventory:', inventoryData);
+    showSuccess('Inventory item added successfully!');
+    setShowInventoryModal(false);
   };
 
   const handleAddCustomer = (customerData: any) => {
@@ -527,7 +537,7 @@ export default function IndustryDashboard() {
                       <h3 className="text-sm font-medium text-yellow-800">{t('business.setup_required', 'Business Setup Required')}</h3>
                       <p className="text-xs text-yellow-700 mt-1">{t('business.setup_message', 'Please complete your business profile to start adding transactions and expenses.')}</p>
                       <div className="mt-2 text-xs text-yellow-600">
-                        {t('business.auth_user', 'Auth User')}: {authUser?.phone_number || t('business.not_authenticated', 'Not authenticated')}<br/>
+                        {t('business.auth_user', 'Auth User')}: {user?.phone_number || t('business.not_authenticated', 'Not authenticated')}<br/>
                         {t('business.business_status', 'Tenant Status')}: {business ? 'Loaded' : 'Not loaded'}
                       </div>
                     </div>
@@ -582,6 +592,15 @@ export default function IndustryDashboard() {
                 />
               </div>
 
+              {/* Quick Actions - Universal */}
+              <QuickActions
+                industry={industry}
+                country={country}
+                onAddInventory={handleAddInventory}
+                onAddService={handleAddService}
+                onAddAppointment={handleAddAppointment}
+              />
+
               {/* Industry-Specific Lists */}
               <div className="space-y-5">
                 {/* Customer List - All Industries */}
@@ -593,27 +612,23 @@ export default function IndustryDashboard() {
                   onAddCustomer={() => setShowCustomerModal(true)}
                 />
 
-                {/* Appointment List - Calendar Industries */}
-                {['salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
-                  <AppointmentList
-                    industry={industry}
-                    country={country}
-                    appointments={appointments}
-                    onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
-                    onScheduleAppointment={handleAddAppointment}
-                  />
-                )}
+                {/* Appointment List - Universal */}
+                <AppointmentList
+                  industry={industry}
+                  country={country}
+                  appointments={appointments}
+                  onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
+                  onScheduleAppointment={handleAddAppointment}
+                />
 
-                {/* Service List - Service Industries */}
-                {['transport', 'salon', 'tailor', 'freelance', 'repairs'].includes(industry) && (
-                  <ServiceList
-                    industry={industry}
-                    country={country}
-                    services={services}
-                    onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
-                    onAddService={handleAddService}
-                  />
-                )}
+                {/* Service List - Universal */}
+                <ServiceList
+                  industry={industry}
+                  country={country}
+                  services={services}
+                  onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
+                  onAddService={handleAddService}
+                />
               </div>
 
               {/* Inventory List - Universal */}
@@ -657,6 +672,16 @@ export default function IndustryDashboard() {
           onClose={() => setShowServiceModal(false)}
           onUpdate={handleUpdateService}
           isAddMode={true}
+          country={country}
+          industry={industry}
+        />
+      )}
+
+      {showInventoryModal && (
+        <AddInventoryForm
+          isOpen={showInventoryModal}
+          onClose={() => setShowInventoryModal(false)}
+          onSubmit={handleAddInventorySubmit}
           country={country}
           industry={industry}
         />

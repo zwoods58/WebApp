@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { Appointment } from './types';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface CalendarViewProps {
   appointments: Appointment[];
@@ -185,3 +185,4 @@ export default function CalendarView({
     </div>
   );
 }
+

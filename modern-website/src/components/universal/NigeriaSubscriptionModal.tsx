@@ -219,3 +219,4 @@ export default function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }:
     </>
   );
 }
+

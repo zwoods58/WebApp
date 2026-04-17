@@ -16,9 +16,9 @@ import { useParams } from 'next/navigation';
 
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useToast } from '@/hooks/useToast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useToast } from '@/hooks';
 
 // Type definitions
 interface FeedbackForm {
@@ -34,7 +34,7 @@ export default function BeehivePage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
-  const { user, business } = useUnifiedAuth();
+  const { user, business } = useSupabaseAuth();
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
   // Form state

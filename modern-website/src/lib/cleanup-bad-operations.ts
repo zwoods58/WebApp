@@ -88,3 +88,4 @@ export async function cleanupBadOperations(): Promise<void> {
 if (typeof window !== 'undefined') {
   (window as any).cleanupBadOperations = cleanupBadOperations;
 }
+

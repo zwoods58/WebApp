@@ -29,3 +29,4 @@ export function SubscriptionModal({ isOpen, onClose, country, onSuccess }: Subsc
       return <KenyaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
   }
 }
+

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, Clock, DollarSign, Plus, Edit2, Trash2 } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useAppointmentsTanStack } from '@/hooks';
 
@@ -251,3 +251,4 @@ export default function AppointmentList({
     </div>
   );
 }
+

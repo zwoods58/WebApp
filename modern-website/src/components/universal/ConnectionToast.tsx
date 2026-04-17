@@ -73,3 +73,4 @@ export function ConnectionToast({ duration = 3000 }: ConnectionToastProps) {
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Wrench, Car, Package, Plus, DollarSign, Edit2, Trash2 } from 'lucide-react';
-import { useLanguage } from '@/hooks/LanguageContext';
+import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency } from '@/utils/currency';
 import { useServicesTanStack } from '@/hooks';
 
@@ -192,3 +192,4 @@ export default function ServiceList({
     </div>
   );
 }
+

@@ -85,3 +85,4 @@ export function getCurrencyFromCountry(country: string): string {
   const countryCode = getCountryCode(country);
   return currencyMap[countryCode] || 'USD';
 }
+

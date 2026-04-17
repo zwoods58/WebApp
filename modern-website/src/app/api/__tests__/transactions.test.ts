@@ -221,3 +221,4 @@ describe('Security Tests for Transaction/Expense APIs', () => {
     expect(sanitized.nested.content).not.toContain('<img');
   });
 });
+

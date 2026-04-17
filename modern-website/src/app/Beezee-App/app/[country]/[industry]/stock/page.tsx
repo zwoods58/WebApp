@@ -8,10 +8,10 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import Header from '@/components/universal/Header';
-import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useToast } from '@/hooks/useToast';
+import { useInventoryTanStack, useTransactionsTanStack } from '@/hooks/index';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useLanguage } from '@/hooks/index';
+import { useToast } from '@/hooks/index';
 import BottomNav from '@/components/universal/BottomNav';
 import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
 
@@ -24,7 +24,7 @@ export default function StockPage() {
   const queryClient = useQueryClient();
   const { confirm, DialogComponent } = useBeeZeeConfirm();
   
-  const { business, loading: businessLoading } = useUnifiedAuth();
+  const { business, loading: businessLoading } = useSupabaseAuth();
   const businessId = business?.id;
 
   // ✅ STEP 2: Toast hook (always called) - LIKE OTHER PAGES

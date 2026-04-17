@@ -308,3 +308,4 @@ export const realtimeConnectionPool = new RealtimeConnectionPool();
 
 // Export class for testing
 export { RealtimeConnectionPool };
+

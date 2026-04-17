@@ -7,10 +7,10 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useCreditTanStack, useTransactionsTanStack, useCreditItems } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-import { useLanguage } from '@/hooks/LanguageContext';
-import { useToast } from '@/hooks/useToast';
+import { useCreditTanStack, useTransactionsTanStack, useCreditItems } from '@/hooks/index';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/index';
 import { findMatchingCreditCustomer, validateCreditData, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
 import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 import Header from '@/components/universal/Header';
@@ -27,7 +27,7 @@ export default function CreditPage() {
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
   
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   
   // TanStack Query handles online/offline automatically
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -41,10 +41,18 @@ export default function CreditPage() {
     industry,
     businessId: business?.id 
   });
-  const { addCreditItemAsync } = useCreditItems({ 
+  const { addCreditItem } = useCreditItems({ 
     businessId: business?.id,
     industry 
   });
+  const addCreditItemAsync = async (item: any) => {
+    try {
+      await addCreditItem(item);
+      return { data: item, error: undefined };
+    } catch (error) {
+      return { data: undefined, error };
+    }
+  };
   
   // ✅ ADDED: Refresh credit data when businessId is available
   useEffect(() => {
@@ -174,7 +182,7 @@ export default function CreditPage() {
 
   const handleUpdateCredit = async (id: string, updates: any) => {
     try {
-      updateCredit({ id, data: updates });
+      await updateCredit(id, updates);
       showSuccess(t('credit.updated_successfully', 'Credit updated successfully'));
       // ✅ Force refresh after update
       await refetch();
@@ -203,10 +211,10 @@ export default function CreditPage() {
     }
     
     // Calculate new amounts
-    const currentPaid = creditRecord.paid_amount || 0;
+    const currentPaid = 0;
     const newPaidAmount = currentPaid + paymentAmount;
     const newStatus = newPaidAmount >= creditRecord.amount ? 'paid' : 
-                     newPaidAmount > 0 ? 'partial' : 'outstanding';
+                     newPaidAmount > 0 ? 'partial' : 'pending';
     
     console.log(`Payment processing: ${creditRecord.customer_name}`);
     console.log(`- Original amount: ${creditRecord.amount}`);
@@ -218,19 +226,14 @@ export default function CreditPage() {
     
     try {
       // Update credit record with payment - AWAIT to complete before transaction
-      await updateCreditAsync({ 
-        id: creditId, 
-        data: { 
-          paid_amount: newPaidAmount,
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        }
-      });
+      await updateCreditAsync(creditId, { 
+          status: newStatus
+        });
       
       // Record payment transaction - AWAIT to ensure it completes
       await addTransactionAsync({
         business_id: business.id,
-        industry,
+        type: 'money_in',
         amount: paymentAmount,
         category: 'payment',
         description: `Payment for credit: ${creditRecord.customer_name}`,
@@ -279,7 +282,7 @@ export default function CreditPage() {
 
   const generateCreditDetailsText = (creditItem: any): string => {
     const remainingAmount = creditItem.status === 'paid' ? 0 : 
-                           creditItem.status === 'partial' ? creditItem.amount - (creditItem.paid_amount || 0) : 
+                           creditItem.status === 'partial' ? creditItem.amount - 0 : 
                            creditItem.amount;
     const daysOverdue = creditItem.due_date ? Math.max(0, Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24))) : 0;
     
@@ -289,7 +292,7 @@ export default function CreditPage() {
     text += `${t('credit.original_amount', 'Original Amount')}: ${formatCurrency(creditItem.amount, country)}\n`;
     
     if (creditItem.status === 'partial' || creditItem.status === 'paid') {
-      text += `${t('credit.amount_paid', 'Amount Paid')}: ${formatCurrency(creditItem.paid_amount || 0, country)}\n`;
+      text += `${t('credit.amount_paid', 'Amount Paid')}: ${formatCurrency(0, country)}\n`;
     }
     
     text += `${t('credit.date_given', 'Date Given')}: ${new Date(creditItem.date_given).toLocaleDateString()}\n`;
@@ -744,7 +747,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
   t: (key: string, defaultText?: string, vars?: Record<string, any>) => string,
   isSubmitting?: boolean
 }) {
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const [creditCustomers, setCreditCustomers] = useState<any[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [newCustomerName, setNewCustomerName] = useState('');

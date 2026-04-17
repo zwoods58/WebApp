@@ -41,3 +41,4 @@ export interface AppointmentFormErrors {
   endTime?: string;
   serviceId?: string;
 }
+
