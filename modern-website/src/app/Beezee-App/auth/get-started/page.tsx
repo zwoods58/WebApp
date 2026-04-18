@@ -188,7 +188,7 @@ export default function GetStartedPage() {
             ) : (
               <>
                 <button
-                  onClick={() => { window.location.href = '/Beezee-App/auth/signup'; }}
+                  onClick={() => router.push('/Beezee-App/auth/signup')}
                   id="signup-button"
                   className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
                 >
@@ -198,7 +198,7 @@ export default function GetStartedPage() {
                 </button>
 
                 <button
-                  onClick={() => { window.location.href = '/Beezee-App/auth/login'; }}
+                  onClick={() => router.push('/Beezee-App/auth/login')}
                   id="login-button"
                   className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
                 >
