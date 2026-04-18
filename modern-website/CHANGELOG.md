@@ -168,7 +168,8 @@ style={{ backgroundColor: '#ffffff' }}
 
 | Version | Changes | Date |
 |---------|---------|------|
-| **v69** | Vercel build stability & dependency cleanup (Auth Helpers remove) | Current |
+| **v70** | Next.js security patch (v15.5.15) | Current |
+| **v69** | Vercel build stability & dependency cleanup (Auth Helpers remove) | Previous |
 | **v68** | Complete white backgrounds for Money In/Out modals | Previous |
 | **v67** | Fixed backdrop CSS overrides with !important | Previous |
 | **v66** | Enabled 1-minute update checking | Previous |
