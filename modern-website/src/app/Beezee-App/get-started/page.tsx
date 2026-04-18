@@ -3,26 +3,38 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, Shield, TrendingUp } from 'lucide-react';
+import { ArrowRight, Sparkles, Shield, TrendingUp, LogIn, UserPlus } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 
 const features = [
-  { icon: TrendingUp, label: 'Track every sale & expense' },
-  { icon: Shield, label: 'Secure cloud backup' },
-  { icon: Sparkles, label: 'Smart business insights' },
+  { 
+    icon: TrendingUp, 
+    label: 'Track Sales & Expenses',
+    desc: 'Record every transaction on the go, even offline.'
+  },
+  { 
+    icon: Shield, 
+    label: 'Secure Cloud Sync',
+    desc: 'Your data is encrypted and synced across all devices.'
+  },
+  { 
+    icon: Sparkles, 
+    label: 'Business Insights',
+    desc: 'Smart reports to help you grow your business faster.'
+  },
 ];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.32, 0.72, 0, 1] as [number, number, number, number] } },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
 export default function GetStartedPage() {
@@ -33,233 +45,140 @@ export default function GetStartedPage() {
 
   return (
     <div
+      className="min-h-screen relative flex flex-col items-center justify-between overflow-hidden"
       style={{
-        position: 'relative',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '48px 24px 36px',
-        overflow: 'hidden',
-        background: 'linear-gradient(160deg, #EEF5FB 0%, #FFFFFF 55%, #EAF2FF 100%)',
+        background: 'radial-gradient(circle at top right, #EEF5FB 0%, #FFFFFF 40%, #F5F9FF 100%)',
+        padding: 'env(safe-area-inset-top, 40px) 24px env(safe-area-inset-bottom, 32px)',
       }}
     >
-      {/* ── Decorative glow blobs ── */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{
-          position: 'absolute', top: '-100px', right: '-80px',
-          width: '360px', height: '360px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(74,141,184,0.16) 0%, transparent 68%)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-80px', left: '-60px',
-          width: '300px', height: '300px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(74,141,184,0.11) 0%, transparent 68%)',
-        }} />
-        {/* Centre accent */}
-        <div style={{
-          position: 'absolute', top: '38%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '500px', height: '500px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(74,141,184,0.05) 0%, transparent 65%)',
-        }} />
+      {/* ── Decorative Background Elements ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-blue-100/40 blur-3xl animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[350px] h-[350px] rounded-full bg-blue-50/50 blur-3xl" />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(74,141,184,0.03)_0%,transparent_70%)]" />
       </div>
 
-      {/* ── Logo + brand ── */}
+      {/* ── Header / Logo Section ── */}
       <motion.div
-        initial={{ opacity: 0, y: -18 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65, ease: [0.32, 0.72, 0, 1] }}
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="flex flex-col items-center z-10"
       >
-        {/* Pulsing halo behind icon */}
-        <div style={{ position: 'relative', marginBottom: '14px' }}>
-          <div style={{
-            position: 'absolute', inset: '-16px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(74,141,184,0.22) 0%, transparent 70%)',
-            animation: 'ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite',
-          }} />
+        <div className="relative mb-6">
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -inset-4 rounded-full bg-blue-500/10 blur-xl"
+          />
           <Image
             src="/beezee-icon-192x192.png"
             alt="BeeZee Logo"
-            width={88}
-            height={88}
+            width={96}
+            height={96}
             priority
-            style={{
-              borderRadius: '22px',
-              boxShadow: '0 8px 28px rgba(74,141,184,0.25)',
-              position: 'relative',
-            }}
+            className="rounded-[24px] shadow-2xl relative border-4 border-white/50"
           />
         </div>
-
-        <h1 style={{
-          fontSize: '1.85rem', fontWeight: 800,
-          color: 'var(--text-1, #1A2332)',
-          letterSpacing: '-0.03em', lineHeight: 1.1,
-          textAlign: 'center', margin: 0,
-        }}>
+        <h1 className="text-3xl font-black text-[#1A2332] tracking-tight leading-none text-center">
           BeeZee
         </h1>
-        <p style={{
-          fontSize: '0.875rem', color: 'var(--text-3, #7A8FA5)',
-          marginTop: '5px', textAlign: 'center',
-        }}>
-          Your digital black book
+        <p className="text-sm font-medium text-[#7A8FA5] mt-2 uppercase tracking-widest text-center">
+          Your Digital Black Book
         </p>
       </motion.div>
 
-      {/* ── Middle content ── */}
+      {/* ── Main Content ── */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        style={{
-          width: '100%', maxWidth: '360px',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', textAlign: 'center',
-          zIndex: 1,
-        }}
+        className="w-full max-w-[420px] flex flex-col items-center text-center z-10"
       >
-        {/* Headline */}
-        <motion.h2
-          variants={itemVariants}
+        <motion.div variants={itemVariants} className="mb-8 px-4">
+          <h2 className="text-[2.2rem] font-black text-[#1A2332] leading-[1.1] tracking-tight mb-4">
+            Manage your business <br/>
+            <span className="text-[#4A8DB8] bg-clip-text text-transparent bg-gradient-to-r from-[#4A8DB8] to-[#7AAECE]">with ease</span>
+          </h2>
+          <p className="text-base text-[#4A5F78] leading-relaxed">
+            Join thousands of African entrepreneurs taking control of their finances with BeeZee. Simple, fast, and reliable.
+          </p>
+        </motion.div>
+
+        {/* ── App Mockup / Visual ── */}
+        <motion.div 
+          variants={itemVariants} 
+          className="relative w-full aspect-[4/3] mb-10 overflow-hidden rounded-[32px] shadow-2xl border-4 border-white/80"
           style={{
-            fontSize: '1.65rem', fontWeight: 800,
-            color: 'var(--text-1, #1A2332)',
-            letterSpacing: '-0.03em', lineHeight: 1.2,
-            marginBottom: '10px',
+            background: 'linear-gradient(135deg, #F0F7FF 0%, #FFFFFF 100%)',
           }}
         >
-          Manage your business{' '}
-          <span style={{ color: 'var(--powder-dark, #4A8DB8)' }}>with ease</span>
-        </motion.h2>
+          <Image
+            src="/images/mockup.png"
+            alt="BeeZee App Mockup"
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-[2s] ease-out"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+        </motion.div>
 
-        <motion.p
-          variants={itemVariants}
-          style={{
-            fontSize: '0.875rem', color: 'var(--text-2, #4A5F78)',
-            lineHeight: 1.65, marginBottom: '26px',
-          }}
-        >
-          Join thousands of African entrepreneurs tracking sales,
-          expenses &amp; growth — all in one place.
-        </motion.p>
-
-        {/* Feature pills */}
-        <motion.div
-          variants={itemVariants}
-          style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginBottom: '28px' }}
-        >
-          {features.map(({ icon: Icon, label }) => (
+        {/* Feature Pills (Side by side scroll or grid) */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 gap-2.5 w-full mb-10">
+          {features.map(({ icon: Icon, label, desc }) => (
             <div
               key={label}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '12px',
-                background: 'rgba(255,255,255,0.80)',
-                backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(74,141,184,0.18)',
-                borderRadius: '14px',
-                padding: '11px 16px',
-                boxShadow: '0 2px 8px rgba(74,141,184,0.06)',
-              }}
+              className="flex items-center gap-4 p-3.5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-sm"
             >
-              <div style={{
-                width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0,
-                background: 'linear-gradient(135deg, var(--powder-dark, #4A8DB8), var(--powder-mid, #7AAECE))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon size={16} color="white" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8DB8] to-[#7AAECE] flex items-center justify-center shrink-0 shadow-lg shadow-blue-100">
+                <Icon size={18} className="text-white" />
               </div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-1, #1A2332)', textAlign: 'left' }}>
-                {label}
-              </span>
+              <div className="text-left">
+                <h3 className="text-sm font-bold text-[#1A2332]">{label}</h3>
+              </div>
+              <ArrowRight size={14} className="ml-auto text-[#7A8FA5] opacity-40" />
             </div>
           ))}
         </motion.div>
 
-        {/* ── PRIMARY CTA: Get Started ── */}
-        <motion.div variants={itemVariants} style={{ width: '100%' }}>
+        {/* ── Call to Actions ── */}
+        <motion.div variants={itemVariants} className="w-full flex flex-col gap-4">
           <Link
             href="/Beezee-App/auth/signup"
-            id="get-started-btn"
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: '10px', width: '100%',
-              background: 'linear-gradient(135deg, var(--powder-dark, #4A8DB8) 0%, var(--powder-mid, #7AAECE) 100%)',
-              color: '#ffffff', fontWeight: 700, fontSize: '1.05rem',
-              padding: '17px 24px', borderRadius: '18px',
-              boxShadow: '0 8px 26px rgba(74,141,184,0.38)',
-              textDecoration: 'none', letterSpacing: '-0.01em',
-              transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 14px 36px rgba(74,141,184,0.46)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 26px rgba(74,141,184,0.38)';
-            }}
+            id="signup-button"
+            className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
           >
-            Get Started
-            <ArrowRight size={20} />
+            <UserPlus size={22} />
+            Create Free Account
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </Link>
-        </motion.div>
 
-        {/* ── SECONDARY: Already have an account ── */}
-        <motion.div variants={itemVariants} style={{ marginTop: '18px' }}>
           <Link
             href="/Beezee-App/auth/login"
-            id="login-link"
-            style={{
-              display: 'inline-block',
-              fontSize: '0.85rem',
-              color: 'var(--text-3, #7A8FA5)',
-              textDecoration: 'none',
-              transition: 'color 0.18s ease',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.color = 'var(--powder-dark, #4A8DB8)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.color = 'var(--text-3, #7A8FA5)';
-            }}
+            id="login-button"
+            className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold text-lg py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 uppercase tracking-wide text-sm"
           >
-            Already have an account?{' '}
-            <span style={{
-              color: 'var(--powder-dark, #4A8DB8)',
-              fontWeight: 600,
-              textDecoration: 'underline',
-              textUnderlineOffset: '3px',
-            }}>
-              Login
-            </span>
+            <LogIn size={20} />
+            Log In
           </Link>
         </motion.div>
       </motion.div>
 
       {/* ── Footer ── */}
-      <motion.p
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.0, duration: 0.5 }}
-        style={{
-          fontSize: '0.72rem', color: 'var(--text-4, #A8B8C8)',
-          textAlign: 'center', zIndex: 1,
-        }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="flex flex-col items-center gap-4 z-10"
       >
-        Powered by AtarWebb · Free to get started
-      </motion.p>
+        <p className="text-[0.8rem] text-[#A8B8C8] tracking-tight">
+          Already trusted by <span className="text-[#4A8DB8] font-bold">10,000+</span> businesses
+        </p>
+        <div className="h-[1px] w-12 bg-[#D4E4F7]" />
+        <p className="text-[0.7rem] text-[#A8B8C8] font-medium opacity-60">
+          Powered by AtarWebb
+        </p>
+      </motion.div>
     </div>
   );
 }
