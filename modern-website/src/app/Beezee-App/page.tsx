@@ -19,15 +19,8 @@ export default function BeezeeAppRoot() {
     // Wait for both the splash to finish AND auth state to resolve
     if (!splashDone || loading) return;
 
-    if (isAuthenticated && user) {
-      // Authenticated → go straight to dashboard
-      const country = user.country || 'kenya';
-      const industry = user.industry || 'retail';
-      router.replace(`/Beezee-App/app/${country}/${industry}`);
-    } else {
-      // Not authenticated → show the Get Started onboarding page
+      // The get-started page is now the universal dispatcher/entry point
       router.replace('/Beezee-App/get-started');
-    }
   }, [splashDone, isAuthenticated, user, loading, router]);
 
   return (

@@ -5,6 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, TrendingUp, Shield, Sparkles, LogIn, UserPlus } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useRouter } from 'next/navigation';
+import { LayoutDashboard } from 'lucide-react';
 
 const features = [
   {
@@ -39,9 +42,21 @@ const itemVariants: Variants = {
 
 export default function GetStartedPage() {
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated, user, loading } = useUnifiedAuth();
+  const router = useRouter();
+
   useEffect(() => { setMounted(true); }, []);
 
   if (!mounted) return null;
+
+  // Handle dashboard redirect
+  const goToDashboard = () => {
+    if (user) {
+      const country = user.country?.toLowerCase() || 'kenya';
+      const industry = user.industry?.toLowerCase() || 'retail';
+      router.push(`/Beezee-App/app/${country}/${industry}`);
+    }
+  };
 
   return (
     // Outer scroll container — overrides the globals.css height:100% body constraint
@@ -160,24 +175,59 @@ export default function GetStartedPage() {
 
           {/* CTA Buttons */}
           <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 mb-10">
-            <Link
-              href="/Beezee-App/auth/signup"
-              id="signup-button"
-              className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
-            >
-              <UserPlus size={22} />
-              Get Started — It&apos;s Free
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {isAuthenticated && user ? (
+              <>
+                <button
+                  onClick={goToDashboard}
+                  className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
+                >
+                  <LayoutDashboard size={22} />
+                  Continue to Dashboard
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                
+                <div className="flex flex-col gap-3 mt-2">
+                  <p className="text-xs text-[#7A8FA5] font-semibold uppercase tracking-wider">Account Options</p>
+                  <div className="flex gap-3">
+                    <Link
+                      href="/Beezee-App/auth/login"
+                      className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-[#1A2332] font-bold py-3 px-4 rounded-xl text-xs uppercase"
+                    >
+                      <LogIn size={16} />
+                      Switch Account
+                    </Link>
+                    <Link
+                      href="/Beezee-App/auth/signup"
+                      className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-[#1A2332] font-bold py-3 px-4 rounded-xl text-xs uppercase"
+                    >
+                      <UserPlus size={16} />
+                      New Business
+                    </Link>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/Beezee-App/auth/signup"
+                  id="signup-button"
+                  className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
+                >
+                  <UserPlus size={22} />
+                  Get Started — It&apos;s Free
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
 
-            <Link
-              href="/Beezee-App/auth/login"
-              id="login-button"
-              className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
-            >
-              <LogIn size={20} />
-              I already have an account
-            </Link>
+                <Link
+                  href="/Beezee-App/auth/login"
+                  id="login-button"
+                  className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
+                >
+                  <LogIn size={20} />
+                  I already have an account
+                </Link>
+              </>
+            )}
           </motion.div>
         </motion.div>
 

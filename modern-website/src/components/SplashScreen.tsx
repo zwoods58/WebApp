@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SplashScreenProps {
   onFinish?: () => void;
@@ -9,6 +10,7 @@ interface SplashScreenProps {
 export default function SplashScreen({ onFinish }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [shouldShow, setShouldShow] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Check if this is the first time the app is loading
@@ -23,6 +25,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       const timer = setTimeout(() => {
         setIsVisible(false);
         setTimeout(() => {
+          router.push('/Beezee-App/get-started');
           onFinish?.();
         }, 300); // Allow fade out animation
       }, 2500);
