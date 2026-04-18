@@ -72,7 +72,7 @@ export default function Signup() {
       } else {
         showSuccess('Account created successfully! Welcome to BeeZee.');
         
-        // Store user data for the route page setup animation
+        // Store user data in case it's needed for caching or context
         const userData = {
           country: formData.country,
           industry: formData.industry,
@@ -81,8 +81,10 @@ export default function Signup() {
         };
         localStorage.setItem('beezee_user_data', JSON.stringify(userData));
         
-        // Route to the setup animation page which will redirect to login for email confirmation
-        router.push('/Beezee-App/route');
+        // Route them directly to the home page dashboard
+        const c = formData.country.toLowerCase() || 'kenya';
+        const i = formData.industry.toLowerCase() || 'retail';
+        router.push(`/Beezee-App/app/${c}/${i}`);
       }
     } catch (error) {
       showError('An unexpected error occurred during signup.');
