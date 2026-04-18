@@ -11,23 +11,23 @@ export default function AuthLayout({
 }) {
   return (
     <QueryProvider>
-      <div className="auth-layout h-screen bg-[var(--bg)] text-[var(--text-1)] flex flex-col overflow-hidden">
+      <div className="auth-layout min-h-[100dvh] bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
       {/* Header logo - consistent across all auth pages */}
-      <div className="flex justify-center items-center pt-16 pb-1 flex-shrink-0">
+      <div className="flex justify-center items-center pt-12 pb-1 flex-shrink-0">
         <div className="relative">
           <Image
             src="/beezee-icon-192x192.png"
             alt="BeeZee Icon"
-            width={120}
-            height={120}
+            width={100}
+            height={100}
             className="rounded-xl shadow-lg"
             priority
           />
         </div>
       </div>
       
-      {/* Page content */}
-      <div className="flex-1 min-h-0">
+      {/* Page content — allow natural growth & scroll */}
+      <div className="flex-1">
         {children}
       </div>
     </div>
