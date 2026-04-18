@@ -44,12 +44,10 @@ export default function Login() {
       console.log('🔄 User already authenticated, redirecting to dashboard...');
       setIsRedirecting(true);
       
-      const country = business.country.toLowerCase();
-      const industry = business.industry.toLowerCase();
-      
-      // Add a small delay to ensure auth state is set before redirect
+      // Route through the setup page which detects business data 
+      // and redirects to the correct country/industry dashboard
       const redirectTimer = setTimeout(() => {
-        navigatePWAAware(`/Beezee-App/app/${country}/${industry}`, router);
+        navigatePWAAware('/Beezee-App/route', router);
       }, 150);
       
       return () => clearTimeout(redirectTimer);
@@ -88,7 +86,10 @@ export default function Login() {
         showError(result.error.message);
       } else {
         showSuccess('Login successful!');
-        // Redirect will be handled by useEffect hook
+        // Navigate to route page which handles the dashboard redirect
+        // with the setup animation showing country/industry
+        setIsRedirecting(true);
+        navigatePWAAware('/Beezee-App/route', router);
       }
     } catch (error) {
       showError('Login failed. Please try again.');

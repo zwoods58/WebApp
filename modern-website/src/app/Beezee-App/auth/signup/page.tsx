@@ -70,8 +70,18 @@ export default function Signup() {
         showError(result.error.message || "Signup failed");
       } else {
         showSuccess('Account created successfully! Welcome to BeeZee.');
-        // Navigate back to login page or handle auto-login if backend returns session
-        router.push('/Beezee-App/auth/login');
+        
+        // Store user data for the route page setup animation
+        const userData = {
+          country: formData.country,
+          industry: formData.industry,
+          businessName: formData.businessName,
+          firstName: formData.firstName,
+        };
+        localStorage.setItem('beezee_user_data', JSON.stringify(userData));
+        
+        // Route to the setup animation page which will redirect to login for email confirmation
+        router.push('/Beezee-App/route');
       }
     } catch (error) {
       showError('An unexpected error occurred during signup.');

@@ -49,9 +49,11 @@ export default function AuthCallback() {
           setStatus('success');
           setMessage('Email confirmed successfully!');
           
-          // Redirect to login after a short delay
+          // Redirect to the route page — user has a session now,
+          // so the route page will detect their business data and 
+          // redirect them to the correct dashboard
           setTimeout(() => {
-            router.push('/Beezee-App/auth/login?confirmed=true');
+            router.push('/Beezee-App/route');
           }, 2000);
         } else {
           setStatus('error');
