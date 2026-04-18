@@ -18,7 +18,7 @@ export default function BeezeeAppRoot() {
     if (!mounted || loading) return;
 
     // Direct redirection to the universal entry point
-    router.replace('/Beezee-App/get-started');
+    router.replace('/Beezee-App/auth/get-started');
   }, [mounted, loading, router]);
 
   return (

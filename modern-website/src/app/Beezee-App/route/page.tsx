@@ -91,7 +91,7 @@ function RoutePageContent() {
       }, 2000);
     } else {
       // No data found, redirect to Get Started onboarding page
-      router.push('/Beezee-App/get-started');
+      router.push('/Beezee-App/auth/get-started');
     }
   }, [router, searchParams]);
 

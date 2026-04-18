@@ -86,8 +86,8 @@ const COUNTRY_CONFIGS = {
     description: 'Financial management for Kenyan informal businesses',
     theme_color: '#006600',
     background_color: '#ffffff',
-    start_url: '/kenya/app',
-    scope: '/kenya/app/',
+    start_url: '/Beezee-App/auth/get-started',
+    scope: '/Beezee-App/',
     icons: [
       {
         src: '/icons/ke-icon-192.png',
@@ -114,8 +114,8 @@ const COUNTRY_CONFIGS = {
     description: 'Financial management for South African informal businesses',
     theme_color: '#F59E0B',
     background_color: '#ffffff',
-    start_url: '/south-africa/app',
-    scope: '/south-africa/app/',
+    start_url: '/Beezee-App/auth/get-started',
+    scope: '/Beezee-App/',
     icons: [
       {
         src: '/icons/za-icon-192.png',
@@ -142,8 +142,8 @@ const COUNTRY_CONFIGS = {
     description: 'Financial management for Nigerian informal businesses',
     theme_color: '#008751',
     background_color: '#ffffff',
-    start_url: '/nigeria/app',
-    scope: '/nigeria/app/',
+    start_url: '/Beezee-App/auth/get-started',
+    scope: '/Beezee-App/',
     icons: [
       {
         src: '/icons/ng-icon-192.png',
