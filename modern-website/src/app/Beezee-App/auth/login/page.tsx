@@ -110,9 +110,9 @@ export default function Login() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col">
       {/* Main content */}
-      <div className="flex-1 container mx-auto px-6 pb-6 flex flex-col justify-end">
+      <div className="flex-1 container mx-auto px-6 pb-6 flex flex-col pt-12">
         <div className="max-w-md mx-auto w-full">
           <div className="text-center mb-6 fade-in">
             <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
@@ -232,16 +232,6 @@ export default function Login() {
                   className="text-[var(--powder-dark)] hover:underline font-medium"
                 >
                   Forgot your password?
-                </Link>
-              </p>
-              
-              <p className="text-[var(--text-3)] text-xs">
-                Don't have an account?{' '}
-                <Link
-                  href="/Beezee-App/auth/signup"
-                  className="text-[var(--powder-dark)] hover:underline font-medium"
-                >
-                  Sign up
                 </Link>
               </p>
             </div>

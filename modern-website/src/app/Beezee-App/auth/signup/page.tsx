@@ -81,7 +81,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[var(--bg)] overflow-y-auto w-full px-4 py-8 sm:px-6 pb-20">
+    <div className="w-full bg-[var(--bg)] px-4 py-8 sm:px-6 pb-20">
       <div className="w-full max-w-md mx-auto mt-4 sm:mt-10">
         <div className="text-center mb-6 fade-in">
           <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">Create an Account</h1>
@@ -165,15 +165,6 @@ export default function Signup() {
             </button>
 
           </form>
-
-          <div className="mt-4 text-center space-y-2">
-            <p className="text-[var(--text-3)] text-xs">
-              Already have an account?{' '}
-              <Link href="/Beezee-App/auth/login" className="text-[var(--powder-dark)] hover:underline font-medium">
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>
