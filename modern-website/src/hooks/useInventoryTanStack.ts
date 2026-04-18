@@ -18,6 +18,7 @@ export interface Inventory {
 export interface UseInventoryTanStackProps {
   businessId?: string;
   industry?: string;
+  country?: string;
 }
 
 export interface UseInventoryTanStackReturn {
@@ -28,6 +29,7 @@ export interface UseInventoryTanStackReturn {
   updateInventory: (id: string, updates: Partial<Inventory>) => Promise<void>;
   deleteInventory: (id: string) => Promise<void>;
   refetch: () => void;
+  isOffline: boolean;
 }
 
 export function useInventoryTanStack({ businessId, industry }: UseInventoryTanStackProps = {}): UseInventoryTanStackReturn {
@@ -110,12 +112,13 @@ export function useInventoryTanStack({ businessId, industry }: UseInventoryTanSt
   };
 
   return {
-    data,
+    data: data as Inventory[],
     isLoading,
     error,
     addInventory,
     updateInventory,
     deleteInventory,
     refetch: () => queryClient.invalidateQueries({ queryKey: ['inventory'] }),
+    isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
   };
 }

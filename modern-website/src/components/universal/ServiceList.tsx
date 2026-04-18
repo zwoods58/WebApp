@@ -30,7 +30,7 @@ export default function ServiceList({
   const handleDeleteService = async (serviceId: string) => {
     try {
       // Use soft delete by setting is_active = false
-      await updateService({ id: serviceId, data: { is_active: false } });
+      await updateService(serviceId, { is_active: false });
       setConfirmDelete(null);
     } catch (error) {
       console.error('Failed to delete service:', error);

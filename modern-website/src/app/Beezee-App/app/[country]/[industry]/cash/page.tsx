@@ -212,6 +212,7 @@ export default function CashPage() {
       
       const newTransaction = await addTransaction({
         ...transactionData,
+        type: 'money_in',
         business_id: businessId,
         industry
       });

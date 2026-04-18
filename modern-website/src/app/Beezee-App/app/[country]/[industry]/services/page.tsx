@@ -432,7 +432,7 @@ export default function ServicesPage() {
 
   const handleUpdateService = async (serviceId: string, updates: any) => {
     try {
-      await updateService({ id: serviceId, data: updates });
+      await updateService(serviceId, updates);
       
       // Automatic sync will be handled by useIndustryDataNew hook
       
@@ -472,7 +472,7 @@ export default function ServicesPage() {
       localStorage.removeItem(storageKey);
       
       // Step 3: Remove from persistent storage state
-      setPersistentServices(prev => prev.filter(s => s.id !== serviceId));
+      setPersistentServices((prev: any[]) => prev.filter((s: any) => s.id !== serviceId));
       
       // Step 4: Clear from React Query cache
       queryClient.removeQueries({ queryKey: ['services', industry, business?.id] });
@@ -532,6 +532,7 @@ export default function ServicesPage() {
         customer_name: sellData.customerName || 'Walk-in Customer',
         payment_method: sellData.paymentMethod || 'cash',
         transaction_date: new Date().toISOString().split('T')[0],
+        type: 'money_in' as const,
         currency: (business as any).currency || 'KES', // Add required currency field
         metadata: {
           inventory_item_id: selectedInventoryItem.id,
@@ -553,7 +554,7 @@ export default function ServicesPage() {
       }
       
       // ✅ FIX: Use "data" not "updates"
-      await updateInventoryItem({ id: selectedInventoryItem.id, data: { quantity: newQuantity } });
+      await updateInventoryItem(selectedInventoryItem.id, { quantity: newQuantity });
       console.log('✅ Inventory updated successfully');
       
       setShowSellModal(false);
@@ -595,7 +596,7 @@ export default function ServicesPage() {
       }
 
       // ✅ FIX: Use "data" not "updates"
-      await updateInventoryItem({ id: selectedInventoryItem.id, data: updates });
+      await updateInventoryItem(selectedInventoryItem.id, updates);
       console.log('✅ Inventory item updated successfully');
       
       // Close modal and reset selection
@@ -636,7 +637,7 @@ export default function ServicesPage() {
       localStorage.removeItem(storageKey);
       
       // Step 3: Remove from persistent storage state
-      setPersistentInventory(prev => prev.filter(i => i.id !== itemId));
+      setPersistentInventory((prev: any[]) => prev.filter((i: any) => i.id !== itemId));
       
       // Step 4: Clear from React Query cache
       queryClient.removeQueries({ queryKey: ['inventory', industry, business?.id] });
@@ -682,6 +683,7 @@ export default function ServicesPage() {
         customer_name: 'Walk-in Customer',
         payment_method: 'cash' as const,
         transaction_date: new Date().toISOString().split('T')[0],
+        type: 'money_in' as const,
         metadata: {
           service_id: service.id,
           service_name: service.service_name,

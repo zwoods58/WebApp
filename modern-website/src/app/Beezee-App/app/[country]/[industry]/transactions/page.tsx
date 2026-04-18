@@ -59,7 +59,7 @@ export default function TransactionsPage() {
       if (isOnline) {
         // Try online first
         try {
-          await addTransaction(fullTransactionData);
+          await addTransaction({ ...fullTransactionData, type: 'money_in' });
           showSuccess('Transaction added successfully');
         } catch (error) {
           console.error('Failed to add transaction:', error);
@@ -67,7 +67,7 @@ export default function TransactionsPage() {
         }
       } else {
         // Offline mode - TanStack Query handles this automatically
-        await addTransaction(fullTransactionData);
+        await addTransaction({ ...fullTransactionData, type: 'money_in' });
         showInfo('Transaction queued - will sync when online');
       }
     } catch (error) {

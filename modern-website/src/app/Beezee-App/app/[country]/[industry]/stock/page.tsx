@@ -206,7 +206,7 @@ export default function StockPage() {
       console.log('🔧 [StockPage] Updating item:', { id: selectedItem.id, updates });
       
       // ✅ SIMPLE: Use basic hook like other pages
-      await updateInventory({ id: selectedItem.id, data: updates });
+      await updateInventory(selectedItem.id, updates);
       
       setShowEditModal(false);
       setSelectedItem(null);
@@ -253,12 +253,15 @@ export default function StockPage() {
       console.log('🔧 [StockPage] Adding transaction:', transactionData);
       
       // ✅ SIMPLE: Add transaction using basic hook - LIKE OTHER PAGES
-      await addTransaction(transactionData);
+      await addTransaction({
+        ...transactionData,
+        type: 'money_in'
+      });
       console.log('✅ [StockPage] Transaction recorded');
       
       // ✅ SIMPLE: Update inventory quantity using basic hook - LIKE OTHER PAGES
       console.log('🔧 [StockPage] Updating inventory quantity to:', newQuantity);
-      await updateInventory({ id: selectedItem.id, data: { quantity: newQuantity } });
+      await updateInventory(selectedItem.id, { quantity: newQuantity });
       console.log('✅ [StockPage] Inventory updated');
 
       setShowSellModal(false);

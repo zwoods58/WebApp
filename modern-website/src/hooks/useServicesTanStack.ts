@@ -4,11 +4,14 @@ import { supabase } from '@/lib/supabase';
 export interface Service {
   id: string;
   business_id: string;
-  name: string;
+  service_name: string;
   description?: string;
   price: number;
   duration?: number;
   category?: string;
+  is_active?: boolean;
+  currency?: string;
+  industry?: string;
   created_at: string;
   updated_at: string;
 }
@@ -26,6 +29,8 @@ export interface UseServicesTanStackReturn {
   updateService: (id: string, updates: Partial<Service>) => Promise<void>;
   deleteService: (id: string) => Promise<void>;
   refetch: () => void;
+  isOffline: boolean;
+  isPending: boolean;
 }
 
 export function useServicesTanStack({ businessId, industry }: UseServicesTanStackProps = {}): UseServicesTanStackReturn {
@@ -108,12 +113,14 @@ export function useServicesTanStack({ businessId, industry }: UseServicesTanStac
   };
 
   return {
-    data,
+    data: data as Service[],
     isLoading,
     error,
     addService,
     updateService,
     deleteService,
     refetch: () => queryClient.invalidateQueries({ queryKey: ['services'] }),
+    isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
+    isPending: addServiceMutation.status === 'pending',
   };
 }
