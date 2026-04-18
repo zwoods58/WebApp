@@ -42,7 +42,7 @@ const itemVariants: Variants = {
 
 export default function GetStartedPage() {
   const [mounted, setMounted] = useState(false);
-  const { isAuthenticated, user, loading } = useUnifiedAuth();
+  const { isAuthenticated, user, business, loading } = useUnifiedAuth();
   const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);
@@ -51,10 +51,14 @@ export default function GetStartedPage() {
 
   // Handle dashboard redirect
   const goToDashboard = () => {
-    if (user) {
-      const country = user.country?.toLowerCase() || 'kenya';
-      const industry = user.industry?.toLowerCase() || 'retail';
-      router.push(`/Beezee-App/app/${country}/${industry}`);
+    if (isAuthenticated) {
+      if (business) {
+        const country = business.country?.toLowerCase() || 'kenya';
+        const industry = business.industry?.toLowerCase() || 'retail';
+        router.push(`/Beezee-App/app/${country}/${industry}`);
+      } else {
+        router.push('/Beezee-App/route');
+      }
     }
   };
 

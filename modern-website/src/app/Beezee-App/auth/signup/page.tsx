@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { User, Mail, Lock, Eye, EyeOff, Briefcase, Globe, Target, Building } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Briefcase, Globe, Target, Building, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
@@ -28,6 +28,7 @@ export default function Signup() {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     businessName: '',
@@ -59,7 +60,7 @@ export default function Signup() {
       const result = await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: '', // Optional/empty for now
+        phone: formData.phone,
         businessName: formData.businessName,
         country: formData.country,
         industry: formData.industry,
@@ -110,6 +111,11 @@ export default function Signup() {
                 <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5"><User size={14} /> Last Name</label>
                 <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg text-[var(--text-1)] placeholder-[var(--text-3)] text-sm focus:ring-2 focus:ring-[var(--powder-dark)] outline-none transition-all" placeholder="Doe" />
               </div>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-xs font-medium text-[var(--text-2)] mb-1.5"><Phone size={14} /> Phone Number</label>
+              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg text-[var(--text-1)] placeholder-[var(--text-3)] text-sm focus:ring-2 focus:ring-[var(--powder-dark)] outline-none transition-all" placeholder="+254712345678" />
             </div>
 
             <div>

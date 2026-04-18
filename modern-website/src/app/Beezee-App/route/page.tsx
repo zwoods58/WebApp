@@ -89,8 +89,8 @@ function RoutePageContent() {
 
     // --- Priority 1: Authenticated user with business data from Supabase ---
     if (isAuthenticated && business) {
-      const userCountry = business.country.toLowerCase();
-      const userIndustry = business.industry.toLowerCase();
+      const userCountry = (business.country || 'kenya').toLowerCase();
+      const userIndustry = (business.industry || 'retail').toLowerCase();
       
       console.log('[Route] Authenticated user detected:', { country: userCountry, industry: userIndustry });
       
@@ -122,8 +122,8 @@ function RoutePageContent() {
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        const userCountry = (parsed.country || '').toLowerCase();
-        const userIndustry = (parsed.industry || '').toLowerCase();
+        const userCountry = (parsed.country || 'kenya').toLowerCase();
+        const userIndustry = (parsed.industry || 'retail').toLowerCase();
         
         console.log('[Route] localStorage user data found:', { country: userCountry, industry: userIndustry });
         
@@ -160,8 +160,8 @@ function RoutePageContent() {
     const industryParam = searchParams.get('industry');
 
     if (countryParam && industryParam) {
-      const userCountry = countryParam.toLowerCase();
-      const userIndustry = industryParam.toLowerCase();
+      const userCountry = (countryParam || 'kenya').toLowerCase();
+      const userIndustry = (industryParam || 'retail').toLowerCase();
       
       console.log('[Route] URL params found:', { country: userCountry, industry: userIndustry });
       
