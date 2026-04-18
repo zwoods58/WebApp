@@ -60,6 +60,7 @@ export default function Signup() {
 
   const router = useRouter();
 
+  // If already authenticated, go straight to the app
   useEffect(() => {
     if (!loading && isAuthenticated && business && !isRedirecting) {
       setIsRedirecting(true);
@@ -70,21 +71,38 @@ export default function Signup() {
     }
   }, [isAuthenticated, business, loading, isRedirecting, router]);
 
+  // If this is a direct/fresh load (PWA reopen, bookmark, etc.) and the user
+  // is not authenticated, send them to Get Started instead of leaving them on
+  // the signup page they may have accidentally landed on.
+  useEffect(() => {
+    if (loading) return; // wait for auth resolution
+    if (isAuthenticated) return; // already handled above
+
+    // Detect a fresh load: no referrer, or referrer is outside this app
+    const referrer = typeof document !== 'undefined' ? document.referrer : '';
+    const host = typeof window !== 'undefined' ? window.location.host : '';
+    const isFreshLoad = !referrer || !referrer.includes(host);
+
+    if (isFreshLoad) {
+      router.replace('/Beezee-App/get-started');
+    }
+  }, [loading, isAuthenticated, router]);
+
   const validateForm = (): boolean => {
     const e: Record<string, string> = {};
-    if (!formData.firstName.trim()) e.firstName = 'What\'s your first name?';
+    if (!formData.firstName.trim()) e.firstName = "What's your first name?";
     else if (formData.firstName.length < 2) e.firstName = 'At least 2 characters please';
 
-    if (!formData.lastName.trim()) e.lastName = 'What\'s your last name?';
+    if (!formData.lastName.trim()) e.lastName = "What's your last name?";
     else if (formData.lastName.length < 2) e.lastName = 'At least 2 characters please';
 
     if (!formData.email.trim()) e.email = 'We need your email address';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'That email doesn\'t look right';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = "That email doesn't look right";
 
-    if (!formData.phone.trim()) e.phone = 'Don\'t forget your phone number';
+    if (!formData.phone.trim()) e.phone = "Don't forget your phone number";
     else if (formData.phone.length < 10) e.phone = 'Phone number too short';
 
-    if (!formData.businessName.trim()) e.businessName = 'What\'s your business called?';
+    if (!formData.businessName.trim()) e.businessName = "What's your business called?";
     if (!formData.country) e.country = 'Pick your country';
     if (!formData.industry) e.industry = 'What type of business do you run?';
 
@@ -92,7 +110,7 @@ export default function Signup() {
     else if (formData.password.length < 8) e.password = 'Password needs at least 8 characters';
 
     if (!formData.confirmPassword) e.confirmPassword = 'Type your password again';
-    else if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords don\'t match';
+    else if (formData.password !== formData.confirmPassword) e.confirmPassword = "Passwords don't match";
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -136,8 +154,10 @@ export default function Signup() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
+      <div
+        style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff' }}
+      >
+        <div style={{ textAlign: 'center' }}>
           <div className="w-10 h-10 border-2 border-[#4A8DB8]/30 border-t-[#4A8DB8] rounded-full animate-spin mx-auto mb-3" />
           <p className="text-gray-400 text-sm">One second...</p>
         </div>
@@ -146,9 +166,19 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    // Explicit scroll container — overrides globals.css height:100% body constraint
+    <div
+      style={{
+        minHeight: '100vh',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch' as any,
+        background: '#F9FAFB',
+      }}
+    >
       {/* ── Top Bar ── */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
+      <div
+        style={{ position: 'sticky', top: 0, zIndex: 10, background: '#fff', borderBottom: '1px solid #F3F4F6' }}
+      >
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
           <Link
             href="/Beezee-App/get-started"
@@ -163,7 +193,7 @@ export default function Signup() {
       </div>
 
       {/* ── Page Content ── */}
-      <div className="max-w-lg mx-auto px-5 py-8 pb-16">
+      <div className="max-w-lg mx-auto px-5 py-8 pb-20">
 
         {/* Heading */}
         <div className="mb-8">
@@ -180,7 +210,7 @@ export default function Signup() {
 
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
-          {/* ── Your Details ── */}
+          {/* ── About You ── */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">About you</p>
             <div className="space-y-3">
@@ -243,7 +273,7 @@ export default function Signup() {
             </div>
           </div>
 
-          {/* ── Business Details ── */}
+          {/* ── Your Business ── */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Your business</p>
             <div className="space-y-3">

@@ -44,140 +44,160 @@ export default function GetStartedPage() {
   if (!mounted) return null;
 
   return (
+    // Outer scroll container — overrides the globals.css height:100% body constraint
     <div
-      className="min-h-screen relative flex flex-col items-center justify-between"
       style={{
+        minHeight: '100vh',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch' as any,
         background: 'radial-gradient(circle at top right, #EEF5FB 0%, #FFFFFF 40%, #F5F9FF 100%)',
-        padding: 'env(safe-area-inset-top, 40px) 24px env(safe-area-inset-bottom, 32px)',
+        position: 'relative',
       }}
     >
-      {/* ── Decorative Background ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Decorative Background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ overflow: 'hidden' }}
+        aria-hidden="true"
+      >
         <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-blue-100/40 blur-3xl animate-pulse" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[350px] h-[350px] rounded-full bg-blue-50/50 blur-3xl" />
       </div>
 
-      {/* ── Logo ── */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="flex flex-col items-center z-10"
-      >
-        <div className="relative mb-6">
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -inset-4 rounded-full bg-blue-500/10 blur-xl"
-          />
-          <Image
-            src="/beezee-icon-192x192.png"
-            alt="BeeZee Logo"
-            width={96}
-            height={96}
-            priority
-            className="rounded-[24px] shadow-2xl relative border-4 border-white/50"
-          />
-        </div>
-        <h1 className="text-3xl font-black text-[#1A2332] tracking-tight leading-none text-center">
-          BeeZee
-        </h1>
-        <p className="text-sm font-medium text-[#7A8FA5] mt-2 uppercase tracking-widest text-center">
-          Your Digital Black Book
-        </p>
-      </motion.div>
+      {/* Page content — natural block flow, no justify-between */}
+      <div className="relative z-10 flex flex-col items-center px-6 pt-12 pb-16">
 
-      {/* ── Main Content ── */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="w-full max-w-[420px] flex flex-col items-center text-center z-10"
-      >
-        <motion.div variants={itemVariants} className="mb-8 px-4">
-          <h2 className="text-[2rem] font-black text-[#1A2332] leading-[1.15] tracking-tight mb-4">
-            Run your business <br />
-            <span className="text-[#4A8DB8] bg-clip-text text-transparent bg-gradient-to-r from-[#4A8DB8] to-[#7AAECE]">
-              without the stress
-            </span>
-          </h2>
-          <p className="text-base text-[#4A5F78] leading-relaxed">
-            BeeZee is like your notebook — but smarter. Write down your sales, track what you spend, and always know where your money is going. No accounting skills needed.
+        {/* ── Logo ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="flex flex-col items-center mb-10"
+        >
+          <div className="relative mb-5">
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -inset-4 rounded-full bg-blue-500/10 blur-xl"
+            />
+            <Image
+              src="/beezee-icon-192x192.png"
+              alt="BeeZee Logo"
+              width={88}
+              height={88}
+              priority
+              className="rounded-[22px] shadow-2xl relative border-4 border-white/50"
+            />
+          </div>
+          <h1 className="text-3xl font-black text-[#1A2332] tracking-tight leading-none text-center">
+            BeeZee
+          </h1>
+          <p className="text-sm font-medium text-[#7A8FA5] mt-2 uppercase tracking-widest text-center">
+            Your Digital Black Book
           </p>
         </motion.div>
 
-        {/* ── App Preview ── */}
+        {/* ── Main Content ── */}
         <motion.div
-          variants={itemVariants}
-          className="relative w-full aspect-[4/3] mb-10 overflow-hidden rounded-[32px] shadow-2xl border-4 border-white/80"
-          style={{ background: 'linear-gradient(135deg, #F0F7FF 0%, #FFFFFF 100%)' }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full max-w-[420px] flex flex-col items-center text-center"
         >
-          <Image
-            src="/images/mockup.png"
-            alt="BeeZee App Preview"
-            fill
-            className="object-cover hover:scale-105 transition-transform duration-[2s] ease-out"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-        </motion.div>
+          {/* Headline */}
+          <motion.div variants={itemVariants} className="mb-8 px-2">
+            <h2 className="text-[2rem] font-black text-[#1A2332] leading-[1.15] tracking-tight mb-4">
+              Run your business <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#4A8DB8] to-[#7AAECE]">
+                without the stress
+              </span>
+            </h2>
+            <p className="text-base text-[#4A5F78] leading-relaxed">
+              BeeZee is like your notebook — but smarter. Write down your sales, track what you spend, and always know where your money is going. No accounting skills needed.
+            </p>
+          </motion.div>
 
-        {/* ── Feature Pills ── */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 gap-2.5 w-full mb-10">
-          {features.map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="flex items-center gap-4 p-3.5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-sm"
+          {/* App Preview */}
+          <motion.div
+            variants={itemVariants}
+            className="relative w-full mb-8"
+            style={{
+              aspectRatio: '4/3',
+              overflow: 'hidden',
+              borderRadius: 32,
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '4px solid rgba(255,255,255,0.8)',
+              background: 'linear-gradient(135deg, #F0F7FF 0%, #FFFFFF 100%)',
+            }}
+          >
+            <Image
+              src="/images/mockup.png"
+              alt="BeeZee App Preview"
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-[2s] ease-out"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+          </motion.div>
+
+          {/* Feature Pills */}
+          <motion.div variants={itemVariants} className="grid grid-cols-1 gap-2.5 w-full mb-8">
+            {features.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-4 p-3.5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-sm"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8DB8] to-[#7AAECE] flex items-center justify-center shrink-0 shadow-lg shadow-blue-100">
+                  <Icon size={18} className="text-white" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-sm font-bold text-[#1A2332]">{label}</h3>
+                </div>
+                <ArrowRight size={14} className="ml-auto text-[#7A8FA5] opacity-40" />
+              </div>
+            ))}
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 mb-10">
+            <Link
+              href="/Beezee-App/auth/signup"
+              id="signup-button"
+              className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8DB8] to-[#7AAECE] flex items-center justify-center shrink-0 shadow-lg shadow-blue-100">
-                <Icon size={18} className="text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="text-sm font-bold text-[#1A2332]">{label}</h3>
-              </div>
-              <ArrowRight size={14} className="ml-auto text-[#7A8FA5] opacity-40" />
-            </div>
-          ))}
+              <UserPlus size={22} />
+              Get Started — It&apos;s Free
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/Beezee-App/auth/login"
+              id="login-button"
+              className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
+            >
+              <LogIn size={20} />
+              I already have an account
+            </Link>
+          </motion.div>
         </motion.div>
 
-        {/* ── Buttons ── */}
-        <motion.div variants={itemVariants} className="w-full flex flex-col gap-4">
-          <Link
-            href="/Beezee-App/auth/signup"
-            id="signup-button"
-            className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
-          >
-            <UserPlus size={22} />
-            Get Started — It&apos;s Free
-            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-
-          <Link
-            href="/Beezee-App/auth/login"
-            id="login-button"
-            className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
-          >
-            <LogIn size={20} />
-            I already have an account
-          </Link>
+        {/* Footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="flex flex-col items-center gap-3"
+        >
+          <p className="text-[0.8rem] text-[#A8B8C8] tracking-tight">
+            Loved by <span className="text-[#4A8DB8] font-bold">10,000+</span> business owners
+          </p>
+          <div className="h-[1px] w-12 bg-[#D4E4F7]" />
+          <p className="text-[0.7rem] text-[#A8B8C8] font-medium opacity-60">
+            Powered by AtarWebb
+          </p>
         </motion.div>
-      </motion.div>
 
-      {/* ── Footer ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
-        className="flex flex-col items-center gap-4 z-10"
-      >
-        <p className="text-[0.8rem] text-[#A8B8C8] tracking-tight">
-          Loved by <span className="text-[#4A8DB8] font-bold">10,000+</span> business owners
-        </p>
-        <div className="h-[1px] w-12 bg-[#D4E4F7]" />
-        <p className="text-[0.7rem] text-[#A8B8C8] font-medium opacity-60">
-          Powered by AtarWebb
-        </p>
-      </motion.div>
+      </div>
     </div>
   );
 }
