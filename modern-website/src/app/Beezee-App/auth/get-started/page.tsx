@@ -194,43 +194,43 @@ export default function GetStartedPage() {
                 <div className="flex flex-col gap-3 mt-2">
                   <p className="text-xs text-[#7A8FA5] font-semibold uppercase tracking-wider">Account Options</p>
                   <div className="flex gap-3">
-                    <Link
-                      href="/Beezee-App/auth/login"
+                    <button
+                      onClick={() => router.push('/Beezee-App/auth/login')}
                       className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-[#1A2332] font-bold py-3 px-4 rounded-xl text-xs uppercase"
                     >
                       <LogIn size={16} />
                       Switch Account
-                    </Link>
-                    <Link
-                      href="/Beezee-App/auth/signup"
+                    </button>
+                    <button
+                      onClick={() => router.push('/Beezee-App/auth/signup')}
                       className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 text-[#1A2332] font-bold py-3 px-4 rounded-xl text-xs uppercase"
                     >
                       <UserPlus size={16} />
                       New Business
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </>
             ) : (
               <>
-                <Link
-                  href="/Beezee-App/auth/signup"
+                <button
+                  onClick={() => router.push('/Beezee-App/auth/signup')}
                   id="signup-button"
                   className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
                 >
                   <UserPlus size={22} />
                   Get Started — It&apos;s Free
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </button>
 
-                <Link
-                  href="/Beezee-App/auth/login"
+                <button
+                  onClick={() => router.push('/Beezee-App/auth/login')}
                   id="login-button"
                   className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
                 >
                   <LogIn size={20} />
                   I already have an account
-                </Link>
+                </button>
               </>
             )}
           </motion.div>
