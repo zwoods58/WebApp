@@ -225,6 +225,17 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       }
 
       if (authData.user) {
+        // Check if user already exists (Supabase security feature returns user but no identities)
+        if (authData.user.identities && authData.user.identities.length === 0) {
+          console.error('❌ User already exists');
+          setAuthState(prev => ({ 
+            ...prev, 
+            loading: false, 
+            error: 'An account with this email already exists.' 
+          }));
+          return { error: new Error('An account with this email already exists.') };
+        }
+
         console.log('✅ User created, creating business record...');
         
         // Create business record
@@ -277,7 +288,10 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         };
       }
 
-      return { error: null, data: authData };
+      // If authData.user is null but there was no explicit signUpError
+      const silentError = new Error('Signup failed silently. The email might be invalid or network request failed.');
+      setAuthState(prev => ({ ...prev, loading: false, error: silentError.message }));
+      return { error: silentError, data: undefined };
     } catch (error) {
       console.error('💥 Sign up error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Sign up failed';

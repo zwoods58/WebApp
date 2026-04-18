@@ -40,6 +40,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -48,9 +49,10 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     
     if (formData.password !== formData.confirmPassword) {
-      showError("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       return;
     }
 
@@ -68,6 +70,7 @@ export default function Signup() {
       });
 
       if (result.error) {
+        setErrorMessage(result.error.message || "Signup failed");
         showError(result.error.message || "Signup failed");
       } else {
         showSuccess('Account created successfully! Welcome to BeeZee.');
@@ -86,7 +89,8 @@ export default function Signup() {
         const i = formData.industry.toLowerCase() || 'retail';
         router.push(`/Beezee-App/app/${c}/${i}`);
       }
-    } catch (error) {
+    } catch (error: any) {
+      setErrorMessage(error?.message || 'An unexpected error occurred during signup.');
       showError('An unexpected error occurred during signup.');
     } finally {
       setIsSubmitting(false);
@@ -102,6 +106,11 @@ export default function Signup() {
         </div>
 
         <div className="fade-in-up bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-sm">
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
+              {errorMessage}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             
             <div className="grid grid-cols-2 gap-4">
