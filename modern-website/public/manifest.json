@@ -2,7 +2,7 @@
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
   "description": "Your Digital Black Book - Ultra-fast PWA",
-  "start_url": "/Beezee-App/auth/signup",
+  "start_url": "/Beezee-App",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",

@@ -175,7 +175,12 @@ export default function GetStartedPage() {
 
           {/* CTA Buttons */}
           <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 mb-10">
-            {isAuthenticated && user ? (
+            {loading ? (
+              <div className="w-full flex flex-col gap-4">
+                <div className="h-[68px] w-full bg-gray-100 rounded-2xl animate-pulse" />
+                <div className="h-[68px] w-full bg-gray-50 rounded-2xl animate-pulse" />
+              </div>
+            ) : isAuthenticated && user ? (
               <>
                 <button
                   onClick={goToDashboard}
