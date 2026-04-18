@@ -1,5 +1,6 @@
-const CACHE_NAME = "html-cache-v2";
-const STATIC_ASSETS_CACHE = "static-assets-v2";
+const CACHE_VERSION = "2026.04.18.01"; // Update this to trigger a full cache purge
+const CACHE_NAME = `html-cache-${CACHE_VERSION}`;
+const STATIC_ASSETS_CACHE = `static-assets-${CACHE_VERSION}`;
 const CACHE_WHITELIST = [CACHE_NAME, STATIC_ASSETS_CACHE];
 const TTL = 10 * 60 * 1000; // 10 minutes
 const OFFLINE_URL = "/offline.html";
@@ -35,16 +36,27 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// Activation — take control immediately
+// Activation — purge old caches and take control
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
       .then((cacheNames) => {
         return Promise.all(
-          cacheNames
-            .filter((cacheName) => !CACHE_WHITELIST.includes(cacheName))
-            .map((cacheName) => caches.delete(cacheName))
+          cacheNames.map((cacheName) => {
+            // Aggressively delete any old versions of our caches
+            const isOldCache = 
+              (cacheName.startsWith("html-cache-") || cacheName.startsWith("static-assets-")) &&
+              !CACHE_WHITELIST.includes(cacheName);
+              
+            // Also explicitly delete the old "v2" names if they exist
+            const isLegacyV2 = cacheName === "html-cache-v2" || cacheName === "static-assets-v2";
+
+            if (isOldCache || isLegacyV2) {
+              console.log("[SW] Purging stale cache:", cacheName);
+              return caches.delete(cacheName);
+            }
+          })
         );
       })
       .then(() => self.clients.claim())
