@@ -17,9 +17,9 @@ export default function InstantSplash() {
       setFadeOut(true);
     }, 1500);
 
-    // Navigate to signup after fade out completes
+    // Navigate to Get Started after fade out completes
     const navigateTimer = setTimeout(() => {
-      router.push('/Beezee-App/auth/signup');
+      router.push('/Beezee-App/get-started');
     }, 2000);
 
     return () => {
