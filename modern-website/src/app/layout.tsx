@@ -132,7 +132,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: '/atarwebb-manifest.json',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -145,6 +145,37 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* PWA Launch Redirect — runs BEFORE React hydration for already-installed PWAs */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var isPWA = window.matchMedia('(display-mode: standalone)').matches
+                    || window.navigator.standalone === true;
+                  if (!isPWA) return;
+
+                  var path = window.location.pathname;
+                  var target = '/Beezee-App/auth/get-started';
+
+                  // Already on the correct page or deeper in the app — do nothing
+                  if (path.indexOf(target) === 0) return;
+                  if (path.indexOf('/Beezee-App/app/') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/login') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/callback') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/confirmation') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/update-password') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/forgot-password') === 0) return;
+
+                  // Redirect stale PWA entry points to Get Started
+                  // Covers: /, /Beezee-App, /Beezee-App/auth, /Beezee-App/auth/signup
+                  console.log('[PWA Launch] Redirecting from', path, 'to', target);
+                  window.location.replace(target);
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         {/* Mobile-friendly Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
         

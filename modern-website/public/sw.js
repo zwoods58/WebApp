@@ -1,4 +1,4 @@
-const CACHE_VERSION = "2026.04.18.02"; // Increment version to fix 404s and apply updates
+const CACHE_VERSION = "2026.04.18.03"; // Bumped: force-clear stale PWA cache after manifest start_url fix
 const CACHE_NAME = `html-cache-${CACHE_VERSION}`;
 const STATIC_ASSETS_CACHE = `static-assets-${CACHE_VERSION}`;
 const CACHE_WHITELIST = [CACHE_NAME, STATIC_ASSETS_CACHE];

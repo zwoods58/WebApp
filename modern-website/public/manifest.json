@@ -1,11 +1,18 @@
 {
   "name": "BeeZee - Your Digital Black Book",
   "short_name": "BeeZee",
-  "description": "Your Digital Black Book - Ultra-fast PWA",
+  "description": "Your Digital Black Book - Financial management for informal businesses across Africa",
   "start_url": "/Beezee-App/auth/get-started",
+  "scope": "/Beezee-App/",
+  "id": "/Beezee-App/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#1A2332",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "business", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/beezee-icon-192x192.png",
