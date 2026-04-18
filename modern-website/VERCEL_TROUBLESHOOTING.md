@@ -1,14 +1,18 @@
 # Vercel Deployment Troubleshooting Guide
 
-## Current Build Issues
+## Resolved Build Issues (April 18, 2026)
 
-The Vercel build is failing with module resolution errors:
+### ✅ Non-existent Package Version (RESOLVED)
+- **Error**: `No matching version found for @supabase/auth-helpers-nextjs@^0.15.1`
+- **Resolution**: Removed the deprecated `@supabase/auth-helpers-nextjs` package in `e959070`. The package was requesting a version that never existed on npm (last was 0.15.0) and was unused in the actual source code.
 
-```
-Module not found: Can't resolve '@/hooks/useLanguage'
-Module not found: Can't resolve '@/components/appointments/AppointmentsNew'
-Module not found: Can't resolve 'lucide-react'
-```
+### ✅ React Router Conflicts (RESOLVED)
+- **Error**: Vercel build failing due to multiple router versions/contexts.
+- **Resolution**: Removed conflicting `react-router` and `react-router-dom` packages in `e95e42d` to ensure a single, stable routing context.
+
+### ✅ Package-Lock Conflicts (RESOLVED)
+- **Error**: `npm ci` failing due to lockfile mismatch.
+- **Resolution**: Removed stale `package-lock.json` in `b4fbeac`, enabling Vercel to generate a consistent environment.
 
 ## Root Cause Analysis
 

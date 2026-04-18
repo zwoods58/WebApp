@@ -168,7 +168,8 @@ style={{ backgroundColor: '#ffffff' }}
 
 | Version | Changes | Date |
 |---------|---------|------|
-| **v68** | Complete white backgrounds for Money In/Out modals | Current |
+| **v69** | Vercel build stability & dependency cleanup (Auth Helpers remove) | Current |
+| **v68** | Complete white backgrounds for Money In/Out modals | Previous |
 | **v67** | Fixed backdrop CSS overrides with !important | Previous |
 | **v66** | Enabled 1-minute update checking | Previous |
 | **v65** | Fixed PWA update modal functionality | Previous |
