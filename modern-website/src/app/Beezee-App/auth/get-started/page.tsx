@@ -86,36 +86,6 @@ export default function GetStartedPage() {
       {/* Page content — natural block flow, no justify-between */}
       <div className="relative z-10 flex flex-col items-center px-6 pt-12 pb-16">
 
-        {/* ── Logo ── */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="flex flex-col items-center mb-10"
-        >
-          <div className="relative mb-5">
-            <motion.div
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -inset-4 rounded-full bg-blue-500/10 blur-xl"
-            />
-            <Image
-              src="/beezee-icon-192x192.png"
-              alt="BeeZee Logo"
-              width={88}
-              height={88}
-              priority
-              className="rounded-[22px] shadow-2xl relative border-4 border-white/50"
-            />
-          </div>
-          <h1 className="text-3xl font-black text-[#1A2332] tracking-tight leading-none text-center">
-            BeeZee
-          </h1>
-          <p className="text-sm font-medium text-[#7A8FA5] mt-2 uppercase tracking-widest text-center">
-            Your Digital Black Book
-          </p>
-        </motion.div>
-
         {/* ── Main Content ── */}
         <motion.div
           variants={containerVariants}
@@ -218,17 +188,17 @@ export default function GetStartedPage() {
             ) : (
               <>
                 <button
-                  onClick={() => router.push('/Beezee-App/auth/signup')}
+                  onClick={() => { window.location.href = '/Beezee-App/auth/signup'; }}
                   id="signup-button"
                   className="group flex items-center justify-center gap-3 w-full bg-[#1A2332] text-white font-bold text-lg py-5 px-8 rounded-2xl shadow-xl active:scale-[0.98] transition-all hover:bg-black"
                 >
                   <UserPlus size={22} />
-                  Get Started — It&apos;s Free
+                  Get Started
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
-                  onClick={() => router.push('/Beezee-App/auth/login')}
+                  onClick={() => { window.location.href = '/Beezee-App/auth/login'; }}
                   id="login-button"
                   className="flex items-center justify-center gap-3 w-full bg-white border-2 border-[#1A2332]/5 text-[#1A2332] font-bold py-5 px-8 rounded-2xl shadow-sm active:scale-[0.98] transition-all hover:bg-gray-50 tracking-wide text-sm uppercase"
                 >
