@@ -162,13 +162,14 @@ export default function RootLayout({
                   if (path.indexOf(target) === 0) return;
                   if (path.indexOf('/Beezee-App/app/') === 0) return;
                   if (path.indexOf('/Beezee-App/auth/login') === 0) return;
+                  if (path.indexOf('/Beezee-App/auth/signup') === 0) return;
                   if (path.indexOf('/Beezee-App/auth/callback') === 0) return;
                   if (path.indexOf('/Beezee-App/auth/confirmation') === 0) return;
                   if (path.indexOf('/Beezee-App/auth/update-password') === 0) return;
                   if (path.indexOf('/Beezee-App/auth/forgot-password') === 0) return;
 
                   // Redirect stale PWA entry points to Get Started
-                  // Covers: /, /Beezee-App, /Beezee-App/auth, /Beezee-App/auth/signup
+                  // Covers: /, /Beezee-App, /Beezee-App/auth
                   console.log('[PWA Launch] Redirecting from', path, 'to', target);
                   window.location.replace(target);
                 } catch(e) {}
