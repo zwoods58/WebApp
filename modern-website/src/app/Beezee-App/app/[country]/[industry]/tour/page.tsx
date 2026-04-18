@@ -16,7 +16,7 @@ import {
   Settings
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
@@ -24,6 +24,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 export default function TourPage() {
   const params = useParams();
+  const router = useRouter();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
@@ -138,7 +139,7 @@ export default function TourPage() {
     setIsPlaying(false);
     
     // Navigate to dashboard
-    window.location.href = `/Beezee-App/app/${country}/${industry}`;
+    router.push(`/Beezee-App/app/${country}/${industry}`);
   };
 
   const currentStepData = tourSteps[currentStep];

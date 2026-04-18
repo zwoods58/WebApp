@@ -608,7 +608,7 @@ export default function IndustryDashboard() {
                   industry={industry}
                   country={country}
                   customers={credit}
-                  onViewAll={() => window.location.href = `/Beezee-App/app/${country}/${industry}/credit`}
+                  onViewAll={() => router.push(`/Beezee-App/app/${country}/${industry}/credit`)}
                   onAddCustomer={() => setShowCustomerModal(true)}
                 />
 
@@ -617,7 +617,7 @@ export default function IndustryDashboard() {
                   industry={industry}
                   country={country}
                   appointments={appointments}
-                  onManageAppointments={() => window.location.href = `/Beezee-App/app/${country}/${industry}/appointments`}
+                  onManageAppointments={() => router.push(`/Beezee-App/app/${country}/${industry}/appointments`)}
                   onScheduleAppointment={handleAddAppointment}
                 />
 
@@ -626,7 +626,7 @@ export default function IndustryDashboard() {
                   industry={industry}
                   country={country}
                   services={services}
-                  onManageServices={() => window.location.href = `/Beezee-App/app/${country}/${industry}/services`}
+                  onManageServices={() => router.push(`/Beezee-App/app/${country}/${industry}/services`)}
                   onAddService={handleAddService}
                 />
               </div>

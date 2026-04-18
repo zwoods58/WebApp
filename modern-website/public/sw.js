@@ -1,4 +1,4 @@
-const CACHE_VERSION = "2026.04.18.01"; // Update this to trigger a full cache purge
+const CACHE_VERSION = "2026.04.18.02"; // Increment version to fix 404s and apply updates
 const CACHE_NAME = `html-cache-${CACHE_VERSION}`;
 const STATIC_ASSETS_CACHE = `static-assets-${CACHE_VERSION}`;
 const CACHE_WHITELIST = [CACHE_NAME, STATIC_ASSETS_CACHE];
@@ -23,6 +23,11 @@ const MESSAGE_EVENT_TYPES = {
 
 // Check: is it HTML
 const isHTML = (request) => {
+  const url = new URL(request.url);
+  // Next.js RSC requests (ending in .rsc or having _rsc query param) should NOT be treated as HTML for caching
+  if (url.searchParams.has('_rsc') || url.pathname.endsWith('.rsc')) {
+    return false;
+  }
   return request.headers.get("accept")?.includes("text/html");
 };
 
@@ -71,36 +76,42 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // HTML pages
+  // HTML pages - Network First with Background Update
   if (isHTML(request)) {
+    const url = new URL(request.url);
+    // Normalize URL: collapse multiple slashes
+    const normalizedPath = url.pathname.replace(/\/+/g, '/');
+    const normalizedUrl = url.origin + normalizedPath + url.search;
+
     event.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
-        const cached = await cache.match(request);
-        const cachedTime = await cache.match(request.url + ":ts");
-        let age = 0;
-        if (cached && cachedTime) {
-          age = Date.now() - (await cachedTime.json()).ts;
-          if (age < TTL) {
-            // Cache is fresh — return it
-            return cached;
+        const cached = await cache.match(normalizedUrl);
+        
+        // If we are online, try network first
+        if (navigator.onLine) {
+          try {
+            const response = await fetch(request);
+            if (response.ok) {
+              cache.put(normalizedUrl, response.clone());
+              cache.put(
+                normalizedUrl + ":ts",
+                new Response(JSON.stringify({ ts: Date.now() }))
+              );
+            }
+            return response;
+          } catch (err) {
+            console.log("[SW] Network fetch failed, falling back to cache:", normalizedUrl);
           }
         }
-        // Cache is stale or missing — try fetch
-        try {
-          const response = await fetch(request);
-          cache.put(request, response.clone());
-          cache.put(
-            request.url + ":ts",
-            new Response(JSON.stringify({ ts: Date.now() }))
-          );
-          return response;
-        } catch (err) {
-          // If there is any cache — return it!
-          if (cached) return cached;
-          // If there is no cache — offline.html
-          const fallback = await caches.match(OFFLINE_URL);
-          return fallback || new Response("Offline", { status: 503 });
+
+        // Offline or Network failed - return cached if available
+        if (cached) {
+          return cached;
         }
+
+        // No cache - check for offline page
+        const fallback = await caches.match(OFFLINE_URL);
+        return fallback || new Response("Offline", { status: 503 });
       })
     );
   }
@@ -192,29 +203,23 @@ self.addEventListener("message", (event) => {
       console.log("[SW] Skipping cache (cacheDisabled):", url);
       return;
     }
+
+    const parsedUrl = new URL(url);
+    const normalizedPath = parsedUrl.pathname.replace(/\/+/g, '/');
+    const normalizedUrl = parsedUrl.origin + normalizedPath + parsedUrl.search;
+
     caches.open(CACHE_NAME).then(async (cache) => {
-      const existing = await cache.match(url);
-      const existingTs = await cache.match(url + ":ts");
-
-      if (existing && existingTs) {
-        const age = Date.now() - (await existingTs.json()).ts;
-        if (age < TTL) {
-          console.log("[SW] Skip caching, still fresh:", url);
-          return;
-        }
-      }
-
       const response = new Response(html, {
         headers: { "Content-Type": "text/html" },
       });
 
-      await cache.put(url, response.clone());
+      await cache.put(normalizedUrl, response.clone());
       await cache.put(
-        url + ":ts",
+        normalizedUrl + ":ts",
         new Response(JSON.stringify({ ts: ts || Date.now() }))
       );
 
-      console.log("[SW] Cached:", url);
+      console.log("[SW] Cached current page:", normalizedUrl);
     });
   }
 });

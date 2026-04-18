@@ -19,7 +19,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatCurrency, getCurrency } from '@/utils/currency';
@@ -35,6 +35,7 @@ import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeCon
 
 export default function ServicesPage() {
   const params = useParams();
+  const router = useRouter();
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
@@ -69,7 +70,7 @@ export default function ServicesPage() {
     let isMounted = true;
     
     if (isMounted && industry === 'retail' && navigator.onLine) {
-      window.location.href = `/Beezee-App/app/${country}/${industry}/stock`;
+      router.push(`/Beezee-App/app/${country}/${industry}/stock`);
     }
     
     return () => {
