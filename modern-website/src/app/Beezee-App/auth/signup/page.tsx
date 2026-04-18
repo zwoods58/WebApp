@@ -193,15 +193,28 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg)] flex flex-col">
+      {/* Back Nav */}
+      <div className="sticky top-0 z-10 bg-[var(--bg)]/80 backdrop-blur-sm border-b border-[var(--border)]">
+        <div className="container mx-auto px-6 py-3 max-w-2xl">
+          <Link
+            href="/Beezee-App/get-started"
+            className="inline-flex items-center gap-2 text-sm text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Get Started
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="container mx-auto px-6 pt-6">
+      <div className="container mx-auto px-6 pt-8 pb-6">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-[var(--text-1)] mb-3">
               Create Your Business Account
             </h1>
-            <p className="text-[var(--text-3)] text-xs">
+            <p className="text-[var(--text-2)] text-sm max-w-sm mx-auto">
               Join thousands of African entrepreneurs managing their business with ease.
             </p>
           </div>
@@ -209,9 +222,9 @@ export default function Signup() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 container mx-auto px-6 pb-6 overflow-y-auto">
+      <div className="container mx-auto px-6 pb-12">
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-2xl p-6">
+          <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8 shadow-xl">
             {/* General Error */}
             {Object.keys(errors).length > 0 && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-6">

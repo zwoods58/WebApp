@@ -90,8 +90,8 @@ function RoutePageContent() {
         router.push(`/Beezee-App/app/${countryParam.toLowerCase()}/${industryParam.toLowerCase()}`);
       }, 2000);
     } else {
-      // No data found, redirect to signup
-      router.push('/beezee/auth/signup');
+      // No data found, redirect to Get Started onboarding page
+      router.push('/Beezee-App/get-started');
     }
   }, [router, searchParams]);
 

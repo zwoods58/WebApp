@@ -45,7 +45,7 @@ export default function GetStartedPage() {
 
   return (
     <div
-      className="min-h-screen relative flex flex-col items-center justify-between overflow-hidden"
+      className="min-h-screen relative flex flex-col items-center justify-between"
       style={{
         background: 'radial-gradient(circle at top right, #EEF5FB 0%, #FFFFFF 40%, #F5F9FF 100%)',
         padding: 'env(safe-area-inset-top, 40px) 24px env(safe-area-inset-bottom, 32px)',
