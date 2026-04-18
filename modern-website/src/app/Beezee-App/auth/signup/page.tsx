@@ -1,32 +1,44 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, User, Mail, Phone, Building, Globe, Lock, Check, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
-import { getCurrency, countryConfigs } from '@/utils/currency';
 import { industries } from '@/data/industries';
 
-// Country data with enhanced configuration
 const countries = [
-  { code: 'KE', name: 'Kenya', flag: '🇰🇪', flagAlt: 'KE' },
-  { code: 'ZA', name: 'South Africa', flag: '🇿🇦', flagAlt: 'ZA' },
-  { code: 'NG', name: 'Nigeria', flag: '🇳🇬', flagAlt: 'NG' },
-  { code: 'GH', name: 'Ghana', flag: '🇬🇭', flagAlt: 'GH' },
-  { code: 'UG', name: 'Uganda', flag: '🇺🇬', flagAlt: 'UG' },
-  { code: 'RW', name: 'Rwanda', flag: '🇷🇼', flagAlt: 'RW' },
-  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿', flagAlt: 'TZ' },
-  { code: 'CI', name: "Cote d'Ivoire", flag: '🇨🇮', flagAlt: 'CI' }
+  { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
+  { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
+  { code: 'CI', name: "Cote d'Ivoire", flag: '🇨🇮' },
 ];
+
+const inputClass = (hasError: boolean) =>
+  `w-full px-4 py-3 rounded-xl border text-sm bg-white text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 ${
+    hasError
+      ? 'border-red-400 focus:ring-red-200'
+      : 'border-gray-200 focus:border-[#4A8DB8] focus:ring-[#4A8DB8]/20'
+  }`;
+
+const selectClass = (hasError: boolean) =>
+  `w-full px-4 py-3 rounded-xl border text-sm bg-white text-gray-900 outline-none transition-all focus:ring-2 appearance-none cursor-pointer ${
+    hasError
+      ? 'border-red-400 focus:ring-red-200'
+      : 'border-gray-200 focus:border-[#4A8DB8] focus:ring-[#4A8DB8]/20'
+  }`;
 
 export default function Signup() {
   const { t } = useLanguage();
   const { signUp, isAuthenticated, business, loading } = useSupabaseAuth();
   const { showError, showSuccess } = useToast();
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -39,120 +51,66 @@ export default function Signup() {
     password: '',
     confirmPassword: '',
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const router = useRouter();
 
-  // Check if user is already authenticated and redirect
   useEffect(() => {
     if (!loading && isAuthenticated && business && !isRedirecting) {
       setIsRedirecting(true);
       const country = business.country.toLowerCase();
       const industry = business.industry.toLowerCase();
-      
-      const redirectTimer = setTimeout(() => {
-        router.push(`/Beezee-App/app/${country}/${industry}`);
-      }, 150);
-      
-      return () => clearTimeout(redirectTimer);
+      const t = setTimeout(() => router.push(`/Beezee-App/app/${country}/${industry}`), 150);
+      return () => clearTimeout(t);
     }
   }, [isAuthenticated, business, loading, isRedirecting, router]);
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+    const e: Record<string, string> = {};
+    if (!formData.firstName.trim()) e.firstName = 'What\'s your first name?';
+    else if (formData.firstName.length < 2) e.firstName = 'At least 2 characters please';
 
-    // First name
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    } else if (formData.firstName.length < 2) {
-      newErrors.firstName = 'First name must be at least 2 characters';
-    }
+    if (!formData.lastName.trim()) e.lastName = 'What\'s your last name?';
+    else if (formData.lastName.length < 2) e.lastName = 'At least 2 characters please';
 
-    // Last name
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    } else if (formData.lastName.length < 2) {
-      newErrors.lastName = 'Last name must be at least 2 characters';
-    }
+    if (!formData.email.trim()) e.email = 'We need your email address';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'That email doesn\'t look right';
 
-    // Email
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
+    if (!formData.phone.trim()) e.phone = 'Don\'t forget your phone number';
+    else if (formData.phone.length < 10) e.phone = 'Phone number too short';
 
-    // Phone
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (formData.phone.length < 10) {
-      newErrors.phone = 'Phone number must be at least 10 digits';
-    }
+    if (!formData.businessName.trim()) e.businessName = 'What\'s your business called?';
+    if (!formData.country) e.country = 'Pick your country';
+    if (!formData.industry) e.industry = 'What type of business do you run?';
 
-    // Business name
-    if (!formData.businessName.trim()) {
-      newErrors.businessName = 'Business name is required';
-    }
+    if (!formData.password) e.password = 'You need a password';
+    else if (formData.password.length < 8) e.password = 'Password needs at least 8 characters';
 
-    // Country
-    if (!formData.country) {
-      newErrors.country = 'Please select a country';
-    }
+    if (!formData.confirmPassword) e.confirmPassword = 'Type your password again';
+    else if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords don\'t match';
 
-    // Industry
-    if (!formData.industry) {
-      newErrors.industry = 'Please select an industry';
-    }
-
-    // Password
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    // Confirm password
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) {
-      showError('Please fix the errors in the form');
+      showError('Almost there — check a few things above');
       return;
     }
-
     setIsSubmitting(true);
-
     try {
       const result = await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
@@ -163,392 +121,272 @@ export default function Signup() {
         industry: formData.industry,
         dailyTarget: formData.dailyTarget ? Number(formData.dailyTarget) : undefined,
       });
-
       if (result.error) {
         showError(result.error.message);
       } else if (result.data?.message) {
         showSuccess(result.data.message);
-        // Redirect to confirmation page
-        setTimeout(() => {
-          router.push('/Beezee-App/auth/confirmation');
-        }, 2000);
+        setTimeout(() => router.push('/Beezee-App/auth/confirmation'), 2000);
       }
-    } catch (error) {
-      showError('Sign up failed. Please try again.');
+    } catch {
+      showError('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-2 border-[var(--powder-dark)]/30 border-t-[var(--powder-dark)] rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[var(--text-2)]">Checking authentication...</p>
+          <div className="w-10 h-10 border-2 border-[#4A8DB8]/30 border-t-[#4A8DB8] rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-gray-400 text-sm">One second...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex flex-col">
-      {/* Back Nav */}
-      <div className="sticky top-0 z-10 bg-[var(--bg)]/80 backdrop-blur-sm border-b border-[var(--border)]">
-        <div className="container mx-auto px-6 py-3 max-w-2xl">
+    <div className="min-h-screen bg-gray-50">
+      {/* ── Top Bar ── */}
+      <div className="sticky top-0 z-10 bg-white border-b border-gray-100">
+        <div className="max-w-lg mx-auto px-5 py-3 flex items-center gap-3">
           <Link
             href="/Beezee-App/get-started"
-            className="inline-flex items-center gap-2 text-sm text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
           >
             <ArrowLeft size={16} />
-            Back to Get Started
+            Back
           </Link>
+          <span className="text-gray-300">|</span>
+          <span className="text-sm font-semibold text-gray-800">Create your account</span>
         </div>
       </div>
 
-      {/* Header */}
-      <div className="container mx-auto px-6 pt-8 pb-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-[var(--text-1)] mb-3">
-              Create Your Business Account
-            </h1>
-            <p className="text-[var(--text-2)] text-sm max-w-sm mx-auto">
-              Join thousands of African entrepreneurs managing their business with ease.
-            </p>
+      {/* ── Page Content ── */}
+      <div className="max-w-lg mx-auto px-5 py-8 pb-16">
+
+        {/* Heading */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Let&apos;s get you set up 👋</h1>
+          <p className="text-gray-500 text-sm">Takes less than 2 minutes. No credit card needed.</p>
+        </div>
+
+        {/* Error Banner */}
+        {Object.keys(errors).length > 0 && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm mb-6">
+            Almost there — check the highlighted fields above.
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Main content */}
-      <div className="container mx-auto px-6 pb-12">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8 shadow-xl">
-            {/* General Error */}
-            {Object.keys(errors).length > 0 && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-6">
-                <p className="font-medium">Please fix the following errors:</p>
-                <ul className="mt-2 space-y-1">
-                  {Object.values(errors).map((error, index) => (
-                    <li key={index} className="text-red-600">• {error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-[var(--text-1)] mb-4">Personal Information</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <User size={16} />
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      placeholder="Enter your first name"
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm ${
-                        errors.firstName ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      autoComplete="given-name"
-                      required
-                    />
-                    {errors.firstName && (
-                      <p className="text-red-600 text-xs mt-1">{errors.firstName}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <User size={16} />
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      placeholder="Enter your last name"
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm ${
-                        errors.lastName ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      autoComplete="family-name"
-                      required
-                    />
-                    {errors.lastName && (
-                      <p className="text-red-600 text-xs mt-1">{errors.lastName}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Mail size={16} />
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email address"
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm ${
-                        errors.email ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      autoComplete="email"
-                      required
-                    />
-                    {errors.email && (
-                      <p className="text-red-600 text-xs mt-1">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Phone size={16} />
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+254 700 000 000"
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm ${
-                        errors.phone ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      autoComplete="tel"
-                      required
-                    />
-                    {errors.phone && (
-                      <p className="text-red-600 text-xs mt-1">{errors.phone}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-[var(--text-1)] mb-4">Business Information</h3>
-                
+          {/* ── Your Details ── */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">About you</p>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                    <Building size={16} />
-                    Business Name
-                  </label>
                   <input
                     type="text"
-                    name="businessName"
-                    value={formData.businessName}
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
-                    placeholder="Enter your business name"
-                    className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm ${
-                      errors.businessName ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                    }`}
+                    placeholder="First name"
+                    className={inputClass(!!errors.firstName)}
                     disabled={isSubmitting}
-                    autoComplete="organization"
-                    required
+                    autoComplete="given-name"
                   />
-                  {errors.businessName && (
-                    <p className="text-red-600 text-xs mt-1">{errors.businessName}</p>
-                  )}
+                  {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Globe size={16} />
-                      Country
-                    </label>
-                    <select
-                      name="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] transition-all text-sm appearance-none cursor-pointer ${
-                        errors.country ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      required
-                    >
-                      <option value="">Select a country...</option>
-                      {countries.map((country) => (
-                        <option key={country.code} value={country.code}>
-                          {country.flag} {country.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.country && (
-                      <p className="text-red-600 text-xs mt-1">{errors.country}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Building size={16} />
-                      Industry
-                    </label>
-                    <select
-                      name="industry"
-                      value={formData.industry}
-                      onChange={handleChange}
-                      className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] transition-all text-sm appearance-none cursor-pointer ${
-                        errors.industry ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                      }`}
-                      disabled={isSubmitting}
-                      required
-                    >
-                      <option value="">Select an industry...</option>
-                      {industries.map((industry) => (
-                        <option key={industry.id} value={industry.id}>
-                          {industry.icon} {industry.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.industry && (
-                      <p className="text-red-600 text-xs mt-1">{errors.industry}</p>
-                    )}
-                  </div>
-                </div>
-
                 <div>
-                  <label className="text-sm font-medium text-[var(--text-2)] mb-2">
-                    Daily Target (Optional)
-                  </label>
                   <input
-                    type="number"
-                    name="dailyTarget"
-                    value={formData.dailyTarget}
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
                     onChange={handleChange}
-                    placeholder="Enter your daily sales target"
-                    className="w-full px-3 py-2.5 bg-[var(--glass-bg)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm"
+                    placeholder="Last name"
+                    className={inputClass(!!errors.lastName)}
                     disabled={isSubmitting}
-                    min="0"
-                    step="100"
+                    autoComplete="family-name"
                   />
+                  {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                 </div>
               </div>
 
-              {/* Security */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-[var(--text-1)] mb-4">Security</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Lock size={16} />
-                      Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Create a strong password"
-                        className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm pr-10 ${
-                          errors.password ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                        }`}
-                        disabled={isSubmitting}
-                        autoComplete="new-password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
-                      >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-600 text-xs mt-1">{errors.password}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-[var(--text-2)] mb-2">
-                      <Lock size={16} />
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="Confirm your password"
-                        className={`w-full px-3 py-2.5 bg-[var(--glass-bg)] border rounded-lg focus:ring-2 focus:ring-[var(--powder-dark)] focus:border-[var(--powder-mid)] text-[var(--text-1)] placeholder-[var(--text-3)] transition-all text-sm pr-10 ${
-                          errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-[var(--border)]'
-                        }`}
-                        disabled={isSubmitting}
-                        autoComplete="new-password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
-                      >
-                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && (
-                      <p className="text-red-600 text-xs mt-1">{errors.confirmPassword}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4">
-                <button
-                  type="submit"
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email address"
+                  className={inputClass(!!errors.email)}
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Creating Account...
-                    </>
-                  ) : (
-                    <>
-                      Create Account
-                      <ArrowRight size={18} />
-                    </>
-                  )}
-                </button>
+                  autoComplete="email"
+                />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
-            </form>
 
-            {/* Login Link */}
-            <div className="mt-6 text-center">
-              <p className="text-[var(--text-3)] text-sm">
-                Already have an account?{' '}
-                <Link
-                  href="/Beezee-App/auth/login"
-                  className="text-[var(--powder-dark)] hover:underline font-medium"
-                >
-                  Sign in
-                </Link>
-              </p>
+              <div>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Phone number (e.g. +254 700 000 000)"
+                  className={inputClass(!!errors.phone)}
+                  disabled={isSubmitting}
+                  autoComplete="tel"
+                />
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* ── Business Details ── */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Your business</p>
+            <div className="space-y-3">
+              <div>
+                <input
+                  type="text"
+                  name="businessName"
+                  value={formData.businessName}
+                  onChange={handleChange}
+                  placeholder="What's your business called?"
+                  className={inputClass(!!errors.businessName)}
+                  disabled={isSubmitting}
+                  autoComplete="organization"
+                />
+                {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className={selectClass(!!errors.country)}
+                    disabled={isSubmitting}
+                  >
+                    <option value="">Your country</option>
+                    {countries.map(c => (
+                      <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
+                    ))}
+                  </select>
+                  {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+                </div>
+                <div>
+                  <select
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleChange}
+                    className={selectClass(!!errors.industry)}
+                    disabled={isSubmitting}
+                  >
+                    <option value="">Type of business</option>
+                    {industries.map(i => (
+                      <option key={i.id} value={i.id}>{i.icon} {i.name}</option>
+                    ))}
+                  </select>
+                  {errors.industry && <p className="text-red-500 text-xs mt-1">{errors.industry}</p>}
+                </div>
+              </div>
+
+              <div>
+                <input
+                  type="number"
+                  name="dailyTarget"
+                  value={formData.dailyTarget}
+                  onChange={handleChange}
+                  placeholder="Daily sales goal — optional (e.g. 5000)"
+                  className={inputClass(false)}
+                  disabled={isSubmitting}
+                  min="0"
+                  step="100"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Password ── */}
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Set a password</p>
+            <div className="space-y-3">
+              <div>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Choose a password (8+ characters)"
+                    className={`${inputClass(!!errors.password)} pr-11`}
+                    disabled={isSubmitting}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(p => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+              </div>
+
+              <div>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Type your password again"
+                    className={`${inputClass(!!errors.confirmPassword)} pr-11`}
+                    disabled={isSubmitting}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(p => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Submit ── */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-[#1A2332] text-white font-bold py-4 rounded-2xl text-base active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 shadow-lg"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Setting things up...
+              </>
+            ) : (
+              'Create my account →'
+            )}
+          </button>
+        </form>
+
+        {/* ── Login Link ── */}
+        <p className="text-center text-gray-400 text-sm mt-6">
+          Already have an account?{' '}
+          <Link href="/Beezee-App/auth/login" className="text-[#4A8DB8] font-semibold hover:underline">
+            Sign in here
+          </Link>
+        </p>
       </div>
     </div>
   );
 }
-
