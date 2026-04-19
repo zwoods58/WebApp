@@ -4,7 +4,7 @@ import { useEffect, useState, lazy, Suspense } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { LanguageProvider } from '@/hooks/useLanguage';
 import { SupabaseAuthProvider, useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext';
+import { UnifiedAuthProvider, useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { IndustryProvider, useIndustry } from '@/contexts/IndustryContext';
 import { ToastProvider } from '@/providers/ToastProvider';
