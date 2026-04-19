@@ -32,6 +32,7 @@ import { syncManager } from '@/lib/sync-manager';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeConfirmDialog';
+import { INDUSTRY_CONFIG } from '@/config/industryConfig';
 
 export default function ServicesPage() {
   const params = useParams();
@@ -225,18 +226,17 @@ export default function ServicesPage() {
     return () => clearInterval(syncInterval);
   }, [business?.id]);
   
-  const addInventoryItem = industry === 'transport' ? () => {} : addInventoryItemFn;
-  const updateInventoryItem = industry === 'transport' ? () => {} : updateInventoryItemFn;
-  const deleteInventoryItem = industry === 'transport' ? 
-    () => {} : 
-    deleteInventoryItemFn;
+  const featureConfig = INDUSTRY_CONFIG[industry as keyof typeof INDUSTRY_CONFIG];
+  const addInventoryItem = featureConfig.inventory ? addInventoryItemFn : () => {};
+  const updateInventoryItem = featureConfig.inventory ? updateInventoryItemFn : () => {};
+  const deleteInventoryItem = featureConfig.inventory ? deleteInventoryItemFn : () => {};
   
   // Tab state for split screen (only show tabs for non-transport industries)
   const [activeTab, setActiveTab] = useState<'services' | 'inventory'>('services');
   
-  // Check if industry should show services tab (food and retail should not, transport only services)
-  const shouldShowServicesTab = !['food', 'retail'].includes(industry);
-  const shouldShowInventoryTab = !['transport'].includes(industry); // Transport doesn't show inventory
+  // Use unified config to determine tab visibility
+  const shouldShowServicesTab = featureConfig.services;
+  const shouldShowInventoryTab = featureConfig.inventory;
   const pageTitle = shouldShowServicesTab ? safeT('services.title', 'Services') : safeT('services.inventory_tab', 'Inventory');
   
   // Force inventory tab for food and retail industries
@@ -310,8 +310,8 @@ export default function ServicesPage() {
     }
   };
 
-  const config = industryConfig[industry as keyof typeof industryConfig] || industryConfig.retail;
-  const categories = config.categories;
+  const categoryConfig = industryConfig[industry as keyof typeof industryConfig] || industryConfig.retail;
+  const categories = categoryConfig.categories;
   
   // Calculate summary statistics from real data
   const totalServices = safeServices.length;
@@ -1156,7 +1156,7 @@ export default function ServicesPage() {
               onCancel={() => setShowAddModal(false)}
               country={country}
               industry={industry}
-              config={config}
+              config={categoryConfig}
             />
           </div>
         </div>
@@ -1171,7 +1171,7 @@ export default function ServicesPage() {
               onCancel={() => setShowAddInventoryModal(false)}
               country={country}
               industry={industry}
-              config={config}
+              config={categoryConfig}
               t={t}
             />
           </div>

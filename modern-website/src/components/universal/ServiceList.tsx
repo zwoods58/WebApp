@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Wrench, Car, Package, Plus, DollarSign, Edit2, Trash2 } from 'lucide-react';
+import { Package, Edit, Trash2, Clock, MapPin, Car, Wrench, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency } from '@/utils/currency';
+import { INDUSTRY_CONFIG } from '@/config/industryConfig';
 import { useServicesTanStack } from '@/hooks';
 
 interface ServiceListProps {
@@ -24,7 +25,9 @@ export default function ServiceList({
   businessId
 }: ServiceListProps) {
   const { t } = useLanguage();
+  const featureConfig = INDUSTRY_CONFIG[industry as keyof typeof INDUSTRY_CONFIG];
   const { deleteService, updateService } = useServicesTanStack({ businessId, industry });
+  const [editingService, setEditingService] = useState<any>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const handleDeleteService = async (serviceId: string) => {
@@ -57,7 +60,7 @@ export default function ServiceList({
   };
 
   const getServicePricing = (service: any) => {
-    if (industry === 'transport' && service.metadata) {
+    if (featureConfig.services && service.metadata) {
       const base = service.metadata.base_amount || 0;
       const pricePerKm = service.metadata.price_per_km || 0;
       if (pricePerKm > 0) {
@@ -90,16 +93,14 @@ export default function ServiceList({
             <div key={service.id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Icon className="text-green-600" size={16} />
+                  <Edit className="text-blue-600" size={14} />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900 text-sm">
                     {service.service_name}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {industry === 'transport' ? t('services.base_km_pricing', 'Base + KM pricing') : 
-                     (industry === 'salon' || industry === 'freelance') ? 
-                     `${service.duration || 30} ${t(`services.${industry === 'salon' ? 'minutes' : 'days'}`, industry === 'salon' ? 'minutes' : 'days')}` :
+                    {featureConfig.services ? t('services.base_km_pricing', 'Base + KM pricing') : 
                      service.category || t('services.service', 'Service')}
                   </p>
                 </div>
@@ -121,7 +122,7 @@ export default function ServiceList({
                     className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                     title={t('services.edit_service', 'Edit service')}
                   >
-                    <Edit2 size={14} />
+                    <Edit size={14} />
                   </button>
                   <button
                     onClick={() => setConfirmDelete(service.id)}

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Save, Clock } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { formatCurrency, getCurrency } from '@/utils/currency';
+import { INDUSTRY_CONFIG } from '@/config/industryConfig';
 
 interface EditServiceModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function EditServiceModal({
   isAddMode = false 
 }: EditServiceModalProps) {
   const { t } = useLanguage();
+  const featureConfig = INDUSTRY_CONFIG[industry as keyof typeof INDUSTRY_CONFIG];
   const [formData, setFormData] = useState({
     service_name: service?.service_name || '',
     price: service?.price ? service.price.toString() : '',
@@ -43,8 +45,8 @@ export default function EditServiceModal({
       category: formData.category
     };
 
-    // Add duration for salon and freelance industries
-    if ((industry === 'salon' || industry === 'freelance') && formData.duration) {
+    // Add duration for industries that support it
+    if (featureConfig.services && formData.duration) {
       updates.duration = parseInt(formData.duration);
     }
 
@@ -139,7 +141,7 @@ export default function EditServiceModal({
                 />
               </div>
               
-              {(industry === 'salon' || industry === 'freelance') && (
+              {featureConfig.services && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('services.duration_minutes', 'Duration (minutes)')}

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { TrendingUp, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
-import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useLanguage } from '@/hooks/useLanguage';
+import React, { useState, useEffect, useRef } from 'react';
+import { DollarSign, Plus, X, Car, Store, Utensils, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { useServices } from '@/hooks';
+import { formatCurrency, getCurrency } from '@/utils/currency';
+import { INDUSTRY_CONFIG } from '@/config/industryConfig';
+import { useLanguage } from '@/hooks/useLanguage';
 import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 
 type Service = {
@@ -60,7 +61,8 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
   });
 
   // Get services for transport industry
-  const servicesHook = industry === 'transport' ? useServices({ industry }) : { data: [], loading: false, error: null };
+  const featureConfig = INDUSTRY_CONFIG[industry as keyof typeof INDUSTRY_CONFIG];
+  const servicesHook = featureConfig.services ? useServices({ industry }) : { data: [], loading: false, error: null };
   const services = servicesHook.data || [];
 
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
@@ -87,7 +89,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
 
   // Update amount when transport fields change
   React.useEffect(() => {
-    if (industry === 'transport' && formData.service_id) {
+    if (featureConfig.services && formData.service_id) {
       const fare = calculateTransportFare();
       setFormData(prev => ({ ...prev, amount: fare.toString() }));
       // Update description with service name
@@ -311,7 +313,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                 </div>
 
                 {/* Transport-specific fields */}
-                {industry === 'transport' && (
+                {featureConfig.services && (
                   <>
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
