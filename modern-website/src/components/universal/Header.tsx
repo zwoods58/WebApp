@@ -58,7 +58,10 @@ export default function Header({ industry, country }: HeaderProps) {
   const isHomeDashboard = pathname?.endsWith(`/${country}/${industry}`) || pathname?.endsWith(`/${country}/${industry}/`);
   const isNoBackArrowPage = pathname?.includes(`/${country}/${industry}/cash`) || 
                            pathname?.includes(`/${country}/${industry}/credit`) || 
-                           pathname?.includes(`/${country}/${industry}/more`);
+                           pathname?.includes(`/${country}/${industry}/more`) ||
+                           pathname?.includes(`/${country}/${industry}/stock`) ||
+                           pathname?.includes(`/${country}/${industry}/services`) ||
+                           pathname?.includes(`/${country}/${industry}/appointments`);
   const shouldHideBackArrow = isHomeDashboard || isNoBackArrowPage;
 
   // Available languages for the current country
