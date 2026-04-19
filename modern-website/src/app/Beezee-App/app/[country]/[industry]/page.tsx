@@ -455,11 +455,13 @@ export default function IndustryDashboard() {
   };
 
   const handleAddService = () => {
-    setShowServiceModal(true);
+    // Navigate to services page instead of showing modal
+    router.push(`/Beezee-App/app/${country}/${industry}/services`);
   };
 
   const handleAddInventory = () => {
-    setShowInventoryModal(true);
+    // Navigate to inventory page instead of showing modal
+    router.push(`/Beezee-App/app/${country}/${industry}/stock`);
   };
 
   const handleAddInventorySubmit = (inventoryData: any) => {
