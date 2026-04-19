@@ -16,6 +16,17 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
     const [isStabilizing, setIsStabilizing] = useState(true);
     const [isOnline, setIsOnline] = useState(true);
 
+    // NEW: detect fresh signup so we don't redirect too early
+    const [isNewSignup, setIsNewSignup] = useState(false);
+
+    useEffect(() => {
+        const freshSignup = sessionStorage.getItem('beezee_fresh_signup');
+        if (freshSignup) {
+            setIsNewSignup(true);
+            sessionStorage.removeItem('beezee_fresh_signup');
+        }
+    }, []);
+
     useEffect(() => {
         const updateOnlineStatus = () => setIsOnline(navigator.onLine);
         updateOnlineStatus();
@@ -31,6 +42,7 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
         console.log('🛡️ ProtectedRoute check:', { 
             loading, 
             isAuthenticated, 
+            isNewSignup,
             business: business ? { 
                 id: business.id, 
                 country: business.country, 
@@ -42,10 +54,19 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
         });
 
         // CRITICAL: Only make routing decisions when everything is loaded
-        // This prevents the glitch where we redirect to login during auth restoration
         if (loading) {
             console.log('⏳ Still loading auth/business data, waiting...');
-            return; // Don't make ANY routing decisions while loading
+            return; 
+        }
+
+        // NEW: if business is still loading in after fresh signup, wait up to 5s
+        if (isNewSignup && !business) {
+            console.log('⏳ Fresh signup detected, waiting for business context to load...');
+            const timeout = setTimeout(() => {
+                console.log('⏳ Fresh signup grace period expired');
+                setIsNewSignup(false); // give up waiting, let normal logic proceed
+            }, 5000);
+            return () => clearTimeout(timeout);
         }
 
         // Auth is loaded, now check authentication status
@@ -85,9 +106,10 @@ export function ProtectedRoute({ children, requiredCountry, requiredIndustry }: 
 
         console.log('✅ Authentication and route validation passed');
         setIsStabilizing(false);
-    }, [business, loading, isAuthenticated, requiredCountry, requiredIndustry, router, isOnline]);
+    }, [business, loading, isAuthenticated, isNewSignup, requiredCountry, requiredIndustry, router, isOnline]);
 
-    if (loading || isStabilizing) {
+    // treat fresh signup as stabilizing so spinner shows instead of redirecting
+    if (loading || isStabilizing || (isNewSignup && !business)) {
         return (
             <div className="relative min-h-screen">
                 {/* Show content with reduced opacity */}

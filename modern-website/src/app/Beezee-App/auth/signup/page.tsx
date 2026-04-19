@@ -84,6 +84,9 @@ export default function Signup() {
         };
         localStorage.setItem('beezee_user_data', JSON.stringify(userData));
         
+        // ADD THIS LINE before router.push
+        sessionStorage.setItem('beezee_fresh_signup', 'true');
+        
         // Route them directly to the home page dashboard
         const c = formData.country.toLowerCase() || 'kenya';
         const i = formData.industry.toLowerCase() || 'retail';
