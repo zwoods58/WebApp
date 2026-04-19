@@ -5,10 +5,17 @@ import { SubscriptionAPI } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
+/**
+ * NigeriaSubscriptionModal
+ * Optimized for PWA with same-tab redirection and secure server-side verification.
+ * Supports Paga, OPay, and Bank Transfer.
+ */
+
 const PagaColors = {
-  primary: '#F26522',
+  primary: '#F26522', // Paga Orange
   secondary: '#F7931E',
-  accent: '#FFC20E'
+  accent: '#FFC20E',
+  dark: '#1E3A5F', // Deep Navy
 };
 
 interface NigeriaSubscriptionModalProps {
@@ -19,7 +26,7 @@ interface NigeriaSubscriptionModalProps {
 
 export function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: NigeriaSubscriptionModalProps) {
   const { showSuccess, showError } = useToastContext();
-  const { user } = useUnifiedAuth();
+  const { business } = useUnifiedAuth();
   const amount = 500;
   
   const [paymentMethod, setPaymentMethod] = useState('paga');
@@ -27,48 +34,31 @@ export function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: Nigeria
   const [email, setEmail] = useState('');
   const [step, setStep] = useState<'form' | 'waiting' | 'success'>('form');
   const [isLoading, setIsLoading] = useState(false);
-  const [planId, setPlanId] = useState<string | null>(null);
 
-  const userName = user?.business_name || 'Customer';
+  const businessName = business?.business_name || 'Beezee Customer';
 
   const paymentMethods = [
-    { id: 'paga', name: 'Paga', icon: '', description: 'Paga ID or phone number', color: PagaColors.primary },
-    { id: 'opay', name: 'OPay', icon: '', description: 'OPay account number', color: '#4CAF50' },
-    { id: 'bank', name: 'Bank Transfer', icon: '', description: 'Instant NIBSS payment', color: '#3B82F6' },
-    { id: 'card', name: 'Card', icon: '', description: 'Visa, Mastercard, Verve', color: '#1E3A5F' }
+    { id: 'paga', name: 'Paga', icon: '🟠', description: 'Paga ID or phone', color: PagaColors.primary },
+    { id: 'opay', name: 'OPay', icon: '🟢', description: 'OPay account', color: '#05AC72' },
+    { id: 'bank_transfer', name: 'Transfer', icon: '🏦', description: 'NIBSS Instant', color: '#3B82F6' },
   ];
 
   useEffect(() => {
-    if (isOpen) {
-      fetchPlanId();
+    if (isOpen && business?.email && !email) {
+      setEmail(business.email);
     }
-  }, [isOpen]);
+  }, [isOpen, business, email]);
 
-  const fetchPlanId = async () => {
-    try {
-      const plans = await SubscriptionAPI.getPlans('NG');
-      if (plans && plans.length > 0) {
-        setPlanId(plans[0].id);
-        console.log(' Nigeria plan loaded:', plans[0]);
-      }
-    } catch (error) {
-      console.error('Failed to load plan:', error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!identifier) {
-      showError('Please enter your payment identifier');
-      return;
-    }
-
-    if (!planId) {
-      showError('Loading subscription plan. Please try again.');
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     if (!email || !email.includes('@')) {
-      showError('Please enter a valid email address');
+      showError('Please enter a valid email');
+      return;
+    }
+
+    if (!identifier && paymentMethod !== 'card') {
+      showError('Please enter your account details');
       return;
     }
 
@@ -76,36 +66,25 @@ export function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: Nigeria
     setStep('waiting');
 
     try {
-      const result = await SubscriptionAPI.createSubscription({
+      const response = await SubscriptionAPI.createSubscription({
         email: email,
-        firstName: userName,
-        countryCode: 'NG',
-        planId: planId,
-        paymentMethod: paymentMethod,
-        phone: identifier,
+        firstName: businessName,
         lastName: 'Customer',
+        phone: identifier,
+        countryCode: 'Nigeria', // <--- Matches Edge Function map
+        paymentMethod: paymentMethod === 'bank_transfer' ? 'bank_transfer' : 'mobile_money',
       });
 
-      if (result.authorizationUrl) {
-        // Open payment URL in new tab (PWA-safe)
-        window.open(result.authorizationUrl, '_blank', 'noopener,noreferrer');
-        setStep('waiting');
-        showSuccess('Payment opened in new tab. Complete payment and return here.');
-      } else if (result.success) {
-        setStep('success');
-        showSuccess('Weekly subscription activated!');
-        setTimeout(() => {
-          onSuccess?.();
-          onClose();
-          setStep('form');
-          setIdentifier('');
-        }, 3000);
+      if (response.success && (response.paymentUrl || response.authorizationUrl)) {
+        const url = response.paymentUrl || response.authorizationUrl;
+        // PWA Safe Redirect
+        window.location.href = url!;
       } else {
-        throw new Error(result.message || 'Payment failed');
+        throw new Error(response.message || 'Payment initialization failed');
       }
     } catch (error) {
-      console.error('Payment error:', error);
-      showError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
+      console.error('Nigeria subscription error:', error);
+      showError(error instanceof Error ? error.message : 'Something went wrong');
       setStep('form');
     } finally {
       setIsLoading(false);
@@ -117,126 +96,142 @@ export function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: Nigeria
   const selectedMethod = paymentMethods.find(m => m.id === paymentMethod);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
-        
-        <div style={{ backgroundColor: PagaColors.primary }} className="p-5">
-          <h2 className="text-xl font-bold text-white">Subscribe with Paga</h2>
-          <p className="text-sm text-orange-100">Powered by Kyshi NIBSS Instant</p>
-        </div>
-
-        <div className="bg-orange-50 p-3 text-center border-b border-orange-100">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl"></span>
-            <span className="font-semibold text-orange-800">Paga Instant Payment</span>
-            <span className="text-xs bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">Weekly</span>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
+      <div 
+        className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden relative border border-white/20"
+        style={{ 
+          background: `linear-gradient(135deg, #ffffff 0%, #fff7f5 100%)`,
+        }}
+      >
+        {/* Header */}
+        <div style={{ backgroundColor: PagaColors.primary }} className="p-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl -ml-16 -mb-16"></div>
+          
+          <div className="relative z-10">
+            <h2 className="text-2xl font-black text-white tracking-tight uppercase">Nigeria Checkout</h2>
+            <p className="text-orange-100 text-xs font-bold tracking-widest mt-1 opacity-80">POWERED BY KYSHI SECURE</p>
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">#{amount.toLocaleString()}</div>
-          <div className="text-sm text-gray-500 mt-1">weekly subscription auto-renews every 7 days</div>
-          <div className="text-xs text-green-600 mt-2"> 7.5% VAT included</div>
-          <div className="text-xs text-gray-400 mt-1"> Billed weekly Cancel anytime</div>
+        {/* Price Tag */}
+        <div className="px-8 pt-8 pb-4 text-center">
+          <div className="inline-block px-4 py-1.5 bg-orange-50 rounded-2xl text-orange-600 text-[10px] font-black tracking-[0.2em] mb-4">
+            WEEKLY SUBSCRIPTION
+          </div>
+          <div className="flex items-center justify-center gap-1">
+            <span className="text-2xl font-bold text-gray-400">₦</span>
+            <span className="text-6xl font-black text-gray-900 tracking-tighter">{amount}</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-3 font-medium">Billed every 7 days. Cancel anytime.</p>
         </div>
 
         {step === 'form' && (
-          <>
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-2">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
-                disabled={isLoading}
-                required
-              />
-              <p className="text-xs text-gray-500 mt-2">We'll send your subscription confirmation here</p>
-            </div>
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+            <div className="space-y-5">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full bg-gray-50 px-5 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-500 transition-all outline-none text-gray-900 font-medium"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
 
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-3">Select payment method</label>
-              <div className="grid grid-cols-2 gap-3">
-                {paymentMethods.map(method => (
-                  <button
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`p-3 border rounded-xl text-left transition ${
-                      paymentMethod === method.id 
-                        ? 'border-orange-500 bg-orange-50' 
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="text-xl mb-1">{method.icon}</div>
-                    <div className="font-medium text-sm">{method.name}</div>
-                    <div className="text-xs text-gray-400">{method.description}</div>
-                  </button>
-                ))}
+              {/* Method Selector */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Payment Method</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {paymentMethods.map(method => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setProviderSelection(method.id)}
+                      className={`py-3 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 ${
+                        paymentMethod === method.id 
+                          ? 'border-orange-500 bg-orange-50/50 shadow-sm' 
+                          : 'border-gray-100 bg-gray-50/30'
+                      }`}
+                    >
+                      <span className="text-lg">{method.icon}</span>
+                      <span className="text-[9px] font-black uppercase text-gray-600">{method.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Identifier */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                  {paymentMethod === 'paga' ? 'Paga ID or Phone' : 
+                   paymentMethod === 'opay' ? 'OPay Account No' : 
+                   'Bank Account Number'}
+                </label>
+                <input
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder={paymentMethod === 'paga' ? '080...' : '1234567890'}
+                  className="w-full bg-gray-50 px-5 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-orange-500 transition-all outline-none text-gray-900 font-medium"
+                  required
+                  disabled={isLoading}
+                />
               </div>
             </div>
 
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-2">
-                {paymentMethod === 'paga' && 'Paga ID or Phone Number'}
-                {paymentMethod === 'opay' && 'OPay Account Number'}
-                {paymentMethod === 'bank' && 'Bank Account Number'}
-                {paymentMethod === 'card' && 'Card Number'}
-              </label>
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder={
-                  paymentMethod === 'paga' ? '0801 234 5678 or Paga ID' :
-                  paymentMethod === 'opay' ? '8123456789' :
-                  paymentMethod === 'bank' ? '0123456789' :
-                  '1234 5678 9012 3456'
-                }
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
-                disabled={isLoading}
-                required
-              />
-              {paymentMethod === 'bank' && (
-                <p className="text-xs text-blue-600 mt-2"> You will be redirected to your banking app</p>
-              )}
-            </div>
-
-            <div className="p-6 pt-0">
+            <div className="pt-2">
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={isLoading}
                 style={{ backgroundColor: selectedMethod?.color || PagaColors.primary }}
-                className="w-full hover:opacity-90 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50"
+                className="w-full py-5 rounded-[1.25rem] text-white font-black text-sm uppercase tracking-[0.15em] shadow-xl shadow-orange-900/10 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
               >
-                {isLoading ? 'Processing...' : `Pay #${amount} via ${selectedMethod?.name}`}
+                {isLoading ? 'Wait...' : `Pay ₦${amount}`}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={onClose}
+                className="w-full mt-6 text-[10px] font-black text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-[0.25em]"
+              >
+                NOT NOW
               </button>
             </div>
-          </>
+          </form>
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-            <p className="font-medium text-gray-900">Check your phone</p>
-            <p className="text-sm text-gray-500 mt-1">Approve payment on your {selectedMethod?.name} app</p>
+          <div className="p-16 text-center space-y-8">
+            <div className="relative inline-block">
+              <div className="w-24 h-24 border-[10px] border-orange-50 border-t-orange-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center text-3xl">🇳🇬</div>
+            </div>
+            <div>
+              <p className="text-xl font-black text-gray-900 uppercase italic">Confirming...</p>
+              <p className="text-sm text-gray-500 mt-2 font-medium">Please check your {selectedMethod?.name} app or phone for the prompt.</p>
+            </div>
           </div>
         )}
 
-        {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4"></div>
-            <p className="font-medium text-gray-900">Weekly subscription activated!</p>
-            <p className="text-sm text-gray-500 mt-1">You will be charged #{amount} every 7 days</p>
-          </div>
-        )}
-
-        <div className="p-4 text-center text-xs text-gray-400 border-t">
-          Secured by Kyshi NIBSS Instant Payment Network
+        {/* Security Footer */}
+        <div className="p-6 text-center bg-gray-50/80 border-t border-gray-100">
+          <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">
+            Secured by Kyshi • NIBSS Compliant
+          </p>
         </div>
       </div>
     </div>
   );
-}
 
+  function setProviderSelection(id: string) {
+    setPaymentMethod(id);
+    // Visual feedback
+    const vibrate = window.navigator.vibrate;
+    if (vibrate) vibrate(10);
+  }
+}

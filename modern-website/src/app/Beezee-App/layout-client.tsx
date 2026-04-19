@@ -35,11 +35,13 @@ function BeezeeContentWithLanguage({ children }: { children: React.ReactNode }) 
   );
 }
 
+import { ReadOnlyBanner } from '@/components/subscription/ReadOnlyBanner';
+
 function BeezeeContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, business } = useSupabaseAuth();
+  const { user, business, isReadOnly } = useUnifiedAuth();
   
   // Add custom styles for animations (client-side only)
   useEffect(() => {
@@ -142,7 +144,10 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
   const industry = pathMatch?.[2] || '';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Read Only Banner */}
+      <ReadOnlyBanner />
+
       {/* Connection Toast Notification */}
       <Suspense fallback={null}>
         <ConnectionToast duration={3000} />

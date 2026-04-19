@@ -26,10 +26,12 @@ export interface Business {
 export interface SupabaseAuthState {
   user: any | null;
   business: Business | null;
+  subscription: any | null; // Added subscription state
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
   isEmailConfirmed: boolean;
+  isReadOnly: boolean; // Added read-only flag
 }
 
 interface SupabaseAuthContextType extends SupabaseAuthState {
@@ -56,10 +58,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   const [authState, setAuthState] = useState<SupabaseAuthState>({
     user: null,
     business: null,
+    subscription: null,
     loading: true,
     error: null,
     isAuthenticated: false,
     isEmailConfirmed: false,
+    isReadOnly: false,
   });
 
   // Load auth state from storage and Supabase on mount
@@ -86,13 +90,22 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
           // Load business data
           const business = await loadBusinessData(session.user.id);
           
+          // Load subscription data
+          const subscription = await loadSubscriptionData(session.user.id);
+          
+          // Determine if read-only
+          // If status is 'failed' or 'cancelled', or if sub is missing but user is old
+          const isReadOnly = subscription?.status === 'failed' || subscription?.status === 'cancelled';
+          
           setAuthState({
             user: session.user,
             business,
+            subscription,
             loading: false,
             error: null,
             isAuthenticated: true,
             isEmailConfirmed: isConfirmed,
+            isReadOnly,
           });
 
           // Set business context for RLS
@@ -123,28 +136,30 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         if (event === 'SIGNED_IN' && session?.user) {
           const isConfirmed = session.user.email_confirmed_at != null;
           const business = await loadBusinessData(session.user.id);
+          const subscription = await loadSubscriptionData(session.user.id);
+          const isReadOnly = subscription?.status === 'failed' || subscription?.status === 'cancelled';
           
           setAuthState(prev => ({
             ...prev,
             user: session.user,
             business,
+            subscription,
             isAuthenticated: true,
             isEmailConfirmed: isConfirmed,
+            isReadOnly,
             loading: false,
             error: null,
           }));
-
-          if (business) {
-            await setBusinessContext(business.id, business.country, business.industry);
-          }
         } else if (event === 'SIGNED_OUT') {
           setAuthState({
             user: null,
             business: null,
+            subscription: null,
             loading: false,
             error: null,
             isAuthenticated: false,
             isEmailConfirmed: false,
+            isReadOnly: false,
           });
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           const isConfirmed = session.user.email_confirmed_at != null;
@@ -158,6 +173,26 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     );
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  // Load subscription data for a user
+  const loadSubscriptionData = useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('❌ Error loading subscription data:', error);
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error('💥 Error loading subscription data:', error);
+      return null;
+    }
   }, []);
 
   // Load business data for a user

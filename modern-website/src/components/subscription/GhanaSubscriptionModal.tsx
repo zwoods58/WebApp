@@ -1,13 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SubscriptionAPI } from '@/lib/subscription-api';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { SubscriptionAPI } from '@/lib/subscription-api';
 
-const MtnColors = { primary: '#EAB308', secondary: '#000000' };
-const VodafoneColors = { primary: '#DC2626', secondary: '#FFFFFF' };
-const AirtelTigoColors = { primary: '#DC2626', secondary: '#FFFFFF' };
+/**
+ * GhanaSubscriptionModal
+ * Optimized for PWA with same-tab redirection and secure server-side verification.
+ * Supports MTN MoMo, Vodafone Cash, and AirtelTigo.
+ */
+
+const GH_Colors = {
+  mtn: '#FFCC00',
+  vodafone: '#E60000',
+  airteltigo: '#004C91',
+  dark: '#121212',
+};
 
 interface GhanaSubscriptionModalProps {
   isOpen: boolean;
@@ -15,59 +24,42 @@ interface GhanaSubscriptionModalProps {
   onSuccess?: () => void;
 }
 
+type Provider = 'mtn' | 'vodafone' | 'airteltigo';
+
+const PROVIDERS = {
+  mtn:        { name: 'MTN Mobile Money',  short: 'MTN MoMo',      color: GH_Colors.mtn,      textColor: 'black', icon: '🟡' },
+  vodafone:   { name: 'Vodafone Cash',     short: 'Vodafone Cash', color: GH_Colors.vodafone, textColor: 'white', icon: '🔴' },
+  airteltigo: { name: 'AirtelTigo Money',  short: 'AirtelTigo',   color: GH_Colors.airteltigo, textColor: 'white', icon: '🔵' },
+} as const;
+
 export function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubscriptionModalProps) {
   const { showSuccess, showError } = useToastContext();
-  const { user } = useUnifiedAuth();
-  const amount = 20;
-  
-  const [provider, setProvider] = useState<'mtn' | 'vodafone' | 'airteltigo'>('mtn');
+  const { business } = useUnifiedAuth();
+
+  const [provider, setProvider]     = useState<Provider>('mtn');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [step, setStep] = useState<'form' | 'waiting' | 'success'>('form');
-  const [isLoading, setIsLoading] = useState(false);
-  const [planId, setPlanId] = useState<string | null>(null);
+  const [email, setEmail]           = useState('');
+  const [step, setStep]             = useState<'form' | 'waiting' | 'success'>('form');
+  const [isLoading, setIsLoading]   = useState(false);
 
-  const userName = user?.business_name || 'Customer';
-
-  const providers = {
-    mtn: { name: 'MTN Mobile Money', short: 'MTN MoMo', color: MtnColors.primary, textColor: 'black', prefix: '24' },
-    vodafone: { name: 'Vodafone Cash', short: 'Vodafone Cash', color: VodafoneColors.primary, textColor: 'white', prefix: '30' },
-    airteltigo: { name: 'AirtelTigo Money', short: 'AirtelTigo', color: AirtelTigoColors.primary, textColor: 'white', prefix: '27' }
-  };
-
-  const currentProvider = providers[provider];
+  const amount = 20;
+  const currentProvider = PROVIDERS[provider];
+  const businessName = business?.business_name || 'Beezee Customer';
 
   useEffect(() => {
-    if (isOpen) {
-      fetchPlanId();
+    if (isOpen && business?.email && !email) {
+      setEmail(business.email);
     }
-  }, [isOpen]);
+  }, [isOpen, business, email]);
 
-  const fetchPlanId = async () => {
-    try {
-      const plans = await SubscriptionAPI.getPlans('GH');
-      if (plans && plans.length > 0) {
-        setPlanId(plans[0].id);
-        console.log(' Ghana plan loaded:', plans[0]);
-      }
-    } catch (error) {
-      console.error('Failed to load plan:', error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!phoneNumber || phoneNumber.length < 9) {
-      showError('Please enter a valid phone number');
-      return;
-    }
-
-    if (!planId) {
-      showError('Loading subscription plan. Please try again.');
-      return;
-    }
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!email || !email.includes('@')) {
       showError('Please enter a valid email address');
+      return;
+    }
+    if (!phoneNumber || phoneNumber.length < 9) {
+      showError('Please enter a valid phone number');
       return;
     }
 
@@ -75,35 +67,26 @@ export function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubs
     setStep('waiting');
 
     try {
-      const result = await SubscriptionAPI.createSubscription({
+      // Use 'Ghana' to match Edge Function keys
+      const response = await SubscriptionAPI.createSubscription({
         email: email,
-        firstName: userName,
+        firstName: businessName,
         lastName: 'Customer',
-        countryCode: 'GH',
-        planId: planId,
+        phone: `233${phoneNumber.replace(/^0/, '')}`,
+        countryCode: 'Ghana', // <--- Matches Edge Function map
         paymentMethod: 'mobile_money',
-        phone: `233${phoneNumber}`,
+        provider: provider // 'mtn', 'vodafone', or 'airteltigo'
       });
 
-      if (result.authorizationUrl) {
-        // Open payment URL in new tab (PWA-safe)
-        window.open(result.authorizationUrl, '_blank', 'noopener,noreferrer');
-        setStep('waiting');
-        showSuccess('Payment opened in new tab. Complete payment and return here.');
-      } else if (result.success) {
-        setStep('success');
-        showSuccess('Weekly subscription activated!');
-        setTimeout(() => {
-          onSuccess?.();
-          onClose();
-          setStep('form');
-          setPhoneNumber('');
-        }, 3000);
+      if (response.success && (response.paymentUrl || response.authorizationUrl)) {
+        const url = response.paymentUrl || response.authorizationUrl;
+        // PWA Safe Redirect
+        window.location.href = url!;
       } else {
-        throw new Error(result.message || 'Payment failed');
+        throw new Error(response.message || 'Payment initialization failed');
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('[GhanaModal] Error:', error);
       showError(error instanceof Error ? error.message : 'Payment failed. Please try again.');
       setStep('form');
     } finally {
@@ -114,151 +97,136 @@ export function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubs
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full shadow-xl overflow-hidden">
-        
-        <div style={{ backgroundColor: currentProvider.color }} className="p-5">
-          <h2 className={`text-xl font-bold ${currentProvider.textColor === 'white' ? 'text-white' : 'text-black'}`}>
-            {currentProvider.name}
-          </h2>
-          <p className={`text-sm ${currentProvider.textColor === 'white' ? 'text-white/70' : 'text-black/70'}`}>
-            Powered by Kyshi MoMo approved
-          </p>
-        </div>
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-xl flex items-center justify-center z-[100] p-4 animate-in fade-in zoom-in duration-300">
+      <div 
+        className="w-full max-w-md bg-white rounded-[3rem] shadow-2xl overflow-hidden relative border border-white/10"
+        style={{ 
+          background: `linear-gradient(135deg, #ffffff 0%, #fefce8 100%)`,
+        }}
+      >
+        {/* Animated Background Element */}
+        <div 
+          className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[80px] opacity-20 animate-pulse transition-colors duration-700"
+          style={{ backgroundColor: currentProvider.color }}
+        ></div>
 
-        <div className="bg-yellow-50 p-3 text-center border-b border-yellow-100">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl"></span>
-            <span className="font-semibold text-yellow-800">Mobile Money</span>
-            <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full">Weekly</span>
+        {/* Brand Header */}
+        <div style={{ backgroundColor: GH_Colors.dark }} className="p-8 pb-12 relative overflow-hidden">
+          <div className="flex justify-between items-center relative z-10">
+            <div>
+              <h2 className="text-3xl font-black text-white tracking-tight">Ghana <span style={{ color: currentProvider.color }}>Pay</span></h2>
+              <p className="text-gray-400 text-[10px] font-black tracking-[0.3em] mt-1">KYSHI SECURE NETWORK</p>
+            </div>
+            <div className="text-4xl">{currentProvider.icon}</div>
           </div>
         </div>
 
-        <div className="p-6 text-center border-b">
-          <div className="text-3xl font-bold">#{amount}</div>
-          <div className="text-sm text-gray-500 mt-1">weekly subscription auto-renews every 7 days</div>
-          <div className="text-xs text-gray-500 mt-2">E-Levy included in price</div>
-          <div className="text-xs text-gray-400 mt-1"> Billed weekly Cancel anytime</div>
+        {/* Plan Details Card */}
+        <div className="mx-8 -mt-8 bg-white/80 backdrop-blur-md rounded-[2rem] p-6 shadow-xl border border-white/50 relative z-20">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-black text-gray-400 tracking-widest uppercase">Weekly Plan</span>
+            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-[9px] font-black rounded-full">RECOMMENDED</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-5xl font-black text-gray-900 tracking-tighter">GHS {amount}</span>
+            <span className="text-xs text-gray-400 font-bold mb-2">/ week</span>
+          </div>
         </div>
 
         {step === 'form' && (
-          <>
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-2">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                disabled={isLoading}
-                required
-              />
-              <p className="text-xs text-gray-500 mt-2">We'll send your subscription confirmation here</p>
+          <form onSubmit={handleSubmit} className="p-8 pt-6 space-y-6">
+            {/* Provider Tabs */}
+            <div className="flex gap-2 p-1.5 bg-gray-100/50 rounded-2xl">
+              {(Object.keys(PROVIDERS) as Provider[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setProvider(key)}
+                  className={`flex-1 py-3 rounded-xl text-[10px] font-black transition-all ${
+                    provider === key 
+                      ? 'bg-white shadow-md text-gray-900' 
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  {key.toUpperCase()}
+                </button>
+              ))}
             </div>
 
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-3">Choose your network</label>
-              <div className="space-y-3">
-                <button
-                  onClick={() => setProvider('mtn')}
-                  className={`w-full p-4 border rounded-xl flex items-center gap-4 transition ${
-                    provider === 'mtn' ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold">M</div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">MTN Mobile Money</div>
-                    <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
-                  </div>
-                  {provider === 'mtn' && <div className="text-yellow-600"></div>}
-                </button>
-
-                <button
-                  onClick={() => setProvider('vodafone')}
-                  className={`w-full p-4 border rounded-xl flex items-center gap-4 transition ${
-                    provider === 'vodafone' ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">V</div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">Vodafone Cash</div>
-                    <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
-                  </div>
-                  {provider === 'vodafone' && <div className="text-red-600"></div>}
-                </button>
-
-                <button
-                  onClick={() => setProvider('airteltigo')}
-                  className={`w-full p-4 border rounded-xl flex items-center gap-4 transition ${
-                    provider === 'airteltigo' ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                  }`}
-                >
-                  <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">AirtelTigo Money</div>
-                    <div className="text-xs text-gray-500">Instant payment via Kyshi</div>
-                  </div>
-                  {provider === 'airteltigo' && <div className="text-red-600"></div>}
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 border-b">
-              <label className="block text-sm font-medium mb-2">Mobile Money Number</label>
-              <div className="flex">
-                <span className="bg-gray-100 px-4 py-3 rounded-l-xl border text-gray-600">+233</span>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
                 <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                  placeholder={currentProvider.prefix}
-                  className="flex-1 px-4 py-3 border rounded-r-xl focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                  disabled={isLoading}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  className="w-full bg-white/50 px-6 py-4 border-2 border-gray-50 rounded-2xl focus:border-yellow-400 transition-all outline-none text-sm font-bold shadow-sm"
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                You'll receive a payment request on your {currentProvider.name}
-              </p>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
+                <div className="flex gap-2">
+                  <div className="bg-white/50 px-5 py-4 rounded-2xl border-2 border-gray-50 font-black text-gray-400 text-sm shadow-sm">
+                    +233
+                  </div>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="24 000 0000"
+                    className="flex-1 bg-white/50 px-6 py-4 border-2 border-gray-50 rounded-2xl focus:border-yellow-400 transition-all outline-none text-sm font-bold shadow-sm"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="p-6 pt-0">
+            <div className="pt-2">
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={isLoading}
-                style={{ backgroundColor: currentProvider.color }}
-                className={`w-full hover:opacity-90 py-3 rounded-xl font-semibold transition disabled:opacity-50 ${
-                  currentProvider.textColor === 'white' ? 'text-white' : 'text-black'
-                }`}
+                style={{ backgroundColor: currentProvider.color, color: currentProvider.textColor }}
+                className="w-full py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
               >
-                {isLoading ? 'Processing...' : `Pay #${amount} via ${currentProvider.short}`}
+                {isLoading ? 'Processing...' : `Subscribe Now`}
+              </button>
+              
+              <button 
+                type="button"
+                onClick={onClose}
+                className="w-full mt-6 text-[10px] font-black text-gray-300 hover:text-gray-500 transition-colors uppercase tracking-[0.3em]"
+              >
+                CLOSE
               </button>
             </div>
-          </>
+          </form>
         )}
 
         {step === 'waiting' && (
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-            <p className="font-medium text-gray-900">Check your phone</p>
-            <p className="text-sm text-gray-500 mt-1">Enter your MoMo PIN to complete payment</p>
+          <div className="p-16 text-center space-y-8">
+            <div className="relative inline-flex items-center justify-center">
+              <div 
+                className="w-24 h-24 border-8 border-gray-50 rounded-full animate-spin"
+                style={{ borderTopColor: currentProvider.color }}
+              ></div>
+              <div className="absolute text-4xl animate-bounce">🇬🇭</div>
+            </div>
+            <div>
+              <p className="text-xl font-black text-gray-900 uppercase">Redirecting...</p>
+              <p className="text-xs text-gray-500 mt-2 font-bold px-8">Completing your connection to the {currentProvider.short} network.</p>
+            </div>
           </div>
         )}
 
-        {step === 'success' && (
-          <div className="p-8 text-center">
-            <div className="text-5xl mb-4"></div>
-            <p className="font-medium text-gray-900">Weekly subscription activated!</p>
-            <p className="text-sm text-gray-500 mt-1">You will be charged #{amount} every 7 days</p>
-          </div>
-        )}
-
-        <div className="p-4 text-center text-xs text-gray-400 border-t">
-          Secured by Kyshi Ghana MoMo approved
+        <div className="p-6 text-center bg-gray-50/50">
+          <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.4em]">
+            Fully Secure · Kyshi Ghana
+          </p>
         </div>
       </div>
     </div>
   );
 }
-

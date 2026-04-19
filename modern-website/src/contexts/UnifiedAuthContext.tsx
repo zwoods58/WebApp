@@ -10,6 +10,8 @@ export interface UnifiedAuthState {
   error: string | null;
   isAuthenticated: boolean;
   isEmailConfirmed: boolean;
+  subscription: any | null;
+  isReadOnly: boolean;
 }
 
 interface UnifiedAuthContextType extends UnifiedAuthState {

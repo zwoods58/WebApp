@@ -16,6 +16,7 @@ function SubscriptionCallbackContent() {
   const [message, setMessage] = useState('');
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
+  // Remove old handlePaymentSuccess and handlePaymentFailed
   useEffect(() => {
     if (!isClient) return;
     
@@ -24,12 +25,53 @@ function SubscriptionCallbackContent() {
     const userEmail = searchParams.get('user_email') || undefined;
     const country = searchParams.get('country') || undefined;
 
-    if (paymentStatus === 'success' && reference) {
-      handlePaymentSuccess(reference, userEmail, country);
-    } else if (paymentStatus === 'failed') {
-      handlePaymentFailed(reference || undefined);
+    const verifyTransaction = async () => {
+      if (!reference) {
+        setStatus('failed');
+        setMessage('Missing transaction reference. Please contact support.');
+        return;
+      }
+
+      try {
+        console.log(`Verifying transaction: ${reference}`);
+        const response = await fetch('/api/subscription/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reference, user_email: userEmail, country }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          setStatus('success');
+          setMessage('Payment successful! Your subscription is now active.');
+          if (result.subscriptionId) setSubscriptionId(result.subscriptionId);
+          
+          handleRedirect(reference, 'success');
+        } else {
+          // If the status is pending, we can either poll or show pending
+          if (result.kyshiStatus === 'pending') {
+            setStatus('loading');
+            setMessage('Payment is still processing. Please wait...');
+            // Check again after 5 seconds
+            setTimeout(verifyTransaction, 5000);
+          } else {
+            console.error('Payment verified as failed/cancelled', result);
+            setStatus('failed');
+            setMessage(`Payment wasn't successful. Status: ${result.kyshiStatus || 'failed'}`);
+            handleRedirect(reference, 'failed');
+          }
+        }
+      } catch (err) {
+        console.error('Verification error:', err);
+        setStatus('failed');
+        setMessage('Error verifying payment. Please contact support.');
+      }
+    };
+
+    if (reference) {
+       verifyTransaction();
     } else {
-      // Default to loading if no status
       setTimeout(() => {
         setStatus('failed');
         setMessage('No payment status received. Please contact support.');
@@ -37,70 +79,12 @@ function SubscriptionCallbackContent() {
     }
   }, [searchParams, isClient]);
 
-  const handlePaymentSuccess = async (reference: string, userEmail?: string, country?: string) => {
-    try {
-      console.log('Payment successful:', { reference, userEmail, country });
-
-      // Update subscription status in database
-      if (userEmail && country) {
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('*')
-          .eq('user_email', userEmail)
-          .eq('country', country)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (subscription) {
-          const { error } = await supabase
-            .from('subscriptions')
-            .update({
-              status: 'active',
-              is_active: true,
-              last_charge_date: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', subscription.id);
-
-          if (error) {
-            console.error('Error updating subscription:', error);
-          } else {
-            setSubscriptionId(subscription.id);
-          }
-        }
-      }
-
-      setStatus('success');
-      setMessage('Payment successful! Your subscription is now active.');
-      
-      // Redirect back to app after 3 seconds
-      setTimeout(() => {
-        // Try deep link redirect first
-        const deepLinkUrl = `yourapp://subscription/success?reference=${reference}`;
-        window.location.href = deepLinkUrl;
-        
-        // Fallback to regular redirect
-        setTimeout(() => {
-          router.push('/Beezee-App/app/ke/retail/more');
-        }, 1000);
-      }, 3000);
-    } catch (error) {
-      console.error('Error handling payment success:', error);
-      setStatus('failed');
-      setMessage('Error processing payment. Please contact support.');
-    }
-  };
-
-  const handlePaymentFailed = (reference?: string) => {
-    setStatus('failed');
-    setMessage('Payment failed. Please try again.');
-    
-    // Redirect back to app after 3 seconds
+  const handleRedirect = (reference: string, type: 'success' | 'failed') => {
     setTimeout(() => {
-      const deepLinkUrl = reference 
-        ? `yourapp://subscription/failed?reference=${reference}`
-        : 'yourapp://subscription/failed';
+      // Try deep link redirect first
+      const deepLinkUrl = type === 'success' 
+        ? `yourapp://subscription/success?reference=${reference}`
+        : `yourapp://subscription/failed?reference=${reference}`;
       window.location.href = deepLinkUrl;
       
       // Fallback to regular redirect

@@ -11,6 +11,7 @@ export interface SubscriptionRequest {
   planId?: string;
   paymentMethod?: string;
   industry?: string;
+  provider?: string;
 }
 
 export interface SubscriptionResponse {
@@ -150,7 +151,8 @@ export class SubscriptionAPI {
           user_email: request.email,
           user_phone: request.phone,
           country: request.countryCode,
-          full_name: `${request.firstName} ${request.lastName}`.trim()
+          full_name: `${request.firstName} ${request.lastName}`.trim(),
+          mobile_money_provider: request.provider
         }
       });
 
