@@ -12,7 +12,8 @@ import {
   Phone,
   Building,
   Globe,
-  Share2
+  Share2,
+  CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -99,6 +100,13 @@ export default function MorePage() {
     {
       title: t('more.business_tools', 'Business Tools'),
       items: [
+        {
+          icon: CreditCard,
+          label: t('more.subscription', 'Kyshi Subscription'),
+          description: t('more.subscription_description', 'Manage your subscription and payment methods'),
+          href: `/Beezee-App/app/${country}/${industry}/subscription`,
+          color: 'text-green-600 bg-green-50'
+        },
         {
           icon: FileText,
           label: t('more.reports', 'Reports'),
