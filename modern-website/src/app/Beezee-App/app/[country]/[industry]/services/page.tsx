@@ -65,19 +65,6 @@ export default function ServicesPage() {
   const hasInitializedServices = useRef(false);
   const hasInitializedInventory = useRef(false);
   
-  // Redirect retail users to stock page - retail doesn't use services
-  useEffect(() => {
-    let isMounted = true;
-    
-    if (isMounted && industry === 'retail' && navigator.onLine) {
-      router.push(`/Beezee-App/app/${country}/${industry}/stock`);
-    }
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [industry, country]);
-  
   const { business, loading: businessLoading } = useSupabaseAuth();
   
   // Persistent storage backup for services and inventory
