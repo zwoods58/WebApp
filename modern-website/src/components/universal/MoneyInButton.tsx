@@ -96,8 +96,8 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
       const service = services.find((s: Service) => s.id === formData.service_id);
       if (service) {
         const description = formData.use_base_amount 
-          ? `${service.service_name} (Base only${formData.tips ? ' + tips' : ''})`
-          : `${service.service_name} (${formData.distance || '0'} km${formData.tips ? ' + tips' : ''})`;
+          ? `${service.service_name} (${t('transport.base_amount_only', 'Base only')}${formData.tips ? ` + ${t('transport.tips', 'tips')}` : ''})`
+          : `${service.service_name} (${formData.distance || '0'} km${formData.tips ? ` + ${t('transport.tips', 'tips')}` : ''})`;
         setFormData(prev => ({ ...prev, description }));
       }
     }
@@ -306,7 +306,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                       onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                       className="w-full pl-14 pr-4 py-4 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
                       style={{ backgroundColor: '#ffffff' }}
-                      placeholder="0.00"
+                      placeholder={t('cash.enter_amount', '0.00')}
                       inputMode="decimal"
                     />
                   </div>
@@ -345,7 +345,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                         onChange={(e) => setFormData(prev => ({ ...prev, distance: e.target.value }))}
                         className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         style={{ backgroundColor: '#ffffff' }}
-                        placeholder="0.0"
+                        placeholder={t('transport.distance_placeholder', '0.0')}
                         step="0.1"
                         disabled={formData.use_base_amount}
                       />
@@ -374,7 +374,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                         onChange={(e) => setFormData(prev => ({ ...prev, tips: e.target.value }))}
                         className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                         style={{ backgroundColor: '#ffffff' }}
-                        placeholder="0.00"
+                        placeholder={t('payment.enter_tips', '0.00')}
                         step="0.01"
                       />
                     </div>
@@ -409,13 +409,13 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                     style={{ backgroundColor: '#ffffff' }}
-                    placeholder={t('common.description_placeholder_money_in', 'What was this for?')}
+                    placeholder={t('cash.description_placeholder_money_in', 'What was this for?')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                    {t('customerName')} ({t('common.optional', 'Optional')})
+                    {t('customerName', 'Customer Name')} ({t('common.optional', 'Optional')})
                   </label>
                   <input
                     type="text"
@@ -423,7 +423,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                     onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
                     className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
                     style={{ backgroundColor: '#ffffff' }}
-                    placeholder={t('customerName')}
+                    placeholder={t('customerName', 'Customer Name')}
                   />
                 </div>
 
@@ -451,7 +451,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                         }`}
                         style={{ backgroundColor: '#ffffff' }}
                       >
-                        {t(`payment.${method}`, method === 'mobile_money' ? 'Mobile Money' : method.charAt(0).toUpperCase() + method.slice(1))}
+                        {t(`payment.${method}`, method === 'mobile_money' ? t('payment.mobile_money', 'Mobile Money') : method.charAt(0).toUpperCase() + method.slice(1))}
                       </button>
                     ))}
                   </div>

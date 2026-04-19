@@ -238,7 +238,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                           value={formData.amount}
                           onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                           className="w-full pl-14 pr-4 py-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
-                          placeholder="0.0"
+                          placeholder={t('transport.distance_placeholder', '0.0')}
                           inputMode="decimal"
                           step="0.1"
                         />
@@ -254,7 +254,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                           value={formData.amount}
                           onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
                           className="w-full pl-14 pr-4 py-4 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-xl font-bold text-[var(--text-1)] placeholder-gray-500"
-                          placeholder="0.00"
+                          placeholder={t('cash.enter_amount', '0.00')}
                           inputMode="decimal"
                         />
                       </>
@@ -272,7 +272,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-orange-500/50 focus:border-orange-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                    placeholder={t('credit.description_placeholder', 'What is this credit for?')}
+                    placeholder={t('credit.description_placeholder_money_out', 'What is this credit for?')}
                   />
                 </div>
 
@@ -395,7 +395,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
                   disabled={isSubmitting}
                   className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-2xl font-bold text-lg hover:from-orange-400 hover:to-orange-500 transition-colors shadow-lg button-tap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Processing...' : t('common.save') + ' ' + t('common.transaction', 'Transaction')}
+                  {isSubmitting ? t('common.processing', 'Processing...') : t('common.save', 'Save') + ' ' + t('common.transaction', 'Transaction')}
                 </button>
               </div>
             </div>

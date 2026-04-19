@@ -354,7 +354,7 @@ export default function CashPage() {
   if (authLoading && !isOffline) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Loading cash flow..." fullScreen={false} />
+        <PageLoading message={t('cash.loading_cash_flow', 'Loading cash flow...')} fullScreen={false} />
       </div>
     );
   }
@@ -366,13 +366,13 @@ export default function CashPage() {
         <Header industry={industry} country={country} />
         <div className="p-8 text-center">
           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-yellow-800 mb-2">Business Setup Required</h2>
-            <p className="text-yellow-700 mb-4">Please complete your business profile to start adding transactions.</p>
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">{t('cash.business_setup_required', 'Business Setup Required')}</h2>
+            <p className="text-yellow-700 mb-4">{t('cash.complete_business_profile', 'Please complete your business profile to start adding transactions.')}</p>
             <Link
               href="/Beezee-App/setup"
               className="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
             >
-              Set Up Business
+              {t('cash.set_up_business', 'Set Up Business')}
             </Link>
           </div>
         </div>
@@ -489,15 +489,15 @@ export default function CashPage() {
 
         {/* Recent Activity */}
         <div className="animate-fade-in">
-          <h3 className="font-bold text-[var(--text-1)] mb-4">{t('cash.recent_activity')}</h3>
+          <h3 className="font-bold text-[var(--text-1)] mb-4">{t('cash.recent_activity', 'Recent Activity')}</h3>
 
           {filteredCashFlow.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-400 mb-2">
                 <ArrowUpDown size={48} className="mx-auto" />
               </div>
-              <p className="text-gray-600">{t('cash.no_cash_activity_found')}</p>
-              <p className="text-sm text-gray-500 mt-1">{t('cash.start_by_recording_first_transaction')}</p>
+              <p className="text-gray-600">{t('cash.no_cash_activity_found', 'No cash activity found')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('cash.start_by_recording_first_transaction', 'Start by recording your first transaction')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -514,7 +514,7 @@ export default function CashPage() {
                         {item.supplier && <span>{item.supplier}</span>}
                         {item.status === 'pending' && (
                           <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
-                            Pending
+                            {t('common.pending', 'Pending')}
                           </span>
                         )}
                         {item.payment_method && (
