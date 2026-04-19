@@ -16,7 +16,7 @@ interface HeaderProps {
 
 export default function Header({ industry, country }: HeaderProps) {
   const router = useRouter();
-  const { currentLanguage, setLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [showLangSelector, setShowLangSelector] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { business } = useUnifiedAuth();
@@ -53,9 +53,13 @@ export default function Header({ industry, country }: HeaderProps) {
   // Get business name from signup data or fallback
   const businessName = profile?.businessName || business?.business_name || 'My Business';
 
-  // Check if we're on the home dashboard
+  // Check if we're on the home dashboard or pages that should not have back arrow
   const pathname = usePathname();
   const isHomeDashboard = pathname?.endsWith(`/${country}/${industry}`) || pathname?.endsWith(`/${country}/${industry}/`);
+  const isNoBackArrowPage = pathname?.includes(`/${country}/${industry}/cash`) || 
+                           pathname?.includes(`/${country}/${industry}/credit`) || 
+                           pathname?.includes(`/${country}/${industry}/more`);
+  const shouldHideBackArrow = isHomeDashboard || isNoBackArrowPage;
 
   // Available languages for the current country
   const getCountryLanguages = () => {
@@ -105,7 +109,7 @@ export default function Header({ industry, country }: HeaderProps) {
   };
 
   const availableLanguages = getCountryLanguages();
-  const currentLangObj = availableLanguages.find(lang => lang.code === currentLanguage) || availableLanguages[0];
+  const currentLangObj = availableLanguages.find(lang => lang.code === language) || availableLanguages[0];
 
   // Helper function to get translated language name
   const getLanguageName = (langCode: string) => {
@@ -150,8 +154,8 @@ export default function Header({ industry, country }: HeaderProps) {
     <>
       <header className="relative top-0 left-0 right-0 z-[60] bg-[var(--bg)] safe-area-top">
         <div className="max-w-md mx-auto px-5 h-16 flex items-center justify-between">
-          {/* Back Button - Hidden on home dashboard */}
-          {!isHomeDashboard && (
+          {/* Back Button - Hidden on home dashboard and specific pages */}
+          {!shouldHideBackArrow && (
             <button
               onClick={() => router.back()}
               className="p-2.5 -ml-2 rounded-xl hover:bg-[var(--powder)]/10 active:scale-95 transition-all duration-200 no-select button-touch flex items-center text-[var(--powder-dark)]"
@@ -161,7 +165,7 @@ export default function Header({ industry, country }: HeaderProps) {
           )}
 
           {/* Title Area */}
-          <div className={`flex items-center justify-center pointer-events-none ${!isHomeDashboard ? 'flex-1' : ''}`}>
+          <div className={`flex items-center justify-center pointer-events-none ${shouldHideBackArrow ? '' : 'flex-1'}`}>
             <IndustryIcon size={20} className="text-[var(--text-1)] mr-2" strokeWidth={2.5} />
             {isHomeDashboard && (
               <span className="text-[var(--text-1)] font-medium text-sm">
@@ -202,7 +206,7 @@ export default function Header({ industry, country }: HeaderProps) {
                     setShowLangSelector(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                    currentLanguage === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-900'
+                    language === lang.code ? 'bg-blue-50 text-blue-600' : 'text-gray-900'
                   }`}
                 >
                   <span className="text-lg">{lang.flag}</span>
@@ -210,7 +214,7 @@ export default function Header({ industry, country }: HeaderProps) {
                     <div className="text-sm font-medium">{getLanguageName(lang.code)}</div>
                     <div className="text-xs text-gray-500">{lang.nativeName}</div>
                   </div>
-                  {currentLanguage === lang.code && (
+                  {language === lang.code && (
                     <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   )}
                 </button>

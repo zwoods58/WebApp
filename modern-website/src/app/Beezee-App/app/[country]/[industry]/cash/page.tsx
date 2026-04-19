@@ -463,25 +463,7 @@ export default function CashPage() {
       <main className="flex-1 container mx-auto px-4 pt-24 py-6 max-w-md">
         {/* Removed offline indicator - silent offline mode */}
 
-        {/* Quick Actions */}
-        <div className="flex gap-3 mb-6 mt-8">
-          <div className="add-transaction-btn flex-1">
-            <MoneyInButton 
-              industry={industry}
-              country={country}
-              businessId={business?.id || ''}
-              onSuccess={handleMoneyIn}
-            />
-          </div>
-          <div className="add-transaction-btn flex-1">
-            <MoneyOutButton 
-              industry={industry}
-              country={country}
-              onSuccess={handleMoneyOut}
-            />
-          </div>
-        </div>
-
+        
         {/* Today's Summary */}
         <div className="grid grid-cols-3 gap-3 mb-6 mt-8 animate-fade-in">
           <div className="glass-card p-4 border border-[var(--border)]">
