@@ -25,7 +25,7 @@ export default function DailyTarget({ industry, country, today_total, daily_targ
           <div className="w-11 h-11 bg-[var(--powder)]/15 rounded-2xl flex items-center justify-center">
             <Target className="text-[var(--powder-dark)]" size={22} strokeWidth={2.5} />
           </div>
-          <span className="font-semibold text-base text-[var(--text-1)] tracking-tight">{t(`${industry}.daily_target`)}</span>
+          <span className="font-semibold text-base text-[var(--text-1)] tracking-tight">{t('common.daily_target')}</span>
         </div>
         <span className="font-bold text-[var(--text-1)] text-lg">{formatCurrency(daily_target, country)}</span>
       </div>
