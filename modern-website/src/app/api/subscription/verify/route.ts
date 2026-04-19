@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import kyshiAPI from '@/lib/kyshi'; // Assuming this gives us access to Kyshi API or we can fetch directly
+import { supabaseAdmin } from '@/lib/supabase';
+import kyshiAPI from '@/lib/kyshi';
 
 export async function POST(request: Request) {
   try {
@@ -14,19 +13,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Initialize Supabase client
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    // Use admin client for verification and status updates
+    // as it needs to bypass RLS to update shared subscription records
+    const supabase = supabaseAdmin;
 
     console.log(`Verifying Kyshi transaction via server: ${reference}`);
     
