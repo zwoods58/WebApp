@@ -15,6 +15,7 @@ const essentialTranslations = {
     tw: "Fa BÉtÉm Foforo",
     rw: "Ongeraho Ikintu Gishya",
     lg: "Yongeza Ekintu Kipya",
+    fr: "Ajouter un article",
     dy: "Ka ji faran"
   },
   
@@ -31,6 +32,7 @@ const essentialTranslations = {
     tw: "Fa Nsrae Foforo",
     rw: "Ongeraha Umunsi",
     lg: "Yongeza Olukalala",
+    fr: "Ajouter un rendez-vous",
     dy: "Ka ji ladrɛ"
   },
   
@@ -47,6 +49,7 @@ const essentialTranslations = {
     tw: "Sie",
     rw: "Bika",
     lg: "Tereka",
+    fr: "Enregistrer",
     dy: "Saba"
   },
   
@@ -62,6 +65,7 @@ const essentialTranslations = {
     tw: "Twa",
     rw: "Kureka",
     lg: "Sazaamu",
+    fr: "Annuler",
     dy: "Ka banna"
   },
   
@@ -77,6 +81,7 @@ const essentialTranslations = {
     tw: "Retrieving...",
     rw: "Ifashamo...",
     lg: "Kika...",
+    fr: "Chargement...",
     dy: "Ka ba..."
   }
 };

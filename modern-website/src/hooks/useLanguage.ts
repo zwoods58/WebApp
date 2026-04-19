@@ -55,7 +55,7 @@ export function LanguageProvider({
         'tz': 'sw',
         'ug': 'en',
         'rw': 'en',
-        'ci': 'fr',
+        'ci': 'dy',  // Dioula is the actual local language
         'za': 'en'
       };
       
