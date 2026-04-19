@@ -38,6 +38,17 @@ const generateVersion = () => {
   
   console.log(`Version info written to: ${versionFilePath}`);
   
+  // Inject version into service worker
+  const swPath = path.join(__dirname, '../public/sw.js');
+  let swContent = fs.readFileSync(swPath, 'utf8');
+  swContent = swContent.replace(
+    /const CACHE_VERSION = "[^"]+"/,
+    `const CACHE_VERSION = "${version}"` // same version string used for build-version.json
+  );
+  fs.writeFileSync(swPath, swContent);
+  
+  console.log(`Service worker cache version updated to: ${version}`);
+  
   return versionInfo;
 };
 

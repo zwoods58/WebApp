@@ -204,6 +204,12 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080],
     minimumCacheTTL: 60,
   },
+  
+  // PWA configuration
+  pwa: {
+    skipWaiting: true,
+    clientsClaim: true,
+  },
 };
 
 export default nextConfig;

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "2026.04.18.03"; // Bumped: force-clear stale PWA cache after manifest start_url fix
+const CACHE_VERSION = "v110-ea47152-1776589460791"; // temporary manual bump to test
 const CACHE_NAME = `html-cache-${CACHE_VERSION}`;
 const STATIC_ASSETS_CACHE = `static-assets-${CACHE_VERSION}`;
 const CACHE_WHITELIST = [CACHE_NAME, STATIC_ASSETS_CACHE];
@@ -31,8 +31,8 @@ const isHTML = (request) => {
   return request.headers.get("accept")?.includes("text/html");
 };
 
-// Installation — cache offline.html
-self.addEventListener("install", (event) => {
+// Single install listener
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_ASSETS_CACHE).then((cache) => {
       return cache.addAll([OFFLINE_URL]);
@@ -41,30 +41,23 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// Activation — purge old caches and take control
-self.addEventListener("activate", (event) => {
+// Single activate listener
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            // Aggressively delete any old versions of our caches
-            const isOldCache = 
-              (cacheName.startsWith("html-cache-") || cacheName.startsWith("static-assets-")) &&
-              !CACHE_WHITELIST.includes(cacheName);
-              
-            // Also explicitly delete the old "v2" names if they exist
-            const isLegacyV2 = cacheName === "html-cache-v2" || cacheName === "static-assets-v2";
-
-            if (isOldCache || isLegacyV2) {
-              console.log("[SW] Purging stale cache:", cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
-      })
-      .then(() => self.clients.claim())
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          const isOldCache =
+            (cacheName.startsWith("html-cache-") || cacheName.startsWith("static-assets-")) &&
+            !CACHE_WHITELIST.includes(cacheName);
+          const isLegacyV2 = cacheName === "html-cache-v2" || cacheName === "static-assets-v2";
+          if (isOldCache || isLegacyV2) {
+            console.log("[SW] Purging stale cache:", cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
