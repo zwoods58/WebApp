@@ -413,6 +413,10 @@ export const translations = {
 
     // Services Page
     "services.no_services_found": { en: "No services found", sw: "Hakuna huduma iliyopatikana", ha: "Babu hidima da aka gano", yo: "Ko si i ti a rí", ig: "Enwegh i  r", zu: "Akukho isevisi etholakayo", xh: "Akukho iinkonzo ezitholakayo", af: "Geen diense gevind nie", tw: "Nni adwuma biara woho", rw: "Nta serivisi yabonetse", lg: "Tewali mirimu byalabidde", fr: "Aucun service trouvé", dy: "A si fara bonya" },
+    "services.service_name_placeholder": { en: "Enter service name", sw: "Weka jina la huduma", ha: "Shigar sunan hidima", yo: "Fi oruk ise", ig: "Tinye aha oru", zu: "Faka igama lesevisi", xh: "Faka igama lesevisi", af: "Voeg diensnaam in", tw: "Hy din adwuma din", rw: "Andika izina rya serivisi", lg: "Wandiika linnya l'omulimu", fr: "Entrez le nom du service", dy: "Andigi laban bii" },
+    "services.category_placeholder": { en: "Enter category", sw: "Weka aina", ha: "Shira rabe", yo: "Fi oruk", ig: "Tinye ud", zu: "Faka isigaba", xh: "Faka isigaba", af: "Voeg kategorie in", tw: "Hy kyer", rw: "Andika itsinda", lg: "Wandiika ekika", fr: "Entrez la catégorie", dy: "Andigi sebeni" },
+    "services.dropoff_location": { en: "Drop-off Location", sw: "Eneo la Kupotea", ha: "Wurin aje", yo: "Ibi ti a fi", ig: "Ebe nr", zu: "Indawo yokuhlela", xh: "Indawo yokuhlela", af: "Aflewerplek", tw: "Bea", rw: "Aho utegura", lg: "Ebe gyokuleka", fr: "Lieu de dépose", dy: "Bee laban" },
+    "services.confirm_fare": { en: "Confirm Fare", sw: "Thibitisha Ada", ha: "Tabbatar hadarin", yo: "Fi iye ran", ig: "Gosi ego", zu: "Qinisekisa ifare", xh: "Qinisekisa ifare", af: "Bevestig fooi", tw: "B", rw: "Emezanya ibiciro", lg: "Kakasa bbeetooli", fr: "Confirmer le tarif", dy: "Bii laben" },
 
     // Services Filters
     "filters.title": { en: "Filters", sw: "Vichungi", ha: "Siftoci", yo: "Aw n f", ig: "Nzacha", zu: "Izihlulelo", xh: "Izihlulelo", af: "Filters", tw: "Nzacha", rw: "Mifiteri", lg: "Amasengeko", fr: "Filtres", dy: "Nzacha" },
@@ -444,7 +448,20 @@ export const translations = {
     "home.add_first_service": { en: "Add your first service to get started", sw: "Ongeza huduma yako ya kwanza kuanza", ha: "Sanya hidimarka ta farko ka fara", yo: "Fi ise ak lat", ig: "Tinye or g", zu: "Yongeza isevisi yakho yokuqala ukuze uqale", xh: "Yongeza iinkonzo zakho zokuqala ukuze uqale", af: "Voeg jou eerste diens by om te begin", tw: "Fa adwuma ak", rw: "Ongeraho serivisi ya mbere ukuze utangire", lg: "Yongeza emirimu gyo ekiyamba okutandika", fr: "Ajoutez votre premier service pour commencer", dy: "A fara denkili fok laban" },
 
     // Home Page - Inventory List Component
-    "home.no_items_in_inventory": { en: "No items in inventory", sw: "Hakuna vitu kwenye dhibiti hifadhi", ha: "Babu abu a cikin kayayyaki", yo: "Ko si nnkan ninu inventori", ig: "Enwegh ihe", zu: "Akukho izinto kusitoko", xh: "Akukho izinto kusitoko", af: "Geen items in voorraad nie", tw: "Nni nnka", rw: "Nta bintu muri inventory", lg: "Tewali ebintu mu ssente", fr: "Aucun article en stock", dy: "A si bii laban" }
+    "home.no_items_in_inventory": { en: "No items in inventory", sw: "Hakuna vitu kwenye dhibiti hifadhi", ha: "Babu abu a cikin kayayyaki", yo: "Ko si nnkan ninu inventori", ig: "Enwegh ihe", zu: "Akukho izinto kusitoko", xh: "Akukho izinto kusitoko", af: "Geen items in voorraad nie", tw: "Nni nnka", rw: "Nta bintu muri inventory", lg: "Tewali ebintu mu ssente", fr: "Aucun article en stock", dy: "A si bii laban" },
 
+    // Loading Messages
+    "loading.initializing_application": { en: "Initializing application...", sw: "Inaanzisha programu...", ha: "Fara fara shirin", yo: "N siseto eto...", ig: "Idu mmemme...", zu: "Iqalisa uhlelo...", xh: "Iqalisa uhlelo...", af: "Besig tans besig...", tw: "Rehyehy nhyehy...", rw: "Gutangira porogaramu...", lg: "Enjamya puloguramu...", fr: "Initialisation de l'application...", dy: "Bonya porogaramu..." },
+    "loading.redirecting_to_login": { en: "Redirecting to login...", sw: "Inaele kwa kuingia...", ha: "Fara zuwa shiga...", yo: "N yipada s'ile...", ig: "Ibanye n'ihu...", zu: "Iya kwa kungena...", xh: "Iya kwa kungena...", af: "Aanstuur na aanmeld...", tw: "Returning koma login...", rw: "Kugaruka ku winyika...", lg: "Okukyusiza ku wulira...", fr: "Redirection vers la connexion...", dy: "Bonya k'wulira..." },
+    "loading.business_data": { en: "Loading your business data...", sw: "Inapakua data yako ya biashara...", ha: "Sana bayanan kasuwancin ka...", yo: "N gbe data i...", ig: "Ibubata data gburugburu...", zu: "Ilayinda idatha yakho yebhizinisi...", xh: "Ilayinda idatha yakho yebhizinisi...", af: "Laai u besigheidsdata...", tw: "Rehyeh data wo adwuma...", rw: "Guhangira ibijyanye byawe...", lg: "Okukungula data yo'emirimu...", fr: "Chargement de vos données d'entreprise...", dy: "Bonya data laban..." },
+
+    // Credit Related
+    "credit.expense": { en: "Credit expense", sw: "Ada ya deni", ha: "Kudin kiredi", yo: "Iye k", ig: "Ego ire", zu: "Izimo zokuhweba", xh: "Izimo zokuhweba", af: "Kredietuitgawe", tw: "Kredi", rw: "Ibyangiritse", lg: "Bbeetooli by'okubonero", fr: "Dépense à crédit", dy: "Bii laban" },
+
+    // Service Placeholders
+    "services.price_placeholder": { en: "0.00", sw: "0.00", ha: "0.00", yo: "0.00", ig: "0.00", zu: "0.00", xh: "0.00", af: "0.00", tw: "0.00", rw: "0.00", lg: "0.00", fr: "0.00", dy: "0.00" },
+    "services.duration_placeholder": { en: "30", sw: "30", ha: "30", yo: "30", ig: "30", zu: "30", xh: "30", af: "30", tw: "30", rw: "30", lg: "30", fr: "30", dy: "30" }
+
+    
   }
 };

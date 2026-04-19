@@ -311,8 +311,8 @@ export default function ServicesPage() {
                 }`}
               >
                 {category === 'all'
-                  ? t('filter.all', 'All')
-                  : t(`filter.${category}`, category.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '))}
+                  ? t('filters.all_services', 'All Services')
+                  : t(`filters.${category}`, category.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '))}
               </button>
             ))}
           </div>
@@ -364,7 +364,7 @@ export default function ServicesPage() {
                       )}
                     </div>
                     {service.price === 0 && (
-                      <div className="text-xs text-orange-500 mt-0.5">Update price</div>
+                      <div className="text-xs text-orange-500 mt-0.5">{t('services.update_price', 'Update price')}</div>
                     )}
                     <div className="flex items-center gap-1 mt-2 justify-end">
                       <button

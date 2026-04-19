@@ -410,7 +410,7 @@ export default function IndustryDashboard() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Initializing application..." fullScreen={false} />
+        <PageLoading message={t('loading.initializing_application', 'Initializing application...')} fullScreen={false} />
       </div>
     );
   }
@@ -420,7 +420,7 @@ export default function IndustryDashboard() {
   if (!user || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Redirecting to login..." fullScreen={false} />
+        <PageLoading message={t('loading.redirecting_to_login', 'Redirecting to login...')} fullScreen={false} />
       </div>
     );
   }
@@ -431,7 +431,7 @@ export default function IndustryDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <div className="w-8 h-8 border-4 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-[var(--text-3)]">Loading your business data...</p>
+        <p className="text-sm text-[var(--text-3)]">{t('loading.business_data', 'Loading your business data...')}</p>
       </div>
     );
   }
