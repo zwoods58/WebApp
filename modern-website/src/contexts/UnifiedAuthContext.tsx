@@ -52,7 +52,25 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
 export function useUnifiedAuth() {
   const context = useContext(UnifiedAuthContext);
   if (!context) {
-    throw new Error('useUnifiedAuth must be used within UnifiedAuthProvider');
+    // Return a default empty state for pages outside the provider (e.g., landing pages, offline tests)
+    // This prevents "useUnifiedAuth must be used within UnifiedAuthProvider" errors during SSR/Build
+    return {
+      user: null,
+      business: null,
+      subscription: null,
+      loading: false,
+      error: null,
+      isAuthenticated: false,
+      isEmailConfirmed: false,
+      isReadOnly: false,
+      signUp: async () => ({ error: 'Auth provider missing' }),
+      signIn: async () => ({ error: 'Auth provider missing' }),
+      signOut: async () => ({ error: 'Auth provider missing' }),
+      resetPassword: async () => ({ error: 'Auth provider missing' }),
+      updatePassword: async () => ({ error: 'Auth provider missing' }),
+      resendConfirmation: async () => ({ error: 'Auth provider missing' }),
+      refreshSession: async () => {},
+    } as UnifiedAuthContextType;
   }
   return context;
 }

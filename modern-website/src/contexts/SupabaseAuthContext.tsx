@@ -542,7 +542,24 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 export function useSupabaseAuth() {
   const context = useContext(SupabaseAuthContext);
   if (!context) {
-    throw new Error('useSupabaseAuth must be used within SupabaseAuthProvider');
+    // Return a default empty state for pages outside the provider
+    return {
+      user: null,
+      business: null,
+      subscription: null,
+      loading: false,
+      error: null,
+      isAuthenticated: false,
+      isEmailConfirmed: false,
+      isReadOnly: false,
+      signUp: async () => ({ error: 'Auth provider missing' }),
+      signIn: async () => ({ error: 'Auth provider missing' }),
+      signOut: async () => ({ error: 'Auth provider missing' }),
+      resetPassword: async () => ({ error: 'Auth provider missing' }),
+      updatePassword: async () => ({ error: 'Auth provider missing' }),
+      resendConfirmation: async () => ({ error: 'Auth provider missing' }),
+      refreshSession: async () => {},
+    } as SupabaseAuthContextType;
   }
   return context;
 }
