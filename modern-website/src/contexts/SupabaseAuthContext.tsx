@@ -308,18 +308,50 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         // Store business data for after email confirmation
         persistentStorage.set('pending_business', business, { backup: true });
 
-        setAuthState(prev => ({ 
-          ...prev, 
-          loading: false 
-        }));
+        // authData.session is a live session when Supabase email confirmation is OFF.
+        // authData.session is null when email confirmation is ON (user must click link first).
+        const hasLiveSession = !!authData.session;
 
-        return { 
-          error: null,
-          data: { 
-            user: authData.user,
+        if (hasLiveSession) {
+          // Email confirmation is OFF — populate full auth state immediately.
+          // This must happen before signUp() returns so that when the signup page
+          // calls router.push('/dashboard'), the dashboard loads with a valid user.
+          const isConfirmed = !!authData.user.email_confirmed_at;
+
+          setAuthState({
+            user:             authData.user,
             business,
-            message: 'Account created! Please check your email to confirm your account.' 
-          } 
+            subscription:     null,
+            loading:          false,
+            error:            null,
+            isAuthenticated:  true,
+            isEmailConfirmed: isConfirmed,
+            isReadOnly:       false,
+          });
+
+          // Set RLS context immediately so Supabase queries work on first dashboard load.
+          // Without this, the first database query after signup will fail with RLS errors.
+          if (business) {
+            await setBusinessContext(business.id, business.country, business.industry);
+          }
+        } else {
+          // Email confirmation is ON — no live session yet.
+          // Do NOT set isAuthenticated: true. The signup page will route to
+          // confirm-email page instead of the dashboard.
+          setAuthState(prev => ({ ...prev, loading: false }));
+        }
+
+        return {
+          error: null,
+          data: {
+            user:                      authData.user,
+            business,
+            session:                   authData.session,
+            requiresEmailConfirmation: !hasLiveSession,
+            message: hasLiveSession
+              ? 'Account created successfully!'
+              : 'Account created! Please check your email to confirm your account.',
+          },
         };
       }
 

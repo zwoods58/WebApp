@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 
 // Context and hooks - import these first to avoid circular dependencies
 import { useLanguage } from '@/hooks/useLanguage';
-import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 import { useBusinessProfile, useCurrency } from '@/contexts/BusinessProfileContext';
 import { useToast } from '@/hooks';
 import { useRefreshContext } from '@/contexts/RefreshContext';
@@ -83,7 +83,7 @@ export default function IndustryDashboard() {
   
   console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
   
-  const { business, loading, user } = useSupabaseAuth();
+  const { user, business, isAuthenticated, loading: authLoading } = useUnifiedAuth();
   const businessId = business?.id;
   
   console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });
@@ -212,6 +212,38 @@ export default function IndustryDashboard() {
   
   // State management - must be before any early returns
   const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
+  const [businessTimedOut, setBusinessTimedOut] = useState(false);
+
+  // AUTH GUARD — redirect unauthenticated users
+  // Must be inside useEffect, not in the render body.
+  // Calling router.replace() during render causes React 18 warnings
+  // and inconsistent behavior in strict mode.
+  useEffect(() => {
+    if (!authLoading && (!user || !isAuthenticated)) {
+      router.replace('/Beezee-App/auth/login');
+    }
+  }, [authLoading, user, isAuthenticated, router]);
+
+  // AUTH GUARD — business data timeout
+  // loadBusinessData() returns null silently on error.
+  // Without a timeout, the user would be stuck on the loading spinner forever.
+  // After 10 seconds with no business data, redirect to login.
+  useEffect(() => {
+    if (!authLoading && user && isAuthenticated && !business) {
+      const timer = setTimeout(() => {
+        setBusinessTimedOut(true);
+      }, 10000); // 10 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, user, isAuthenticated, business]);
+
+  // AUTH GUARD — business timed out, redirect to login
+  useEffect(() => {
+    if (businessTimedOut) {
+      router.replace('/Beezee-App/auth/login');
+    }
+  }, [businessTimedOut, router]);
+
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
@@ -374,43 +406,8 @@ export default function IndustryDashboard() {
     setTodayStats({ sales: todaySales, expenses: todayExpenses });
   }, [businessId, safeTransactions, safeExpenses, transactionsLoading, expensesLoading]);
   
-  // 🔥 ROUTE VALIDATION: Ensure user is on correct industry/country page
-  useEffect(() => {
-    if (loading) return;
-    
-    const isOnline = navigator.onLine;
-    
-    if (!business) {
-      if (!isOnline) {
-        console.log('🔌 Offline - skipping auth redirect');
-        return;
-      }
-      console.log('🔓 User not authenticated, redirecting to login');
-      router.replace('/Beezee-App/auth/login');
-      return;
-    }
-    
-    // Redirect if wrong industry/country
-    if (business.country?.toLowerCase() !== country || 
-        business.industry?.toLowerCase() !== industry) {
-      if (!isOnline) {
-        console.log('🔌 Offline - skipping route correction');
-        return;
-      }
-      console.log('🔄 Wrong route, redirecting to correct industry/country:', {
-        currentRoute: { country, industry },
-        businessData: { country: business.country, industry: business.industry }
-      });
-      router.replace(`/Beezee-App/app/${business.country?.toLowerCase()}/${business.industry?.toLowerCase()}`);
-      return;
-    }
-    
-    console.log('✅ Route validation passed:', { country, industry, business: business.business_name });
-  }, [business, country, industry, loading, router]);
-
-  // Additional safety check - add early return if critical data is missing
-  if (!transactionsHook || !expensesHook || !creditHook || !inventoryHook || !targetsHook) {
-    console.log('🔍 Hooks not ready, showing loading');
+  // CASE 1: Auth is still initializing — show loading skeleton
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <PageLoading message="Initializing application..." fullScreen={false} />
@@ -418,36 +415,23 @@ export default function IndustryDashboard() {
     );
   }
 
-  // 🔒 LOADING GATE: Prevent data-dependent UI from rendering until businessId is confirmed
-  // Show loading only when online and auth is loading
-  if (loading && !isOffline) {
-    console.log('🔍 Waiting for business authentication...', { loading, businessId });
-    return (
-      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <PageLoading message="Loading your business..." fullScreen={false} />
-      </div>
-    );
-  }
-  
-  // If offline and no business, show offline fallback
-  if (isOffline && !business) {
-    console.log('🔌 Offline and no business data - showing fallback');
-    return <OfflineFallback message="Please login while online first to cache your business data" />;
-  }
-  
-  // If offline and auth still loading after hooks, show fallback
-  if (isOffline && loading) {
-    console.log('🔌 Offline and auth loading - showing fallback');
-    return <OfflineFallback message="Loading cached business data..." />;
-  }
-  
-  // Online but no businessId - redirect to login
-  if (!isOffline && !businessId) {
-    console.log('🔍 No business ID - redirecting to login');
-    router.replace('/Beezee-App/auth/login');
+  // CASE 2: Auth done but no user or not authenticated — show loading while
+  //         useEffect redirect fires (router.replace is async, needs one render)
+  if (!user || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <PageLoading message="Redirecting to login..." fullScreen={false} />
+      </div>
+    );
+  }
+
+  // CASE 3: User authenticated but business not loaded yet
+  //         Show spinner. useEffect will redirect after 10s if it never loads.
+  if (!business) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="w-8 h-8 border-4 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-[var(--text-3)]">Loading your business data...</p>
       </div>
     );
   }

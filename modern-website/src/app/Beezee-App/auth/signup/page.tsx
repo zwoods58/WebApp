@@ -73,24 +73,33 @@ export default function Signup() {
         setErrorMessage(result.error.message || "Signup failed");
         showError(result.error.message || "Signup failed");
       } else {
-        showSuccess('Account created successfully! Welcome to BeeZee.');
-        
-        // Store user data in case it's needed for caching or context
-        const userData = {
-          country: formData.country,
-          industry: formData.industry,
+        // Cache user data locally for offline use and context fallback
+        localStorage.setItem('beezee_user_data', JSON.stringify({
+          country:      formData.country,
+          industry:     formData.industry,
           businessName: formData.businessName,
-          firstName: formData.firstName,
-        };
-        localStorage.setItem('beezee_user_data', JSON.stringify(userData));
-        
-        // ADD THIS LINE before router.push
+          firstName:    formData.firstName,
+        }));
         sessionStorage.setItem('beezee_fresh_signup', 'true');
-        
-        // Route them directly to the home page dashboard
-        const c = formData.country.toLowerCase() || 'kenya';
-        const i = formData.industry.toLowerCase() || 'retail';
-        router.push(`/Beezee-App/app/${c}/${i}`);
+
+        const c = formData.country.toLowerCase();
+        const i = formData.industry.toLowerCase();
+
+        if (result.data?.requiresEmailConfirmation) {
+          // Supabase email confirmation is ON.
+          // There is no live session. Do NOT navigate to the dashboard.
+          // Navigate to the confirm-email waiting page instead.
+          showSuccess('Account created! Check your email to confirm before logging in.');
+          router.push(
+            `/Beezee-App/auth/confirm-email?email=${encodeURIComponent(formData.email)}&country=${c}&industry=${i}`
+          );
+        } else {
+          // Supabase email confirmation is OFF.
+          // signUp() already set isAuthenticated: true in auth context.
+          // Safe to navigate directly to the dashboard.
+          showSuccess('Account created successfully! Welcome to BeeZee.');
+          router.push(`/Beezee-App/app/${c}/${i}`);
+        }
       }
     } catch (error: any) {
       setErrorMessage(error?.message || 'An unexpected error occurred during signup.');

@@ -1,140 +1,68 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+// This page handles the redirect from Supabase after a user clicks
+// the email confirmation link. Supabase appends a code or token to
+// the URL. This page exchanges that code for a live session.
+//
+// After exchange, onAuthStateChange in SupabaseAuthContext fires SIGNED_IN,
+// which loads business data and sets isAuthenticated: true.
+// Then we redirect to the dashboard.
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { CheckCircle, AlertCircle, Loader } from 'lucide-react';
-import Link from 'next/link';
 
-export default function AuthCallback() {
+export default function AuthCallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const handleCallback = async () => {
-      const code = searchParams.get('code');
-      const error = searchParams.get('error');
-      const errorDescription = searchParams.get('error_description');
+      // Supabase automatically reads the token from the URL hash/query
+      // when getSession() is called. This completes the PKCE flow.
+      const { data: { session }, error } = await supabase.auth.getSession();
 
       if (error) {
-        setStatus('error');
-        setMessage(errorDescription || 'Authentication failed');
-        console.error('Auth callback error:', { error, errorDescription });
+        console.error('[AuthCallback] Session exchange error:', error);
+        router.replace('/Beezee-App/auth/login?error=confirmation_failed');
         return;
       }
 
-      if (!code) {
-        setStatus('error');
-        setMessage('No authorization code provided');
-        return;
-      }
+      if (session) {
+        // Session established. onAuthStateChange will fire SIGNED_IN
+        // in SupabaseAuthContext, which loads business data automatically.
+        // Redirect to the app root — let routing logic handle country/industry.
+        console.log('[AuthCallback] Session confirmed, redirecting to app...');
 
-      try {
-        setStatus('loading');
-        setMessage('Confirming your email...');
-
-        // Exchange the code for a session
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (exchangeError) {
-          setStatus('error');
-          setMessage(exchangeError.message || 'Failed to confirm email');
-          console.error('Code exchange error:', exchangeError);
-          return;
+        // Read cached country/industry from localStorage set during signup
+        let destination = '/Beezee-App/app';
+        try {
+          const cached = localStorage.getItem('beezee_user_data');
+          if (cached) {
+            const { country, industry } = JSON.parse(cached);
+            if (country && industry) {
+              destination = `/Beezee-App/app/${country.toLowerCase()}/${industry.toLowerCase()}`;
+            }
+          }
+        } catch {
+          // Ignore parse errors, use default destination
         }
 
-        if (data.session) {
-          setStatus('success');
-          setMessage('Email confirmed successfully!');
-          
-          // Redirect to the route page — user has a session now,
-          // so the route page will detect their business data and 
-          // redirect them to the correct dashboard
-          setTimeout(() => {
-            router.push('/Beezee-App/route');
-          }, 2000);
-        } else {
-          setStatus('error');
-          setMessage('No session created');
-        }
-      } catch (err) {
-        setStatus('error');
-        setMessage('An unexpected error occurred');
-        console.error('Callback error:', err);
+        router.replace(destination);
+      } else {
+        // No session after exchange — token may be expired or already used
+        console.warn('[AuthCallback] No session after exchange');
+        router.replace('/Beezee-App/auth/login?error=link_expired');
       }
     };
 
     handleCallback();
-  }, [searchParams, router]);
+  }, [router]);
 
+  // Show spinner while the session exchange is happening
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text-1)] flex items-center justify-center">
-      <div className="text-center max-w-md mx-auto px-6">
-        {status === 'loading' && (
-          <>
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Loader size={32} className="text-blue-600 animate-spin" />
-            </div>
-            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-4">
-              Processing...
-            </h1>
-            <p className="text-[var(--text-2)] text-lg">
-              {message}
-            </p>
-          </>
-        )}
-
-        {status === 'success' && (
-          <>
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle size={32} className="text-green-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-4">
-              Success!
-            </h1>
-            <p className="text-[var(--text-2)] text-lg mb-6">
-              {message}
-            </p>
-            <Link
-              href="/Beezee-App/auth/login"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium text-sm"
-            >
-              Continue to Login
-            </Link>
-          </>
-        )}
-
-        {status === 'error' && (
-          <>
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle size={32} className="text-red-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-[var(--text-1)] mb-4">
-              Authentication Error
-            </h1>
-            <p className="text-[var(--text-2)] text-lg mb-6">
-              {message}
-            </p>
-            <div className="space-y-3">
-              <Link
-                href="/Beezee-App/auth/signup"
-                className="inline-block w-full bg-gradient-to-r from-[var(--powder-dark)] to-[var(--powder-mid)] text-white py-3 px-6 rounded-xl hover:from-[var(--powder-mid)] hover:to-[var(--powder-dark)] transition-all font-medium text-sm text-center"
-              >
-                Try Signing Up Again
-              </Link>
-              <Link
-                href="/Beezee-App/auth/login"
-                className="inline-block w-full bg-[var(--glass-bg)] border-2 border-[var(--border)] text-[var(--text-1)] py-3 px-6 rounded-xl hover:bg-[var(--border)] hover:border-[var(--powder-mid)] transition-all font-medium text-sm text-center"
-              >
-                Back to Login
-              </Link>
-            </div>
-          </>
-        )}
-      </div>
+    <div className="min-h-screen bg-[var(--bg)] flex flex-col items-center justify-center gap-4">
+      <div className="w-10 h-10 border-4 border-[var(--powder-dark)] border-t-transparent rounded-full animate-spin" />
+      <p className="text-sm text-[var(--text-3)]">Confirming your account...</p>
     </div>
   );
 }
-
