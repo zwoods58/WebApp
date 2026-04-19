@@ -120,7 +120,7 @@ export default function AddCreditLineItemModal({
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={t('credit.description_placeholder', 'e.g., Product purchase, Service payment')}
+              placeholder={t('credit.description_placeholder')}
             />
           </div>
 

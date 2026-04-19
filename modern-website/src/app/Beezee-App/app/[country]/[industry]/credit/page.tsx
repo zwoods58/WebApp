@@ -808,7 +808,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       customer_name: finalCustomerName,
       amount: formData.amount,
       due_date: formData.due_date,
-      description: formData.description || `Cost - Personal` 
+      description: formData.description || t('credit.cost_personal_description', 'Cost - Personal') 
     });
   };
   
@@ -838,7 +838,7 @@ function PersonalCreditForm({ onSubmit, onCancel, t, isSubmitting }: {
       {showNewCustomerInput && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            t('credit.new_vendor_name') + ' <span className="text-red-500">*</span>'
+            {t('credit.new_vendor_name')} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"

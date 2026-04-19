@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v110-5a5df8e-1776608648037"; // temporary manual bump to test
+const CACHE_VERSION = "v110-747b7a8-1776618881876"; // temporary manual bump to test
 const CACHE_NAME = `html-cache-${CACHE_VERSION}`;
 const STATIC_ASSETS_CACHE = `static-assets-${CACHE_VERSION}`;
 const CACHE_WHITELIST = [CACHE_NAME, STATIC_ASSETS_CACHE];
