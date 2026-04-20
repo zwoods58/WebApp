@@ -1,244 +1,164 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import KyshiAPI from '@/lib/kyshi-api';
+import crypto from 'crypto';
+
+// Use service role — no user session in webhook context
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+function verifySignature(body: string, signature: string): boolean {
+  const expected = crypto
+    .createHmac('sha256', process.env.KYSHI_WEBHOOK_SECRET!)
+    .update(body)
+    .digest('hex');
+  return expected === signature;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Get webhook body
     const body = await request.text();
-    const signature = request.headers.get('x-kyshi-signature');
+    const signature = request.headers.get('x-kyshi-signature') ?? '';
 
-    // Verify webhook signature (SHA512)
-    if (!signature || !KyshiAPI.verifyWebhookSignature(body, signature)) {
+    if (!verifySignature(body, signature)) {
       console.error('❌ Invalid webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Parse webhook data
     const webhookData = JSON.parse(body);
-    console.log('🔔 Kyshi Webhook received:', webhookData);
+    console.log('🔔 Kyshi Webhook received:', JSON.stringify(webhookData, null, 2));
 
-    // Only handle transaction.successful events
-    if (webhookData.event !== 'transaction.successful') {
+    // Kyshi docs say event is "successful" (not "transaction.successful")
+    if (webhookData.event !== 'successful') {
       console.log(`ℹ️ Ignoring event: ${webhookData.event}`);
       return NextResponse.json({ received: true });
     }
 
-    const transaction = webhookData.data;
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const txn = webhookData.data;
+    const reference = txn.reference || txn.authorization?.authorizationCode;
 
-    // Find user by email
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', transaction.customerEmail)
-      .single();
-
-    if (userError || !user) {
-      console.error('❌ User not found:', transaction.customerEmail);
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!reference) {
+      console.error('❌ No reference in webhook payload');
+      return NextResponse.json({ error: 'Missing reference' }, { status: 400 });
     }
 
-    // Check if transaction already processed
-    const { data: existingTransaction } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('reference', transaction.reference)
+    // Check if already processed (idempotency)
+    const { data: existing } = await supabase
+      .from('payment_transactions')
+      .select('id, status')
+      .eq('reference', reference)
       .single();
 
-    if (existingTransaction) {
-      console.log('ℹ️ Transaction already processed:', transaction.reference);
+    if (existing?.status === 'SUCCESS') {
+      console.log('ℹ️ Already processed:', reference);
       return NextResponse.json({ received: true });
     }
 
-    // Create transaction record
-    const { error: transactionError } = await supabase
-      .from('transactions')
-      .insert({
-        user_id: user.id,
-        reference: transaction.reference,
-        transaction_id: transaction.transactionId,
-        amount: transaction.amount,
-        currency: transaction.currency,
-        status: transaction.status,
-        customer_email: transaction.customerEmail,
-        customer_name: transaction.customerName,
-        created_at: transaction.createdAt,
-        paid_at: transaction.paidAt,
-        webhook_data: transaction,
-        type: 'subscription_payment'
-      });
+    // Find the pending transaction to get business_id / user_id
+    // Fall back to email lookup if no pending record exists
+    let businessId: string | null = null;
+    let userId: string | null = null;
 
-    if (transactionError) {
-      console.error('❌ Failed to create transaction record:', transactionError);
-      return NextResponse.json({ error: 'Failed to record transaction' }, { status: 500 });
+    if (existing) {
+      // We have a payment_transactions record — use it
+      const { data: fullTxn } = await supabase
+        .from('payment_transactions')
+        .select('business_id, user_id')
+        .eq('reference', reference)
+        .single();
+      businessId = fullTxn?.business_id ?? null;
+      userId = fullTxn?.user_id ?? null;
+    } else {
+      // Fallback: look up by customer email
+      const email = txn.customer?.email;
+      if (!email) {
+        console.error('❌ Cannot identify user — no reference match and no email');
+        return NextResponse.json({ error: 'Cannot identify user' }, { status: 404 });
+      }
+
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('id, user_id')
+        .eq('email', email)
+        .single();
+
+      if (!business) {
+        // Try auth.users
+        const { data: { users } } = await supabase.auth.admin.listUsers();
+        const matchedUser = users.find(u => u.email === email);
+        if (matchedUser) {
+          userId = matchedUser.id;
+          const { data: biz } = await supabase
+            .from('businesses')
+            .select('id')
+            .eq('user_id', matchedUser.id)
+            .single();
+          businessId = biz?.id ?? null;
+        }
+      } else {
+        businessId = business.id;
+        userId = business.user_id;
+      }
     }
 
-    // Update user subscription
-    const nextPaymentDue = new Date();
-    nextPaymentDue.setDate(nextPaymentDue.getDate() + 7); // Add 7 days
-
-    const { error: subscriptionError } = await supabase
-      .from('users')
-      .update({
-        subscription_status: 'active',
-        subscription_amount: transaction.amount,
-        subscription_currency: transaction.currency,
-        next_payment_due: nextPaymentDue.toISOString(),
-        last_payment_at: transaction.paidAt || new Date().toISOString(),
-        access_granted_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id);
-
-    if (subscriptionError) {
-      console.error('❌ Failed to update subscription:', subscriptionError);
-      return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
+    if (!businessId && !userId) {
+      console.error('❌ Could not find business/user for reference:', reference);
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Log activity
-    await supabase
-      .from('activity_logs')
-      .insert({
-        user_id: user.id,
-        action: 'subscription_activated',
-        data: {
-          transactionId: transaction.transactionId,
-          reference: transaction.reference,
-          amount: transaction.amount,
-          currency: transaction.currency,
-          nextPaymentDue: nextPaymentDue.toISOString()
-        },
-        created_at: new Date().toISOString()
+    // Mark transaction as successful
+    if (existing) {
+      await supabase
+        .from('payment_transactions')
+        .update({ status: 'SUCCESS', paid_at: new Date().toISOString() })
+        .eq('reference', reference);
+    } else {
+      // Insert if no pending record existed
+      await supabase.from('payment_transactions').insert({
+        business_id: businessId,
+        user_id: userId,
+        reference,
+        amount: txn.amount,
+        currency: txn.meta?.localCurrency ?? 'USD',
+        status: 'SUCCESS',
+        paid_at: new Date().toISOString(),
+        webhook_payload: txn,
       });
+    }
 
-    console.log(`✅ Subscription activated for ${transaction.customerEmail}`);
-    console.log(`📅 Next payment due: ${nextPaymentDue.toISOString()}`);
+    // Grant 7-day access on businesses table
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
 
-    return NextResponse.json({ 
+    if (businessId) {
+      const { error: bizError } = await supabase
+        .from('businesses')
+        .update({
+          subscription_status: 'active',
+          subscription_expires_at: expiresAt.toISOString(),
+          last_payment_reference: reference,
+          last_payment_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', businessId);
+
+      if (bizError) {
+        console.error('❌ Failed to update business subscription:', bizError);
+        return NextResponse.json({ error: 'Failed to activate subscription' }, { status: 500 });
+      }
+    }
+
+    console.log(`✅ Subscription activated. Business: ${businessId}, Expires: ${expiresAt.toISOString()}`);
+
+    return NextResponse.json({
+      received: true,
       success: true,
-      message: 'Subscription activated successfully',
-      nextPaymentDue: nextPaymentDue.toISOString()
+      expiresAt: expiresAt.toISOString(),
     });
 
   } catch (error) {
-    console.error('❌ Webhook processing error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('❌ Webhook error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
-async function handleSubscriptionCreated(supabase: any, data: any) {
-  console.log('Subscription created:', data);
-  
-  // Update subscription status in database with complete information
-  const updateData: any = {
-    status: 'pending',
-    kyshi_subscription_id: data.id,
-    kyshi_subscription_code: data.code,
-    updated_at: new Date().toISOString(),
-  };
-
-  // Add additional data if available
-  if (data.amount) updateData.amount = data.amount;
-  if (data.currency) updateData.currency = data.currency;
-  if (data.paymentMethod) updateData.payment_method = data.paymentMethod;
-  if (data.plan) {
-    updateData.plan_name = data.plan.name;
-    updateData.plan_interval = data.plan.interval;
-  }
-  if (data.customer) {
-    updateData.customer_email = data.customer.email;
-    updateData.customer_phone = data.customer.phone;
-  }
-  
-  await supabase
-    .from('subscriptions')
-    .update(updateData)
-    .eq('kyshi_subscription_id', data.id);
-}
-
-async function handleSubscriptionActivated(supabase: any, data: any) {
-  console.log('Subscription activated:', data);
-  
-  // Update subscription status in database
-  await supabase
-    .from('subscriptions')
-    .update({
-      status: 'active',
-      is_active: true,
-      current_period_start: data.startDate,
-      current_period_end: data.nextPaymentDate,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('kyshi_subscription_id', data.id);
-}
-
-async function handleSubscriptionCancelled(supabase: any, data: any) {
-  console.log('Subscription cancelled:', data);
-  
-  // Update subscription status in database
-  await supabase
-    .from('subscriptions')
-    .update({
-      status: 'cancelled',
-      is_active: false,
-      cancelled_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('kyshi_subscription_id', data.id);
-}
-
-async function handlePaymentSucceeded(supabase: any, data: any) {
-  console.log('Payment succeeded:', data);
-  
-  // Create transaction record
-  await supabase
-    .from('transactions')
-    .insert({
-      kyshi_transaction_id: data.id,
-      kyshi_reference: data.reference,
-      subscription_id: data.subscriptionId,
-      amount: data.amount,
-      currency: data.currency,
-      status: 'success',
-      payment_method: data.paymentMethod,
-      processed_at: data.processedAt || new Date().toISOString(),
-      created_at: new Date().toISOString(),
-    });
-
-  // Update subscription next charge date
-  await supabase
-    .from('subscriptions')
-    .update({
-      last_charge_date: new Date().toISOString(),
-      next_charge_date: data.nextPaymentDate,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('kyshi_subscription_id', data.subscriptionId);
-}
-
-async function handlePaymentFailed(supabase: any, data: any) {
-  console.log('Payment failed:', data);
-  
-  // Create transaction record
-  await supabase
-    .from('transactions')
-    .insert({
-      kyshi_transaction_id: data.id,
-      kyshi_reference: data.reference,
-      subscription_id: data.subscriptionId,
-      amount: data.amount,
-      currency: data.currency,
-      status: 'failed',
-      payment_method: data.paymentMethod,
-      processed_at: data.processedAt || new Date().toISOString(),
-      created_at: new Date().toISOString(),
-    });
-}
-
