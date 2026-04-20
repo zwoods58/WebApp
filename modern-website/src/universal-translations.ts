@@ -510,7 +510,7 @@ export const translations = {
     "services.price_placeholder": { en: "0.00", sw: "0.00", ha: "0.00", yo: "0.00", ig: "0.00", zu: "0.00", xh: "0.00", af: "0.00", tw: "0.00", rw: "0.00", lg: "0.00", fr: "0.00", dy: "0.00" },
     "services.duration_placeholder": { en: "30", sw: "30", ha: "30", yo: "30", ig: "30", zu: "30", xh: "30", af: "30", tw: "30", rw: "30", lg: "30", fr: "30", dy: "30" }
 
-
+    
   }
 };
 
