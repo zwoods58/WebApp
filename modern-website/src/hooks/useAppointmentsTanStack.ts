@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export interface Appointment {
   id: string;
@@ -46,7 +45,6 @@ export interface UseAppointmentsTanStackReturn {
 
 export function useAppointmentsTanStack({ businessId, industry }: UseAppointmentsTanStackProps = {}): UseAppointmentsTanStackReturn {
   const queryClient = useQueryClient();
-  const { isReadOnly } = useUnifiedAuth();
 
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['appointments', businessId, industry],
@@ -67,14 +65,18 @@ export function useAppointmentsTanStack({ businessId, industry }: UseAppointment
 
   const addAppointmentMutation = useMutation({
     mutationFn: async (appointment: Omit<Appointment, 'id' | 'created_at' | 'updated_at'>) => {
-      if (isReadOnly) throw new Error('READ_ONLY: Subscription inactive.');
+      console.log('Appointment data being inserted:', appointment);
+      
       const { data, error } = await supabase
         .from('appointments')
         .insert(appointment)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Appointment insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {

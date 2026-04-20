@@ -54,13 +54,18 @@ export function useInventoryTanStack({ businessId, industry }: UseInventoryTanSt
 
   const addInventoryMutation = useMutation({
     mutationFn: async (inventory: Omit<Inventory, 'id' | 'created_at' | 'updated_at'>) => {
+      console.log('Inventory data being inserted:', inventory);
+      
       const { data, error } = await supabase
         .from('inventory')
         .insert(inventory)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Inventory insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {

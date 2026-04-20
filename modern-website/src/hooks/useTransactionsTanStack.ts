@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
 
 export interface Transaction {
   id: string;
@@ -36,12 +35,10 @@ export interface UseTransactionsTanStackReturn {
   refetch: () => void;
   isOffline: boolean;
   isAdding: boolean;
-  isReadOnly: boolean;
 }
 
 export function useTransactionsTanStack({ businessId, industry }: UseTransactionsTanStackProps = {}): UseTransactionsTanStackReturn {
   const queryClient = useQueryClient();
-  const { isReadOnly } = useUnifiedAuth();
 
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['transactions', businessId, industry],
@@ -62,17 +59,18 @@ export function useTransactionsTanStack({ businessId, industry }: UseTransaction
 
   const addTransactionMutation = useMutation({
     mutationFn: async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
-      if (isReadOnly) {
-        throw new Error('READ_ONLY: Subscription expired or payment failed. Please reactivate your account to add transactions.');
-      }
-
+      console.log('Transaction data being inserted:', transaction);
+      
       const { data, error } = await supabase
         .from('transactions')
         .insert(transaction)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Transaction insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
@@ -82,10 +80,6 @@ export function useTransactionsTanStack({ businessId, industry }: UseTransaction
 
   const updateTransactionMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Transaction> }) => {
-      if (isReadOnly) {
-        throw new Error('READ_ONLY: Account restriction. Please reactivate subscription to edit data.');
-      }
-
       const { data, error } = await supabase
         .from('transactions')
         .update(updates)
@@ -103,10 +97,6 @@ export function useTransactionsTanStack({ businessId, industry }: UseTransaction
 
   const deleteTransactionMutation = useMutation({
     mutationFn: async (id: string) => {
-      if (isReadOnly) {
-        throw new Error('READ_ONLY: Account restriction. Please reactivate subscription to delete data.');
-      }
-
       const { error } = await supabase
         .from('transactions')
         .delete()
@@ -151,6 +141,5 @@ export function useTransactionsTanStack({ businessId, industry }: UseTransaction
     refetch: () => queryClient.invalidateQueries({ queryKey: ['transactions'] }),
     isOffline: typeof window !== 'undefined' ? !navigator.onLine : false,
     isAdding: addTransactionMutation.status === 'pending',
-    isReadOnly
   };
 }

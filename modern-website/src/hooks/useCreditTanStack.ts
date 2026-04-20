@@ -4,13 +4,24 @@ import { supabase } from '@/lib/supabase';
 export interface Credit {
   id: string;
   business_id: string;
+  industry: string;
   customer_name: string;
+  customer_phone?: string;
   amount: number;
-  due_date: string;
-  description?: string;
+  currency: string;
+  amount_home?: number;
+  exchange_rate?: number;
+  paid_amount?: number;
   status: 'pending' | 'partial' | 'paid' | 'overdue';
+  due_date?: string;
+  date_given: string;
+  notes?: string;
+  metadata?: Record<string, any>;
   created_at: string;
   updated_at: string;
+  created_by?: string;
+  updated_by?: string;
+  type?: string;
 }
 
 export interface UseCreditTanStackProps {
@@ -53,13 +64,32 @@ export function useCreditTanStack({ businessId, industry }: UseCreditTanStackPro
 
   const addCreditMutation = useMutation({
     mutationFn: async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
+      // Ensure required fields are present with defaults
+      const creditData = {
+        ...credit,
+        // Required fields that may be missing
+        industry: credit.industry || 'retail',
+        currency: credit.currency || 'KES',
+        date_given: credit.date_given || new Date().toISOString().split('T')[0],
+        status: credit.status || 'pending',
+        paid_amount: credit.paid_amount || 0,
+        // Optional fields with defaults
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log('Credit data being inserted:', creditData);
+      
       const { data, error } = await supabase
         .from('credit')
-        .insert(credit)
+        .insert(creditData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Credit insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {

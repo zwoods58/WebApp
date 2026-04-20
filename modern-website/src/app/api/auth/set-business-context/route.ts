@@ -61,11 +61,13 @@ export async function POST(req: NextRequest) {
     const { data: business, error: bizError } = await adminClient
       .from('businesses')
       .select('id, subscription_status, subscription_expires_at')
-      .eq('user_id', user.id)
+      .eq('supabase_user_id', user.id)
       .single();
 
     if (bizError || !business) {
-      return NextResponse.json({ success: false, message: 'Business not found' }, { status: 404 });
+      console.error('Business query error:', bizError);
+      console.error('User ID:', user.id);
+      return NextResponse.json({ success: false, message: 'Business not found', error: bizError?.message }, { status: 404 });
     }
 
     const now = new Date();

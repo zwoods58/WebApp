@@ -2,18 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { DollarSign, Plus, X, Car, Store, Utensils, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
-import { useServices } from '@/hooks';
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { INDUSTRY_CONFIG } from '@/config/industryConfig';
 import { useLanguage } from '@/hooks/useLanguage';
 import { addCreditUnified } from '@/app/Beezee-App/services/creditService';
 
-type Service = {
-  id: string;
-  service_name: string;
-  price?: number;
-  category?: string;
-};
 
 interface MoneyInButtonProps {
   industry: string;
@@ -49,59 +41,18 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
+    category: 'sales',
     customer_name: '',
     payment_method: 'cash',
-    // Transport-specific fields
-    service_id: '',
-    distance: '',
-    tips: '',
-    use_base_amount: false,
     // Credit due date
     due_date: getDefaultDueDate(),
   });
 
-  // Get services for transport industry
-  const featureConfig = INDUSTRY_CONFIG[industry as keyof typeof INDUSTRY_CONFIG];
-  const servicesHook = featureConfig.services ? useServices({ industry }) : { data: [], loading: false, error: null };
-  const services = servicesHook.data || [];
 
   const labels = industryLabels[industry as keyof typeof industryLabels] || industryLabels.retail;
   const Icon = labels.icon;
 
-  // Calculate fare for transport
-  const calculateTransportFare = () => {
-    if (!formData.service_id) return 0;
-    
-    const service = services.find((s: Service) => s.id === formData.service_id);
-    if (!service) return 0;
 
-    if (formData.use_base_amount) {
-      return (service.price || 0) + (parseFloat(formData.tips) || 0);
-    }
-
-    const distance = parseFloat(formData.distance) || 0;
-    const pricePerKm = service.price || 0;
-    const baseAmount = service.price || 0;
-    const tips = parseFloat(formData.tips) || 0;
-
-    return (distance * pricePerKm) + baseAmount + tips;
-  };
-
-  // Update amount when transport fields change
-  React.useEffect(() => {
-    if (featureConfig.services && formData.service_id) {
-      const fare = calculateTransportFare();
-      setFormData(prev => ({ ...prev, amount: fare.toString() }));
-      // Update description with service name
-      const service = services.find((s: Service) => s.id === formData.service_id);
-      if (service) {
-        const description = formData.use_base_amount 
-          ? `${service.service_name} (${t('transport.base_amount_only', 'Base only')}${formData.tips ? ` + ${t('transport.tips', 'tips')}` : ''})`
-          : `${service.service_name} (${formData.distance || '0'} km${formData.tips ? ` + ${t('transport.tips', 'tips')}` : ''})`;
-        setFormData(prev => ({ ...prev, description }));
-      }
-    }
-  }, [formData.service_id, formData.distance, formData.tips, formData.use_base_amount, industry, services]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,6 +100,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
           amount,
           currency,
           description: formData.description,
+          category: formData.category,
           customer_name: formData.customer_name,
           payment_method: formData.payment_method,
           transaction_date: new Date().toISOString().split('T')[0],
@@ -163,6 +115,7 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
           amount,
           currency,
           description: formData.description,
+          category: formData.category,
           customer_name: formData.customer_name,
           payment_method: formData.payment_method,
           transaction_date: new Date().toISOString().split('T')[0],
@@ -178,12 +131,9 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
       setFormData({ 
         amount: '', 
         description: '', 
+        category: 'sales',
         customer_name: '', 
         payment_method: 'cash',
-        service_id: '',
-        distance: '',
-        tips: '',
-        use_base_amount: false,
         due_date: getDefaultDueDate(),
       });
       
@@ -312,92 +262,19 @@ export default function MoneyInButton({ industry, country, businessId, onSuccess
                   </div>
                 </div>
 
-                {/* Transport-specific fields */}
-                {featureConfig.services && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        {t('services.service', 'Service')}
-                      </label>
-                      <select
-                        value={formData.service_id}
-                        onChange={(e) => setFormData(prev => ({ ...prev, service_id: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
-                        required
-                      >
-                        <option value="">{t('transport.select_service', 'Select service')}</option>
-                        {services.map((service: Service) => (
-                          <option key={service.id} value={service.id}>
-                            {service.service_name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        {t('transport.distance_km', 'Distance (km)')}
-                      </label>
-                      <input
-                        type="number"
-                        value={formData.distance}
-                        onChange={(e) => setFormData(prev => ({ ...prev, distance: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
-                        placeholder={t('transport.distance_placeholder', '0.0')}
-                        step="0.1"
-                        disabled={formData.use_base_amount}
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="useBaseAmount"
-                        checked={formData.use_base_amount}
-                        onChange={(e) => setFormData(prev => ({ ...prev, use_base_amount: e.target.checked }))}
-                        className="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                      />
-                      <label htmlFor="useBaseAmount" className="text-sm text-[var(--text-2)]">
-                        {t('transport.use_base_amount', 'Use base amount only')}
-                      </label>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
-                        {t('transport.tips_optional', 'Tips (optional)')}
-                      </label>
-                      <input
-                        type="number"
-                        value={formData.tips}
-                        onChange={(e) => setFormData(prev => ({ ...prev, tips: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
-                        style={{ backgroundColor: '#ffffff' }}
-                        placeholder={t('payment.enter_tips', '0.00')}
-                        step="0.01"
-                      />
-                    </div>
-
-                    {/* Fare calculation display */}
-                    {formData.service_id && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-green-900">{t('transport.calculated_fare', 'Calculated Fare:')}</span>
-                          <span className="text-lg font-bold text-green-900">
-                            {country === 'ke' ? 'KSh' : '$'} {calculateTransportFare().toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="text-xs text-green-600 mt-1">
-                          {formData.use_base_amount 
-                            ? t('transport.base_amount_only', 'Base amount only') + (formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} ${t('transport.tips', 'tips')}` : '')
-                            : `${formData.distance || '0'} km × ${t('transport.rate', 'rate')}` + (formData.tips ? ` + ${country === 'ke' ? 'KSh' : '$'} ${formData.tips} ${t('transport.tips', 'tips')}` : '')
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
+                {/* Category */}
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
+                    {t('common.category', 'Category')}
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-4 py-3 bg-white/90 backdrop-blur-md rounded-xl border border-gray-300/50 focus:ring-2 focus:ring-green-500/50 focus:border-green-300 shadow-sm text-[var(--text-1)] placeholder-gray-500"
+                    placeholder={t('money_in.category_placeholder', 'e.g., Sales, Services, Products')}
+                  />
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-2)] mb-1">
