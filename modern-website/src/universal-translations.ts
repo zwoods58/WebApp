@@ -274,19 +274,6 @@ export const translations = {
     // ─── Modals ───────────────────────────────────────────────────
     "modal.cancel": { en: "Cancel", sw: "Ghairi", ha: "Soke", yo: "Fagile", ig: "Kwusi", zu: "Khansela", xh: "Khansela", af: "Kanselleer", tw: "Twa", rw: "Kuraho", lg: "Sazaamu", fr: "Annuler", dy: "A bali" },
     "modal.confirm": { en: "Confirm", sw: "Thibitisha", ha: "Tabbatar", yo: "T", ig: "Gbanar", zu: "Qinisekisa", xh: "Qinisekisa", af: "Bevestig", tw: "T", rw: "Emeza", lg: "Kakasa", fr: "Confirmer", dy: "A don" },
-    "modal.processing": { en: "Processing...", sw: "Inachambishwa...", ha: "Ana Aikewa...", yo: "N...", ig: "N...", zu: "Iyaqhubeka...", xh: "Iyaqhubeka...", af: "Besig om...", tw: "N...", rw: "Iri gukurikizwa...", lg: "Kikola...", fr: "Traitement en cours...", dy: "A be kele..." },
-
-    // ─── App ──────────────────────────────────────────────────────
-    "app.name": { en: "BeeZee App", sw: "BeeZee App", ha: "BeeZee App", yo: "BeeZee App", ig: "BeeZee App", zu: "BeeZee App", xh: "BeeZee App", af: "BeeZee App", tw: "BeeZee App", rw: "BeeZee App", lg: "BeeZee App", fr: "BeeZee App", dy: "BeeZee App" },
-
-    // ─── Auth ─────────────────────────────────────────────────────
-    "auth.sign_out": { en: "Sign Out", sw: "Toka", ha: "Fita", yo: "Jáde", ig: "Pụọ", zu: "Phuma", xh: "Phuma", af: "Teken Uit", tw: "Pue", rw: "Sohoka", lg: "Fuluma", fr: "Se Déconnecter", dy: "Bɔ" },
-
-    // ─── Footer ───────────────────────────────────────────────────
-    "footer.help": { en: "Help", sw: "Msaada", ha: "Taimako", yo: "Ìrànlọ́wọ́", ig: "Enyemaka", zu: "Usizo", xh: "Uncedo", af: "Hulp", tw: "Mmoa", rw: "Ubufasha", lg: "Obuyambi", fr: "Aide", dy: "Dɛmɛ" },
-    "footer.privacy": { en: "Privacy", sw: "Faragha", ha: "Sirri", yo: "Aṣírí", ig: "Nzuzo", zu: "Ubumfihlo", xh: "Imfihlo", af: "Privaatheid", tw: "Onipadaseɛ", rw: "Ibanga", lg: "Kyama", fr: "Confidentialité", dy: "Gundo" },
-    "footer.terms": { en: "Terms", sw: "Masharti", ha: "Sharuɗɗa", yo: "Àwọn Ìpèsè", ig: "Usoro", zu: "Imigomo", xh: "Imimmiselo", af: "Bepalings", tw: "Mmara", rw: "Amategeko", lg: "Amateeka", fr: "Conditions", dy: "Sariya" },
-
     // ─── Country & Language ───────────────────────────────────────
     "country.current": { en: "Current Country", sw: "Nchi ya Sasa", ha: "Kasa ta Yanzu", yo: "Orl-Il", ig: "Obodo", zu: "Inqubo yenkamva", xh: "Inqubo yenkamva", af: "Huidige Land", tw: "Man", rw: "Igihugu gihano", lg: "Ennaku zino", fr: "Pays actuel", dy: "Jamana" },
     "language.select": { en: "Select Language", sw: "Chagua Lugha", ha: "Zauba", yo: "Yan", ig: "Asusu", zu: "Khetha ulimi", xh: "Khetha ulimi", af: "Kies Taal", tw: "P", rw: "Hitamo ururimi", lg: "Londa lulimi", fr: "Sélectionner la langue", dy: "Kan sugandi" },
@@ -300,10 +287,6 @@ export const translations = {
     "industry.services": { en: "Services", sw: "Huduma", ha: "Sabis", yo: "Ise", ig: "Oru", zu: "Inkonzo", xh: "Inkonzo", af: "Dienste", tw: "Adwuma", rw: "Serivisi", lg: "Emirimu", fr: "Services", dy: "Bonya" },
     "industry.tailor": { en: "Tailor", sw: "Mfumaji", ha: "Mai Sanya", yo: "Alr", ig: "Onye", zu: "Umshayi nemikhono", xh: "Umshayi nemikhono", af: "Kleermaker", tw: "Nt", rw: "Umuhanga", lg: "Mukwati", fr: "Tailleur", dy: "Wolofin" },
     "industry.transport": { en: "Transport", sw: "Usafiri", ha: "Sufuri", yo: "Irin-ajo", ig: "Njem", zu: "Ukuthuthukiswa", xh: "Ukuthuthukiswa", af: "Vervoer", tw: "K", rw: "Gutwara", lg: "Okutambula", fr: "Transport", dy: "Lafihe" },
-    "food.title": { en: "Food & Restaurant", sw: "Chakula na Migahawa", ha: "Abinci da Gona", yo: "Ounj at Ounj", ig: "Nri na Ihe", zu: "Ukudla neenovili", xh: "Ukudla neenovili", af: "Kos en Restaurant", tw: "Aduad ne", rw: "Ibiribwa n'ahantu hanywa", lg: "Emmere n'ebijulo", fr: "Alimentation & Restaurant", dy: "Dumu ni Mine" },
-    "freelance.title": { en: "Freelance Services", sw: "Huduma za Kujitegemea", ha: "Sabis na", yo: "Is", ig: "Oru Onye", zu: "Isevisi zokuzenza", xh: "Isevisi zokuzenza", af: "Vryskut Dienste", tw: "Adwuma a", rw: "Serivisi zigenga", lg: "Emirimu egiganyizidwa", fr: "Services freelance", dy: "Baara Yere ni Denkili" },
-    "repairs.title": { en: "Repair Services", sw: "Huduma za Marekebisho", ha: "Sabis Gyaran", yo: "Se", ig: "Oru", zu: "Isevisi zokulungisa", xh: "Isevisi zokulungisa", af: "Herstel Dienste", tw: "Adwuma a", rw: "Serivisi zo kurinda", lg: "Emirimu gy'okulongoosa", fr: "Services de réparation", dy: "Segesegeli" },
-    "retail.title": { en: "Retail Shop", sw: "Duka la Rejareja", ha: "Shagon Saye", yo: "Ile itaja", ig: "Ahia Rejareja", zu: "Ishasho lethengiso", xh: "Ishasho lethengiso", af: "Winkelwinkel", tw: "Boremu Ntenu", rw: "Duka ry'ibicuruzwa", lg: "Dduuka ly'ebitundutundu", fr: "Boutique de détail", dy: "Jarabaa" },
 
     // Feedback System
     "feedback.title": { en: "Share Your Feedback", sw: "Shiriki Maoni Yako", ha: "Raba Ra'ayin Ka", yo: "Pin Imoyo Rere", ig: "Kekoo Riri Nke G", zu: "Yabelana Isipho Sakho", xh: "Yabelana Isipho Sakho", af: "Deel Jou Terugvoer", tw: "Ky Wn Nkyerkyer Mu", rw: "Sangira Ibyanditswe", lg: "Gaba Ebiwandiiko Byo", fr: "Partagez vos commentaires", dy: "A bii kunnafoni" },
@@ -465,3 +448,5 @@ export const translations = {
     
   }
 };
+
+export default translations;

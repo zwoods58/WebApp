@@ -1,73 +1,133 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createHmac } from 'node:crypto';
+import KyshiAPI from '@/lib/kyshi-api';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Get webhook body
     const body = await request.text();
     const signature = request.headers.get('x-kyshi-signature');
-    const webhookSecret = process.env.KYSHI_WEBHOOK_SECRET;
 
-    if (!signature || !webhookSecret) {
-      return NextResponse.json(
-        { error: 'Missing signature or webhook secret' },
-        { status: 401 }
-      );
+    // Verify webhook signature (SHA512)
+    if (!signature || !KyshiAPI.verifyWebhookSignature(body, signature)) {
+      console.error('❌ Invalid webhook signature');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Verify webhook signature
-    const expectedSignature = createHmac('sha256', webhookSecret)
-      .update(body, 'utf8')
-      .digest('hex');
+    // Parse webhook data
+    const webhookData = JSON.parse(body);
+    console.log('🔔 Kyshi Webhook received:', webhookData);
 
-    if (!signature.includes(expectedSignature)) {
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      );
+    // Only handle transaction.successful events
+    if (webhookData.event !== 'transaction.successful') {
+      console.log(`ℹ️ Ignoring event: ${webhookData.event}`);
+      return NextResponse.json({ received: true });
     }
 
-    const event = JSON.parse(body);
-    console.log('Kyshi webhook event:', event);
-
-    // Initialize Supabase client
+    const transaction = webhookData.data;
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // Handle different event types
-    switch (event.event) {
-      case 'subscription.created':
-        await handleSubscriptionCreated(supabase, event.data);
-        break;
-      
-      case 'subscription.activated':
-        await handleSubscriptionActivated(supabase, event.data);
-        break;
-      
-      case 'subscription.cancelled':
-        await handleSubscriptionCancelled(supabase, event.data);
-        break;
-      
-      case 'subscription.payment.succeeded':
-        await handlePaymentSucceeded(supabase, event.data);
-        break;
-      
-      case 'subscription.payment.failed':
-        await handlePaymentFailed(supabase, event.data);
-        break;
-      
-      default:
-        console.log('Unhandled event type:', event.event);
+    // Find user by email
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', transaction.customerEmail)
+      .single();
+
+    if (userError || !user) {
+      console.error('❌ User not found:', transaction.customerEmail);
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ received: true });
+    // Check if transaction already processed
+    const { data: existingTransaction } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('reference', transaction.reference)
+      .single();
+
+    if (existingTransaction) {
+      console.log('ℹ️ Transaction already processed:', transaction.reference);
+      return NextResponse.json({ received: true });
+    }
+
+    // Create transaction record
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        reference: transaction.reference,
+        transaction_id: transaction.transactionId,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        status: transaction.status,
+        customer_email: transaction.customerEmail,
+        customer_name: transaction.customerName,
+        created_at: transaction.createdAt,
+        paid_at: transaction.paidAt,
+        webhook_data: transaction,
+        type: 'subscription_payment'
+      });
+
+    if (transactionError) {
+      console.error('❌ Failed to create transaction record:', transactionError);
+      return NextResponse.json({ error: 'Failed to record transaction' }, { status: 500 });
+    }
+
+    // Update user subscription
+    const nextPaymentDue = new Date();
+    nextPaymentDue.setDate(nextPaymentDue.getDate() + 7); // Add 7 days
+
+    const { error: subscriptionError } = await supabase
+      .from('users')
+      .update({
+        subscription_status: 'active',
+        subscription_amount: transaction.amount,
+        subscription_currency: transaction.currency,
+        next_payment_due: nextPaymentDue.toISOString(),
+        last_payment_at: transaction.paidAt || new Date().toISOString(),
+        access_granted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id);
+
+    if (subscriptionError) {
+      console.error('❌ Failed to update subscription:', subscriptionError);
+      return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
+    }
+
+    // Log activity
+    await supabase
+      .from('activity_logs')
+      .insert({
+        user_id: user.id,
+        action: 'subscription_activated',
+        data: {
+          transactionId: transaction.transactionId,
+          reference: transaction.reference,
+          amount: transaction.amount,
+          currency: transaction.currency,
+          nextPaymentDue: nextPaymentDue.toISOString()
+        },
+        created_at: new Date().toISOString()
+      });
+
+    console.log(`✅ Subscription activated for ${transaction.customerEmail}`);
+    console.log(`📅 Next payment due: ${nextPaymentDue.toISOString()}`);
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Subscription activated successfully',
+      nextPaymentDue: nextPaymentDue.toISOString()
+    });
 
   } catch (error) {
-    console.error('Webhook error:', error);
+    console.error('❌ Webhook processing error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

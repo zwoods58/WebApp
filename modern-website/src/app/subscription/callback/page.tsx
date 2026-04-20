@@ -1,169 +1,127 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '../../../lib/supabase';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 function SubscriptionCallbackContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
+  const router = useRouter();
+  const [status, setStatus] = useState<'verifying' | 'success' | 'pending' | 'failed'>('verifying');
   const [message, setMessage] = useState('');
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
-  // Remove old handlePaymentSuccess and handlePaymentFailed
   useEffect(() => {
-    if (!isClient) return;
-    
     const reference = searchParams.get('reference');
-    const paymentStatus = searchParams.get('status');
-    const userEmail = searchParams.get('user_email') || undefined;
-    const country = searchParams.get('country') || undefined;
+    const sub_id = searchParams.get('sub_id');
 
-    const verifyTransaction = async () => {
-      if (!reference) {
-        setStatus('failed');
-        setMessage('Missing transaction reference. Please contact support.');
-        return;
-      }
+    if (!reference) {
+      setStatus('failed');
+      setMessage('Missing payment reference');
+      return;
+    }
 
+    const verifyPayment = async () => {
       try {
-        console.log(`Verifying transaction: ${reference}`);
-        const response = await fetch('/api/subscription/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ reference, user_email: userEmail, country }),
-        });
+        const response = await fetch(`/api/subscription/verify?reference=${reference}&sub_id=${sub_id}`);
+        const data = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
+        if (data.status === 'success') {
           setStatus('success');
-          setMessage('Payment successful! Your subscription is now active.');
-          if (result.subscriptionId) setSubscriptionId(result.subscriptionId);
-          
-          handleRedirect(reference, 'success');
+          setMessage('Your subscription is now active.');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 3000);
+        } else if (data.status === 'pending') {
+          setStatus('pending');
+          setMessage('We will email you when your payment clears.');
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 5000);
         } else {
-          // If the status is pending, we can either poll or show pending
-          if (result.kyshiStatus === 'pending') {
-            setStatus('loading');
-            setMessage('Payment is still processing. Please wait...');
-            // Check again after 5 seconds
-            setTimeout(verifyTransaction, 5000);
-          } else {
-            console.error('Payment verified as failed/cancelled', result);
-            setStatus('failed');
-            setMessage(`Payment wasn't successful. Status: ${result.kyshiStatus || 'failed'}`);
-            handleRedirect(reference, 'failed');
-          }
+          setStatus('failed');
+          setMessage('Your payment was not completed. Please try again.');
+          setTimeout(() => {
+            router.push('/subscribe');
+          }, 4000);
         }
-      } catch (err) {
-        console.error('Verification error:', err);
+      } catch (error) {
         setStatus('failed');
-        setMessage('Error verifying payment. Please contact support.');
+        setMessage('Unable to verify payment. Please try again.');
+        setTimeout(() => {
+          router.push('/subscribe');
+        }, 4000);
       }
     };
 
-    if (reference) {
-       verifyTransaction();
-    } else {
-      setTimeout(() => {
-        setStatus('failed');
-        setMessage('No payment status received. Please contact support.');
-      }, 5000);
-    }
-  }, [searchParams, isClient]);
+    verifyPayment();
+  }, [searchParams, router]);
 
-  const handleRedirect = (reference: string, type: 'success' | 'failed') => {
-    setTimeout(() => {
-      // Try deep link redirect first
-      const deepLinkUrl = type === 'success' 
-        ? `yourapp://subscription/success?reference=${reference}`
-        : `yourapp://subscription/failed?reference=${reference}`;
-      window.location.href = deepLinkUrl;
-      
-      // Fallback to regular redirect
-      setTimeout(() => {
-        router.push('/Beezee-App/app/ke/retail/more');
-      }, 1000);
-    }, 3000);
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-8 text-center shadow-xl">
-        {status === 'loading' && (
-          <>
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Processing Payment</h2>
-            <p className="text-gray-600">Please wait while we confirm your payment...</p>
-            <div className="mt-4">
-              <div className="animate-pulse flex space-x-2 justify-center">
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {status === 'success' && (
-          <>
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
-            <p className="text-gray-600 mb-4">{message}</p>
-            {subscriptionId && (
-              <p className="text-sm text-gray-500 mb-4">Subscription ID: {subscriptionId}</p>
-            )}
-            <div className="bg-green-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-green-800 font-medium mb-2">What happens next?</p>
-              <ul className="text-sm text-green-700 text-left space-y-1">
-                <li>Weekly subscription activated</li>
-                <li>Access granted to premium features</li>
-                <li>Next charge in 7 days</li>
-                <li>Cancel anytime from settings</li>
-              </ul>
-            </div>
-            <p className="text-sm text-gray-500">Redirecting back to app...</p>
-          </>
-        )}
-
-        {status === 'failed' && (
-          <>
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Failed</h2>
-            <p className="text-gray-600 mb-6">{message}</p>
-            <button
-              onClick={() => router.push('/Beezee-App/app/ke/retail/more')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
-            >
-              Try Again
-            </button>
-          </>
-        )}
+  if (status === 'verifying') {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)] mx-auto mb-4"></div>
+          <h1 className="text-xl font-semibold text-[var(--text-1)] mb-2">Verifying your payment...</h1>
+          <p className="text-[var(--text-2)]">Please wait while we confirm your transaction.</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (status === 'success') {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-green-600 mb-2">Payment Confirmed!</h1>
+          <p className="text-[var(--text-1)] mb-4">{message}</p>
+          <p className="text-sm text-[var(--text-2)]">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'pending') {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏰</div>
+          <h1 className="text-2xl font-bold text-[var(--text-1)] mb-2">Payment Processing</h1>
+          <p className="text-[var(--text-2)] mb-4">{message}</p>
+          <p className="text-sm text-[var(--text-2)]">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'failed') {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Payment Not Completed</h1>
+          <p className="text-[var(--text-2)] mb-4">{message}</p>
+          <p className="text-sm text-[var(--text-2)]">Redirecting to subscribe page...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
-export default function SubscriptionCallback() {
+export default function SubscriptionCallbackPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)]"></div>
       </div>
     }>
       <SubscriptionCallbackContent />

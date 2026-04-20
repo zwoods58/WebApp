@@ -1,6 +1,7 @@
 'use client';
 
-import { KenyaSubscriptionModal } from './KenyaSubscriptionModal';
+import { NewKenyaSubscriptionModal } from './NewKenyaSubscriptionModal';
+// TODO: Create new modals for other countries using correct API
 import { NigeriaSubscriptionModal } from './NigeriaSubscriptionModal';
 import { GhanaSubscriptionModal } from './GhanaSubscriptionModal';
 import { CoteIvoireSubscriptionModal } from './CoteIvoireSubscriptionModal';
@@ -17,7 +18,7 @@ export function SubscriptionModal({ isOpen, onClose, country, onSuccess }: Subsc
   
   switch (countryCode) {
     case 'KE':
-      return <KenyaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
+      return <NewKenyaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
     case 'NG':
       return <NigeriaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
     case 'GH':
@@ -26,7 +27,7 @@ export function SubscriptionModal({ isOpen, onClose, country, onSuccess }: Subsc
       return <CoteIvoireSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
     default:
       console.warn(`No subscription modal found for ${country}, using Kenya modal as fallback`);
-      return <KenyaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
+      return <NewKenyaSubscriptionModal isOpen={isOpen} onClose={onClose} onSuccess={onSuccess} />;
   }
 }
 

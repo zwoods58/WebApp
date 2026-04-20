@@ -1,96 +1,153 @@
+/// <reference path="./deno-types.d.ts" />
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createHmac } from "https://deno.land/std@0.168.0/node/crypto.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-kyshi-signature',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+serve(async (req: Request) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  // Only accept POST requests
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
 
   try {
-    const signature = req.headers.get('x-kyshi-signature');
-    // For now, skipping HMAC verification to focus on logic, 
-    // but in production, Deno.env.get('KYSHI_WEBHOOK_SECRET') should be used.
+    // Read ENTIRE raw body as text first before anything else
+    const rawBody = await req.text();
     
-    const body = await req.json();
-    console.log('[Webhook] Received:', body);
+    // Validate using HMAC-SHA512
+    const KYSHI_WEBHOOK_SECRET = Deno.env.get("KYSHI_WEBHOOK_SECRET");
+    if (!KYSHI_WEBHOOK_SECRET) {
+      console.error('❌ KYSHI_WEBHOOK_SECRET not set');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
+    const expected = createHmac("sha512", KYSHI_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    const received = req.headers.get("x-kyshi-signature");
+    
+    if (expected !== received) {
+      console.error('❌ Invalid webhook signature');
+      return new Response(
+        JSON.stringify({ error: 'Invalid signature' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse JSON from rawBody
+    const event = JSON.parse(rawBody);
+    
+    // Only process when event === "successful" — return 200 for all other events
+    if (event.event !== "successful") {
+      console.log(`ℹ️ Ignoring non-successful event: ${event.event}`);
+      return new Response(
+        JSON.stringify({ received: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get reference from event.data.reference
+    const reference = event.data?.reference;
+    if (!reference) {
+      console.error('❌ No reference found in webhook data');
+      return new Response(
+        JSON.stringify({ error: 'Missing reference' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Initialize Supabase client
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // KEY CHANGE: Transactions API uses "event: successful" instead of "subscription.payment.succeeded"
-    if (body.event === 'successful') {
-      const data = body.data;
-      const reference = data.reference;
+    // Query subscriptions table where kyshi_reference = reference
+    const { data: subscription, error: fetchError } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('kyshi_reference', reference)
+      .single();
 
-      // 1. Find the subscription associated with this reference
-      const { data: sub, error: subError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('last_transaction_reference', reference)
-        .single();
-
-      if (subError || !sub) {
-         // Fallback: try searching by email (not ideal but safe)
-         const { data: subEmail, error: emailError } = await supabase
-           .from('subscriptions')
-           .select('*')
-           .eq('email', data.customer.email)
-           .single();
-         
-         if (emailError || !subEmail) {
-           console.error('[Webhook] Could not find subscription for ref:', reference);
-           return new Response('Sub not found', { status: 200 });
-         }
-         // use subEmail
-      }
-      
-      const targetSub = sub || null; // Simplified logic for brevity
-
-      if (targetSub) {
-        // 2. Calculate next billing date (7 days from now)
-        const nextBilling = new Date();
-        nextBilling.setDate(nextBilling.getDate() + 7);
-
-        // 3. Update Subscription status and reset grace period
-        await supabase
-          .from('subscriptions')
-          .update({
-            status: 'active',
-            is_active: true,
-            retry_index: 0,
-            next_billing_date: nextBilling.toISOString(),
-            last_charge_date: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', targetSub.id);
-
-        // 4. Record Transaction
-        await supabase
-          .from('transactions')
-          .insert({
-            kyshi_transaction_id: data.id || reference,
-            kyshi_reference: reference,
-            subscription_id: targetSub.id,
-            amount: data.amount,
-            currency: data.meta?.localCurrency || targetSub.currency,
-            status: 'success',
-            processed_at: new Date().toISOString()
-          });
-
-        console.log(`[Webhook] Successfully processed renewal for ${targetSub.email}`);
-      }
+    if (fetchError || !subscription) {
+      console.log(`ℹ️ No subscription found for reference: ${reference}`);
+      return new Response(
+        JSON.stringify({ received: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    return new Response(JSON.stringify({ received: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    // If subscription.status already === "active" return 200 (idempotency)
+    if (subscription.status === 'active') {
+      console.log(`ℹ️ Subscription ${subscription.id} already active`);
+      return new Response(
+        JSON.stringify({ received: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-  } catch (err) {
-    const error = err as Error;
-    console.error('[Webhook] Error:', error.message);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    // Calculate dates
+    const now = new Date();
+    const nextChargeDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // NOW + 7 days
+
+    // Update subscription
+    const { error: updateError } = await supabase
+      .from('subscriptions')
+      .update({
+        status: 'active',
+        is_active: true,
+        grace_period_day: 0,
+        last_charge_date: now.toISOString(),
+        next_charge_date: nextChargeDate.toISOString(),
+        current_period_start: now.toISOString(),
+        current_period_end: nextChargeDate.toISOString(),
+        bank_account_number: null,
+        bank_account_name: null,
+        bank_name: null,
+        bank_account_expires_at: null,
+        updated_at: now.toISOString()
+      })
+      .eq('id', subscription.id);
+
+    if (updateError) {
+      console.error('❌ Failed to update subscription:', updateError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to update subscription' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`✅ Successfully activated subscription ${subscription.id} for reference ${reference}`);
+
+    return new Response(
+      JSON.stringify({ received: true, subscription_id: subscription.id }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('❌ Webhook processing error:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Internal server error' 
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   }
 });

@@ -1,21 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { SubscriptionAPI, COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
-import { useToastContext } from '@/providers/ToastProvider';
+import { useState } from 'react';
 import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
-
-/**
- * KenyaSubscriptionModal
- * Optimized for PWA with same-tab redirection and secure server-side verification.
- */
-
-const MpesaColors = {
-  primary: '#1B5E20', // Safaricom Green
-  secondary: '#4CAF50',
-  accent: '#EAB308', // Gold
-  glass: 'rgba(255, 255, 255, 0.9)',
-};
+import { useToastContext } from '@/providers/ToastProvider';
 
 interface KenyaSubscriptionModalProps {
   isOpen: boolean;
@@ -23,243 +10,157 @@ interface KenyaSubscriptionModalProps {
   onSuccess?: () => void;
 }
 
-export function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
+export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
+  const { user } = useUnifiedAuth();
   const { showSuccess, showError } = useToastContext();
-  const { business } = useUnifiedAuth();
-  const amount = COUNTRY_PAYMENT_METHODS.KE.defaultAmount;
   
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [step, setStep] = useState<'form' | 'waiting' | 'success'>('form');
-  const [language, setLanguage] = useState<'en' | 'sw'>('en');
   const [isLoading, setIsLoading] = useState(false);
 
-  const businessName = business?.business_name || 'Beezee Customer';
-
-  const texts = {
-    en: {
-      title: 'Lipa na M-Pesa',
-      subtitle: 'Powered by Kyshi Secure',
-      price: 'KES 200',
-      period: 'Weekly subscription auto-renews every 7 days',
-      emailLabel: 'Email Address',
-      emailPlaceholder: 'your@email.com',
-      emailHint: 'Confirmation will be sent here',
-      phoneLabel: 'M-Pesa Number',
-      phonePlaceholder: '712 345 678',
-      phoneHint: 'You will receive an STK Push to enter your PIN',
-      button: 'Subscribe Now',
-      waiting: 'Check your phone',
-      waitingHint: 'A prompt has been sent to your M-Pesa',
-      success: 'Subscription Active!',
-      successHint: 'You now have full access to Beezee features',
-      footer: 'Secured by Kyshi • Fast & Encrypted'
-    },
-    sw: {
-      title: 'Lipa kwa M-Pesa',
-      subtitle: 'Inaendeshwa na Kyshi',
-      price: 'KES 200',
-      period: 'Usajili wa kila wiki hujirudia kila siku 7',
-      emailLabel: 'Barua pepe',
-      emailPlaceholder: 'yako@email.com',
-      emailHint: 'Thibitisho itatumwa hapa',
-      phoneLabel: 'Nambari ya M-Pesa',
-      phonePlaceholder: '712 345 678',
-      phoneHint: 'Utapokea STK Push kuweka PIN yako',
-      button: 'Jisajili Sasa',
-      waiting: 'Angalia simu yako',
-      waitingHint: 'Ombi limetumwa kwa M-Pesa yako',
-      success: 'Usajili Umekamilika!',
-      successHint: 'Sasa una ufikiaji kamili wa huduma za Beezee',
-      footer: 'Imelindwa na Kyshi • Haraka na Siri'
-    }
-  };
-
-  const t = texts[language];
-
-  // Set default email from business if available
-  useEffect(() => {
-    if (isOpen && business?.email && !email) {
-      setEmail(business.email);
-    }
-  }, [isOpen, business, email]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!email || !email.includes('@')) {
-      showError('Please enter a valid email');
+      showError('Please enter a valid email address');
       return;
     }
 
     if (!phoneNumber || phoneNumber.length < 9) {
-      showError('Please enter a valid M-Pesa number');
+      showError('Please enter a valid phone number');
       return;
     }
 
     setIsLoading(true);
-    setStep('waiting');
-    
+
     try {
-      // Use 'Kenya' as country string to match Edge Function COUNTRY_CONFIG keys
-      const response = await SubscriptionAPI.createSubscription({
-        email: email,
-        firstName: businessName,
-        lastName: 'Customer',
-        phone: `254${phoneNumber.replace(/^0/, '')}`, // Ensure format 254...
-        countryCode: 'Kenya', // <--- Matches Edge Function map
-        paymentMethod: 'mobile_money'
+      const res = await fetch('/api/subscription/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_email: email,
+          user_phone: '254' + phoneNumber,
+          user_name: user?.business_name || 'Customer',
+          country: 'KE'
+        })
       });
-      
-      if (response.success && (response.paymentUrl || response.authorizationUrl)) {
-        const url = response.paymentUrl || response.authorizationUrl;
-        // PWA Safe: Redirect in same tab
-        window.location.href = url!;
+
+      const result = await res.json();
+
+      if (result.authorizationUrl) {
+        setStep('waiting');
+        window.location.href = result.authorizationUrl;
       } else {
-        throw new Error(response.message || 'Failed to initialize payment');
+        showError(result.message || 'Payment failed');
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error('Kenya subscription error:', error);
-      showError(error instanceof Error ? error.message : 'Something went wrong');
-      setStep('form');
-    } finally {
+      showError('Payment failed. Please try again.');
       setIsLoading(false);
     }
+  };
+
+  const handleClose = () => {
+    if (isLoading) return;
+    
+    setPhoneNumber('');
+    setEmail('');
+    setStep('form');
+    setIsLoading(false);
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300">
-      <div 
-        className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden relative border border-white/20"
-        style={{ 
-          background: `linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)`,
-        }}
-      >
-        {/* Header Section */}
-        <div style={{ backgroundColor: MpesaColors.primary }} className="p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-green-400/20 rounded-full blur-2xl -ml-12 -mb-12"></div>
-          
-          <div className="flex justify-between items-start relative z-10">
-            <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">{t.title}</h2>
-              <p className="text-green-100 text-sm font-medium opacity-90">{t.subtitle}</p>
-            </div>
-            <button 
-              onClick={() => setLanguage(l => l === 'en' ? 'sw' : 'en')}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white transition-all transform active:scale-95 border border-white/10"
-            >
-              {language === 'en' ? 'SWAHILI' : 'ENGLISH'}
-            </button>
-          </div>
-        </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          disabled={isLoading}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        {/* Pricing Badge */}
-        <div className="py-8 text-center bg-white/50 backdrop-blur-sm border-b border-green-50">
-          <div className="inline-flex items-center gap-2 px-4 py-1 bg-green-100 rounded-full text-green-700 text-xs font-bold mb-3">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-            WEEKLY PLAN
+        {/* Header */}
+        <div style={{ backgroundColor: '#1B5E20' }} className="p-6 rounded-t-2xl -mx-6 -mt-6 mb-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-2">Lipa na M-Pesa</h2>
+            <p className="text-green-100">KES 200 per week • Cancel anytime</p>
           </div>
-          <div className="text-5xl font-black text-gray-900 tracking-tighter">
-            {t.price}
-          </div>
-          <p className="text-sm text-gray-500 mt-2 font-medium max-w-[250px] mx-auto leading-tight">
-            {t.period}
-          </p>
         </div>
 
         {step === 'form' && (
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t.emailLabel}</label>
-                <div className="relative group">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t.emailPlaceholder}
-                    className="w-full bg-gray-50 px-5 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-green-500 transition-all outline-none text-gray-900 placeholder:text-gray-300 shadow-sm"
-                    required
-                    disabled={isLoading}
-                  />
-                  <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-0 group-focus-within:opacity-100 transition-opacity">
-                    <span className="text-green-500 font-bold">✓</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">{t.phoneLabel}</label>
-                <div className="flex gap-2">
-                  <div className="bg-gray-100 px-4 py-4 rounded-2xl border-2 border-transparent font-bold text-gray-600 flex items-center shadow-sm">
-                    +254
-                  </div>
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    placeholder={t.phonePlaceholder}
-                    className="flex-1 bg-gray-50 px-5 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-green-500 transition-all outline-none text-gray-900 placeholder:text-gray-300 shadow-sm"
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-                <p className="text-[10px] text-gray-400 mt-2 italic px-1">{t.phoneHint}</p>
-              </div>
+          <>
+            {/* Email Input */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={isLoading}
+              />
             </div>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={isLoading}
-                style={{ backgroundColor: MpesaColors.primary }}
-                className="w-full py-4 rounded-2xl text-white font-bold text-lg shadow-lg shadow-green-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    <span>Processing...</span>
-                  </div>
-                ) : t.button}
-              </button>
-              
-              <button 
-                type="button"
-                onClick={onClose}
-                className="w-full mt-4 text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-widest"
-              >
-                NOT NOW
-              </button>
+            {/* Phone Input */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">M-Pesa Number</label>
+              <div className="flex">
+                <div className="px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50">
+                  +254
+                </div>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
+                  placeholder="712345678"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  disabled={isLoading}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">You will receive an STK Push to enter your PIN</p>
             </div>
-          </form>
+
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              style={{ backgroundColor: '#4CAF50' }}
+              className="w-full py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Pay KES 200 with M-Pesa'}
+            </button>
+          </>
         )}
 
         {step === 'waiting' && (
-          <div className="p-12 text-center space-y-6">
-            <div className="relative inline-block">
-              <div className="w-20 h-20 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl animate-pulse">📱</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-xl font-bold text-gray-900">{t.waiting}</p>
-              <p className="text-sm text-gray-500 mt-2">{t.waitingHint}</p>
-            </div>
-            <div className="bg-green-50 p-4 rounded-2xl">
-              <p className="text-xs font-medium text-green-700">Request sent to +254 {phoneNumber}</p>
-            </div>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Check your phone</h3>
+            <p className="text-gray-600">A prompt has been sent to your M-Pesa number +254{phoneNumber}</p>
           </div>
         )}
 
-        <div className="p-6 text-center border-t border-gray-100 bg-gray-50/50">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest opacity-60">
-            {t.footer}
-          </p>
-        </div>
+        {step === 'success' && (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Subscription Active!</h3>
+            <p className="text-gray-600">You now have full access to Beezee features.</p>
+          </div>
+        )}
       </div>
     </div>
   );
