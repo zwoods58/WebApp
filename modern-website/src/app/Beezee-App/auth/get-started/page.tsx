@@ -120,7 +120,7 @@ export default function GetStartedPage() {
             }}
           >
             <Image
-              src="/Get Started image (1).png"
+              src="/Get%20Started%20image%20(1).png"
               alt="BeeZee App Phone Preview"
               fill
               className="object-cover hover:scale-105 transition-transform duration-[2s] ease-out"
