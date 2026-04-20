@@ -19,8 +19,8 @@ vi.mock('@supabase/supabase-js', () => ({
   }))
 }));
 
-// Mock bcrypt
-vi.mock('bcrypt', () => ({
+// Mock bcryptjs
+vi.mock('bcryptjs', () => ({
   default: {
     hash: vi.fn(() => Promise.resolve('$2b$12$hashedpin')),
     compare: vi.fn(() => Promise.resolve(true))
@@ -194,7 +194,7 @@ describe('Auth API - Error Responses', () => {
 describe('Auth API - Security Tests', () => {
   it('should hash PINs before storage', async () => {
     const pin = '123456';
-    const bcrypt = await import('bcrypt');
+    const bcrypt = await import('bcryptjs');
     const hash = await bcrypt.default.hash(pin, 12);
     
     expect(hash).not.toBe(pin);
