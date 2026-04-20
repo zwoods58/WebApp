@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { supabase } from '@/lib/supabase';
 import { setBusinessContext } from '@/lib/supabaseContext';
 import { persistentStorage } from '@/utils/persistentStorage';
-import { getNetworkStatus } from '@/lib/network-status';
 
 export interface Business {
   id: string;
@@ -23,15 +22,22 @@ export interface Business {
   updated_at?: string;
 }
 
+export interface SubscriptionData {
+  status: 'active' | 'inactive' | 'cancelled' | 'failed';
+  isActive: boolean;
+  expiresAt: string | null;
+  daysRemaining: number;
+}
+
 export interface SupabaseAuthState {
   user: any | null;
   business: Business | null;
-  subscription: any | null; // Added subscription state
+  subscription: SubscriptionData | null;
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
   isEmailConfirmed: boolean;
-  isReadOnly: boolean; // Added read-only flag
+  isReadOnly: boolean;
 }
 
 interface SupabaseAuthContextType extends SupabaseAuthState {
@@ -66,15 +72,75 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     isReadOnly: false,
   });
 
-  // Load auth state from storage and Supabase on mount
+  // Load subscription data from businesses table (NOT subscriptions table)
+  const loadSubscriptionData = useCallback(async (supabaseUserId: string): Promise<SubscriptionData | null> => {
+    try {
+      const { data: business, error } = await supabase
+        .from('businesses')
+        .select('subscription_status, subscription_expires_at')
+        .eq('supabase_user_id', supabaseUserId)
+        .single();
+
+      if (error || !business) {
+        console.error('❌ Error loading subscription data:', error);
+        return null;
+      }
+
+      const now = new Date();
+      const expiresAt = business.subscription_expires_at
+        ? new Date(business.subscription_expires_at)
+        : null;
+
+      const isActive =
+        business.subscription_status === 'active' &&
+        expiresAt !== null &&
+        expiresAt > now;
+
+      const daysRemaining = expiresAt
+        ? Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+        : 0;
+
+      return {
+        status: isActive ? 'active' : (business.subscription_status ?? 'inactive'),
+        isActive,
+        expiresAt: business.subscription_expires_at ?? null,
+        daysRemaining,
+      };
+    } catch (error) {
+      console.error('💥 Error loading subscription data:', error);
+      return null;
+    }
+  }, []);
+
+  // Load business data for a user
+  const loadBusinessData = useCallback(async (supabaseUserId: string): Promise<Business | null> => {
+    try {
+      const { data: business, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('supabase_user_id', supabaseUserId)
+        .single();
+
+      if (error) {
+        console.error('❌ Error loading business data:', error);
+        return null;
+      }
+
+      console.log('✅ Business data loaded:', business?.business_name);
+      return business;
+    } catch (error) {
+      console.error('💥 Error loading business data:', error);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         console.log('🔍 Initializing Supabase auth...');
-        
-        // Get current session from Supabase
+
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
+
         if (sessionError) {
           console.error('❌ Error getting session:', sessionError);
           setAuthState(prev => ({ ...prev, loading: false, error: sessionError.message }));
@@ -83,20 +149,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
         if (session?.user) {
           console.log('✅ Found existing session:', session.user.email);
-          
-          // Check if email is confirmed
+
           const isConfirmed = session.user.email_confirmed_at != null;
-          
-          // Load business data
           const business = await loadBusinessData(session.user.id);
-          
-          // Load subscription data
           const subscription = await loadSubscriptionData(session.user.id);
-          
-          // Determine if read-only
-          // If status is 'failed' or 'cancelled', or if sub is missing but user is old
           const isReadOnly = subscription?.status === 'failed' || subscription?.status === 'cancelled';
-          
+
           setAuthState({
             user: session.user,
             business,
@@ -108,7 +166,6 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             isReadOnly,
           });
 
-          // Set business context for RLS
           if (business) {
             await setBusinessContext(business.id, business.country, business.industry);
           }
@@ -118,27 +175,26 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         }
       } catch (error) {
         console.error('💥 Error initializing auth:', error);
-        setAuthState(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: 'Failed to initialize authentication' 
+        setAuthState(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to initialize authentication'
         }));
       }
     };
 
     initializeAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔄 Auth state changed:', event, session?.user?.email);
-        
+
         if (event === 'SIGNED_IN' && session?.user) {
           const isConfirmed = session.user.email_confirmed_at != null;
           const business = await loadBusinessData(session.user.id);
           const subscription = await loadSubscriptionData(session.user.id);
           const isReadOnly = subscription?.status === 'failed' || subscription?.status === 'cancelled';
-          
+
           setAuthState(prev => ({
             ...prev,
             user: session.user,
@@ -173,54 +229,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [loadBusinessData, loadSubscriptionData]);
 
-  // Load subscription data for a user
-  const loadSubscriptionData = useCallback(async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('❌ Error loading subscription data:', error);
-        return null;
-      }
-      return data;
-    } catch (error) {
-      console.error('💥 Error loading subscription data:', error);
-      return null;
-    }
-  }, []);
-
-  // Load business data for a user
-  const loadBusinessData = useCallback(async (supabaseUserId: string): Promise<Business | null> => {
-    try {
-      const { data: business, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .eq('supabase_user_id', supabaseUserId)
-        .single();
-
-      if (error) {
-        console.error('❌ Error loading business data:', error);
-        return null;
-      }
-
-      console.log('✅ Business data loaded:', business?.business_name);
-      return business;
-    } catch (error) {
-      console.error('💥 Error loading business data:', error);
-      return null;
-    }
-  }, []);
-
-  // Sign up new user
   const signUp = useCallback(async (
-    email: string, 
-    password: string, 
+    email: string,
+    password: string,
     userData: {
       firstName: string;
       lastName: string;
@@ -235,8 +248,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
     try {
       console.log('🚀 Signing up user:', email);
-      
-      // Create Supabase user
+
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -251,29 +263,23 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
       if (signUpError) {
         console.error('❌ Sign up error:', signUpError);
-        setAuthState(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: signUpError.message 
-        }));
+        setAuthState(prev => ({ ...prev, loading: false, error: signUpError.message }));
         return { error: signUpError };
       }
 
       if (authData.user) {
-        // Check if user already exists (Supabase security feature returns user but no identities)
         if (authData.user.identities && authData.user.identities.length === 0) {
           console.error('❌ User already exists');
-          setAuthState(prev => ({ 
-            ...prev, 
-            loading: false, 
-            error: 'An account with this email already exists.' 
+          setAuthState(prev => ({
+            ...prev,
+            loading: false,
+            error: 'An account with this email already exists.'
           }));
           return { error: new Error('An account with this email already exists.') };
         }
 
         console.log('✅ User created, creating business record...');
-        
-        // Create business record
+
         const { data: business, error: businessError } = await supabase
           .from('businesses')
           .insert({
@@ -289,64 +295,58 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
               daily_target: userData.dailyTarget || 0,
             },
             home_currency: getCurrency(userData.country),
+            subscription_status: 'inactive',
           })
           .select()
           .single();
 
         if (businessError) {
           console.error('❌ Business creation error:', businessError);
-          setAuthState(prev => ({ 
-            ...prev, 
-            loading: false, 
-            error: 'Failed to create business record' 
+          setAuthState(prev => ({
+            ...prev,
+            loading: false,
+            error: 'Failed to create business record'
           }));
           return { error: businessError };
         }
 
         console.log('✅ Business created:', business.business_name);
-        
-        // Store business data for after email confirmation
         persistentStorage.set('pending_business', business, { backup: true });
 
-        // authData.session is a live session when Supabase email confirmation is OFF.
-        // authData.session is null when email confirmation is ON (user must click link first).
         const hasLiveSession = !!authData.session;
 
         if (hasLiveSession) {
-          // Email confirmation is OFF — populate full auth state immediately.
-          // This must happen before signUp() returns so that when the signup page
-          // calls router.push('/dashboard'), the dashboard loads with a valid user.
           const isConfirmed = !!authData.user.email_confirmed_at;
 
           setAuthState({
-            user:             authData.user,
+            user: authData.user,
             business,
-            subscription:     null,
-            loading:          false,
-            error:            null,
-            isAuthenticated:  true,
+            subscription: {
+              status: 'inactive',
+              isActive: false,
+              expiresAt: null,
+              daysRemaining: 0,
+            },
+            loading: false,
+            error: null,
+            isAuthenticated: true,
             isEmailConfirmed: isConfirmed,
-            isReadOnly:       false,
+            isReadOnly: false,
           });
 
-          // Set RLS context immediately so Supabase queries work on first dashboard load.
-          // Without this, the first database query after signup will fail with RLS errors.
           if (business) {
             await setBusinessContext(business.id, business.country, business.industry);
           }
         } else {
-          // Email confirmation is ON — no live session yet.
-          // Do NOT set isAuthenticated: true. The signup page will route to
-          // confirm-email page instead of the dashboard.
           setAuthState(prev => ({ ...prev, loading: false }));
         }
 
         return {
           error: null,
           data: {
-            user:                      authData.user,
+            user: authData.user,
             business,
-            session:                   authData.session,
+            session: authData.session,
             requiresEmailConfirmation: !hasLiveSession,
             message: hasLiveSession
               ? 'Account created successfully!'
@@ -355,29 +355,23 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         };
       }
 
-      // If authData.user is null but there was no explicit signUpError
-      const silentError = new Error('Signup failed silently. The email might be invalid or network request failed.');
+      const silentError = new Error('Signup failed silently.');
       setAuthState(prev => ({ ...prev, loading: false, error: silentError.message }));
       return { error: silentError, data: undefined };
     } catch (error) {
       console.error('💥 Sign up error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Sign up failed';
-      setAuthState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: errorMessage 
-      }));
+      setAuthState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return { error: { message: errorMessage }, data: undefined };
     }
   }, []);
 
-  // Sign in existing user
   const signIn = useCallback(async (email: string, password: string) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
       console.log('🔐 Signing in user:', email);
-      
+
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -385,33 +379,26 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
       if (signInError) {
         console.error('❌ Sign in error:', signInError);
-        setAuthState(prev => ({ 
-          ...prev, 
-          loading: false, 
-          error: signInError.message 
-        }));
+        setAuthState(prev => ({ ...prev, loading: false, error: signInError.message }));
         return { error: signInError, data: undefined };
       }
 
       if (authData.user) {
         const isConfirmed = authData.user.email_confirmed_at != null;
-        
+
         if (!isConfirmed) {
-          setAuthState(prev => ({ 
-            ...prev, 
-            loading: false, 
-            error: 'Please confirm your email address before signing in.' 
+          setAuthState(prev => ({
+            ...prev,
+            loading: false,
+            error: 'Please confirm your email address before signing in.'
           }));
-          return { 
-            error: { 
-              message: 'Please confirm your email address before signing in.' 
-            },
+          return {
+            error: { message: 'Please confirm your email address before signing in.' },
             data: undefined
           };
         }
 
         console.log('✅ Sign in successful');
-        // Set loading true so route page waits for auth state change listener to fire
         setAuthState(prev => ({ ...prev, loading: true }));
         return { error: null, data: authData };
       }
@@ -420,99 +407,49 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     } catch (error) {
       console.error('💥 Sign in error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Sign in failed';
-      setAuthState(prev => ({ 
-        ...prev, 
-        loading: false, 
-        error: errorMessage 
-      }));
+      setAuthState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return { error: { message: errorMessage }, data: undefined };
     }
   }, []);
 
-  // Sign out
   const signOut = useCallback(async () => {
     try {
       console.log('🔓 Signing out...');
-      
       const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('❌ Sign out error:', error);
-        return { error };
-      }
-
-      // Clear any pending business data
+      if (error) return { error };
       persistentStorage.remove('pending_business');
-      
       console.log('✅ Signed out successfully');
       return { error: null };
     } catch (error) {
       console.error('💥 Sign out error:', error);
-      return { 
-        error: { 
-          message: 'Failed to sign out' 
-        } 
-      };
+      return { error: { message: 'Failed to sign out' } };
     }
   }, []);
 
-  // Reset password
   const resetPassword = useCallback(async (email: string) => {
     try {
-      console.log('🔄 Sending password reset for:', email);
-      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/Beezee-App/auth/update-password`,
       });
-
-      if (error) {
-        console.error('❌ Password reset error:', error);
-        return { error };
-      }
-
-      console.log('✅ Password reset email sent');
+      if (error) return { error };
       return { error: null };
     } catch (error) {
-      console.error('💥 Password reset error:', error);
-      return { 
-        error: { 
-          message: 'Failed to send password reset email' 
-        } 
-      };
+      return { error: { message: 'Failed to send password reset email' } };
     }
   }, []);
 
-  // Update password
   const updatePassword = useCallback(async (newPassword: string) => {
     try {
-      console.log('🔄 Updating password...');
-      
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        console.error('❌ Password update error:', error);
-        return { error };
-      }
-
-      console.log('✅ Password updated successfully');
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) return { error };
       return { error: null };
     } catch (error) {
-      console.error('💥 Password update error:', error);
-      return { 
-        error: { 
-          message: 'Failed to update password' 
-        } 
-      };
+      return { error: { message: 'Failed to update password' } };
     }
   }, []);
 
-  // Resend confirmation email
   const resendConfirmation = useCallback(async (email: string) => {
     try {
-      console.log('🔄 Resending confirmation email to:', email);
-      
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
@@ -520,35 +457,16 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
           emailRedirectTo: `${window.location.origin}/Beezee-App/auth/callback`,
         },
       });
-
-      if (error) {
-        console.error('❌ Resend confirmation error:', error);
-        return { error };
-      }
-
-      console.log('✅ Confirmation email resent');
+      if (error) return { error };
       return { error: null };
     } catch (error) {
-      console.error('💥 Resend confirmation error:', error);
-      return { 
-        error: { 
-          message: 'Failed to resend confirmation email' 
-        } 
-      };
+      return { error: { message: 'Failed to resend confirmation email' } };
     }
   }, []);
 
-  // Refresh session
   const refreshSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.refreshSession();
-      
-      if (error) {
-        console.error('❌ Session refresh error:', error);
-        return;
-      }
-
-      console.log('✅ Session refreshed');
+      await supabase.auth.refreshSession();
     } catch (error) {
       console.error('💥 Session refresh error:', error);
     }
@@ -575,7 +493,6 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 export function useSupabaseAuth() {
   const context = useContext(SupabaseAuthContext);
   if (!context) {
-    // Return a default empty state for pages outside the provider
     return {
       user: null,
       business: null,
@@ -597,7 +514,6 @@ export function useSupabaseAuth() {
   return context;
 }
 
-// Helper function to get currency by country
 function getCurrency(country: string): string {
   const currencies: Record<string, string> = {
     KE: 'KES',
@@ -611,4 +527,3 @@ function getCurrency(country: string): string {
   };
   return currencies[country] || 'KES';
 }
-
