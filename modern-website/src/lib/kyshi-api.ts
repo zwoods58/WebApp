@@ -1,240 +1,125 @@
-// Correct Kyshi API Integration - Using Transaction Endpoints (NOT Subscriptions)
-// Mobile money is manual - no recurring support
+import crypto from 'crypto';
 
 export interface KyshiTransactionRequest {
   email: string;
   amount: number;
-  currency: string;
-  country: string;
-  channel: string[];
-  paymentMethod: string;
-  customerName: string;
-  customerPhone?: string;
+  amountCurrency?: 'local' | 'settlement';
+  localCurrency: string;
+  reference: string;
+  channels: string[];
   redirectUrl?: string;
-  chargeType?: string; // For Nigeria bank transfers
+  phoneNumber?: string;
+  feeBearer?: 'MERCHANT' | 'CUSTOMER';
 }
 
 export interface KyshiTransactionResponse {
-  success: boolean;
+  status: boolean;
+  code: number;
   message: string;
   data?: {
-    reference: string;
     authorizationUrl: string;
-    checkoutUrl: string;
-    accessCode?: string;
-    transactionId?: string;
+    accessCode: string;
+    reference: string;
+    rate: number;
   };
-  error?: string;
 }
 
 export interface KyshiWebhookEvent {
   event: string;
   data: {
-    transactionId: string;
     reference: string;
-    status: string;
     amount: number;
-    currency: string;
-    customerEmail: string;
-    customerName: string;
-    createdAt: string;
-    paidAt?: string;
+    customer: {
+      id?: string;
+      firstName?: string;
+      lastName?: string;
+      email: string;
+      phone?: string;
+    };
+    authorization?: {
+      authorizationCode?: string;
+    };
+    meta?: {
+      localCurrency: string;
+      localAmount: number;
+      feeBreakdown?: {
+        vat: number;
+        fee: number;
+      };
+    };
   };
-  signature: string;
 }
 
-export class KyshiAPI {
-  private static readonly BASE_URL = 'https://api.kyshi.co';
-  private static readonly SECRET_KEY = 'sk_test_3dd6532c95634d1da5888520b9bf96c8';
-  private static readonly PUBLIC_KEY = 'pk_test_da16574203b943fd82c04964eeffa7d5';
-  private static readonly WEBHOOK_SECRET = 'c4accdbb6b2f49608ef729cd9afed411';
+const COUNTRY_CONFIG: Record<string, {
+  amount: number;
+  currency: string;
+  channels: string[];
+}> = {
+  KEN: { amount: 200,  currency: 'KES', channels: ['mobileMoney'] },
+  NGA: { amount: 500,  currency: 'NGN', channels: ['bankTransfer'] },
+  GHA: { amount: 20,   currency: 'GHS', channels: ['mobileMoney'] },
+  CIV: { amount: 1000, currency: 'XOF', channels: ['mobileMoney'] },
+  // 2-letter aliases
+  KE:  { amount: 200,  currency: 'KES', channels: ['mobileMoney'] },
+  NG:  { amount: 500,  currency: 'NGN', channels: ['bankTransfer'] },
+  GH:  { amount: 20,   currency: 'GHS', channels: ['mobileMoney'] },
+  CI:  { amount: 1000, currency: 'XOF', channels: ['mobileMoney'] },
+};
 
-  // Initialize mobile money transaction (Kenya, Ghana, Côte d'Ivoire)
-  static async initializeMobileMoneyTransaction(request: {
-    email: string;
-    amount: number;
-    currency: string;
-    country: string;
-    customerName: string;
-    customerPhone?: string;
-    redirectUrl?: string;
-  }): Promise<KyshiTransactionResponse> {
+class KyshiAPIClient {
+  private get baseUrl(): string {
+    return process.env.KYSHI_BASE_URL ?? 'https://api.kyshi.co/v1';
+  }
+
+  private get secretKey(): string {
+    return process.env.KYSHI_SECRET_KEY ?? '';
+  }
+
+  private get webhookSecret(): string {
+    return process.env.KYSHI_WEBHOOK_SECRET ?? '';
+  }
+
+  getCountryConfig(countryCode: string) {
+    return COUNTRY_CONFIG[countryCode?.toUpperCase()] ?? null;
+  }
+
+  async initializeTransaction(params: KyshiTransactionRequest): Promise<KyshiTransactionResponse> {
+    const res = await fetch(`${this.baseUrl}/transactions/initialize`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.secretKey,
+      },
+      body: JSON.stringify(params),
+    });
+    return res.json();
+  }
+
+  async verifyTransaction(reference: string): Promise<KyshiTransactionResponse> {
+    const res = await fetch(`${this.baseUrl}/transactions/verify/${reference}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.secretKey,
+      },
+    });
+    return res.json();
+  }
+
+  verifyWebhookSignature(rawBody: string, signature: string): boolean {
     try {
-      const requestBody: KyshiTransactionRequest = {
-        email: request.email,
-        amount: request.amount,
-        currency: request.currency,
-        country: request.country,
-        channel: ['mobileMoney'],
-        paymentMethod: 'mobileMoney',
-        customerName: request.customerName,
-        customerPhone: request.customerPhone,
-        redirectUrl: request.redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/subscription/success`
-      };
-
-      const response = await fetch(`${this.BASE_URL}/v1/transactions/initialize`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to initialize transaction');
-      }
-
-      return {
-        success: true,
-        message: 'Transaction initialized successfully',
-        data: {
-          reference: data.reference,
-          authorizationUrl: data.authorizationUrl,
-          checkoutUrl: data.checkoutUrl,
-          accessCode: data.accessCode,
-          transactionId: data.transactionId
-        }
-      };
-    } catch (error) {
-      console.error('Kyshi mobile money transaction error:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to initialize transaction',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
+      if (!this.webhookSecret || !signature) return false;
+      const expected = crypto
+        .createHmac('sha256', this.webhookSecret)
+        .update(rawBody)
+        .digest('hex');
+      // Safe string comparison without timingSafeEqual length requirement
+      return expected === signature;
+    } catch {
+      return false;
     }
-  }
-
-  // Initialize bank transfer transaction (Nigeria)
-  static async initializeBankTransferTransaction(request: {
-    email: string;
-    amount: number;
-    currency: string;
-    country: string;
-    customerName: string;
-    redirectUrl?: string;
-  }): Promise<KyshiTransactionResponse> {
-    try {
-      const requestBody: KyshiTransactionRequest = {
-        email: request.email,
-        amount: request.amount,
-        currency: request.currency,
-        country: request.country,
-        channel: ['bank_transfer'],
-        paymentMethod: 'bank_transfer',
-        customerName: request.customerName,
-        redirectUrl: request.redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/subscription/success`,
-        chargeType: 'BANK_TRANSFER'
-      };
-
-      const response = await fetch(`${this.BASE_URL}/v1/transactions/charge`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to initialize bank transfer');
-      }
-
-      return {
-        success: true,
-        message: 'Bank transfer initialized successfully',
-        data: {
-          reference: data.reference,
-          authorizationUrl: data.authorizationUrl,
-          checkoutUrl: data.checkoutUrl,
-          accessCode: data.accessCode,
-          transactionId: data.transactionId
-        }
-      };
-    } catch (error) {
-      console.error('Kyshi bank transfer error:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to initialize bank transfer',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-  }
-
-  // Verify webhook signature (SHA512)
-  static verifyWebhookSignature(payload: string, signature: string): boolean {
-    const crypto = require('crypto');
-    const expectedSignature = crypto
-      .createHmac('sha512', this.WEBHOOK_SECRET)
-      .update(payload)
-      .digest('hex');
-    
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expectedSignature, 'hex')
-    );
-  }
-
-  // Get transaction status
-  static async getTransactionStatus(reference: string): Promise<any> {
-    try {
-      const response = await fetch(`${this.BASE_URL}/v1/transactions/${reference}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.SECRET_KEY}`,
-        }
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get transaction status');
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Failed to get transaction status:', error);
-      throw error;
-    }
-  }
-
-  // Country-specific configurations
-  static readonly COUNTRY_CONFIG = {
-    KE: {
-      currency: 'KES',
-      amount: 200,
-      name: 'Kenya',
-      method: 'mobileMoney'
-    },
-    GH: {
-      currency: 'GHS',
-      amount: 20,
-      name: 'Ghana',
-      method: 'mobileMoney'
-    },
-    CI: {
-      currency: 'XOF',
-      amount: 1000,
-      name: 'Côte d\'Ivoire',
-      method: 'mobileMoney'
-    },
-    NG: {
-      currency: 'NGN',
-      amount: 500,
-      name: 'Nigeria',
-      method: 'bank_transfer'
-    }
-  };
-
-  // Get country config
-  static getCountryConfig(countryCode: string) {
-    return this.COUNTRY_CONFIG[countryCode as keyof typeof this.COUNTRY_CONFIG];
   }
 }
 
+const KyshiAPI = new KyshiAPIClient();
 export default KyshiAPI;
