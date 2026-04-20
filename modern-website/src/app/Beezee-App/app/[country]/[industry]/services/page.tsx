@@ -484,7 +484,7 @@ function EditServiceModal({ service, onClose, onUpdate, country, industry, t }: 
           </div>
           {(industry === 'salon' || industry === 'freelance') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.duration_minutes', 'Duration (minutes)')}</label>
               <input
                 type="number" value={formData.duration}
                 onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
@@ -580,7 +580,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry }: {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price/km ({getCurrency(country)})</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.price_per_km', 'Price/km')} ({getCurrency(country)})</label>
               <input
                 type="number" required value={formData.pricePerKm}
                 onChange={(e) => setFormData(prev => ({ ...prev, pricePerKm: e.target.value }))}
@@ -589,7 +589,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry }: {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Base Amount ({getCurrency(country)})</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.base_amount', 'Base Amount')} ({getCurrency(country)})</label>
               <input
                 type="number" value={formData.baseAmount}
                 onChange={(e) => setFormData(prev => ({ ...prev, baseAmount: e.target.value }))}
@@ -616,7 +616,7 @@ function AddServiceForm({ onSubmit, onCancel, country, industry }: {
           </div>
           {(industry === 'salon' || industry === 'freelance') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration (min)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('services.duration_min', 'Duration (min)')}</label>
               <input
                 type="number" value={formData.duration}
                 onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
@@ -678,7 +678,7 @@ function KmInputModal({ service, onClose, onConfirm, country, t }: {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{service.service_name}</h3>
-            <p className="text-sm text-gray-500">Calculate trip fare</p>
+            <p className="text-sm text-gray-500">{t('services.calculate_trip_fare', 'Calculate trip fare')}</p>
           </div>
         </div>
 

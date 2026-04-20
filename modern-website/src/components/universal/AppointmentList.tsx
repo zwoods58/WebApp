@@ -100,7 +100,7 @@ export default function AppointmentList({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('common.appointments', 'Appointments')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('appointments.title', 'Appointments')}</h3>
           <p className="text-sm text-gray-500">{t('appointments.today_count', `${todayAppointments.length} today`)}</p>
         </div>
         <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -124,15 +124,16 @@ export default function AppointmentList({
                       {appointment.customer_name || appointment.title || t('appointments.untitled', 'Appointment')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {appointment.service_name || 'Service'} • {formatTimeRange(appointment)}
+                      {appointment.service_name || t('appointments.service_label', 'Service')} • {formatTimeRange(appointment)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                    {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
-                     (appointment.status as string) === 'completed' ? 'Completed' : 
-                     (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                    {t(`appointments.${(appointment.status as string)}`, 
+                      (appointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                      (appointment.status as string) === 'completed' ? 'Completed' : 
+                      (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled')}
                   </span>
                   <div className="flex gap-1">
                     <button
@@ -176,9 +177,10 @@ export default function AppointmentList({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                    {(appointment.status as string) === 'cancelled' ? 'Cancelled' : 
-                     (appointment.status as string) === 'completed' ? 'Completed' : 
-                     (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled'}
+                    {t(`appointments.${(appointment.status as string)}`, 
+                      (appointment.status as string) === 'cancelled' ? 'Cancelled' : 
+                      (appointment.status as string) === 'completed' ? 'Completed' : 
+                      (appointment.status as string) === 'no-show' ? 'No Show' : 'Scheduled')}
                   </span>
                   <div className="flex gap-1">
                     <button
@@ -206,8 +208,8 @@ export default function AppointmentList({
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
             <Calendar className="text-gray-400" size={24} />
           </div>
-          <p className="text-gray-500 text-sm">{t('common.no_upcoming_appointments', 'No upcoming appointments')}</p>
-          <p className="text-gray-400 text-xs">{t('common.schedule_first_appointment', 'Schedule your first appointment')}</p>
+          <p className="text-gray-500 text-sm">{t('home.no_upcoming_appointments', 'No upcoming appointments')}</p>
+          <p className="text-gray-400 text-xs">{t('home.schedule_first_appointment', 'Schedule your first appointment')}</p>
         </div>
       )}
 

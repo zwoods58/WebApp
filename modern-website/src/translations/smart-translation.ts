@@ -3,7 +3,7 @@ import industryTranslations from './industry-translations';
 import essentialTranslations from './essential-translations';
 
 // Cache-busting timestamp to force refresh translations
-const TRANSLATION_CACHE_BUSTER = '2026-04-20-v110';
+const TRANSLATION_CACHE_BUSTER = '2025-03-20-14-49-34';
 
 // DEBUG: Check if imports are working
 console.log('[DEBUG] universalTranslations loaded:', !!universalTranslations);
