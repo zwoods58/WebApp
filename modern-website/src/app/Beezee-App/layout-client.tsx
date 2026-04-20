@@ -9,6 +9,7 @@ import { BusinessProfileProvider } from '@/contexts/BusinessProfileContext';
 import { IndustryProvider, useIndustry } from '@/contexts/IndustryContext';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { AuthErrorBoundary } from '@/components/AuthErrorBoundary';
+import UpdatePrompt from '@/components/universal/UpdatePrompt';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -159,6 +160,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       <div key={pathname}>
         {children}
       </div>
+      
+      <UpdatePrompt />
       
       {/* PWA Install Prompt */}
       <Suspense fallback={null}>
