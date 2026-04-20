@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -189,7 +190,6 @@ const nextConfig: NextConfig = {
     },
     optimizePackageImports: ['lucide-react', 'date-fns'],
     optimizeServerReact: true,
-    webpackBuildWorker: false,
   },
   
   // Optimize for service worker caching
@@ -204,12 +204,11 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080],
     minimumCacheTTL: 60,
   },
-  
-  // PWA configuration
-  pwa: {
-    skipWaiting: true,
-    clientsClaim: true,
-  },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  skipWaiting: true,
+  clientsClaim: true,
+})(nextConfig as any);
