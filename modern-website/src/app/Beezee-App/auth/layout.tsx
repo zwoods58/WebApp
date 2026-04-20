@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import Image from 'next/image';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { SupabaseAuthProvider } from '@/contexts/SupabaseAuthContext';
 
 export default function AuthLayout({
   children,
@@ -11,7 +12,8 @@ export default function AuthLayout({
 }) {
   return (
     <QueryProvider>
-      <div className="auth-layout min-h-full bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
+      <SupabaseAuthProvider>
+        <div className="auth-layout min-h-full bg-[var(--bg)] text-[var(--text-1)] flex flex-col">
       {/* Header logo - consistent across all auth pages */}
       <div className="flex justify-center items-center pt-12 pb-1 flex-shrink-0">
         <div className="relative">
@@ -31,6 +33,7 @@ export default function AuthLayout({
         {children}
       </div>
     </div>
+      </SupabaseAuthProvider>
     </QueryProvider>
   );
 }

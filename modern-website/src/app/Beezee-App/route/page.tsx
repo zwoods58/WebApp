@@ -184,7 +184,10 @@ function RoutePageContent() {
 
     // --- Priority 4: No data at all — redirect to get-started ---
     console.log('[Route] No routing data found, redirecting to get-started');
-    navigatePWAAware('/Beezee-App/auth/get-started', router);
+    // Wait briefly in case auth state is still settling
+    setTimeout(() => {
+      navigatePWAAware('/Beezee-App/auth/get-started', router);
+    }, 1500);
   }, [router, searchParams, isAuthenticated, business, authLoading]);
 
   const countryConfig = countryConfigs[country];

@@ -411,7 +411,8 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         }
 
         console.log('✅ Sign in successful');
-        // Business data will be loaded by the auth state change listener
+        // Set loading true so route page waits for auth state change listener to fire
+        setAuthState(prev => ({ ...prev, loading: true }));
         return { error: null, data: authData };
       }
 

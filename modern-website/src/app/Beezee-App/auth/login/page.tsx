@@ -86,10 +86,10 @@ export default function Login() {
         showError(result.error.message);
       } else {
         showSuccess('Login successful!');
-        // Navigate to route page which handles the dashboard redirect
-        // with the setup animation showing country/industry
         setIsRedirecting(true);
-        navigatePWAAware('/Beezee-App/route', router);
+        setTimeout(() => {
+          navigatePWAAware('/Beezee-App/route', router);
+        }, 800);
       }
     } catch (error) {
       showError('Login failed. Please try again.');
