@@ -49,14 +49,25 @@ export function useCreditItems({ businessId, industry }: UseCreditItemsProps = {
 
   const addCreditItemMutation = useMutation({
     mutationFn: async (item: Omit<CreditItem, 'id' | 'created_at' | 'updated_at'>) => {
-      const { data, error } = await supabase
-        .from('credit_items')
-        .insert(item)
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('credit_items')
+          .insert(item)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          // Handle specific RLS policy errors
+          if (error.code === '42501') {
+            throw new Error('Permission denied: You can only add credit items to your own business');
+          }
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('[creditService] Error creating line item:', err);
+        throw err;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credit-items'] });
@@ -65,15 +76,26 @@ export function useCreditItems({ businessId, industry }: UseCreditItemsProps = {
 
   const updateCreditItemMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<CreditItem> }) => {
-      const { data, error } = await supabase
-        .from('credit_items')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('credit_items')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return data;
+        if (error) {
+          // Handle specific RLS policy errors
+          if (error.code === '42501') {
+            throw new Error('Permission denied: You can only update credit items from your own business');
+          }
+          throw error;
+        }
+        return data;
+      } catch (err) {
+        console.error('[creditService] Error updating line item:', err);
+        throw err;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credit-items'] });
@@ -82,12 +104,23 @@ export function useCreditItems({ businessId, industry }: UseCreditItemsProps = {
 
   const deleteCreditItemMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('credit_items')
-        .delete()
-        .eq('id', id);
+      try {
+        const { error } = await supabase
+          .from('credit_items')
+          .delete()
+          .eq('id', id);
 
-      if (error) throw error;
+        if (error) {
+          // Handle specific RLS policy errors
+          if (error.code === '42501') {
+            throw new Error('Permission denied: You can only delete credit items from your own business');
+          }
+          throw error;
+        }
+      } catch (err) {
+        console.error('[creditService] Error deleting line item:', err);
+        throw err;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['credit-items'] });

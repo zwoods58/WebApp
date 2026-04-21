@@ -5,15 +5,14 @@ import { transactionSchema } from '@/lib/validation/schemas';
 import { validateRequest, handleValidationError } from '@/middleware/validate';
 import { sanitizeObject } from '@/lib/validation/sanitizer';
 import { withRateLimit } from '@/middleware/rate-limit-middleware';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+import { createServerClient, getUserFromToken } from '@/lib/supabase';
 
 async function transactionHandler(request: NextRequest) {
   try {
-    console.log('🔧 API Route - POST request received');
+    console.log('API Route - POST request received');
+    
+    // Create server client for this request
+    const supabaseAdmin = createServerClient();
     
     const body = await request.json();
 
@@ -35,12 +34,31 @@ async function transactionHandler(request: NextRequest) {
       );
     }
 
-    console.log('🔧 API Route - Validated transaction data:', { business_id, industry, amount, category });
+    // Get user from token for authentication
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Authorization token required' },
+        { status: 401 }
+      );
+    }
 
-    // Fetch business to get country for currency derivation
+    const token = authHeader.substring(7);
+    const user = await getUserFromToken(token);
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid or expired token' },
+        { status: 401 }
+      );
+    }
+
+    console.log('API Route - Validated transaction data:', { business_id, industry, amount, category, userId: user.id });
+
+    // Fetch business to get country for currency derivation and verify ownership
     const { data: business, error: businessError } = await supabaseAdmin
       .from('businesses')
-      .select('country')
+      .select('country, supabase_user_id')
       .eq('id', business_id)
       .single();
 
@@ -49,6 +67,15 @@ async function transactionHandler(request: NextRequest) {
       return NextResponse.json(
         { error: 'Business not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify user owns this business
+    if (business.supabase_user_id !== user.id) {
+      console.error('User does not own this business:', { userId: user.id, businessUserId: business.supabase_user_id });
+      return NextResponse.json(
+        { error: 'Access denied: You do not own this business' },
+        { status: 403 }
       );
     }
 
