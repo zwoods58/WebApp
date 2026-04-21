@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { checkAuthenticationStatus, validateRequiredFields, logDatabaseError, createHookError } from '@/utils/authHelpers';
 
 export interface Credit {
   id: string;
@@ -65,6 +66,16 @@ export function useCreditTanStack({ businessId, industry, country }: UseCreditTa
 
   const addCreditMutation = useMutation({
     mutationFn: async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
+      // Check authentication first
+      if (!businessId) {
+        throw createHookError('Business ID is required for credit');
+      }
+
+      const authCheck = await checkAuthenticationStatus(businessId);
+      if (!authCheck.isAuthenticated) {
+        throw createHookError(`Authentication failed: ${authCheck.error}`);
+      }
+
       const creditData = {
         ...credit,
         industry: credit.industry || industry || 'retail',
@@ -75,6 +86,12 @@ export function useCreditTanStack({ businessId, industry, country }: UseCreditTa
         type: credit.type || 'receivable',
       };
 
+      // Validate required fields
+      const validation = validateRequiredFields(creditData, ['business_id', 'industry', 'customer_name', 'amount', 'currency', 'date_given', 'type']);
+      if (!validation.isValid) {
+        throw createHookError(`Missing required fields: ${validation.missingFields.join(', ')}`);
+      }
+
       console.log('Credit data being inserted:', creditData);
       
       const { data, error } = await supabase
@@ -84,8 +101,8 @@ export function useCreditTanStack({ businessId, industry, country }: UseCreditTa
         .single();
 
       if (error) {
-        console.error('Credit insert error:', error);
-        throw error;
+        logDatabaseError('Credit insert', error, creditData);
+        throw createHookError(`Failed to create credit: ${error.message}`, error);
       }
       return data;
     },

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { checkAuthenticationStatus, validateRequiredFields, logDatabaseError, createHookError } from '@/utils/authHelpers';
 
 export interface Expense {
   id: string;
@@ -64,6 +65,16 @@ export function useExpensesTanStack({ businessId, industry, country }: UseExpens
 
   const addExpenseMutation = useMutation({
     mutationFn: async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
+      // Check authentication first
+      if (!businessId) {
+        throw createHookError('Business ID is required for expenses');
+      }
+
+      const authCheck = await checkAuthenticationStatus(businessId);
+      if (!authCheck.isAuthenticated) {
+        throw createHookError(`Authentication failed: ${authCheck.error}`);
+      }
+
       // Ensure all required DB columns are present
       const payload = {
         ...expense,
@@ -72,8 +83,14 @@ export function useExpensesTanStack({ businessId, industry, country }: UseExpens
         expense_date: expense.expense_date || new Date().toISOString().split('T')[0],
       };
 
-      console.log('Expense data being inserted:', payload);
+      // Validate required fields
+      const validation = validateRequiredFields(payload, ['business_id', 'industry', 'currency', 'amount', 'expense_date']);
+      if (!validation.isValid) {
+        throw createHookError(`Missing required fields: ${validation.missingFields.join(', ')}`);
+      }
 
+      console.log('Expense data being inserted:', payload);
+      
       const { data, error } = await supabase
         .from('expenses')
         .insert(payload)
@@ -81,8 +98,8 @@ export function useExpensesTanStack({ businessId, industry, country }: UseExpens
         .single();
 
       if (error) {
-        console.error('Expense insert error:', error);
-        throw error;
+        logDatabaseError('Expense insert', error, payload);
+        throw createHookError(`Failed to create expense: ${error.message}`, error);
       }
       return data;
     },

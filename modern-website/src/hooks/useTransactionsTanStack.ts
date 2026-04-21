@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { checkAuthenticationStatus, validateRequiredFields, logDatabaseError, createHookError } from '@/utils/authHelpers';
 
 export interface Transaction {
   id: string;
@@ -68,12 +69,29 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
 
   const addTransactionMutation = useMutation({
     mutationFn: async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
+      // Check authentication first
+      if (!businessId) {
+        throw createHookError('Business ID is required for transactions');
+      }
+
+      const authCheck = await checkAuthenticationStatus(businessId);
+      if (!authCheck.isAuthenticated) {
+        throw createHookError(`Authentication failed: ${authCheck.error}`);
+      }
+
       const payload = {
         ...transaction,
+        type: transaction.type || 'money_in', // <- REQUIRED FIELD
         industry: transaction.industry || industry || 'retail',    // <- ensure present
         currency: transaction.currency || getCurrencyFromCountry(country), // <- REQUIRED
         transaction_date: transaction.transaction_date || new Date().toISOString().split('T')[0],
       };
+
+      // Validate required fields
+      const validation = validateRequiredFields(payload, ['business_id', 'type', 'amount', 'currency', 'transaction_date']);
+      if (!validation.isValid) {
+        throw createHookError(`Missing required fields: ${validation.missingFields.join(', ')}`);
+      }
 
       console.log('Transaction data being inserted:', payload);
       
@@ -84,8 +102,8 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
         .single();
 
       if (error) {
-        console.error('Transaction insert error:', error);
-        throw error;
+        logDatabaseError('Transaction insert', error, payload);
+        throw createHookError(`Failed to create transaction: ${error.message}`, error);
       }
       return data;
     },
