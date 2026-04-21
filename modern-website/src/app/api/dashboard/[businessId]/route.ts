@@ -8,6 +8,7 @@ import { createRateLimitMiddleware, DEFAULT_RATE_LIMITS } from '@/lib/rate-limit
 import { UserTier } from '@/lib/rate-limit/supabase-distributed-rate-limit';
 import { supabaseCachedQueries } from '@/lib/cache/supabase-cached-queries';
 import { supabaseRateLimiter } from '@/lib/rate-limit/supabase-distributed-rate-limit';
+import { createServerClient } from '@/lib/supabase';
 
 // Simple in-memory cache for user tiers (5 minute TTL)
 const userTierCache = new Map<string, { tier: UserTier; timestamp: number }>();
@@ -37,7 +38,7 @@ const dashboardRateLimit = createRateLimitMiddleware({
         return cached.tier;
       }
 
-      const { supabaseAdmin } = await import('@/lib/supabase');
+      const supabaseAdmin = createServerClient();
 
       const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
       

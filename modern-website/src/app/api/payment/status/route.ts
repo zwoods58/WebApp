@@ -19,31 +19,32 @@ export async function GET(request: Request) {
     console.log(`Checking payment status for reference: ${reference}`);
     
     // Check local database first (webhook may have already updated)
-    const { data: transaction, error } = await supabaseAdmin
+    const { data: transaction, error: dbError } = await supabaseAdmin
       .from('payment_link_transactions')
       .select('*')
       .eq('reference', reference)
       .single();
     
-    if (error) {
-      console.error('Database error checking transaction:', error);
+    if (dbError) {
+      console.error('Database error checking transaction:', dbError);
       
-      // Check if it exists in the Kyshi transactions table
-      const { data: kyshiTransaction, error: kyshiError } = await supabaseAdmin
+      // Note: Kyshi functionality has been removed
+      // Transaction lookup in main transactions table only
+      const { data: transaction, error } = await supabaseAdmin
         .from('transactions')
         .select('*')
-        .eq('kyshi_reference', reference)
+        .eq('reference', reference)
         .single();
       
-      if (!kyshiError && kyshiTransaction) {
-        console.log('Found transaction in Kyshi transactions table');
+      if (!error && transaction) {
+        console.log('Found transaction in main transactions table');
         return NextResponse.json({
-          status: kyshiTransaction.status === 'success' ? 'success' : kyshiTransaction.status,
-          paid: kyshiTransaction.status === 'success',
-          amount: kyshiTransaction.amount,
-          currency: kyshiTransaction.currency,
+          status: transaction.status === 'success' ? 'success' : transaction.status,
+          paid: transaction.status === 'success',
+          amount: transaction.amount,
+          currency: transaction.currency,
           reference: reference,
-          source: 'kyshi_transactions'
+          source: 'transactions'
         });
       }
       
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
       });
     }
     
-    // Kyshi API check removed - no longer available
+    // Note: Kyshi payment processing has been removed
     
     // Return current status from database
     return NextResponse.json({
