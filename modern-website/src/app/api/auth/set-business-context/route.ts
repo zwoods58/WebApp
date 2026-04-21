@@ -8,7 +8,17 @@ export async function POST(req: NextRequest) {
       hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       hasSupabaseAnon: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      nodeEnv: process.env.NODE_ENV,
     });
+    
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('set-business-context: Missing Supabase environment variables');
+      return NextResponse.json(
+        { success: false, message: 'Server configuration error - missing database credentials' },
+        { status: 500 }
+      );
+    }
     
     // 1. Read the token from the Authorization header (client now sends this)
     const authHeader = req.headers.get('authorization');
@@ -19,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     if (!token) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized â no token provided' },
+        { success: false, message: 'Unauthorized - no token provided' },
         { status: 401 }
       );
     }
@@ -41,31 +51,71 @@ export async function POST(req: NextRequest) {
 
     // 3. Verify the JWT and get the user
     console.log('set-business-context: Getting Supabase client...');
-    const supabase = getSupabaseClient();
+    let supabase;
+    try {
+      supabase = getSupabaseClient();
+    } catch (clientError) {
+      console.error('set-business-context: Failed to get Supabase client:', clientError);
+      return NextResponse.json(
+        { success: false, message: 'Database configuration error' },
+        { status: 500 }
+      );
+    }
 
     console.log('set-business-context: Verifying JWT token...');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    let user, authError;
+    try {
+      const result = await supabase.auth.getUser(token);
+      user = result.data.user;
+      authError = result.error;
+    } catch (jwtError) {
+      console.error('set-business-context: JWT verification failed:', jwtError);
+      return NextResponse.json(
+        { success: false, message: 'Invalid authentication token' },
+        { status: 401 }
+      );
+    }
 
     console.log('set-business-context: Auth error:', authError?.message);
     console.log('set-business-context: User found:', !!user);
 
     if (authError || !user) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized â invalid token', error: authError?.message },
+        { success: false, message: 'Unauthorized - invalid token', error: authError?.message },
         { status: 401 }
       );
     }
 
     // 4. Use service role to query businesses
     console.log('set-business-context: Getting admin client...');
-    const adminClient = getSupabaseAdminClient();
+    let adminClient;
+    try {
+      adminClient = getSupabaseAdminClient();
+    } catch (adminClientError) {
+      console.error('set-business-context: Failed to get admin client:', adminClientError);
+      return NextResponse.json(
+        { success: false, message: 'Database admin configuration error' },
+        { status: 500 }
+      );
+    }
 
     console.log('set-business-context: Looking up business for user:', user.id);
-    const { data: business, error: bizError } = await adminClient
-      .from('businesses')
-      .select('id, subscription_status, subscription_expires_at')
-      .eq('supabase_user_id', user.id)
-      .single();
+    let business, bizError;
+    try {
+      const result = await adminClient
+        .from('businesses')
+        .select('id, subscription_status, subscription_expires_at')
+        .eq('supabase_user_id', user.id)
+        .single();
+      business = result.data;
+      bizError = result.error;
+    } catch (dbError) {
+      console.error('set-business-context: Database query failed:', dbError);
+      return NextResponse.json(
+        { success: false, message: 'Database query error' },
+        { status: 500 }
+      );
+    }
 
     console.log('set-business-context: Business lookup error:', bizError?.message);
     console.log('set-business-context: Business found:', !!business);
@@ -86,7 +136,7 @@ export async function POST(req: NextRequest) {
 
     if (business.id !== businessId) {
       return NextResponse.json(
-        { success: false, message: 'Forbidden â businessId mismatch' },
+        { success: false, message: 'Forbidden - businessId mismatch' },
         { status: 403 }
       );
     }
@@ -114,9 +164,15 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('set-business-context error:', error);
+    console.error('set-business-context: Unexpected error:', error);
+    console.error('set-business-context: Error stack:', error instanceof Error ? error.stack : 'No stack available');
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { 
+        success: false, 
+        message: 'Internal server error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }
