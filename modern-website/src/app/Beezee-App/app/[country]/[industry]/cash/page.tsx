@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useCreditItems } from '@/hooks/index';
+import { CreditCustomer } from '@/app/Beezee-App/services/creditService';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/index';
@@ -71,6 +72,8 @@ export default function CashPage() {
   const isExpensesPending = expensesHook?.isLoading || false;
   const addTransaction = transactionsHook?.addTransaction || (() => Promise.resolve());
   const addExpense = expensesHook?.addExpense || (() => Promise.resolve());
+  const refetchTransactions = transactionsHook?.refetch || (() => Promise.resolve());
+  const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
 
   // Credit data extraction
   const { data: credit, addCredit, updateCredit } = creditHook;
@@ -93,6 +96,7 @@ export default function CashPage() {
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedItemForShare, setSelectedItemForShare] = useState<any>(null);
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
   // ✅ STEP 8: Combined data for display
   const allCashFlow = [
@@ -110,14 +114,16 @@ export default function CashPage() {
 
   // ✅ Handler: Money In
   const handleMoneyIn = async (transactionData: any) => {
+    setIsAddingTransaction(true);
     try {
       if (!businessId) {
-        alert(t('alert.setup_profile_first', 'Please set up your business profile first before adding transactions.'));
+        console.error('[CashPage] No business ID available for transaction');
+        showError(t('alert.setup_profile_first', 'Please set up your business profile first before adding transactions.'));
         return;
       }
 
       if (transactionData.payment_method === 'credit' && transactionData.customer_name) {
-        const existingCredit = findMatchingCreditCustomer(credit || [], transactionData.customer_name, 'receivable');
+        const existingCredit = findMatchingCreditCustomer((credit as CreditCustomer[]) || [], transactionData.customer_name, 'receivable');
 
         if (existingCredit) {
           await addCreditItemAsync({
@@ -147,8 +153,11 @@ export default function CashPage() {
             customer_name: transactionData.customer_name,
             amount: transactionData.amount,
             due_date: transactionData.due_date,
-            description: transactionData.description,
-            status: 'pending'
+            notes: transactionData.description,
+            status: 'pending',
+            industry,
+            currency: getCurrency(country),
+            date_given: transactionData.transaction_date
           });
 
           const creditId = newCredit?.id;
@@ -184,18 +193,26 @@ export default function CashPage() {
       queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
       queryClient.invalidateQueries({ queryKey: [industry, country, 'inventory'] });
 
+      // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
+      await refetchTransactions();
+      await refetchExpenses();
+
       showSuccess(`Money in: ${formatCurrency(transactionData.amount, country)} received successfully!`);
     } catch (error) {
       console.error('Failed to add transaction:', error);
       showError(t('alert.failed_transaction', 'Failed to add transaction. Please try again.'));
+    } finally {
+      setIsAddingTransaction(false);
     }
   };
 
   // ✅ Handler: Money Out
   const handleMoneyOut = async (expenseData: any) => {
+    setIsAddingTransaction(true);
     try {
       if (!businessId) {
-        alert(t('alert.setup_profile_first_expenses', 'Please set up your business profile first before adding expenses.'));
+        console.error('[CashPage] No business ID available for expense');
+        showError(t('alert.setup_profile_first_expenses', 'Please set up your business profile first before adding expenses.'));
         return;
       }
 
@@ -235,8 +252,11 @@ export default function CashPage() {
             customer_name: expenseData.customer_name,
             amount: expenseData.amount,
             due_date: expenseData.due_date,
-            description: expenseData.description,
-            status: 'pending'
+            notes: expenseData.description,
+            status: 'pending',
+            industry,
+            currency: getCurrency(country),
+            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0]
           });
 
           creditId = newCredit?.id;
@@ -276,10 +296,16 @@ export default function CashPage() {
       queryClient.invalidateQueries({ queryKey: [industry, country, 'expenses'] });
       queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
 
+      // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
+      await refetchTransactions();
+      await refetchExpenses();
+
       showSuccess(`Money out: ${formatCurrency(expenseData.amount, country)} paid successfully!`);
     } catch (error) {
       console.error('Failed to add expense:', error);
       showError(t('alert.failed_expense', 'Failed to add expense. Please try again.'));
+    } finally {
+      setIsAddingTransaction(false);
     }
   };
 
@@ -395,13 +421,13 @@ export default function CashPage() {
             country={country}
             businessId={businessId || ''}
             onSuccess={handleMoneyIn}
-            disabled={!businessId}
+            disabled={!businessId || isAddingTransaction}
           />
           <MoneyOutButton
             industry={industry}
             country={country}
             onSuccess={handleMoneyOut}
-            disabled={!businessId}
+            disabled={!businessId || isAddingTransaction}
           />
         </div>
 
