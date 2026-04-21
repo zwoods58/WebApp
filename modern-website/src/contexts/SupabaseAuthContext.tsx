@@ -77,6 +77,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   // Load subscription data from businesses table (NOT subscriptions table)
   const loadSubscriptionData = useCallback(async (supabaseUserId: string): Promise<SubscriptionData | null> => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        console.error('Supabase client is not initialized');
+        return null;
+      }
+
       const { data: business, error } = await supabase
         .from('businesses')
         .select('subscription_status, subscription_expires_at')
@@ -96,9 +102,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         ? Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
         : 0;
 
+      // FIX: Ensure isActive is always boolean, not boolean | null
+      const isActive = !!(business.subscription_status === 'active' && expiresAt && expiresAt > now);
+
       return {
         status: business.subscription_status || 'inactive',
-        isActive: business.subscription_status === 'active' && expiresAt && expiresAt > now,
+        isActive,
         expiresAt: business.subscription_expires_at ?? null,
         daysRemaining,
       };
@@ -111,6 +120,12 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   // Load business data for a user
   const loadBusinessData = useCallback(async (supabaseUserId: string): Promise<Business | null> => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        console.error('Supabase client is not initialized');
+        return null;
+      }
+
       const { data: business, error } = await supabase
         .from('businesses')
         .select('*')
@@ -136,7 +151,13 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         console.log('Initializing auth...');
         setAuthState(prev => ({ ...prev, loading: true }));
 
-        // Check for existing session
+        // FIX: Guard against null supabase client
+        if (!supabase) {
+          console.error('Supabase client is not initialized');
+          setAuthState(prev => ({ ...prev, loading: false, error: 'Supabase not initialized' }));
+          return;
+        }
+
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -161,7 +182,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             error: null,
             isAuthenticated: true,
             isEmailConfirmed: isConfirmed,
-            isReadOnly,
+            isReadOnly: !!isReadOnly,
           });
 
           if (business) {
@@ -183,6 +204,9 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
     initializeAuth();
 
+    // FIX: Guard against null supabase client before subscribing
+    if (!supabase) return;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
@@ -200,7 +224,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             subscription,
             isAuthenticated: true,
             isEmailConfirmed: isConfirmed,
-            isReadOnly,
+            isReadOnly: !!isReadOnly,
             loading: false,
             error: null,
           }));
@@ -249,6 +273,13 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        const err = new Error('Supabase client is not initialized');
+        setAuthState(prev => ({ ...prev, loading: false, error: err.message }));
+        return { error: err };
+      }
+
       console.log('Signing up user:', email);
 
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
@@ -346,17 +377,26 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             : 'Account created! Please check your email to confirm your account.',
         },
       };
+    // FIX: Added missing catch block — this was the critical syntax error causing 500s in production
+    } catch (error) {
+      console.error('Sign up error:', error);
+      const silentError = error instanceof Error ? error : new Error('Signup failed');
+      setAuthState(prev => ({ ...prev, loading: false, error: silentError.message }));
+      return { error: silentError, data: undefined };
     }
-
-    const silentError = new Error('Signup failed silently.');
-    setAuthState(prev => ({ ...prev, loading: false, error: silentError.message }));
-    return { error: silentError, data: undefined };
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string): Promise<{ error: any; data?: any }> => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        const err = new Error('Supabase client is not initialized');
+        setAuthState(prev => ({ ...prev, loading: false, error: err.message }));
+        return { error: err };
+      }
+
       console.log('Signing in user:', email);
 
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -412,7 +452,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
           error: null,
           isAuthenticated: true,
           isEmailConfirmed: isConfirmed,
-          isReadOnly,
+          isReadOnly: !!isReadOnly,
         });
 
         await setBusinessContext(business.id, business.country, business.industry);
@@ -421,7 +461,8 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         return { error: null, data: authData };
       }
 
-      return { data: authData };
+      // FIX: Ensure error property is always present
+      return { error: null, data: authData };
     } catch (error) {
       console.error('Sign in error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Sign in failed';
@@ -432,6 +473,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const signOut = useCallback(async () => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        return { error: { message: 'Supabase client is not initialized' } };
+      }
+
       console.log('Signing out...');
       const { error } = await supabase.auth.signOut();
       if (error) return { error };
@@ -446,6 +492,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const resetPassword = useCallback(async (email: string) => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        return { error: { message: 'Supabase client is not initialized' } };
+      }
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/Beezee-App/auth/update-password`,
       });
@@ -458,6 +509,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const updatePassword = useCallback(async (newPassword: string) => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        return { error: { message: 'Supabase client is not initialized' } };
+      }
+
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) return { error };
       return { error: null };
@@ -468,6 +524,11 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const resendConfirmation = useCallback(async (email: string) => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) {
+        return { error: { message: 'Supabase client is not initialized' } };
+      }
+
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
@@ -484,6 +545,8 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
 
   const refreshSession = useCallback(async () => {
     try {
+      // FIX: Guard against null supabase client
+      if (!supabase) return;
       await supabase.auth.refreshSession();
     } catch (error) {
       console.error('Session refresh error:', error);
@@ -508,8 +571,6 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   );
 }
 
-// FIX: throws an error instead of silently returning null business data,
-// so you immediately know if a page is rendered outside the provider tree.
 export function useSupabaseAuth() {
   const context = useContext(SupabaseAuthContext);
   if (!context) {
