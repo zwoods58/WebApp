@@ -9,6 +9,12 @@ export async function setBusinessContext(
   industry: string
 ): Promise<void> {
   try {
+    // Validate required parameters
+    if (!businessId || !country || !industry) {
+      console.warn('â ï¸ Missing required parameters for business context:', { businessId, country, industry });
+      return;
+    }
+
     // Import supabase here to get the current session token
     const { supabase } = await import('@/lib/supabase');
     const { data: { session } } = await supabase.auth.getSession();
