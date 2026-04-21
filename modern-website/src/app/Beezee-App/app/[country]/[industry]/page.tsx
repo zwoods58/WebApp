@@ -144,14 +144,6 @@ export default function IndustryDashboard() {
   const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
   const { data: credit, addCredit, updateCredit, refetch: refetchCredit } = creditHook;
   const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
-  const addCreditItemAsync = async (item: any) => {
-    try {
-      await addCreditItem(item);
-      return { data: item, error: undefined };
-    } catch (error) {
-      return { data: undefined, error };
-    }
-  };
   const refetchInventory = inventoryHook?.refetch || (() => {});
   const refetchTargets = targetsHook?.refetch || (() => Promise.resolve());
   

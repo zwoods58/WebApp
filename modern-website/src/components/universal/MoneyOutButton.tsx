@@ -91,11 +91,6 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
   };
 
   const handleCreditPayment = async () => {
-    if (!business?.id) {
-      alert(t('credit.business_id_not_found'));
-      return;
-    }
-
     const customerName = selectedCustomer || newCustomerName;
     if (!customerName || customerName.trim() === '') {
       alert(t('credit.select_vendor_required'));
@@ -110,7 +105,7 @@ export default function MoneyOutButton({ industry, country, onSuccess, disabled 
         parseFloat(formData.amount),
         formData.due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         formData.description || `Cost - ${formData.category || 'General'}`,
-        business.id,
+        business?.id || '',
         industry,
         getCurrency(country),
         'payable'  // KEY: 'payable' for money out (who YOU owe)

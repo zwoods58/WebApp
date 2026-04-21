@@ -28,7 +28,7 @@ export default function AddCreditLineItemModal({
 }: AddCreditLineItemModalProps) {
   const { t } = useLanguage();
   const { business } = useSupabaseAuth();
-  const { addCreditItemAsync } = useCreditItems({ 
+  const { addCreditItem } = useCreditItems({ 
     businessId: business?.id,
     industry 
   });
@@ -42,29 +42,16 @@ export default function AddCreditLineItemModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!business?.id) {
-      alert(t('error.no_business_id', 'No business ID found'));
-      return;
-    }
 
     setLoading(true);
     try {
-      const currency = getCurrency(business.country || country);
+      const currency = getCurrency(business?.country || country);
       
-      await addCreditItemAsync({
-        credit_id: creditId,
-        business_id: business.id,
-        industry,
-        description: formData.description,
-        amount: parseFloat(formData.amount),
-        paid_amount: 0,
-        currency,
-        status: 'outstanding',
-        due_date: formData.due_date,
-        date_given: new Date().toISOString().split('T')[0],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+      await addCreditItem({
+        name: formData.description,
+        price: parseFloat(formData.amount),
+        category: 'credit',
+        business_id: business?.id || ''
       });
 
       // Reset form
@@ -79,9 +66,6 @@ export default function AddCreditLineItemModal({
       }
       
       onClose();
-    } catch (error) {
-      console.error('Failed to add credit line item:', error);
-      alert(t('credit.failed_to_add_item', 'Failed to add credit item. Please try again.'));
     } finally {
       setLoading(false);
     }

@@ -78,14 +78,6 @@ export default function CashPage() {
   // Credit data extraction
   const { data: credit, addCredit, updateCredit } = creditHook;
   const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
-  const addCreditItemAsync = async (item: any) => {
-    try {
-      await addCreditItem(item);
-      return { data: item, error: undefined };
-    } catch (error) {
-      return { data: undefined, error };
-    }
-  };
 
   // ✅ STEP 6: Derived state
   const isOffline = isTransactionsOffline || isExpensesOffline || isNetworkOffline;
@@ -126,26 +118,19 @@ export default function CashPage() {
         const existingCredit = findMatchingCreditCustomer((credit as CreditCustomer[]) || [], transactionData.customer_name, 'receivable');
 
         if (existingCredit) {
-          await addCreditItemAsync({
-            credit_id: existingCredit.id,
-            business_id: businessId,
-            industry,
-            description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
-            amount: transactionData.amount,
-            paid_amount: 0,
-            currency: transactionData.currency || getCurrency(country),
-            status: 'pending',
-            due_date: transactionData.due_date,
-            date_given: transactionData.transaction_date,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          await addCreditItem({
+            name: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
+            price: transactionData.amount,
+            category: 'credit',
+            business_id: businessId
           });
 
           const newTotalAmount = calculateNewCreditTotal(existingCredit.amount, transactionData.amount);
           await updateCredit(existingCredit.id, {
             amount: newTotalAmount,
             due_date: transactionData.due_date,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            status: 'outstanding'
           });
         } else {
           const newCredit: any = await addCredit({
@@ -154,7 +139,7 @@ export default function CashPage() {
             amount: transactionData.amount,
             due_date: transactionData.due_date,
             notes: transactionData.description,
-            status: 'pending',
+            status: 'outstanding',
             industry,
             currency: getCurrency(country),
             date_given: transactionData.transaction_date
@@ -162,19 +147,11 @@ export default function CashPage() {
 
           const creditId = newCredit?.id;
           if (creditId) {
-            await addCreditItemAsync({
-              credit_id: creditId,
-              business_id: businessId,
-              industry,
-              description: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
-              amount: transactionData.amount,
-              paid_amount: 0,
-              currency: transactionData.currency || getCurrency(country),
-              status: 'pending',
-              due_date: transactionData.due_date,
-              date_given: transactionData.transaction_date,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+            await addCreditItem({
+              name: transactionData.description || generateDefaultDescription(transactionData.customer_name, 'Credit purchase'),
+              price: transactionData.amount,
+              category: 'credit',
+              business_id: businessId
             });
           }
         }
@@ -229,19 +206,11 @@ export default function CashPage() {
         let creditId = existingCredit?.id;
 
         if (existingCredit) {
-          await addCreditItemAsync({
-            credit_id: existingCredit.id,
-            business_id: businessId,
-            industry,
-            description: expenseData.description || t('credit.expense', 'Credit expense'),
-            amount: expenseData.amount,
-            paid_amount: 0,
-            currency: expenseData.currency || getCurrency(country),
-            status: 'pending',
-            due_date: expenseData.due_date,
-            date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          await addCreditItem({
+            name: expenseData.description || t('credit.expense', 'Credit expense'),
+            price: expenseData.amount,
+            category: 'credit',
+            business_id: businessId
           });
 
           const newTotalAmount = existingCredit.amount + expenseData.amount;
@@ -257,7 +226,7 @@ export default function CashPage() {
             amount: expenseData.amount,
             due_date: expenseData.due_date,
             notes: expenseData.description,
-            status: 'pending',
+            status: 'outstanding',
             industry,
             currency: getCurrency(country),
             date_given: expenseData.expense_date || new Date().toISOString().split('T')[0]
@@ -266,19 +235,11 @@ export default function CashPage() {
           creditId = newCredit?.id;
 
           if (creditId) {
-            await addCreditItemAsync({
-              credit_id: creditId,
-              business_id: businessId,
-              industry,
-              description: expenseData.description || t('credit.expense', 'Credit expense'),
-              amount: expenseData.amount,
-              paid_amount: 0,
-              currency: expenseData.currency || getCurrency(country),
-              status: 'pending',
-              due_date: expenseData.due_date,
-              date_given: expenseData.expense_date || new Date().toISOString().split('T')[0],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+            await addCreditItem({
+              name: expenseData.description || t('credit.expense', 'Credit expense'),
+              price: expenseData.amount,
+              category: 'credit',
+              business_id: businessId
             });
           }
         }

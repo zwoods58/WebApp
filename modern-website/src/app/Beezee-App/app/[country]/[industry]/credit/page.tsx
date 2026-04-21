@@ -41,18 +41,10 @@ export default function CreditPage() {
     industry,
     businessId: business?.id 
   });
-  const { addCreditItem } = useCreditItems({ 
+  const addCreditItem = useCreditItems({ 
     businessId: business?.id,
     industry 
   });
-  const addCreditItemAsync = async (item: any) => {
-    try {
-      await addCreditItem(item);
-      return { data: item, error: undefined };
-    } catch (error) {
-      return { data: undefined, error };
-    }
-  };
   
   // ✅ ADDED: Refresh credit data when businessId is available
   useEffect(() => {

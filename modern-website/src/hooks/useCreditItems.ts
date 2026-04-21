@@ -8,6 +8,7 @@ export interface CreditItem {
   description?: string;
   price: number;
   category?: string;
+  status?: 'outstanding' | 'partial' | 'paid' | 'overdue';
   created_at: string;
   updated_at: string;
 }
