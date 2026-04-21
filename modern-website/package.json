@@ -15,7 +15,9 @@
     "test:run": "vitest run",
     "generate:logos": "node scripts/generate-logo-sizes.js",
     "generate-version": "node scripts/generate-version.js",
-    "seed:beezee-plans": "npx ts-node scripts/seed-beezee-plans.ts"
+    "seed:beezee-plans": "npx ts-node scripts/seed-beezee-plans.ts",
+    "check:database": "node scripts/check-database-connection.js",
+    "test:expense-api": "node scripts/test-expense-api.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

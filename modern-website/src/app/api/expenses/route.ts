@@ -11,6 +11,13 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+// DEBUG: Log database connection info
+console.log('🔧 Database Connection Debug:', {
+  url: supabaseUrl,
+  hasServiceKey: !!supabaseServiceKey,
+  serviceKeyPrefix: supabaseServiceKey ? supabaseServiceKey.substring(0, 20) + '...' : 'none'
+});
+
 async function expenseHandler(request: NextRequest) {
   try {
     const body = await request.json();
@@ -27,17 +34,48 @@ async function expenseHandler(request: NextRequest) {
 
     console.log('🔧 API Route - Validated expense data:', { business_id, industry, amount, category });
 
+    // DEBUG: Tables exist (verified by database check), proceed with business query
+    console.log('🔍 Proceeding with business fetch (tables verified)...');
+
     // Fetch business to get country for currency derivation
+    console.log('🔍 Attempting to fetch business:', { business_id });
     const { data: business, error: businessError } = await supabaseAdmin
       .from('businesses')
       .select('country')
       .eq('id', business_id)
       .single();
 
-    if (businessError || !business) {
-      console.error('Failed to fetch business:', businessError);
+    if (businessError) {
+      console.error('Business fetch failed:', {
+        error: businessError,
+        code: businessError.code,
+        message: businessError.message,
+        details: businessError.details
+      });
+      
+      // Specific handling for missing table
+      if (businessError.code === '42P01') {
+        return NextResponse.json(
+          { 
+            error: 'Database schema error: businesses table not found',
+            code: 'SCHEMA_ERROR',
+            details: 'The businesses table does not exist in the connected database',
+            suggestion: 'Check if environment variables point to the correct Supabase project'
+          },
+          { status: 500 }
+        );
+      }
+      
       return NextResponse.json(
-        { error: 'Business not found' },
+        { error: 'Business not found', details: businessError.message },
+        { status: 404 }
+      );
+    }
+    
+    if (!business) {
+      console.error('Business not found for ID:', business_id);
+      return NextResponse.json(
+        { error: 'Business not found', business_id },
         { status: 404 }
       );
     }
