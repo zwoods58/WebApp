@@ -20,7 +20,7 @@ import { analyzeTransportTransactions } from '@/utils/transportAnalytics';
 import { findMatchingCreditCustomer, generateDefaultDescription, calculateNewCreditTotal } from '@/utils/creditMatching';
 
 // Supabase hooks
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useTargetsTanStack, useCreditItems } from '@/hooks/index';
+import { useTransactionsTanStack, useCreditTanStack, useTargetsTanStack, useCreditItems } from '@/hooks/index';
 import { useServicesTanStack as useServices, useAppointmentsTanStack } from '@/hooks/index';
 import type { Inventory } from '@/hooks/useInventoryTanStack';
 
@@ -58,11 +58,6 @@ interface Transaction {
   };
 }
 
-interface Expense {
-  expense_date: string;
-  amount: number;
-}
-
 export default function IndustryDashboard() {
   // ✅ STEP 1: ALL hooks called at top level, unconditionally
   console.log('🔍 Component Starting...');
@@ -91,9 +86,8 @@ export default function IndustryDashboard() {
   const { showSuccess, showError } = useToast();
   const { registerRefreshHandler, unregisterRefreshHandler } = useRefreshContext();
   
-  // ✅ Use Supabase hooks with business ID filtering - called unconditionally
+  // ✅ Use Supabase hooks with business ID filtering// Use TanStack Query hooks for data
   const transactionsHook = useTransactionsTanStack({ industry, businessId });
-  const expensesHook = useExpensesTanStack({ industry, businessId });
   const creditHook = useCreditTanStack({ industry, businessId });
   const creditItemsHook = useCreditItems({ industry, businessId });
   const targetsHook = useTargetsTanStack({ industry, businessId });
@@ -105,7 +99,6 @@ export default function IndustryDashboard() {
   
   // Safely extract values with fallbacks - add extra defensive checks
   let transactions = Array.isArray(transactionsHook?.data) ? transactionsHook.data : [];
-  let expenses = Array.isArray(expensesHook?.data) ? expensesHook.data : [];
   const inventory = Array.isArray(inventoryHook?.data) ? inventoryHook.data : [];
   const targets = Array.isArray(targetsHook?.data) ? targetsHook.data : [];
   const appointments = Array.isArray(appointmentsHook?.data) ? appointmentsHook.data : [];
@@ -127,37 +120,21 @@ export default function IndustryDashboard() {
     }
   }
   
-  if (expenses.length === 0) {
-    try {
-      const stored = localStorage.getItem(`beezee_${industry}_${country}_expenses`);
-      if (stored) {
-        expenses = JSON.parse(stored);
-        console.log(`📦 Fallback: Loaded ${expenses.length} expenses from localStorage`);
-      }
-    } catch (error) {
-      console.warn('Failed to load expenses from localStorage:', error);
-    }
-  }
-  
   // Extract refetch functions for manual refresh when needed
   const refetchTransactions = transactionsHook?.refetch || (() => Promise.resolve());
-  const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
   const { data: credit, addCredit, updateCredit, refetch: refetchCredit } = creditHook;
   const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
   const refetchInventory = inventoryHook?.refetch || (() => {});
   const refetchTargets = targetsHook?.refetch || (() => Promise.resolve());
   
   const transactionsLoading = transactionsHook?.isLoading || false;
-  const expensesLoading = expensesHook?.isLoading || false;
   const creditLoading = creditHook?.isLoading || false;
   const inventoryLoading = inventoryHook?.isLoading || false;
   const targetsLoading = targetsHook?.isLoading || false;
   
-  const addExpense = expensesHook?.addExpense;
   
   // Ensure arrays are never undefined
   const safeTransactions = transactions || [];
-  const safeExpenses = expenses || [];
   const safeCredit = credit || [];
   const safeInventory = inventory || [];
   const safeTargets = targets || [];
@@ -182,12 +159,10 @@ export default function IndustryDashboard() {
   // Debug: Log hook returns to identify issues
   console.log('🔍 Hook Debug:', {
     transactionsHook: !!transactionsHook,
-    expensesHook: !!expensesHook,
     creditHook: !!creditHook,
     inventoryHook: !!inventoryHook,
     targetsHook: !!targetsHook,
     transactions: transactions ? transactions.length : 'undefined',
-    expenses: expenses ? expenses.length : 'undefined',
     credit: credit ? credit.length : 'undefined',
     inventory: inventory ? inventory.length : 'undefined',
     targets: targets ? targets.length : 'undefined',
@@ -196,14 +171,13 @@ export default function IndustryDashboard() {
     business: !!business,
     // Check the raw hook returns
     rawTransactions: transactionsHook?.data,
-    rawExpenses: expensesHook?.data,
     rawCredit: creditHook?.data,
     rawInventory: inventoryHook?.data,
     rawTargets: targetsHook?.data
   });
   
   // State management - must be before any early returns
-  const [todayStats, setTodayStats] = useState({ sales: 0, expenses: 0 });
+  const [todayStats, setTodayStats] = useState({ sales: 0 });
   const [businessTimedOut, setBusinessTimedOut] = useState(false);
 
   // AUTH GUARD — redirect unauthenticated users
@@ -245,7 +219,7 @@ export default function IndustryDashboard() {
   const signupDailyTarget = profile?.dailyTarget || 0;
   const effectiveDailyTarget = businessDailyTarget || signupDailyTarget || (safeTargets.find(t => (t.type === 'sales' || t.type === 'daily') && (t.period === 'daily' || t.type === 'daily'))?.amount || 500);
   // Offline-aware loading state - don't show loading when offline and we have cached data
-  const isLoading = (transactionsLoading || expensesLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats) && !isOffline;
+  const isLoading = (transactionsLoading || creditLoading || inventoryLoading || targetsLoading || !todayStats) && !isOffline;
   
   // Define handleRefresh BEFORE it's used in useEffect to avoid TDZ error
   const handleRefresh = async () => {
@@ -255,7 +229,6 @@ export default function IndustryDashboard() {
       // Trigger refetch for all data hooks simultaneously
       await Promise.all([
         refetchTransactions(),
-        refetchExpenses(),
         refetchCredit(),
         refetchInventory(),
         refetchTargets()
@@ -308,9 +281,8 @@ export default function IndustryDashboard() {
       effectiveDailyTarget,
       businessSettings: business?.settings,
       transactionsCount: safeTransactions.length,
-      expensesCount: safeExpenses.length
     });
-  }, [business, businessId, businessDailyTarget, signupDailyTarget, effectiveDailyTarget, safeTransactions.length, safeExpenses.length]);
+  }, [business, businessId, businessDailyTarget, signupDailyTarget, effectiveDailyTarget, safeTransactions.length]);
   
   // Add real-time BuzzInsights updates when data changes
   useEffect(() => {
@@ -372,7 +344,7 @@ export default function IndustryDashboard() {
 
   useEffect(() => {
     // Only calculate stats when data is ready and business context is loaded
-    if (!businessId || transactionsLoading || expensesLoading) {
+    if (!businessId || transactionsLoading) {
       return;
     }
 
@@ -387,16 +359,8 @@ export default function IndustryDashboard() {
       })
       .reduce((sum: number, t: Transaction) => sum + t.amount, 0);
 
-    const todayExpenses = safeExpenses
-      .filter((e: Expense) => {
-        const expenseDate = new Date(e.expense_date);
-        expenseDate.setHours(0, 0, 0, 0);
-        return expenseDate.getTime() === today.getTime();
-      })
-      .reduce((sum: number, e: Expense) => sum + e.amount, 0);
-
-    setTodayStats({ sales: todaySales, expenses: todayExpenses });
-  }, [businessId, safeTransactions, safeExpenses, transactionsLoading, expensesLoading]);
+    setTodayStats({ sales: todaySales });
+  }, [businessId, safeTransactions, transactionsLoading]);
   
   // CASE 1: Auth is still initializing — show loading skeleton
   if (authLoading) {
@@ -475,7 +439,7 @@ export default function IndustryDashboard() {
     showSuccess('Service updated successfully!');
   };
 
-  const todayProfit = (todayStats?.sales || 0) - (todayStats?.expenses || 0);
+  const todayProfit = todayStats?.sales || 0;
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
@@ -549,8 +513,8 @@ export default function IndustryDashboard() {
                   transactions={safeTransactions}
                   cashData={{
                     todayIn: todayStats?.sales || 0,
-                    todayOut: todayStats?.expenses || 0,
-                    profit: (todayStats?.sales || 0) - (todayStats?.expenses || 0)
+                    todayOut: 0,
+                    profit: todayStats?.sales || 0
                   }}
                   inventoryData={{
                     totalItems: safeInventory ? safeInventory.length : 0,

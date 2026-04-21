@@ -14,12 +14,6 @@ export {
   type UseTransactionsTanStackReturn 
 } from './useTransactionsTanStack';
 
-export { 
-  useExpensesTanStack, 
-  type Expense, 
-  type UseExpensesTanStackProps, 
-  type UseExpensesTanStackReturn 
-} from './useExpensesTanStack';
 
 export { 
   useCreditTanStack, 

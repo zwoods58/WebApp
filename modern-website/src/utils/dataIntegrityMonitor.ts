@@ -7,7 +7,6 @@ interface DataIntegrityReport {
   duplicateBusinesses: number;
   orphanedData: {
     transactions: number;
-    expenses: number;
     inventory: number;
     credit: number;
   };
@@ -51,12 +50,10 @@ export class DataIntegrityMonitor {
       // Check for orphaned data (data without valid user/business associations)
       const [
         { data: transactionData },
-        { data: expenseData },
         { data: inventoryData },
         { data: creditData }
       ] = await Promise.all([
         supabase.from('transactions').select('id', { count: 'exact', head: true }),
-        supabase.from('expenses').select('id', { count: 'exact', head: true }),
         supabase.from('inventory').select('id', { count: 'exact', head: true }),
         supabase.from('credit').select('id', { count: 'exact', head: true })
       ]);
@@ -68,7 +65,6 @@ export class DataIntegrityMonitor {
         duplicateBusinesses,
         orphanedData: {
           transactions: transactionData?.length || 0,
-          expenses: expenseData?.length || 0,
           inventory: inventoryData?.length || 0,
           credit: creditData?.length || 0
         },

@@ -25,7 +25,6 @@ import html2canvas from 'html2canvas';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { 
   useTransactionsTanStack, 
-  useExpensesTanStack, 
   useCreditTanStack, 
   useInventoryTanStack, 
   useServicesTanStack 
@@ -50,13 +49,12 @@ export default function ReportsPage() {
   // Use TanStack Query hooks for data
   const { business } = useSupabaseAuth();
   const { data: transactions } = useTransactionsTanStack({ businessId: business?.id, industry });
-  const { data: expenses } = useExpensesTanStack({ businessId: business?.id, industry });
   const { data: credit } = useCreditTanStack({ businessId: business?.id, industry });
-  const { inventory } = useInventoryTanStack();
+  const { data: inventory } = useInventoryTanStack();
   const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
   
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
-  const [selectedReport, setSelectedReport] = useState<'overview' | 'sales' | 'expenses' | 'inventory' | 'services' | 'customers' | 'daily'>('overview');
+  const [selectedReport, setSelectedReport] = useState<'overview' | 'sales' | 'inventory' | 'services' | 'customers' | 'daily'>('overview');
   const [dailyHistory, setDailyHistory] = useState<any[]>([]);
 
   // Fetch daily sales history
@@ -74,13 +72,9 @@ export default function ReportsPage() {
     const periodTransactions = transactions.filter(t => 
       new Date(t.transaction_date || t.created_at) >= periodStart
     );
-    const periodExpenses = expenses.filter((e: any) => 
-      new Date(e.expense_date) >= periodStart
-    );
-    
     const totalRevenue = periodTransactions.reduce((sum: number, t: any) => sum + t.amount, 0);
-    const totalExpenses = periodExpenses.reduce((sum: number, e: any) => sum + e.amount, 0);
-    const netProfit = totalRevenue - totalExpenses;
+    const totalExpenses = 0;
+    const netProfit = totalRevenue;
     const totalTransactions = periodTransactions.length;
     
     return {
@@ -523,13 +517,6 @@ export default function ReportsPage() {
           { label: 'Transactions', value: transactions.length.toString(), color: '#8b5cf6' }
         ]);
         
-        // Expenses section
-        const totalExpenses = expenses.reduce((sum: number, e: any) => sum + Number(e.amount), 0);
-        drawSection('💸 EXPENSES', [
-          { label: 'Total Expenses', value: formatCurrency(totalExpenses, country), color: '#ef4444' },
-          { label: 'Number of Expenses', value: expenses.length.toString(), color: '#6b7280' },
-          { label: 'Average Expense', value: formatCurrency(totalExpenses / expenses.length, country), color: '#f59e0b' }
-        ]);
         
         // Industry-specific section
         if (servicesData) {
@@ -666,7 +653,6 @@ export default function ReportsPage() {
             {[
               { id: 'overview', label: t('reports.overview', 'Overview'), icon: BarChart3 },
               { id: 'sales', label: t('reports.sales', 'Sales'), icon: TrendingUp },
-              { id: 'expenses', label: t('reports.expenses', 'Expenses'), icon: TrendingDown },
               { id: 'inventory', label: t('reports.inventory', 'Inventory'), icon: Package },
               { id: 'services', label: t('reports.services', 'Services'), icon: Star },
               { id: 'customers', label: t('reports.customers', 'Customers'), icon: Users },
@@ -724,22 +710,6 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              {/* Expenses Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <TrendingDown className="text-red-600" size={16} />
-                    {t('reports.total_expenses', 'Total Expenses')}
-                  </div>
-                  <div className="flex items-center gap-1 text-red-600">
-                    <ArrowDownRight size={16} />
-                    <span className="text-xs font-medium">+8%</span>
-                  </div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(overviewStats.totalExpenses, country)}
-                </div>
-              </div>
 
               {/* Net Profit Card */}
               <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -998,32 +968,6 @@ export default function ReportsPage() {
             </div>
           )}
 
-          {selectedReport === 'expenses' && (
-            <div className="space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">{t('reports.expenses_breakdown', 'Expenses Breakdown')}</h3>
-                <div className="text-2xl font-bold text-red-600 mb-1">
-                  {formatCurrency(overviewStats.totalExpenses, country)}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {t('reports.total_expenses_period', 'Total expenses this period')}
-                </div>
-              </div>
-
-              {/* Expense Categories */}
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">{t('reports.expense_categories', 'Expense Categories')}</h3>
-                <div className="space-y-2">
-                  {expenses.slice(0, 5).map((expense: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">{expense.category || 'Other'}</span>
-                      <span className="text-sm font-medium">{formatCurrency(expense.amount, country)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
 
           {selectedReport === 'daily' && (
             <div className="space-y-4">

@@ -6,7 +6,6 @@ export type RateLimitType =
   | 'pin_reset_complete'
   | 'forgot_pin_phone'
   | 'forgot_pin_answers'
-  | 'expenses'
   | 'transactions'
   | 'inventory'
   | 'services'
@@ -76,12 +75,7 @@ export const DEFAULT_RATE_LIMITS: Record<RateLimitType, RateLimitConfig> = {
     progressive: true,
     lockoutSeconds: [0, 60, 300, 900],
   },
-  expenses: {
-    maxAttempts: 1000,
-    windowSeconds: 60,
-    progressive: false,
-  },
-  transactions: {
+    transactions: {
     maxAttempts: 1000,
     windowSeconds: 60,
     progressive: false,

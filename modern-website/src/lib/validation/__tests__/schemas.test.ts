@@ -6,7 +6,6 @@ import {
   pinVerificationSchema,
   phoneLookupSchema,
   transactionSchema,
-  expenseSchema,
   beehiveActionSchema,
   syncOperationSchema
 } from '../schemas';
@@ -280,45 +279,6 @@ describe('Transaction Schema', () => {
   });
 });
 
-describe('Expense Schema', () => {
-  const validExpense = {
-    business_id: '123e4567-e89b-12d3-a456-426614174000',
-    industry: 'retail',
-    amount: 500.00,
-    category: 'supplies',
-    description: 'Office supplies',
-    vendor_name: 'Office Depot',
-    payment_method: 'bank' as const,
-    expense_date: new Date().toISOString()
-  };
-
-  it('should accept valid expense data', () => {
-    const result = expenseSchema.safeParse(validExpense);
-    expect(result.success).toBe(true);
-  });
-
-  it('should reject negative amount', () => {
-    const invalidData = {
-      ...validExpense,
-      amount: -50
-    };
-
-    const result = expenseSchema.safeParse(invalidData);
-    expect(result.success).toBe(false);
-  });
-
-  it('should accept minimal required fields', () => {
-    const minimalData = {
-      business_id: '123e4567-e89b-12d3-a456-426614174000',
-      industry: 'retail',
-      amount: 500.00,
-      category: 'supplies'
-    };
-
-    const result = expenseSchema.safeParse(minimalData);
-    expect(result.success).toBe(true);
-  });
-});
 
 describe('Beehive Action Schema', () => {
   it('should accept valid create action', () => {
