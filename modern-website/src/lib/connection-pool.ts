@@ -3,7 +3,7 @@
 // Manages database connections for 50,000 user scaling
 // =====================================================
 
-import { supabase, supabaseAdmin } from './supabase';
+import { supabase } from './supabase';
 
 export interface ConnectionPoolConfig {
   maxConnections: number;
@@ -70,8 +70,10 @@ class ConnectionPool {
   }
 
   private createConnection() {
+    // Use server client for connection pool (bypasses RLS)
+    const { createServerClient } = require('./supabase');
     return {
-      client: supabase,
+      client: createServerClient(),
       created: Date.now(),
       lastUsed: Date.now(),
       inUse: false,
@@ -250,10 +252,10 @@ class ConnectionPool {
   }
 }
 
-// Singleton instances
+// Singleton instances - INCREASED to fix connection exhaustion
 export const userConnectionPool = new ConnectionPool({
-  maxConnections: 20,
-  minConnections: 5,
+  maxConnections: 50,        // INCREASED: 20 → 50
+  minConnections: 10,       // INCREASED: 5 → 10
   connectionTimeout: 10000,
   idleTimeout: 30000,
   maxLifetime: 1800000,
@@ -262,8 +264,8 @@ export const userConnectionPool = new ConnectionPool({
 });
 
 export const adminConnectionPool = new ConnectionPool({
-  maxConnections: 10,
-  minConnections: 2,
+  maxConnections: 25,       // INCREASED: 10 → 25
+  minConnections: 5,        // KEPT: 5 is sufficient for admin
   connectionTimeout: 15000,
   idleTimeout: 60000,
   maxLifetime: 3600000, // 1 hour for admin

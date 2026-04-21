@@ -116,54 +116,6 @@ async function transactionHandler(request: NextRequest) {
       .select()
       .single();
 
-    // WORKAROUND: Handle foreign key constraint issue
-    if (error && error.code === '42P01' && error.message.includes('businesses')) {
-      console.log('🔧 Detected FK constraint issue, attempting workaround...');
-      
-      // Try inserting without business_id first, then update
-      const { data: tempData, error: tempError } = await supabaseAdmin
-        .from('transactions')
-        .insert({
-          type,
-          industry,
-          amount,
-          category,
-          description,
-          customer_name,
-          payment_method,
-          transaction_date,
-          currency,
-          metadata
-        })
-        .select()
-        .single();
-      
-      if (tempError) {
-        console.error('Workaround failed:', tempError);
-        return NextResponse.json(
-          { error: `Transaction failed: ${tempError.message}` },
-          { status: 500 }
-        );
-      }
-      
-      // Update with business_id if insert succeeded
-      const { data: updatedData, error: updateError } = await supabaseAdmin
-        .from('transactions')
-        .update({ business_id })
-        .eq('id', tempData.id)
-        .select()
-        .single();
-      
-      if (updateError) {
-        console.warn('Business ID update failed, but transaction created:', updateError);
-        data = tempData; // Return the transaction without business_id
-        error = null;
-      } else {
-        data = updatedData;
-        error = null;
-      }
-    }
-
     if (error) {
       console.error('Transaction insert error:', error);
       return NextResponse.json(

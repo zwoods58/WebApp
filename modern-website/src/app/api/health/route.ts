@@ -419,7 +419,7 @@ function getHealthRecommendations(data: {
 
   // Connection stats recommendations
   if (data.connectionStats) {
-    const { failedConnections, averageResponseTime } = data.connectionStats.performance;
+    const { failedConnections, averageResponseTime } = data.connectionStats;
     
     if (failedConnections > 5) {
       recommendations.push('Connection failures detected - check database connectivity');
