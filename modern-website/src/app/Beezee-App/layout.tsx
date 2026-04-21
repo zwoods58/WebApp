@@ -1,5 +1,4 @@
 import { metadata } from './metadata';
-import BeezeeLayoutClient from './layout-client';
 import { QueryProvider } from '@/providers/QueryProvider';
 
 export default function BeezeeLayout({
@@ -9,7 +8,7 @@ export default function BeezeeLayout({
 }) {
   return (
     <QueryProvider>
-      <BeezeeLayoutClient>{children}</BeezeeLayoutClient>
+      {children}
     </QueryProvider>
   );
 }

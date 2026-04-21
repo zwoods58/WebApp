@@ -7,8 +7,6 @@ import React from 'react';
 import BeezeeHeader from '@/components/beezee/BeezeeHeader';
 import BeezeeHero from '@/components/beezee/BeezeeHero';
 import BeezeeProcessSection from '@/components/beezee/BeezeeProcessSection';
-import PartnershipSection from '@/components/beezee/PartnershipSection';
-import BeezeePricing from '@/components/beezee/BeezeePricing';
 import GlobalPulseCTA from '@/components/beezee/GlobalPulseCTA';
 import GhostFooter from '@/components/beezee/GhostFooter';
 import DotScrollIndicator from '@/components/universal/DotScrollIndicator';
@@ -20,8 +18,6 @@ export default function BeezeeLanding() {
       <BeezeeHeader />
       <BeezeeHero />
       <BeezeeProcessSection />
-      <PartnershipSection />
-      <BeezeePricing />
       <GlobalPulseCTA />
       <GhostFooter />
       <DotScrollIndicator />
