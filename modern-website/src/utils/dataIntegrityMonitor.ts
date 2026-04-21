@@ -53,7 +53,7 @@ export class DataIntegrityMonitor {
         { data: inventoryData },
         { data: creditData }
       ] = await Promise.all([
-        supabase.from('transactions').select('id', { count: 'exact', head: true }),
+        supabase.from('business_transactions').select('id', { count: 'exact', head: true }),
         supabase.from('inventory').select('id', { count: 'exact', head: true }),
         supabase.from('credit').select('id', { count: 'exact', head: true })
       ]);

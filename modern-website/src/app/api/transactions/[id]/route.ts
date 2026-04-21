@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     const updates = await req.json();
     const { data, error } = await supabaseAdmin
-      .from('transactions')
+      .from('business_transactions')
       .update(updates)
       .eq('id', params.id)
       .select()
@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { error } = await supabaseAdmin
-      .from('transactions')
+      .from('business_transactions')
       .delete()
       .eq('id', params.id);
 

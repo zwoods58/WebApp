@@ -16,7 +16,7 @@ export class OptimizedQueries {
     limit: number = 50
   ) {
     let query = supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('*')
       .eq('business_id', businessId)
       .order('transaction_date', { ascending: false })
@@ -48,7 +48,7 @@ export class OptimizedQueries {
       const batch = transactions.slice(i, i + batchSize);
       
       const { data, error } = await supabase
-        .from('transactions')
+        .from('business_transactions')
         .insert(batch)
         .select();
       
@@ -211,7 +211,7 @@ export class OptimizedQueries {
     limit: number = 20
   ) {
     const { data, error } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('*')
       .eq('business_id', businessId)
       .ilike('customer_name', `%${customerName}%`)
@@ -231,7 +231,7 @@ export class OptimizedQueries {
     limit: number = 100
   ) {
     const { data, error } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('*')
       .eq('business_id', businessId)
       .gte('transaction_date', startDate)

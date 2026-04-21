@@ -35,10 +35,10 @@ async function syncHandler(request: Request) {
         let result;
         
         switch (op.table) {
-          case 'transactions':
+          case 'business_transactions':
             if (op.type === 'CREATE') {
               const { data, error } = await supabase
-                .from('transactions')
+                .from('business_transactions')
                 .insert(op.data)
                 .select()
                 .single();
@@ -47,7 +47,7 @@ async function syncHandler(request: Request) {
               result = data;
             } else if (op.type === 'UPDATE') {
               const { data, error } = await supabase
-                .from('transactions')
+                .from('business_transactions')
                 .update(op.data)
                 .eq('id', op.entityId)
                 .select()
@@ -57,7 +57,7 @@ async function syncHandler(request: Request) {
               result = data;
             } else if (op.type === 'DELETE') {
               const { error } = await supabase
-                .from('transactions')
+                .from('business_transactions')
                 .delete()
                 .eq('id', op.entityId);
               
@@ -314,7 +314,7 @@ async function syncHandler(request: Request) {
 
 // Export with user-based rate limiting for sync operations
 export const POST = withRateLimit(syncHandler, {
-  type: 'expenses', // Use expenses as the base type for sync operations (1000/min)
+  type: 'transactions', // Use transactions as the base type for sync operations (1000/min)
   getIdentifier: async (body: any) => {
     // Extract business_id from the first operation if available
     if (body.operations && body.operations.length > 0) {

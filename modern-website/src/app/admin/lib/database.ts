@@ -37,7 +37,7 @@ export async function getActiveUsers(days: number = 30): Promise<number> {
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
     const { data, error } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('business_id')
       .gte('transaction_date', cutoffDate.toISOString().split('T')[0]);
 
@@ -318,7 +318,7 @@ export async function getConversionMetrics(): Promise<ConversionMetrics> {
     if (newUserError) throw newUserError;
 
     const { data: activeUsers, error: activeError } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('business_id, transaction_date')
       .gte('transaction_date', thirtyDaysAgo.toISOString());
 

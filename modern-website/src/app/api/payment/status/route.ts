@@ -29,22 +29,22 @@ export async function GET(request: Request) {
       console.error('Database error checking transaction:', dbError);
       
       // Note: Kyshi functionality has been removed
-      // Transaction lookup in main transactions table only
+      // Transaction lookup in main business_transactions table only
       const { data: transaction, error } = await supabaseAdmin
-        .from('transactions')
+        .from('business_transactions')
         .select('*')
         .eq('reference', reference)
         .single();
       
       if (!error && transaction) {
-        console.log('Found transaction in main transactions table');
+        console.log('Found transaction in main business_transactions table');
         return NextResponse.json({
           status: transaction.status === 'success' ? 'success' : transaction.status,
           paid: transaction.status === 'success',
           amount: transaction.amount,
           currency: transaction.currency,
           reference: reference,
-          source: 'transactions'
+          source: 'business_transactions'
         });
       }
       
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
         reference: transaction.reference,
         paidAt: transaction.paid_at,
         customerName: transaction.customer_name,
-        source: 'transactions'
+        source: 'business_transactions'
       });
     }
     
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     
     // Update transaction status
     const { data: transaction, error } = await supabaseAdmin
-      .from('transactions')
+      .from('business_transactions')
       .update({
         status: status.toUpperCase(),
         amount: amount || undefined,

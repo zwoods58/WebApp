@@ -58,7 +58,7 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
       if (!businessId) return [];
       
       const { data, error } = await supabase
-        .from('transactions')
+        .from('business_transactions')
         .select('*')
         .eq('business_id', businessId)
         .order('created_at', { ascending: false });
@@ -130,7 +130,7 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
   const updateTransactionMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Transaction> }) => {
       const { data, error } = await supabase
-        .from('transactions')
+        .from('business_transactions')
         .update(updates)
         .eq('id', id)
         .select()

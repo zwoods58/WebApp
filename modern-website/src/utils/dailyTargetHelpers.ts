@@ -52,7 +52,7 @@ export async function getTodaySales(businessId: string, country: string): Promis
     const today = getDateInTimezone(country);
     
     const { data, error } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('amount')
       .eq('business_id', businessId)
       .eq('transaction_date', today);
@@ -72,7 +72,7 @@ export async function getTodaySales(businessId: string, country: string): Promis
 export async function getSalesForDate(businessId: string, date: string): Promise<number> {
   try {
     const { data, error } = await supabase
-      .from('transactions')
+      .from('business_transactions')
       .select('amount')
       .eq('business_id', businessId)
       .eq('transaction_date', date);
