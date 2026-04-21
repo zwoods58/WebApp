@@ -10,9 +10,9 @@ const nextConfig: NextConfig = {
   // Force all pages to be dynamically rendered
   generateEtags: false,
   
-  // Enable optimizations for faster loading
+  // Enable optimizations for faster loading (keep console for debugging)
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: false,
   },
   
   // Optimize for production
@@ -211,4 +211,31 @@ export default withPWA({
   disable: process.env.NODE_ENV === 'development',
   skipWaiting: true,
   clientsClaim: true,
+  register: true,
+  scope: '/',
+  sw: 'sw.js',
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts-cache',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 365 days
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|css|js)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-resources-cache',
+        expiration: {
+          maxEntries: 60,
+          maxAgeSeconds: 24 * 60 * 60 // 24 hours
+        }
+      }
+    }
+  ]
 })(nextConfig as any);
