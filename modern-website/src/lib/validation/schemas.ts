@@ -81,12 +81,11 @@ export const phoneLookupSchema = z.object({
 });
 
 /**
- * Transaction validation schema
+ * Unified Transaction validation schema for both money_in and money_out
  */
 export const transactionSchema = z.object({
   business_id: z.string().uuid('Invalid business ID'),
 
-  // FIX 1: Add type field â was completely missing
   type: z.enum(['money_in', 'money_out']).default('money_in'),
 
   industry: z.string().min(2).max(50),
@@ -96,7 +95,6 @@ export const transactionSchema = z.object({
     .max(999999999.99, 'Amount is too large')
     .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
 
-  // FIX 3: Make category optional so partial forms don't fail
   category: z.string()
     .min(2, 'Category must be at least 2 characters')
     .max(50, 'Category must not exceed 50 characters')
@@ -106,6 +104,7 @@ export const transactionSchema = z.object({
     .max(500, 'Description must not exceed 500 characters')
     .optional(),
 
+  // Money in fields
   customer_name: z.string()
     .max(100, 'Customer name must not exceed 100 characters')
     .optional(),
@@ -114,10 +113,18 @@ export const transactionSchema = z.object({
     .max(20, 'Customer phone must not exceed 20 characters')
     .optional(),
 
+  // Money out fields (from expenses)
+  vendor_name: z.string()
+    .max(100, 'Vendor name must not exceed 100 characters')
+    .optional(),
+
+  supplier_phone: z.string()
+    .max(20, 'Supplier phone must not exceed 20 characters')
+    .optional(),
+
   payment_method: z.enum(['cash', 'mpesa', 'bank', 'card', 'credit', 'other'])
     .optional(),
 
-  // FIX 2: Accept plain date strings like "2024-01-15" as well as full ISO datetime
   transaction_date: z.union([
     z.string().datetime(),
     z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
@@ -125,39 +132,25 @@ export const transactionSchema = z.object({
   ]).optional(),
 
   metadata: z.record(z.string(), z.any()).optional()
+}).refine((data) => {
+  // Validation based on transaction type
+  if (data.type === 'money_in') {
+    // For money_in, customer_name is preferred over vendor_name
+    if (!data.customer_name && !data.description) {
+      return false;
+    }
+  } else if (data.type === 'money_out') {
+    // For money_out, vendor_name is preferred over customer_name
+    if (!data.vendor_name && !data.description) {
+      return false;
+    }
+  }
+  return true;
+}, {
+  message: "Transaction must have appropriate fields based on type",
+  path: ["type"]
 });
 
-/**
- * Expense validation schema
- */
-export const expenseSchema = z.object({
-  business_id: z.string().uuid('Invalid business ID'),
-  industry: z.string().min(2).max(50),
-  amount: z.number()
-    .positive('Amount must be positive')
-    .max(999999999.99, 'Amount is too large')
-    .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
-  category: z.string()
-    .min(2, 'Category must be at least 2 characters')
-    .max(50, 'Category must not exceed 50 characters'),
-  description: z.string()
-    .max(500, 'Description must not exceed 500 characters')
-    .optional(),
-  vendor_name: z.string()
-    .max(100, 'Vendor name must not exceed 100 characters')
-    .optional(),
-  supplier_phone: z.string()
-    .max(20, 'Supplier phone must not exceed 20 characters')
-    .optional(),
-  payment_method: z.enum(['cash', 'mpesa', 'bank', 'card', 'credit', 'other'])
-    .optional(),
-  expense_date: z.union([
-    z.string().datetime('Invalid date format'),
-    z.date()
-  ]).optional(),
-  metadata: z.record(z.string(), z.any())
-    .optional()
-});
 
 /**
  * Beehive action validation schema

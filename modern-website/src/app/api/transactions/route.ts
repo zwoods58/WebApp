@@ -7,24 +7,41 @@ import { sanitizeObject } from '@/lib/validation/sanitizer';
 import { withRateLimit } from '@/middleware/rate-limit-middleware';
 import { createServerClient, getUserFromToken } from '@/lib/supabase';
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
 async function transactionHandler(request: NextRequest) {
   try {
-    console.log('API Route - POST request received');
-    
-    // Create server client for this request
-    const supabaseAdmin = createServerClient();
+    console.log('🚀 Unified Transaction API - POST request received');
     
     const body = await request.json();
+    console.log('📥 Transaction data received:', { type: body.type, amount: body.amount, business_id: body.business_id });
 
-    // Validate with Zod schema
+    // Validate with unified Zod schema
     const validation = validateRequest(transactionSchema, body);
     if (!validation.success) {
+      console.error('❌ Validation failed:', validation.error);
       return handleValidationError(validation.error);
     }
 
     // Sanitize validated data
     const sanitizedData = sanitizeObject(validation.data);
-    const { business_id, type, industry, amount, category, description, customer_name, payment_method, transaction_date, metadata } = sanitizedData;
+    const { 
+      business_id, 
+      type, 
+      industry, 
+      amount, 
+      category, 
+      description, 
+      customer_name,
+      customer_phone,
+      vendor_name,
+      supplier_phone,
+      payment_method, 
+      transaction_date, 
+      metadata 
+    } = sanitizedData;
 
     // Validate business_id exists
     if (!business_id) {
@@ -53,7 +70,7 @@ async function transactionHandler(request: NextRequest) {
       );
     }
 
-    console.log('API Route - Validated transaction data:', { business_id, industry, amount, category, userId: user.id });
+    console.log('✅ Authenticated user:', { userId: user.id, business_id });
 
     // Fetch business to get country for currency derivation and verify ownership
     const { data: business, error: businessError } = await supabaseAdmin
@@ -63,16 +80,16 @@ async function transactionHandler(request: NextRequest) {
       .single();
 
     if (businessError || !business) {
-      console.error('Failed to fetch business:', businessError);
+      console.error('❌ Failed to fetch business:', businessError);
       return NextResponse.json(
-        { error: 'Business not found' },
+        { error: 'Business not found', details: businessError?.message },
         { status: 404 }
       );
     }
 
     // Verify user owns this business
     if (business.supabase_user_id !== user.id) {
-      console.error('User does not own this business:', { userId: user.id, businessUserId: business.supabase_user_id });
+      console.error('❌ User does not own this business:', { userId: user.id, businessUserId: business.supabase_user_id });
       return NextResponse.json(
         { error: 'Access denied: You do not own this business' },
         { status: 403 }
@@ -81,55 +98,70 @@ async function transactionHandler(request: NextRequest) {
 
     // Derive currency from country code
     const currency = getCurrency(business.country);
-    console.log('🔧 Derived currency from country:', { country: business.country, currency });
+    console.log('� Derived currency:', { country: business.country, currency });
 
-    console.log('🔧 About to insert transaction with data:', {
+    // Prepare transaction data based on type
+    const transactionData: any = {
       business_id,
       type,
       industry,
       amount,
+      currency,
       category,
       description,
-      customer_name,
       payment_method,
-      transaction_date,
-      currency,
-      metadata
+      transaction_date: transaction_date || new Date().toISOString(),
+      metadata: metadata || {}
+    };
+
+    // Add type-specific fields
+    if (type === 'money_in') {
+      if (customer_name) transactionData.customer_name = customer_name;
+      if (customer_phone) transactionData.customer_phone = customer_phone;
+    } else if (type === 'money_out') {
+      if (vendor_name) transactionData.vendor_name = vendor_name;
+      if (supplier_phone) transactionData.supplier_phone = supplier_phone;
+    }
+
+    console.log('🔧 About to insert unified transaction:', {
+      ...transactionData,
+      userId: user.id
     });
 
-    // Insert transaction using admin client (bypasses RLS)
+    // Insert into business_transactions table using admin client
     let { data, error } = await supabaseAdmin
-      .from('transactions')
-      .insert({
-        business_id,
-        type,
-        industry,
-        amount,
-        category,
-        description,
-        customer_name,
-        payment_method,
-        transaction_date,
-        currency,
-        metadata
-      })
+      .from('business_transactions')
+      .insert(transactionData)
       .select()
       .single();
 
     if (error) {
-      console.error('Transaction insert error:', error);
+      console.error('❌ Transaction insert error:', error);
       return NextResponse.json(
-        { error: error.message },
+        { 
+          error: 'Failed to create transaction',
+          details: error.message,
+          code: error.code,
+          hint: error.hint
+        },
         { status: 500 }
       );
     }
 
-    console.log('✅ API Route - Transaction inserted successfully:', data);
-    return NextResponse.json({ data }, { status: 201 });
+    console.log('✅ Unified transaction created successfully:', data);
+    return NextResponse.json({ 
+      success: true,
+      data,
+      message: `${type === 'money_in' ? 'Money in' : 'Money out'} transaction recorded successfully`
+    }, { status: 201 });
+
   } catch (error) {
-    console.error('API error:', error);
+    console.error('💥 API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -139,7 +171,7 @@ async function transactionHandler(request: NextRequest) {
 export const POST = withRateLimit(transactionHandler, {
   type: 'transactions',
   getIdentifier: async (body: any) => {
-    return body.business_id; // Use business_id as user identifier
+    return body.business_id;
   },
   isProgressive: false,
 });

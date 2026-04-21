@@ -6,7 +6,7 @@ export interface StoredTransaction {
   id: string;
   business_id: string;
   amount: number;
-  type: 'sale' | 'expense' | 'payment';
+  type: 'money_in' | 'money_out';
   description?: string;
   customer_id?: string;
   date: string;
@@ -51,15 +51,6 @@ export interface StoredCredit {
   _deletedAt?: number;
 }
 
-export interface StoredExpense {
-  id: string;
-  business_id: string;
-  amount: number;
-  category?: string;
-  description?: string;
-  expense_date: string;
-  syncStatus: 'synced' | 'pending' | 'conflict';
-}
 
 export interface StoredTarget {
   id: string;
@@ -202,7 +193,7 @@ export interface StoredBeehiveComment {
 export interface QueuedOperation {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
-  table: 'transactions' | 'inventory' | 'credit' | 'expenses' | 'services' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
+  table: 'transactions' | 'inventory' | 'credit' | 'services' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
   entityId?: string;
   data: any;
   timestamp: number;
@@ -219,7 +210,6 @@ export class BeezeeDatabase extends Dexie {
   inventory!: Table<StoredInventory, string>;
   credit!: Table<StoredCredit, string>;
   credit_items!: Table<StoredCreditItem, string>;
-  expenses!: Table<StoredExpense, string>;
   targets!: Table<StoredTarget, string>;
   services!: Table<StoredService, string>;
   appointments!: Table<StoredAppointment, string>;
@@ -246,7 +236,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
@@ -259,7 +248,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
@@ -293,7 +281,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',  // ✅ Changed name to item_name
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
@@ -345,7 +332,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
@@ -359,7 +345,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
@@ -394,7 +379,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       appointments: 'id, business_id, appointment_date, status, syncStatus',
@@ -407,7 +391,6 @@ export class BeezeeDatabase extends Dexie {
       transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       appointments: 'id, business_id, appointment_date, start_time, end_time, status, service_id, syncStatus',
@@ -421,7 +404,6 @@ export class BeezeeDatabase extends Dexie {
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       credit_items: 'id, credit_id, item_name, quantity, unit_price, total_amount, syncStatus',
-      expenses: 'id, business_id, expense_date, category, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
       services: 'id, business_id, service_name, syncStatus',
       appointments: 'id, business_id, appointment_date, start_time, end_time, status, service_id, syncStatus',
@@ -535,18 +517,7 @@ export class BeezeeDatabase extends Dexie {
     }
   }
 
-  /**
-   * Get expenses with cursor pagination
-   */
-  async getExpensesCursor(businessId: string, cursor?: string, limit: number = 50) {
-    try {
-      return await optimizedQueries.getExpensesCursor(businessId, cursor, limit);
-    } catch (error) {
-      console.error('Failed to get expenses with cursor:', error);
-      return { data: [], nextCursor: null, error };
-    }
-  }
-
+  
   /**
    * Get appointments with cursor pagination
    */

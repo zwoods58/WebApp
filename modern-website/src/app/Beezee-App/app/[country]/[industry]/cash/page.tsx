@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { formatCurrency, getCurrency } from '@/utils/currency';
-import { useTransactionsTanStack, useExpensesTanStack, useCreditTanStack, useCreditItems } from '@/hooks/index';
+import { useTransactionsTanStack, useCreditTanStack, useCreditItems } from '@/hooks/index';
 import { CreditCustomer } from '@/app/Beezee-App/services/creditService';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
@@ -53,34 +53,25 @@ export default function CashPage() {
   // ✅ STEP 3: Toast hook
   const { showSuccess, showError } = useToast();
 
-  // ✅ STEP 4: Data hooks - ALWAYS called
-  const transactionsHook = useTransactionsTanStack({
-    businessId: businessId,
-    industry: business?.industry || industry
-  });
-  const expensesHook = useExpensesTanStack({
-    businessId: businessId,
-    industry: business?.industry || industry
+  const { data: transactions, isLoading, addTransaction, refetch: refetchTransactions } = useTransactionsTanStack({
+    industry,
+    businessId
   });
 
+  // Filter transactions by type for display purposes
+  const moneyInTransactions = transactions?.filter(t => t.type === 'money_in') || [];
+  const moneyOutTransactions = transactions?.filter(t => t.type === 'money_out') || [];
+
   // ✅ STEP 5: Safely extract data with fallbacks
-  const transactions = transactionsHook?.data || [];
-  const expenses = expensesHook?.data || [];
-  const isTransactionsOffline = transactionsHook?.isOffline || false;
-  const isExpensesOffline = expensesHook?.isOffline || false;
-  const isTransactionsPending = transactionsHook?.isAdding || false;
-  const isExpensesPending = expensesHook?.isLoading || false;
-  const addTransaction = transactionsHook?.addTransaction || (() => Promise.resolve());
-  const addExpense = expensesHook?.addExpense || (() => Promise.resolve());
-  const refetchTransactions = transactionsHook?.refetch || (() => Promise.resolve());
-  const refetchExpenses = expensesHook?.refetch || (() => Promise.resolve());
+  const isTransactionsOffline = isLoading || false;
+  const isTransactionsPending = isLoading || false;
 
   // Credit data extraction
   const { data: credit, addCredit, updateCredit } = creditHook;
   const addCreditItem = creditItemsHook?.addCreditItem || (() => Promise.resolve());
 
   // ✅ STEP 6: Derived state
-  const isOffline = isTransactionsOffline || isExpensesOffline || isNetworkOffline;
+  const isOffline = isTransactionsOffline || isNetworkOffline;
 
   // ✅ STEP 7: useState hooks
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,18 +82,16 @@ export default function CashPage() {
   const [isAddingTransaction, setIsAddingTransaction] = useState(false);
 
   // ✅ STEP 8: Combined data for display
-  const allCashFlow = [
-    ...transactions.map((t: any) => ({ ...t, type: 'in' as const })),
-    ...expenses.map((e: any) => ({ ...e, type: 'out' as const }))
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const allCashFlow = [...moneyInTransactions, ...moneyOutTransactions].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   // ✅ STEP 9: useEffect hooks
   useEffect(() => {
     console.log('[CashPage] Business ID:', businessId);
-    console.log('[CashPage] Transactions count:', transactions.length);
-    console.log('[CashPage] Expenses count:', expenses.length);
+    console.log('[CashPage] Money In transactions count:', moneyInTransactions.length);
+    console.log('[CashPage] Money Out transactions count:', moneyOutTransactions.length);
+    console.log('[CashPage] Total transactions count:', transactions.length);
     console.log('[CashPage] Offline status:', isOffline);
-  }, [businessId, transactions.length, expenses.length, isOffline]);
+  }, [businessId, moneyInTransactions.length, moneyOutTransactions.length, transactions.length, isOffline]);
 
   // ✅ Handler: Money In
   const handleMoneyIn = async (transactionData: any) => {
@@ -169,14 +158,10 @@ export default function CashPage() {
       });
 
       // ✅ FIX: Use correct query key structure matching useTransactionsTanStack
-      // Hook registers: ['transactions', businessId, industry]
-      // So invalidating ['transactions'] invalidates all transaction queries
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['inventory'] });
 
       // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
       await refetchTransactions();
-      await refetchExpenses();
 
       showSuccess(`Money in: ${formatCurrency(transactionData.amount, country)} received successfully!`);
     } catch (error) {
@@ -192,8 +177,8 @@ export default function CashPage() {
     setIsAddingTransaction(true);
     try {
       if (!businessId) {
-        console.error('[CashPage] No business ID available for expense');
-        showError(t('alert.setup_profile_first_expenses', 'Please set up your business profile first before adding expenses.'));
+        console.error('[CashPage] No business ID available for transaction');
+        showError(t('alert.setup_profile_first_expenses', 'Please set up your business profile first before adding transactions.'));
         return;
       }
 
@@ -217,22 +202,12 @@ export default function CashPage() {
           await updateCredit(existingCredit.id, {
             amount: newTotalAmount,
             due_date: expenseData.due_date,
-            updated_at: new Date().toISOString()
-          });
-        } else {
-          const newCredit: any = await addCredit({
-            business_id: businessId,
-            customer_name: expenseData.customer_name,
-            amount: expenseData.amount,
-            due_date: expenseData.due_date,
-            notes: expenseData.description,
-            status: 'outstanding',
             industry,
             currency: getCurrency(country),
             date_given: expenseData.expense_date || new Date().toISOString().split('T')[0]
           });
 
-          creditId = newCredit?.id;
+          // creditId is already set from existingCredit.id above
 
           if (creditId) {
             await addCreditItem({
@@ -249,30 +224,34 @@ export default function CashPage() {
         queryClient.invalidateQueries({ queryKey: ['credit-items'] });
       }
 
-      const { payment_method, customer_name, due_date, ...cleanExpenseData } = expenseData;
+      // Convert expense data to transaction data with money_out type
+      const transactionData = {
+        business_id: businessId,
+        type: 'money_out' as const,
+        industry,
+        amount: expenseData.amount,
+        currency: getCurrency(country),
+        description: expenseData.description,
+        category: expenseData.category,
+        payment_method: expenseData.payment_method,
+        transaction_date: expenseData.expense_date || new Date().toISOString().split('T')[0],
+        vendor_name: expenseData.customer_name || undefined,
+        supplier_phone: expenseData.customer_phone || undefined
+      };
 
-      if (addExpense) {
-        await addExpense({
-          ...cleanExpenseData,
-          business_id: businessId,
-          industry
-        });
-      }
+      // Use unified transaction system
+      await addTransaction(transactionData);
 
-      // ✅ FIX: Use correct query key structure matching useExpensesTanStack
-      // Hook registers: ['expenses', businessId, industry]
-      // So invalidating ['expenses'] invalidates all expense queries
-      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      // ✅ FIX: Use correct query key structure matching useTransactionsTanStack
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
 
       // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
       await refetchTransactions();
-      await refetchExpenses();
 
       showSuccess(`Money out: ${formatCurrency(expenseData.amount, country)} paid successfully!`);
     } catch (error) {
-      console.error('Failed to add expense:', error);
-      showError(t('alert.failed_expense', 'Failed to add expense. Please try again.'));
+      console.error('Failed to add transaction:', error);
+      showError(t('alert.failed_expense', 'Failed to add transaction. Please try again.'));
     } finally {
       setIsAddingTransaction(false);
     }
@@ -283,23 +262,25 @@ export default function CashPage() {
     const matchesSearch = !searchTerm || (
       (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (item.customer_name && item.customer_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (item.supplier && item.supplier.toLowerCase().includes(searchTerm.toLowerCase()))
+      (item.vendor_name && item.vendor_name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    const matchesType = filterType === 'all' || item.type === filterType;
+    const matchesType = filterType === 'all' || 
+      (filterType === 'in' && item.type === 'money_in') || 
+      (filterType === 'out' && item.type === 'money_out');
     return matchesSearch && matchesType;
   });
 
   const generateCashItemText = (item: any): string => {
-    const date = item.transaction_date || item.expense_date;
+    const date = item.transaction_date;
     let text = `${t('receipt.receipt_from', 'Receipt from')} ${business?.business_name || t('business.default_name', 'My Business')}\n\n`;
     text += `${t('receipt.description', 'Description')}: ${item.description}\n`;
-    text += `${t('receipt.amount', 'Amount')}: ${item.type === 'in' ? '+' : '-'}${formatCurrency(item.amount, country)}\n`;
+    text += `${t('receipt.amount', 'Amount')}: ${item.type === 'money_in' ? '+' : '-'}${formatCurrency(item.amount, country)}\n`;
     text += `${t('receipt.date', 'Date')}: ${new Date(date).toLocaleDateString()}\n`;
-    if (item.type === 'in' && item.customer_name) {
+    if (item.type === 'money_in' && item.customer_name) {
       text += `${t('receipt.customer', 'Customer')}: ${item.customer_name}\n`;
     }
-    if (item.type === 'out' && item.supplier) {
-      text += `${t('business.suppliers', 'Supplier')}: ${item.supplier}\n`;
+    if (item.type === 'money_out' && item.vendor_name) {
+      text += `${t('business.suppliers', 'Supplier')}: ${item.vendor_name}\n`;
     }
     if (item.payment_method) {
       text += `${t('receipt.payment_method', 'Payment Method')}: ${item.payment_method}\n`;
@@ -338,10 +319,10 @@ export default function CashPage() {
 
   const today = new Date().toISOString().split('T')[0];
   const todayMoneyIn = allCashFlow
-    .filter(item => (item.transaction_date || item.expense_date) === today && item.type === 'in')
+    .filter(item => (item.transaction_date) === today && item.type === 'money_in')
     .reduce((sum, item) => sum + item.amount, 0);
   const todayMoneyOut = allCashFlow
-    .filter(item => (item.transaction_date || item.expense_date) === today && item.type === 'out')
+    .filter(item => (item.transaction_date) === today && item.type === 'money_out')
     .reduce((sum, item) => sum + item.amount, 0);
   const todayProfit = todayMoneyIn - todayMoneyOut;
 
@@ -504,9 +485,9 @@ export default function CashPage() {
                         {item.description}
                       </div>
                       <div className="flex items-center gap-4 text-xs text-[var(--text-3)]">
-                        <span>{new Date(item.transaction_date || item.expense_date).toLocaleDateString()}</span>
+                        <span>{new Date(item.transaction_date).toLocaleDateString()}</span>
                         {item.customer_name && <span>{item.customer_name}</span>}
-                        {item.supplier && <span>{item.supplier}</span>}
+                        {item.vendor_name && <span>{item.vendor_name}</span>}
                         {item.status === 'pending' && (
                           <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
                             {t('common.pending', 'Pending')}
@@ -530,7 +511,7 @@ export default function CashPage() {
                       <div className={`text-lg font-bold ${
                         item.type === 'in' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'
                       }`}>
-                        {item.type === 'in' ? '+' : '-'}{formatCurrency(item.amount, country)}
+                        {item.type === 'money_in' ? '+' : '-'}{formatCurrency(item.amount, country)}
                       </div>
 
                       <div className="flex gap-1 mt-1">

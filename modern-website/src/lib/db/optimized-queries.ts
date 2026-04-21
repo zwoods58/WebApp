@@ -85,7 +85,6 @@ export class OptimizedQueries {
     
     return {
       transactions: data?.transactions,
-      expenses: data?.expenses,
       outstandingCredit: data?.outstanding_credit,
       upcomingAppointments: data?.upcoming_appointments,
       netProfit: data?.net_profit,
@@ -107,7 +106,6 @@ export class OptimizedQueries {
     return {
       period: data?.period,
       transactions: data?.transactions,
-      expenses: data?.expenses,
       dailyBreakdown: data?.daily_breakdown,
       netProfit: data?.net_profit,
       error
@@ -140,44 +138,14 @@ export class OptimizedQueries {
     
     return {
       totalTransactions: data?.total_transactions,
-      totalExpenses: data?.total_expenses,
       totalAppointments: data?.total_appointments,
       totalCredit: data?.total_credit,
       todayActivity: data?.today_activity,
-      upcomingAppointments: data?.upcoming_appointments,
-      outstandingCredit: data?.outstanding_credit,
       error
     };
   }
   
-  /**
-   * Cursor-based pagination for expenses
-   */
-  async getExpensesCursor(
-    businessId: string,
-    cursor?: string,
-    limit: number = 50
-  ) {
-    let query = supabase
-      .from('expenses')
-      .select('*')
-      .eq('business_id', businessId)
-      .order('expense_date', { ascending: false })
-      .limit(limit);
     
-    if (cursor) {
-      query = query.lt('expense_date', cursor);
-    }
-    
-    const { data, error } = await query;
-    
-    const nextCursor = data?.length === limit 
-      ? data[data.length - 1].expense_date 
-      : null;
-    
-    return { data, nextCursor, error };
-  }
-  
   /**
    * Cursor-based pagination for appointments
    */
@@ -274,25 +242,7 @@ export class OptimizedQueries {
     return { data, error };
   }
   
-  /**
-   * Get expenses by supplier (optimized)
-   */
-  async getExpensesBySupplier(
-    businessId: string,
-    supplier: string,
-    limit: number = 20
-  ) {
-    const { data, error } = await supabase
-      .from('expenses')
-      .select('*')
-      .eq('business_id', businessId)
-      .ilike('supplier', `%${supplier}%`)
-      .order('expense_date', { ascending: false })
-      .limit(limit);
     
-    return { data, error };
-  }
-  
   /**
    * Get upcoming appointments (optimized)
    */
@@ -336,10 +286,7 @@ export class OptimizedQueries {
     const { data: txResult } = await supabase.rpc('archive_old_transactions');
     if (txResult) results.push({ type: 'transactions', archived: txResult });
     
-    // Archive expenses
-    const { data: expResult } = await supabase.rpc('archive_old_expenses');
-    if (expResult) results.push({ type: 'expenses', archived: expResult });
-    
+        
     // Archive appointments
     const { data: aptResult } = await supabase.rpc('archive_old_appointments');
     if (aptResult) results.push({ type: 'appointments', archived: aptResult });

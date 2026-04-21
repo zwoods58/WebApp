@@ -12,6 +12,8 @@ export interface Transaction {
   category?: string;
   currency?: string;
   customer_name?: string;
+  vendor_name?: string;
+  supplier_phone?: string;
   payment_method?: string;
   transaction_date: string;
   metadata?: Record<string, any>;
