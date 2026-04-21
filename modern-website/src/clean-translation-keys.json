@@ -5001,7 +5001,7 @@
       "C:\\Users\\Wesley\\Downloads\\WebApp\\WebApp-main\\modern-website\\src\\components\\universal\\_archive\\appointments\\Appointments.tsx"
     ],
     "beezee_unified_auth": [
-      "C:\\Users\\Wesley\\Downloads\\WebApp\\WebApp-main\\modern-website\\src\\contexts\\UnifiedAuthContext.tsx"
+      "C:\\Users\\Wesley\\Downloads\\WebApp\\WebApp-main\\modern-website\\src\\contexts\\SupabaseAuthContext.tsx"
     ],
     "businessId": [
       "C:\\Users\\Wesley\\Downloads\\WebApp\\WebApp-main\\modern-website\\src\\lib\\cache\\cache-integration-example.ts",

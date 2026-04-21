@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
 // Kyshi API functions removed - no longer available
 import { X } from 'lucide-react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 const PagaColors = {
   primary: '#F26522',   // Dark Orange - Official Paga color
@@ -19,7 +19,7 @@ interface NigeriaSubscriptionModalProps {
 }
 
 export default function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: NigeriaSubscriptionModalProps) {
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const amount = COUNTRY_PAYMENT_METHODS.NG.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.NG.currency;
   

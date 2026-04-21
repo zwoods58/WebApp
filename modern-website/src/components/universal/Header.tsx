@@ -5,7 +5,7 @@ import { ChevronLeft, Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop, Glo
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 import { useBusinessProfile } from '@/contexts/BusinessProfileContext';
 
@@ -19,7 +19,7 @@ export default function Header({ industry, country }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage();
   const [showLangSelector, setShowLangSelector] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { profile } = useBusinessProfile();
   const { showInfo } = useToastContext();
   

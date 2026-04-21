@@ -5,7 +5,7 @@ import { X, DollarSign, CheckCircle, Clock, AlertCircle, Calendar, Plus, History
 import { formatCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCreditItems, applyPaymentFIFO, calculateTotalOwed } from '@/hooks/useCreditItems';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ interface PaymentModalProps {
 
 export default function PaymentModal({ isOpen, onClose, customer, country, industry = 'retail', onPayment, onAddNewCredit }: PaymentModalProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const [paymentAmount, setPaymentAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

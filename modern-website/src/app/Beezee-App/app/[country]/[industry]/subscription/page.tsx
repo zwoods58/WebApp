@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CreditCard, Calendar, AlertCircle, CheckCircle, Clock, Mail } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import GhanaSubscriptionModal from '@/components/subscription/GhanaSubscriptionModal';
@@ -18,7 +18,7 @@ export default function SubscriptionPage() {
   const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { showSuccess, showError } = useToastContext();
   
   const country = (params.country as string) || 'ke';

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { X, Plus } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCreditItems } from '@/hooks/useCreditItems';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getCurrency } from '@/utils/currency';
 
 interface AddCreditLineItemModalProps {
@@ -27,7 +27,7 @@ export default function AddCreditLineItemModal({
   onSuccess 
 }: AddCreditLineItemModalProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { addCreditItemAsync } = useCreditItems({ 
     businessId: business?.id,
     industry 

@@ -10,7 +10,7 @@
 - **Changes:**
   - Removed `KyshiPaymentButton` import and usage
   - Added `COUNTRY_PAYMENT_METHODS` and `getPlanIdForCountry` imports
-  - Updated to use `useUnifiedAuth` with `business` object
+  - Updated to use `useSupabaseAuth` with `business` object
   - Implemented Kenya's exact error handling and validation pattern
   - Added proper form submission with `React.FormEvent`
   - Replaced payment button with regular submit button
@@ -22,7 +22,7 @@
 - **Changes Made:**
   - Removed `KyshiPaymentButton` import
   - Added `COUNTRY_PAYMENT_METHODS` and `getPlanIdForCountry` imports
-  - Updated to use `useUnifiedAuth` with `business` object
+  - Updated to use `useSupabaseAuth` with `business` object
   - Updated handleSubmit function to use Subscription API flow
 - **Issues:** JSX structure corrupted during editing process
 

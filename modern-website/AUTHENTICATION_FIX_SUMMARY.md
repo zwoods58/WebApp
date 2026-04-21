@@ -8,7 +8,7 @@ Existing authentication session data in localStorage was being restored automati
 
 ## Changes Made
 
-### 1. UnifiedAuthContext.tsx
+### 1. SupabaseAuthContext.tsx
 - **Added session validation function** (`isSessionValid`) to check session freshness and integrity
 - **Added session cleanup function** (`clearInvalidSessions`) to remove invalid sessions
 - **Enhanced session restoration** to validate sessions before restoring them
@@ -52,7 +52,7 @@ Existing authentication session data in localStorage was being restored automati
 4. Verify successful authentication with phone + PIN
 
 ## Files Modified
-- `/src/contexts/UnifiedAuthContext.tsx`
+- `/src/contexts/SupabaseAuthContext.tsx`
 - `/src/app/Beezee-App/auth/login/page.tsx`
 
 ## Expected Behavior

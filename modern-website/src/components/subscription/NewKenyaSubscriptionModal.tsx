@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import KyshiAPI from '@/lib/kyshi-api';
 import { useToastContext } from '@/providers/ToastProvider';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 /**
  * New Kenya Subscription Modal - Using Correct Kyshi API
@@ -25,7 +25,7 @@ interface NewKenyaSubscriptionModalProps {
 
 export function NewKenyaSubscriptionModal({ isOpen, onClose, onSuccess }: NewKenyaSubscriptionModalProps) {
   const { showSuccess, showError } = useToastContext();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const config = KyshiAPI.getCountryConfig('KE');
   
   const [phoneNumber, setPhoneNumber] = useState('');

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { useServicesTanStack } from '@/hooks';
 import { Service } from '@/hooks/useServicesTanStack';
@@ -30,7 +30,7 @@ export default function CreateAppointmentSheet({
   initialDate
 }: CreateAppointmentSheetProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { showError } = useToast();
   const { data: services } = useServicesTanStack({ businessId: business?.id, industry });
 

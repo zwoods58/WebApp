@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/supabase';
 
 interface Comment {
@@ -21,7 +21,7 @@ interface BeehiveCommentsProps {
 
 export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCommentsProps) {
   const { t } = useLanguage();
-  const { business, user } = useUnifiedAuth();
+  const { business, user } = useSupabaseAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);

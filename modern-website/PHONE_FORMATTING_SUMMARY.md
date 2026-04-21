@@ -39,7 +39,7 @@ The system now handles various input formats:
 - **Updated placeholder** to show multiple country examples
 - **Added logging** to track formatting process
 
-### 5. Updated UnifiedAuthContext (`/src/contexts/UnifiedAuthContext.tsx`)
+### 5. Updated SupabaseAuthContext (`/src/contexts/SupabaseAuthContext.tsx`)
 - **Imported shared utilities** to remove code duplication
 - **Centralized validation** using shared phone validation function
 - **Removed duplicate country configurations**
@@ -80,4 +80,4 @@ Test script created at `/test-phone-formatting.js` with various input formats in
 ## Files Modified
 - `/src/utils/phoneUtils.ts` (NEW)
 - `/src/app/Beezee-App/auth/login/page.tsx`
-- `/src/contexts/UnifiedAuthContext.tsx`
+- `/src/contexts/SupabaseAuthContext.tsx`

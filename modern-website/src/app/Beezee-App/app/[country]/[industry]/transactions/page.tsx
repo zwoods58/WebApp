@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 
 import { formatCurrency } from '@/utils/currency';
 import { useTransactionsTanStack } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
@@ -22,7 +22,7 @@ export default function TransactionsPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   
   // Simple online/offline status using TanStack Query
   const [isOnline, setIsOnline] = useState(true);

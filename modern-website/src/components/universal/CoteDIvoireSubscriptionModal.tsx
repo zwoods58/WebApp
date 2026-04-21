@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
 // Kyshi API functions removed - no longer available
 import { X } from 'lucide-react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 const OrangeColors = {
   primary: '#FF6600',   // Orange - Official Orange Money color
@@ -18,7 +18,7 @@ interface CoteDIvoireSubscriptionModalProps {
 }
 
 export default function CoteDIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: CoteDIvoireSubscriptionModalProps) {
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const amount = COUNTRY_PAYMENT_METHODS.CI.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.CI.currency;
   

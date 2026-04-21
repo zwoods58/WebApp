@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { COUNTRY_PAYMENT_METHODS } from '@/lib/subscription-api';
 // Kyshi API functions removed - no longer available
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 const MpesaColors = {
   primary: '#1B5E20',  // Dark Green - Official M-Pesa color
@@ -19,7 +19,7 @@ interface KenyaSubscriptionModalProps {
 }
 
 export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const amount = COUNTRY_PAYMENT_METHODS.KE.defaultAmount;
   const currency = COUNTRY_PAYMENT_METHODS.KE.currency;
   

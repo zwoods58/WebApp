@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 
 const T = {
@@ -65,7 +65,7 @@ const providers: Record<string, Provider> = {
 };
 
 export default function CoteIvoireSubscriptionModal({ isOpen, onClose, onSuccess }: CoteIvoireSubscriptionModalProps) {
-  const { user } = useUnifiedAuth();
+  const { user } = useSupabaseAuth();
   const { showSuccess, showError } = useToastContext();
   
   const [provider, setProvider] = useState<'orange' | 'mtn'>('orange');

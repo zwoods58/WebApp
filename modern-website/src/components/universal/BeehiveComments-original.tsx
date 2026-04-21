@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/supabase';
 import { onlineManager } from '@tanstack/react-query';
 
@@ -47,7 +47,7 @@ const getCurrentBusinessId = (): string | null => {
 
 export default function BeehiveComments({ requestId, onCommentAdded }: BeehiveCommentsProps) {
   const { t } = useLanguage();
-  const { business, user } = useUnifiedAuth(); // Use UnifiedAuth instead of localStorage
+  const { business, user } = useSupabaseAuth(); // Use UnifiedAuth instead of localStorage
   const isOnline = onlineManager.isOnline();
   const addPendingOperation = async (type: string, action: string, data: any) => {
     console.log('Stub: addPendingOperation called', type, action, data);

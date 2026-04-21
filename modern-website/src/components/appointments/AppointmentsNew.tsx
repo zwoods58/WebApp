@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack, useTransactionsTanStack } from '@/hooks';
 import type { Appointment } from '@/hooks/useAppointmentsTanStack';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, getCurrency } from '@/utils/currency';
 import { getStableDateString, isClient } from '@/utils/stableDates';
@@ -25,7 +25,7 @@ interface AppointmentsNewProps {
 
 export default function AppointmentsNew({ industry, country }: AppointmentsNewProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useToast();
 

@@ -5,7 +5,7 @@ import { Calendar as CalendarIcon, Clock, ChevronRight, Users } from 'lucide-rea
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack } from '@/hooks';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { formatDate } from '@/utils/currency';
 
 type Appointment = {
@@ -44,7 +44,7 @@ const CALENDAR_INDUSTRIES = ['salon', 'transport', 'tailor', 'freelance', 'repai
 
 export default function HomepageCalendar({ industry, country }: HomepageCalendarProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { 
     data: appointments, 
     isLoading, 

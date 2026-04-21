@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';  // ADD THIS IMPORT
 import { AlertCircle, X } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
 import { useAppointmentsTanStack, useServicesTanStack, useTransactionsTanStack } from '@/hooks';
@@ -50,7 +50,7 @@ export default function AddAppointmentModal({
   initialDate 
 }: AddAppointmentModalProps) {
   const { t } = useLanguage();
-  const { business, loading: businessLoading } = useUnifiedAuth();
+  const { business, loading: businessLoading } = useSupabaseAuth();
   const { showSuccess, showError, showWarning, showInfo } = useToast();
   
   const { data: services } = useServicesTanStack({ businessId: business?.id, industry });

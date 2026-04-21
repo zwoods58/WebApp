@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, TrendingUp, Shield, Sparkles, LogIn, UserPlus } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard } from 'lucide-react';
 
@@ -42,7 +42,7 @@ const itemVariants: Variants = {
 
 export default function GetStartedPage() {
   const [mounted, setMounted] = useState(false);
-  const { isAuthenticated, user, business, loading } = useUnifiedAuth();
+  const { isAuthenticated, user, business, loading } = useSupabaseAuth();
   const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);

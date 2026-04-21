@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 
 interface NigeriaSubscriptionModalProps {
@@ -19,7 +19,7 @@ interface BankDetails {
 }
 
 export default function NigeriaSubscriptionModal({ isOpen, onClose, onSuccess }: NigeriaSubscriptionModalProps) {
-  const { user } = useUnifiedAuth();
+  const { user } = useSupabaseAuth();
   const { showSuccess, showError } = useToastContext();
   
   const [email, setEmail] = useState('');

@@ -22,7 +22,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppointmentsTanStack, useTransactionsTanStack, useServicesTanStack } from '@/hooks';
 import { Appointment } from '@/hooks/useAppointmentsTanStack';
 import { Service } from '@/hooks/useServicesTanStack';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToast } from '@/hooks/useToast';
 import { usePersistentStorage } from '@/utils/persistentStorage';
 import { formatCurrency, formatDate, getCurrency } from '@/utils/currency';
@@ -39,7 +39,7 @@ interface AppointmentsProps {
 
 export default function Appointments({ industry, country }: AppointmentsProps) {
   const { t } = useLanguage();
-  const { business, loading: businessLoading } = useUnifiedAuth();
+  const { business, loading: businessLoading } = useSupabaseAuth();
   
   const queryClient = useQueryClient();
   

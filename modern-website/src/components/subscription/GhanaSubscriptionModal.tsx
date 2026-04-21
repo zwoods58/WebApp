@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 
 interface GhanaSubscriptionModalProps {
@@ -39,7 +39,7 @@ const providers: Record<string, Provider> = {
 };
 
 export default function GhanaSubscriptionModal({ isOpen, onClose, onSuccess }: GhanaSubscriptionModalProps) {
-  const { user } = useUnifiedAuth();
+  const { user } = useSupabaseAuth();
   const { showSuccess, showError } = useToastContext();
   
   const [provider, setProvider] = useState<'mtn' | 'vodafone' | 'airteltigo'>('mtn');

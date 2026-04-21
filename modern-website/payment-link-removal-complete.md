@@ -10,7 +10,7 @@
 - **Changes:**
   - Removed `KyshiPaymentButton` import and usage
   - Added `COUNTRY_PAYMENT_METHODS` and `getPlanIdForCountry` imports
-  - Updated to use `useUnifiedAuth` with `business` object
+  - Updated to use `useSupabaseAuth` with `business` object
   - Implemented Kenya's exact error handling and validation pattern
   - Added proper form submission with `React.FormEvent`
   - Replaced payment button with regular submit button
@@ -22,7 +22,7 @@
 - **Changes:**
   - Removed `KyshiPaymentButton` import and usage
   - Added `COUNTRY_PAYMENT_METHODS` and `getPlanIdForCountry` imports
-  - Updated to use `useUnifiedAuth` with `business` object
+  - Updated to use `useSupabaseAuth` with `business` object
   - Updated handleSubmit function to use Subscription API flow
   - Added proper form submission with `React.FormEvent`
   - Replaced payment button with regular submit button
@@ -74,7 +74,7 @@ All Subscription Modals -> Subscription API -> kyshi_subscriptions table -> Webh
 ## Technical Implementation:
 
 ### All Modals Now Use:
-1. **useUnifiedAuth** - Business data retrieval
+1. **useSupabaseAuth** - Business data retrieval
 2. **SubscriptionAPI.getPlans()** - Database plan retrieval
 3. **getPlanIdForCountry()** - Plan ID lookup
 4. **SubscriptionAPI.createSubscription()** - Direct subscription creation

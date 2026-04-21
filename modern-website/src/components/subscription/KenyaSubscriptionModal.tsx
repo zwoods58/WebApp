@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useToastContext } from '@/providers/ToastProvider';
 
 interface KenyaSubscriptionModalProps {
@@ -11,7 +11,7 @@ interface KenyaSubscriptionModalProps {
 }
 
 export default function KenyaSubscriptionModal({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalProps) {
-  const { user } = useUnifiedAuth();
+  const { user } = useSupabaseAuth();
   const { showSuccess, showError } = useToastContext();
   
   const [phoneNumber, setPhoneNumber] = useState('');

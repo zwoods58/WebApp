@@ -32,7 +32,7 @@ import { BeeZeeConfirmDialog, useBeeZeeConfirm } from '@/components/ui/BeeZeeCon
 import Header from '@/components/universal/Header';
 import BottomNav from '@/components/universal/BottomNav';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 export default function SettingsPage() {
   const params = useParams();
@@ -40,7 +40,7 @@ export default function SettingsPage() {
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const { confirm, DialogComponent } = useBeeZeeConfirm();
   
   // Check if accessed from More page

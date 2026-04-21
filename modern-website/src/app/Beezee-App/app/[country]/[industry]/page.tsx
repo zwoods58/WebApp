@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 
 // Context and hooks - import these first to avoid circular dependencies
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useBusinessProfile, useCurrency } from '@/contexts/BusinessProfileContext';
 import { useToast } from '@/hooks';
 import { useRefreshContext } from '@/contexts/RefreshContext';
@@ -83,7 +83,7 @@ export default function IndustryDashboard() {
   
   console.log('🔍 Business Profile Hooks Loaded:', { profile: !!profile, syncProfileWithBusiness: !!syncProfileWithBusiness });
   
-  const { user, business, isAuthenticated, loading: authLoading } = useUnifiedAuth();
+  const { user, business, isAuthenticated, loading: authLoading } = useSupabaseAuth();
   const businessId = business?.id;
   
   console.log('🔍 Auth Hook Loaded:', { business: !!business, businessId });

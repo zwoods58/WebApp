@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Store, Utensils, Car, Scissors, Ruler, Wrench, Laptop } from 'lucide-react';
 import { getCurrency } from '@/utils/currency';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { getPayableCustomers, addCreditUnified, CreditCustomer } from '@/app/Beezee-App/services/creditService';
 
 interface MoneyOutButtonProps {
@@ -26,7 +26,7 @@ const industryLabels = {
 
 export default function MoneyOutButton({ industry, country, onSuccess, disabled = false }: MoneyOutButtonProps) {
   const { t } = useLanguage();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [creditCustomers, setCreditCustomers] = useState<CreditCustomer[]>([]);

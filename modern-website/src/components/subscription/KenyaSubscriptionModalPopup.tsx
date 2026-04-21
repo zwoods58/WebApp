@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useToastContext } from '@/providers/ToastProvider';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 // Kyshi payment removed
 
 const MpesaColors = {
@@ -19,7 +19,7 @@ interface KenyaSubscriptionModalPopupProps {
 
 export function KenyaSubscriptionModalPopup({ isOpen, onClose, onSuccess }: KenyaSubscriptionModalPopupProps) {
   const { showSuccess, showError } = useToastContext();
-  const { user } = useUnifiedAuth();
+  const { user } = useSupabaseAuth();
   const amount = 200;
   const currency = 'KES';
   

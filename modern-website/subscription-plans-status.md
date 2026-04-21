@@ -91,7 +91,7 @@ All plans follow the same structure:
 
 ### Subscription Folder Components
 - All subscription folder components already follow Kenya pattern
-- Proper useUnifiedAuth integration
+- Proper useSupabaseAuth integration
 - Toast notifications and error handling
 
 ## Payment Flow

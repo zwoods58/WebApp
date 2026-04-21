@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { AlertTriangle, Lock, RefreshCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const ReadOnlyBanner: React.FC = () => {
-  const { isReadOnly, subscription } = useUnifiedAuth();
+  const { isReadOnly, subscription } = useSupabaseAuth();
   const router = useRouter();
 
   if (!isReadOnly) return null;

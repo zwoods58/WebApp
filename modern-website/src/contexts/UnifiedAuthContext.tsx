@@ -14,7 +14,7 @@ export interface UnifiedAuthState {
   isReadOnly: boolean;
 }
 
-interface UnifiedAuthContextType extends UnifiedAuthState {
+interface SupabaseAuthContextType extends UnifiedAuthState {
   // Re-export all SupabaseAuth methods
   signUp: (email: string, password: string, userData: {
     firstName: string;
@@ -33,27 +33,27 @@ interface UnifiedAuthContextType extends UnifiedAuthState {
   refreshSession: () => Promise<void>;
 }
 
-const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(undefined);
+const SupabaseAuthContext = createContext<SupabaseAuthContextType | undefined>(undefined);
 
 export function UnifiedAuthProvider({ children }: { children: React.ReactNode }) {
   const supabaseAuth = useSupabaseAuth();
 
-  const value: UnifiedAuthContextType = {
+  const value: SupabaseAuthContextType = {
     ...supabaseAuth,
   };
 
   return React.createElement(
-    UnifiedAuthContext.Provider,
+    SupabaseAuthContext.Provider,
     { value },
     children
   );
 }
 
-export function useUnifiedAuth() {
-  const context = useContext(UnifiedAuthContext);
+export function useSupabaseAuth() {
+  const context = useContext(SupabaseAuthContext);
   if (!context) {
     // Return a default empty state for pages outside the provider (e.g., landing pages, offline tests)
-    // This prevents "useUnifiedAuth must be used within UnifiedAuthProvider" errors during SSR/Build
+    // This prevents "useSupabaseAuth must be used within UnifiedAuthProvider" errors during SSR/Build
     return {
       user: null,
       business: null,
@@ -70,7 +70,7 @@ export function useUnifiedAuth() {
       updatePassword: async () => ({ error: 'Auth provider missing' }),
       resendConfirmation: async () => ({ error: 'Auth provider missing' }),
       refreshSession: async () => {},
-    } as UnifiedAuthContextType;
+    } as SupabaseAuthContextType;
   }
   return context;
 }

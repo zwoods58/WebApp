@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, Loader2 } from 'lucide-react';
-import { useUnifiedAuth } from '@/contexts/UnifiedAuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 
 export default function PaymentSuccessPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { business } = useUnifiedAuth();
+  const { business } = useSupabaseAuth();
   
   const country = (params.country as string) || 'ke';
   const industry = (params.industry as string) || 'retail';
