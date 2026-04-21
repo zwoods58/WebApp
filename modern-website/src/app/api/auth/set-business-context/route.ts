@@ -1,31 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseClient, getSupabaseAdminClient } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('set-business-context: Request received');
-    console.log('set-business-context: Environment check:', {
-      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasSupabaseAnon: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      nodeEnv: process.env.NODE_ENV,
-    });
-    
-    // Check if Supabase is properly configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('set-business-context: Missing Supabase environment variables');
-      return NextResponse.json(
-        { success: false, message: 'Server configuration error - missing database credentials' },
-        { status: 500 }
-      );
-    }
-    
-    // 1. Read the token from the Authorization header (client now sends this)
+    // 1. Read the token from the Authorization header
     const authHeader = req.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
-
-    console.log('set-business-context: Auth header present:', !!authHeader);
-    console.log('set-business-context: Token present:', !!token);
 
     if (!token) {
       return NextResponse.json(
@@ -34,13 +14,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Read the body the client actually sends
-    let body;
-    try {
-      body = await req.json();
-      console.log('set-business-context: Body parsed successfully:', body);
-    } catch (parseError) {
-      console.error('set-business-context: Failed to parse body:', parseError);
+    // 2. Read body
+    const body = await req.json().catch(() => null);
+    if (!body) {
       return NextResponse.json(
         { success: false, message: 'Invalid JSON body' },
         { status: 400 }
@@ -49,35 +25,21 @@ export async function POST(req: NextRequest) {
 
     const { businessId, country, industry } = body;
 
-    // 3. Verify the JWT and get the user
-    console.log('set-business-context: Getting Supabase client...');
-    let supabase;
-    try {
-      supabase = getSupabaseClient();
-    } catch (clientError) {
-      console.error('set-business-context: Failed to get Supabase client:', clientError);
+    // 3. Create Supabase clients directly in the route
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
       return NextResponse.json(
-        { success: false, message: 'Database configuration error' },
+        { success: false, message: 'Server configuration error' },
         { status: 500 }
       );
     }
 
-    console.log('set-business-context: Verifying JWT token...');
-    let user, authError;
-    try {
-      const result = await supabase.auth.getUser(token);
-      user = result.data.user;
-      authError = result.error;
-    } catch (jwtError) {
-      console.error('set-business-context: JWT verification failed:', jwtError);
-      return NextResponse.json(
-        { success: false, message: 'Invalid authentication token' },
-        { status: 401 }
-      );
-    }
-
-    console.log('set-business-context: Auth error:', authError?.message);
-    console.log('set-business-context: User found:', !!user);
+    // 4. Verify the JWT and get user
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
       return NextResponse.json(
@@ -86,39 +48,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Use service role to query businesses
-    console.log('set-business-context: Getting admin client...');
-    let adminClient;
-    try {
-      adminClient = getSupabaseAdminClient();
-    } catch (adminClientError) {
-      console.error('set-business-context: Failed to get admin client:', adminClientError);
-      return NextResponse.json(
-        { success: false, message: 'Database admin configuration error' },
-        { status: 500 }
-      );
-    }
+    // 5. Use service role to query businesses
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
 
-    console.log('set-business-context: Looking up business for user:', user.id);
-    let business, bizError;
-    try {
-      const result = await adminClient
-        .from('businesses')
-        .select('id, subscription_status, subscription_expires_at')
-        .eq('supabase_user_id', user.id)
-        .single();
-      business = result.data;
-      bizError = result.error;
-    } catch (dbError) {
-      console.error('set-business-context: Database query failed:', dbError);
-      return NextResponse.json(
-        { success: false, message: 'Database query error' },
-        { status: 500 }
-      );
-    }
-
-    console.log('set-business-context: Business lookup error:', bizError?.message);
-    console.log('set-business-context: Business found:', !!business);
+    const { data: business, error: bizError } = await adminClient
+      .from('businesses')
+      .select('id, subscription_status, subscription_expires_at')
+      .eq('supabase_user_id', user.id)
+      .single();
 
     if (bizError || !business) {
       return NextResponse.json(
@@ -127,13 +69,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Verify the businessId the client sent matches what the JWT resolves to
-    //    This prevents one user from setting context for another user's business
-    console.log('set-business-context: Comparing business IDs:', { 
-      clientProvided: businessId, 
-      databaseFound: business.id 
-    });
-
+    // 6. Verify businessId matches
     if (business.id !== businessId) {
       return NextResponse.json(
         { success: false, message: 'Forbidden - businessId mismatch' },
@@ -141,6 +77,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 7. Calculate subscription status
     const now = new Date();
     const expiresAt = business.subscription_expires_at
       ? new Date(business.subscription_expires_at)
@@ -164,14 +101,12 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('set-business-context: Unexpected error:', error);
-    console.error('set-business-context: Error stack:', error instanceof Error ? error.stack : 'No stack available');
+    console.error('set-business-context error:', error);
     return NextResponse.json(
       { 
         success: false, 
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        error: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
