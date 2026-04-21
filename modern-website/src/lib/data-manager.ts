@@ -79,7 +79,7 @@ export class DataManager {
     }
 
     // 1. Save to IndexedDB immediately (instant UI)
-    await this.saveToIndexedDB(table, enrichedData);
+    await this.saveToIndexedDB(table === 'transactions' ? 'business_transactions' : table, enrichedData);
     
     // 2. Queue for background sync
     const operation: DataOperation<T> = {
@@ -122,7 +122,7 @@ export class DataManager {
     };
 
     // 1. Update IndexedDB immediately (instant UI)
-    await this.updateInIndexedDB(table, id, updatedData);
+    await this.updateInIndexedDB(table === 'transactions' ? 'business_transactions' : table, id, updatedData);
     
     // 2. Queue for background sync
     const operation: DataOperation<Partial<T>> = {
@@ -151,7 +151,7 @@ export class DataManager {
     const timestamp = new Date();
     
     // 1. Remove from IndexedDB immediately (instant UI)
-    await this.deleteFromIndexedDB(table, id);
+    await this.deleteFromIndexedDB(table === 'transactions' ? 'business_transactions' : table, id);
     
     // 2. Queue for background sync
     const operation: DataOperation<any> = {
@@ -278,7 +278,7 @@ export class DataManager {
    * Clear all local data (for logout/reset)
    */
   async clearLocalData(): Promise<void> {
-    const tables = ['inventory', 'services', 'transactions', 'credit', 'expenses'];
+    const tables = ['inventory', 'services', 'business_transactions', 'credit', 'expenses'];
     
     for (const table of tables) {
       const tableAccess = (db as any)[table];

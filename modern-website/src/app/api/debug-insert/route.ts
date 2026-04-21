@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Test 2: Simple transaction select (this works)
     console.log('Test 2: Transaction select');
     const { data: transactions, error: selectError } = await supabaseAdmin
-      .from('transactions')
+      .from('business_transactions')
       .select('id')
       .limit(1);
     
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // Test 3: Transaction insert without foreign key (this should work)
     console.log('Test 3: Transaction insert without FK');
     const { data: insertResult, error: insertError } = await supabaseAdmin
-      .from('transactions')
+      .from('business_transactions')
       .insert({
         type: 'money_in',
         industry: 'retail',

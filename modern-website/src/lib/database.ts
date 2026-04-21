@@ -193,7 +193,7 @@ export interface StoredBeehiveComment {
 export interface QueuedOperation {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
-  table: 'transactions' | 'inventory' | 'credit' | 'services' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
+  table: 'business_transactions' | 'inventory' | 'credit' | 'services' | 'targets' | 'appointments' | 'beehive_requests' | 'beehive_votes' | 'beehive_comments';
   entityId?: string;
   data: any;
   timestamp: number;
@@ -206,7 +206,7 @@ export interface QueuedOperation {
 }
 
 export class BeezeeDatabase extends Dexie {
-  transactions!: Table<StoredTransaction, string>;
+  business_transactions!: Table<StoredTransaction, string>;
   inventory!: Table<StoredInventory, string>;
   credit!: Table<StoredCredit, string>;
   credit_items!: Table<StoredCreditItem, string>;
@@ -224,7 +224,7 @@ export class BeezeeDatabase extends Dexie {
     
     // Version 1
     this.version(1).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       operations_queue: 'id, type, table, status, timestamp, businessId',
@@ -233,7 +233,7 @@ export class BeezeeDatabase extends Dexie {
 
     // Version 2: Add missing tables
     this.version(2).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -245,7 +245,7 @@ export class BeezeeDatabase extends Dexie {
 
     // Version 3: Fix credit schema (rename paid to paid_amount)
     this.version(3).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -278,7 +278,7 @@ export class BeezeeDatabase extends Dexie {
 
     // ✅ Version 4: Fix inventory schema (rename name to item_name, add missing fields)
     this.version(4).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',  // ✅ Changed name to item_name
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -329,7 +329,7 @@ export class BeezeeDatabase extends Dexie {
 
     // ✅ Version 5: Add appointments table with exact frontend interface match
     this.version(5).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -342,7 +342,7 @@ export class BeezeeDatabase extends Dexie {
 
     // ✅ Version 7: Rename calendar to appointments for consistency
     this.version(7).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -376,7 +376,7 @@ export class BeezeeDatabase extends Dexie {
 
     // ✅ Version 8: Clean schema - calendar fully removed
     this.version(8).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -388,7 +388,7 @@ export class BeezeeDatabase extends Dexie {
 
     // Version 9: Complete appointment schema alignment with Supabase
     this.version(9).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       targets: 'id, business_id, target_type, syncStatus',
@@ -400,7 +400,7 @@ export class BeezeeDatabase extends Dexie {
 
     // Version 10: Add BeeHive tables for feature requests and community voting
     this.version(10).stores({
-      transactions: 'id, business_id, type, date, syncStatus, created_at',
+      business_transactions: 'id, business_id, type, date, syncStatus, created_at',
       inventory: 'id, business_id, item_name, category, syncStatus',
       credit: 'id, business_id, customer_name, status, syncStatus',
       credit_items: 'id, credit_id, item_name, quantity, unit_price, total_amount, syncStatus',

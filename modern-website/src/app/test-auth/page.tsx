@@ -49,7 +49,7 @@ export default function TestAuthPage() {
         };
 
         const { data, error } = await supabase
-          .from('transactions')
+          .from('business_transactions')
           .insert(testTransaction)
           .select()
           .single();
