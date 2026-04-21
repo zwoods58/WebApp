@@ -1,17 +1,6 @@
 import { metadata } from './metadata';
-import { QueryProvider } from '@/providers/QueryProvider';
-
-export default function BeezeeLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <QueryProvider>
-      {children}
-    </QueryProvider>
-  );
-}
+import BeezeeLayout from './layout-client';
 
 export { metadata };
 
+export default BeezeeLayout;
