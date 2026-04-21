@@ -8,7 +8,7 @@ describe('Transaction API - Validation Tests', () => {
     category: 'sales',
     description: 'Product sale',
     customer_name: 'Jane Doe',
-    payment_method: 'mpesa',
+    payment_method: 'mobile_money',
     transaction_date: new Date().toISOString(),
     metadata: { notes: 'test' }
   };
@@ -38,15 +38,15 @@ describe('Transaction API - Validation Tests', () => {
   });
 
   it('should validate payment methods', () => {
-    const validMethods = ['cash', 'mpesa', 'bank', 'card', 'credit', 'other'];
-    const invalidMethods = ['bitcoin', 'paypal', 'venmo'];
+    const validMethods = ['cash', 'mobile_money', 'credit'];
+    const invalidMethods = ['mpesa', 'bank', 'card', 'other', 'bitcoin', 'paypal', 'venmo'];
 
     validMethods.forEach(method => {
-      expect(['cash', 'mpesa', 'bank', 'card', 'credit', 'other']).toContain(method);
+      expect(['cash', 'mobile_money', 'credit']).toContain(method);
     });
 
     invalidMethods.forEach(method => {
-      expect(['cash', 'mpesa', 'bank', 'card', 'credit', 'other']).not.toContain(method);
+      expect(['cash', 'mobile_money', 'credit']).not.toContain(method);
     });
   });
 
@@ -105,7 +105,7 @@ describe('Expense API - Validation Tests', () => {
     category: 'supplies',
     description: 'Office supplies',
     vendor_name: 'Office Depot',
-    payment_method: 'bank',
+    payment_method: 'mobile_money',
     expense_date: new Date().toISOString()
   };
 

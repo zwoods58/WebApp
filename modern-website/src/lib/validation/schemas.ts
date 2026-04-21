@@ -122,7 +122,7 @@ export const transactionSchema = z.object({
     .max(20, 'Supplier phone must not exceed 20 characters')
     .optional(),
 
-  payment_method: z.enum(['cash', 'mpesa', 'bank', 'card', 'credit', 'other'])
+  payment_method: z.enum(['cash', 'mobile_money', 'credit'])
     .optional(),
 
   transaction_date: z.union([

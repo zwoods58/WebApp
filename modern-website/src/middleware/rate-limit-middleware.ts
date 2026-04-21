@@ -43,10 +43,11 @@ export function withRateLimit(
       return rateLimitErrorResponse(result);
     }
     
-    // Create a new request with the same body for the handler
+    // Create a new request with the same body and headers for the handler
+    const headers = new Headers(request.headers);
     const newRequest = new NextRequest(request.url, {
       method: request.method,
-      headers: request.headers,
+      headers: headers,
       body: JSON.stringify(body),
     });
     
