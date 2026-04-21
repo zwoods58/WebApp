@@ -4,12 +4,14 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
+// Log missing environment variables but don't throw during module initialization
+// This allows API routes to load and return proper error messages
 if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Missing Supabase environment variables:', {
         url: !!supabaseUrl,
-        key: !!supabaseAnonKey
+        key: !!supabaseAnonKey,
+        serviceKey: !!supabaseServiceRoleKey
     });
-    throw new Error('Supabase environment variables are required. Please check your production environment variables.');
 }
 
 // =====================================================
@@ -71,7 +73,7 @@ const enhancedStorage = {
 };
 
 // Primary client instance with Phase 3 optimizations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
     // Authentication configuration optimized for scale
     auth: {
         persistSession: true,
@@ -107,13 +109,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         },
     },
 
-    });
+}) : null; // Will be null if env vars are missing
 
 // =====================================================
 // Admin Client for Elevated Operations
 // Uses service role key for admin operations (bypasses RLS)
 // =====================================================
-export const supabaseAdmin = supabaseServiceRoleKey 
+export const supabaseAdmin = (supabaseUrl && supabaseServiceRoleKey) 
     ? createClient(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
         persistSession: false, // Don't persist admin sessions
@@ -153,6 +155,11 @@ class ConnectionPoolMonitor {
 
     async healthCheck(): Promise<boolean> {
         try {
+            if (!supabase) {
+                console.error('Supabase client not initialized - missing environment variables');
+                return false;
+            }
+            
             const start = Date.now();
             // Simple health check query
             await supabase.from('businesses').select('count').limit(1);
@@ -233,8 +240,26 @@ class AutoScalingConnectionManager {
 
 export const autoScalingManager = new AutoScalingConnectionManager();
 
+// =====================================================
+// Helper Functions for Safe Client Access
+// =====================================================
+
+export function getSupabaseClient() {
+    if (!supabase) {
+        throw new Error('Supabase client not initialized. Missing environment variables: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    }
+    return supabase;
+}
+
+export function getSupabaseAdminClient() {
+    if (!supabaseAdmin) {
+        throw new Error('Supabase admin client not initialized. Missing environment variables: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+    }
+    return supabaseAdmin;
+}
+
 // Periodic health checks (every 30 seconds in production)
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && supabase) {
     setInterval(() => {
         connectionMonitor.healthCheck();
     }, 30000);
