@@ -1,32 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken, createServerClient } from '@/lib/supabase';
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    // 1. Get token from Authorization header
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Parse body
-    const body = await req.json().catch(() => null);
-    if (!body?.businessId || !body?.country || !body?.industry) {
-      return NextResponse.json({ success: false, message: 'Missing required fields: businessId, country, industry' }, { status: 400 });
-    }
-    const { businessId, country, industry } = body;
-
-    // 3. Verify user from token
     const user = await getUserFromToken(token);
     if (!user) {
       return NextResponse.json({ success: false, message: 'Invalid or expired token' }, { status: 401 });
     }
 
-    // 4. Fetch business using admin client
     const admin = createServerClient();
     const { data: business, error } = await admin
       .from('businesses')
-      .select('id, subscription_status, subscription_expires_at')
+      .select('subscription_status, subscription_expires_at')
       .eq('supabase_user_id', user.id)
       .single();
 
@@ -34,12 +24,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Business not found' }, { status: 404 });
     }
 
-    // 5. Verify businessId matches the authenticated user's business
-    if (business.id !== businessId) {
-      return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
-    }
-
-    // 6. Calculate subscription status
     const now = new Date();
     const expiresAt = business.subscription_expires_at ? new Date(business.subscription_expires_at) : null;
     const isActive = business.subscription_status === 'active' && !!expiresAt && expiresAt > now;
@@ -47,16 +31,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      businessId: business.id,
-      country,
-      industry,
-      subscriptionActive: isActive,
-      subscriptionExpiresAt: business.subscription_expires_at ?? null,
+      status: business.subscription_status ?? 'inactive',
+      isActive,
+      expiresAt: business.subscription_expires_at ?? null,
       daysRemaining,
     });
 
   } catch (err) {
-    console.error('[set-business-context] error:', err);
+    console.error('[subscription] GET error:', err);
     return NextResponse.json(
       { success: false, message: 'Internal server error', error: err instanceof Error ? err.message : 'Unknown' },
       { status: 500 }
