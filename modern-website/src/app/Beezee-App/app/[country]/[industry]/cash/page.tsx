@@ -179,8 +179,9 @@ export default function CashPage() {
           }
         }
 
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
+        // ✅ FIX: Use correct query key structure matching the hooks
+        queryClient.invalidateQueries({ queryKey: ['credit'] });
+        queryClient.invalidateQueries({ queryKey: ['credit-items'] });
       }
 
       await addTransaction({
@@ -190,8 +191,11 @@ export default function CashPage() {
         industry
       });
 
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'inventory'] });
+      // ✅ FIX: Use correct query key structure matching useTransactionsTanStack
+      // Hook registers: ['transactions', businessId, industry]
+      // So invalidating ['transactions'] invalidates all transaction queries
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
 
       // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
       await refetchTransactions();
@@ -279,8 +283,9 @@ export default function CashPage() {
           }
         }
 
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit'] });
-        queryClient.invalidateQueries({ queryKey: [industry, country, 'credit_items'] });
+        // ✅ FIX: Use correct query key structure matching the hooks
+        queryClient.invalidateQueries({ queryKey: ['credit'] });
+        queryClient.invalidateQueries({ queryKey: ['credit-items'] });
       }
 
       const { payment_method, customer_name, due_date, ...cleanExpenseData } = expenseData;
@@ -293,8 +298,11 @@ export default function CashPage() {
         });
       }
 
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'expenses'] });
-      queryClient.invalidateQueries({ queryKey: [industry, country, 'transactions'] });
+      // ✅ FIX: Use correct query key structure matching useExpensesTanStack
+      // Hook registers: ['expenses', businessId, industry]
+      // So invalidating ['expenses'] invalidates all expense queries
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
 
       // ✅ IMMEDIATE REFETCH: Ensure data updates immediately
       await refetchTransactions();

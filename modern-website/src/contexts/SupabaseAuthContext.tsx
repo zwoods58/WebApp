@@ -206,6 +206,10 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
             loading: false,
             error: null,
           }));
+
+          if (business) {
+            await setBusinessContext(business.id, business.country, business.industry);
+          }
         } else if (event === 'SIGNED_OUT') {
           setAuthState({
             user: null,
@@ -366,6 +370,8 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  // FIX: signIn now loads business and subscription data directly instead of
+  // relying solely on onAuthStateChange, which could race or misfire.
   const signIn = useCallback(async (email: string, password: string) => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
 
@@ -398,8 +404,41 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
           };
         }
 
-        console.log('✅ Sign in successful');
-        setAuthState(prev => ({ ...prev, loading: true }));
+        console.log('✅ Sign in successful, loading business data...');
+
+        // FIX: Load business and subscription data directly here so all pages
+        // have a populated business object immediately after sign in.
+        const business = await loadBusinessData(authData.user.id);
+        const subscription = await loadSubscriptionData(authData.user.id);
+        const isReadOnly = subscription?.status === 'failed' || subscription?.status === 'cancelled';
+
+        if (!business) {
+          console.error('❌ No business record found for user:', authData.user.id);
+          setAuthState(prev => ({
+            ...prev,
+            loading: false,
+            error: 'Business profile not found. Please contact support.',
+          }));
+          return {
+            error: { message: 'Business profile not found.' },
+            data: undefined,
+          };
+        }
+
+        setAuthState({
+          user: authData.user,
+          business,
+          subscription,
+          loading: false,
+          error: null,
+          isAuthenticated: true,
+          isEmailConfirmed: isConfirmed,
+          isReadOnly,
+        });
+
+        await setBusinessContext(business.id, business.country, business.industry);
+
+        console.log('✅ Business data loaded on sign in:', business.business_name);
         return { error: null, data: authData };
       }
 
@@ -410,7 +449,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       setAuthState(prev => ({ ...prev, loading: false, error: errorMessage }));
       return { error: { message: errorMessage }, data: undefined };
     }
-  }, []);
+  }, [loadBusinessData, loadSubscriptionData]);
 
   const signOut = useCallback(async () => {
     try {
@@ -490,26 +529,15 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   );
 }
 
+// FIX: throws an error instead of silently returning null business data,
+// so you immediately know if a page is rendered outside the provider tree.
 export function useSupabaseAuth() {
   const context = useContext(SupabaseAuthContext);
   if (!context) {
-    return {
-      user: null,
-      business: null,
-      subscription: null,
-      loading: false,
-      error: null,
-      isAuthenticated: false,
-      isEmailConfirmed: false,
-      isReadOnly: false,
-      signUp: async () => ({ error: 'Auth provider missing' }),
-      signIn: async () => ({ error: 'Auth provider missing' }),
-      signOut: async () => ({ error: 'Auth provider missing' }),
-      resetPassword: async () => ({ error: 'Auth provider missing' }),
-      updatePassword: async () => ({ error: 'Auth provider missing' }),
-      resendConfirmation: async () => ({ error: 'Auth provider missing' }),
-      refreshSession: async () => {},
-    } as SupabaseAuthContextType;
+    throw new Error(
+      'useSupabaseAuth must be used within a SupabaseAuthProvider. ' +
+      'Make sure your page is wrapped with <SupabaseAuthProvider>.'
+    );
   }
   return context;
 }
