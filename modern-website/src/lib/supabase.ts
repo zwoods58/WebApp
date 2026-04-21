@@ -18,10 +18,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Call createServerClient() inside each API route, never import a singleton
 export function createServerClient() {
   return createClient(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
   });
 }
 
