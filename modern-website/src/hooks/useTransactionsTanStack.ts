@@ -93,19 +93,32 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
         throw createHookError(`Missing required fields: ${validation.missingFields.join(', ')}`);
       }
 
-      console.log('Transaction data being inserted:', payload);
+      console.log('Transaction data being sent to API:', payload);
       
-      const { data, error } = await supabase
-        .from('transactions')
-        .insert(payload)
-        .select()
-        .single();
+      // Route through API to use service role key (bypasses RLS)
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-      if (error) {
-        logDatabaseError('Transaction insert', error, payload);
-        throw createHookError(`Failed to create transaction: ${error.message}`, error);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        logDatabaseError('Transaction API call', { status: response.status, error: errorData }, payload);
+        throw createHookError(`Failed to create transaction: ${errorData.message || response.statusText}`, errorData);
       }
-      return data;
+
+      const result = await response.json();
+      
+      if (result.error) {
+        logDatabaseError('Transaction API error', result.error, payload);
+        throw createHookError(`Failed to create transaction: ${result.error}`, result.error);
+      }
+
+      console.log('✅ Transaction created via API:', result.data);
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });

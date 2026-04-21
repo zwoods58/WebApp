@@ -27,6 +27,14 @@ async function transactionHandler(request: NextRequest) {
     const sanitizedData = sanitizeObject(validation.data);
     const { business_id, industry, amount, category, description, customer_name, payment_method, transaction_date, metadata } = sanitizedData;
 
+    // Validate business_id exists
+    if (!business_id) {
+      return NextResponse.json(
+        { error: 'business_id is required' },
+        { status: 400 }
+      );
+    }
+
     console.log('🔧 API Route - Validated transaction data:', { business_id, industry, amount, category });
 
     // Fetch business to get country for currency derivation
