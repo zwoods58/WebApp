@@ -81,6 +81,12 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
         throw createHookError(`Authentication failed: ${authCheck.error}`);
       }
 
+      // Get session for authorization header
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        throw createHookError('No valid session found for authentication');
+      }
+
       const payload = {
         ...transaction,
         type: transaction.type || 'money_in', // <- REQUIRED FIELD
@@ -102,6 +108,7 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -146,8 +153,17 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
 
   const deleteTransactionMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Get session for authorization header
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        throw createHookError('No valid session found for authentication');
+      }
+
       const response = await fetch(`/api/transactions/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
       });
       if (!response.ok) {
         const err = await response.json().catch(() => ({ message: 'Unknown error' }));
