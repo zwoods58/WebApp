@@ -12,7 +12,7 @@ export interface Credit {
   amount_home?: number;
   exchange_rate?: number;
   paid_amount?: number;
-  status: 'pending' | 'partial' | 'paid' | 'overdue';
+  status: 'outstanding' | 'partial' | 'paid' | 'overdue';
   due_date?: string;
   date_given: string;
   notes?: string;
@@ -21,12 +21,13 @@ export interface Credit {
   updated_at: string;
   created_by?: string;
   updated_by?: string;
-  type?: string;
+  type?: 'receivable' | 'payable';
 }
 
 export interface UseCreditTanStackProps {
   businessId?: string;
   industry?: string;
+  country?: string;
 }
 
 export interface UseCreditTanStackReturn {
@@ -42,7 +43,7 @@ export interface UseCreditTanStackReturn {
   isOffline: boolean;
 }
 
-export function useCreditTanStack({ businessId, industry }: UseCreditTanStackProps = {}): UseCreditTanStackReturn {
+export function useCreditTanStack({ businessId, industry, country }: UseCreditTanStackProps = {}): UseCreditTanStackReturn {
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, error } = useQuery({
@@ -64,18 +65,14 @@ export function useCreditTanStack({ businessId, industry }: UseCreditTanStackPro
 
   const addCreditMutation = useMutation({
     mutationFn: async (credit: Omit<Credit, 'id' | 'created_at' | 'updated_at'>) => {
-      // Ensure required fields are present with defaults
       const creditData = {
         ...credit,
-        // Required fields that may be missing
-        industry: credit.industry || 'retail',
-        currency: credit.currency || 'KES',
+        industry: credit.industry || industry || 'retail',
+        currency: credit.currency || 'USD',
         date_given: credit.date_given || new Date().toISOString().split('T')[0],
-        status: credit.status || 'pending',
-        paid_amount: credit.paid_amount || 0,
-        // Optional fields with defaults
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        status: credit.status || 'outstanding',
+        paid_amount: credit.paid_amount ?? 0,
+        type: credit.type || 'receivable',
       };
 
       console.log('Credit data being inserted:', creditData);

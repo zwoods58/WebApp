@@ -111,6 +111,10 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
     const pathMatch = pathname.match(/\/Beezee-App\/app\/([^\/]+)\/([^\/]+)/);
     const country = pathMatch?.[1] || '';
     const industry = pathMatch?.[2] || '';
+
+    // Don't prefetch if we don't have a valid country/industry yet
+    if (!country || !industry) return;
+
     const basePath = `/Beezee-App/app/${country}/${industry}`;
     
     const routesToPrefetch = [
@@ -125,11 +129,8 @@ function BeezeeContent({ children }: { children: React.ReactNode }) {
       `${basePath}/transactions`,
     ];
     
-    routesToPrefetch.forEach(route => {
-      router.prefetch(route);
-    });
-    
-    console.log('✅ Prefetched navigation routes for:', basePath);
+    routesToPrefetch.forEach(route => router.prefetch(route));
+    console.log('Prefetched navigation routes for:', basePath);
   }, [business?.id, router, pathname]);
 
   // Extract country and industry from pathname

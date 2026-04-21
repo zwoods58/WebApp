@@ -37,7 +37,16 @@ export interface UseTransactionsTanStackReturn {
   isAdding: boolean;
 }
 
-export function useTransactionsTanStack({ businessId, industry }: UseTransactionsTanStackProps = {}): UseTransactionsTanStackReturn {
+// Maps country code -> currency (mirrors what the API route does via getCurrency)
+function getCurrencyFromCountry(country?: string): string {
+  const map: Record<string, string> = {
+    KE: 'KES', UG: 'UGX', TZ: 'TZS', GH: 'GHS', NG: 'NGN',
+    ZA: 'ZAR', RW: 'RWF', ET: 'ETB', US: 'USD', GB: 'GBP',
+  };
+  return (country && map[country.toUpperCase()]) ? map[country.toUpperCase()] : 'USD';
+}
+
+export function useTransactionsTanStack({ businessId, industry, country }: UseTransactionsTanStackProps = {}): UseTransactionsTanStackReturn {
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, error } = useQuery({
@@ -59,11 +68,18 @@ export function useTransactionsTanStack({ businessId, industry }: UseTransaction
 
   const addTransactionMutation = useMutation({
     mutationFn: async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
-      console.log('Transaction data being inserted:', transaction);
+      const payload = {
+        ...transaction,
+        industry: transaction.industry || industry || 'retail',    // <- ensure present
+        currency: transaction.currency || getCurrencyFromCountry(country), // <- REQUIRED
+        transaction_date: transaction.transaction_date || new Date().toISOString().split('T')[0],
+      };
+
+      console.log('Transaction data being inserted:', payload);
       
       const { data, error } = await supabase
         .from('transactions')
-        .insert(transaction)
+        .insert(payload)
         .select()
         .single();
 

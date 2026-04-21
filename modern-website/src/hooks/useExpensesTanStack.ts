@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase';
 export interface Expense {
   id: string;
   business_id: string;
+  industry: string;        // ← ADDED (required by DB)
+  currency: string;        // ← ADDED (required by DB)
   amount: number;
   description: string;
   category?: string;
@@ -31,7 +33,16 @@ export interface UseExpensesTanStackReturn {
   isPending: boolean;
 }
 
-export function useExpensesTanStack({ businessId, industry }: UseExpensesTanStackProps = {}): UseExpensesTanStackReturn {
+// Maps country code → currency (mirrors what the API route does via getCurrency)
+function getCurrencyFromCountry(country?: string): string {
+  const map: Record<string, string> = {
+    KE: 'KES', UG: 'UGX', TZ: 'TZS', GH: 'GHS', NG: 'NGN',
+    ZA: 'ZAR', RW: 'RWF', ET: 'ETB', US: 'USD', GB: 'GBP',
+  };
+  return (country && map[country.toUpperCase()]) ? map[country.toUpperCase()] : 'USD';
+}
+
+export function useExpensesTanStack({ businessId, industry, country }: UseExpensesTanStackProps = {}): UseExpensesTanStackReturn {
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, error, isPending } = useQuery({
@@ -53,13 +64,26 @@ export function useExpensesTanStack({ businessId, industry }: UseExpensesTanStac
 
   const addExpenseMutation = useMutation({
     mutationFn: async (expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>) => {
+      // Ensure all required DB columns are present
+      const payload = {
+        ...expense,
+        industry: expense.industry || industry || 'retail',   // ← REQUIRED
+        currency: expense.currency || getCurrencyFromCountry(country), // ← REQUIRED
+        expense_date: expense.expense_date || new Date().toISOString().split('T')[0],
+      };
+
+      console.log('Expense data being inserted:', payload);
+
       const { data, error } = await supabase
         .from('expenses')
-        .insert(expense)
+        .insert(payload)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Expense insert error:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {

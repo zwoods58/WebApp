@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase';
 export interface Inventory {
   id: string;
   business_id: string;
+  industry: string;        // ← ADDED (required by DB)
+  currency: string;        // ← ADDED (required by DB)
   item_name: string;
   quantity: number;
   threshold?: number;
@@ -32,7 +34,15 @@ export interface UseInventoryTanStackReturn {
   isOffline: boolean;
 }
 
-export function useInventoryTanStack({ businessId, industry }: UseInventoryTanStackProps = {}): UseInventoryTanStackReturn {
+function getCurrencyFromCountry(country?: string): string {
+  const map: Record<string, string> = {
+    KE: 'KES', UG: 'UGX', TZ: 'TZS', GH: 'GHS', NG: 'NGN',
+    ZA: 'ZAR', RW: 'RWF', ET: 'ETB', US: 'USD', GB: 'GBP',
+  };
+  return (country && map[country.toUpperCase()]) ? map[country.toUpperCase()] : 'USD';
+}
+
+export function useInventoryTanStack({ businessId, industry, country }: UseInventoryTanStackProps = {}): UseInventoryTanStackReturn {
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, error } = useQuery({
@@ -54,11 +64,18 @@ export function useInventoryTanStack({ businessId, industry }: UseInventoryTanSt
 
   const addInventoryMutation = useMutation({
     mutationFn: async (inventory: Omit<Inventory, 'id' | 'created_at' | 'updated_at'>) => {
-      console.log('Inventory data being inserted:', inventory);
-      
+      // Ensure all required DB columns are present
+      const payload = {
+        ...inventory,
+        industry: inventory.industry || industry || 'retail',    // ← REQUIRED
+        currency: inventory.currency || getCurrencyFromCountry(country), // ← REQUIRED
+      };
+
+      console.log('Inventory data being inserted:', payload);
+
       const { data, error } = await supabase
         .from('inventory')
-        .insert(inventory)
+        .insert(payload)
         .select()
         .single();
 

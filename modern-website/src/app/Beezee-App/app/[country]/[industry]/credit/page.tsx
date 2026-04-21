@@ -211,10 +211,13 @@ export default function CreditPage() {
     }
     
     // Calculate new amounts
-    const currentPaid = 0;
+    const currentPaid = creditRecord.paid_amount || 0;
     const newPaidAmount = currentPaid + paymentAmount;
-    const newStatus = newPaidAmount >= creditRecord.amount ? 'paid' : 
-                     newPaidAmount > 0 ? 'partial' : 'pending';
+    const newStatus = newPaidAmount >= creditRecord.amount
+      ? 'paid'
+      : newPaidAmount > 0
+      ? 'partial'
+      : 'outstanding';
     
     console.log(`Payment processing: ${creditRecord.customer_name}`);
     console.log(`- Original amount: ${creditRecord.amount}`);
@@ -233,6 +236,8 @@ export default function CreditPage() {
       // Record payment transaction - AWAIT to ensure it completes
       await addTransactionAsync({
         business_id: business.id,
+        industry,
+        currency: getCurrency(business.country || country),
         type: 'money_in',
         amount: paymentAmount,
         category: 'payment',
@@ -282,7 +287,7 @@ export default function CreditPage() {
 
   const generateCreditDetailsText = (creditItem: any): string => {
     const remainingAmount = creditItem.status === 'paid' ? 0 : 
-                           creditItem.status === 'partial' ? creditItem.amount - 0 : 
+                           creditItem.status === 'partial' ? creditItem.amount - creditItem.paid_amount : 
                            creditItem.amount;
     const daysOverdue = creditItem.due_date ? Math.max(0, Math.ceil((new Date().getTime() - new Date(creditItem.due_date).getTime()) / (1000 * 60 * 60 * 24))) : 0;
     
@@ -292,7 +297,7 @@ export default function CreditPage() {
     text += `${t('credit.original_amount', 'Original Amount')}: ${formatCurrency(creditItem.amount, country)}\n`;
     
     if (creditItem.status === 'partial' || creditItem.status === 'paid') {
-      text += `${t('credit.amount_paid', 'Amount Paid')}: ${formatCurrency(0, country)}\n`;
+      text += `${t('credit.amount_paid', 'Amount Paid')}: ${formatCurrency(creditItem.paid_amount || 0, country)}\n`;
     }
     
     text += `${t('credit.date_given', 'Date Given')}: ${new Date(creditItem.date_given).toLocaleDateString()}\n`;
