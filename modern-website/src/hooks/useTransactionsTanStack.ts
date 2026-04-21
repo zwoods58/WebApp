@@ -144,16 +144,15 @@ export function useTransactionsTanStack({ businessId, industry, country }: UseTr
 
   const deleteTransactionMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('transactions')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const response = await fetch(`/api/transactions/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw createHookError(`Failed to delete transaction: ${err.message}`);
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['transactions'] }),
   });
 
   const addTransaction = async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {

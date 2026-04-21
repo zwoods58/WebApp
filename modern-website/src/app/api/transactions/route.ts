@@ -25,7 +25,7 @@ async function transactionHandler(request: NextRequest) {
 
     // Sanitize validated data
     const sanitizedData = sanitizeObject(validation.data);
-    const { business_id, industry, amount, category, description, customer_name, payment_method, transaction_date, metadata } = sanitizedData;
+    const { business_id, type, industry, amount, category, description, customer_name, payment_method, transaction_date, metadata } = sanitizedData;
 
     // Validate business_id exists
     if (!business_id) {
@@ -58,6 +58,7 @@ async function transactionHandler(request: NextRequest) {
 
     console.log('🔧 About to insert transaction with data:', {
       business_id,
+      type,
       industry,
       amount,
       category,
@@ -74,6 +75,7 @@ async function transactionHandler(request: NextRequest) {
       .from('transactions')
       .insert({
         business_id,
+        type,
         industry,
         amount,
         category,

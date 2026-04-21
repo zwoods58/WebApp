@@ -85,31 +85,46 @@ export const phoneLookupSchema = z.object({
  */
 export const transactionSchema = z.object({
   business_id: z.string().uuid('Invalid business ID'),
+
+  // FIX 1: Add type field â was completely missing
+  type: z.enum(['money_in', 'money_out']).default('money_in'),
+
   industry: z.string().min(2).max(50),
+
   amount: z.number()
     .positive('Amount must be positive')
     .max(999999999.99, 'Amount is too large')
     .multipleOf(0.01, 'Amount must have at most 2 decimal places'),
+
+  // FIX 3: Make category optional so partial forms don't fail
   category: z.string()
     .min(2, 'Category must be at least 2 characters')
-    .max(50, 'Category must not exceed 50 characters'),
+    .max(50, 'Category must not exceed 50 characters')
+    .optional(),
+
   description: z.string()
     .max(500, 'Description must not exceed 500 characters')
     .optional(),
+
   customer_name: z.string()
     .max(100, 'Customer name must not exceed 100 characters')
     .optional(),
+
   customer_phone: z.string()
     .max(20, 'Customer phone must not exceed 20 characters')
     .optional(),
+
   payment_method: z.enum(['cash', 'mpesa', 'bank', 'card', 'credit', 'other'])
     .optional(),
+
+  // FIX 2: Accept plain date strings like "2024-01-15" as well as full ISO datetime
   transaction_date: z.union([
-    z.string().datetime('Invalid date format'),
+    z.string().datetime(),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
     z.date()
   ]).optional(),
-  metadata: z.record(z.string(), z.any())
-    .optional()
+
+  metadata: z.record(z.string(), z.any()).optional()
 });
 
 /**

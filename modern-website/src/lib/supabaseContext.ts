@@ -9,22 +9,28 @@ export async function setBusinessContext(
   industry: string
 ): Promise<void> {
   try {
+    // Import supabase here to get the current session token
+    const { supabase } = await import('@/lib/supabase');
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      console.warn('â ï¸ No session token available for business context');
+      return;
+    }
+
     // Call the secure API route to set business context
     const response = await fetch('/api/auth/set-business-context', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`, // â THIS was missing
       },
-      body: JSON.stringify({
-        businessId,
-        country,
-        industry
-      })
+      body: JSON.stringify({ businessId, country, industry }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      console.warn('⚠️ Failed to set business context (non-critical):', error.error || 'Unknown error');
+      console.warn('â ï¸ Failed to set business context:', error.error || 'Unknown error');
       return;
     }
 
@@ -36,11 +42,11 @@ export async function setBusinessContext(
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('✅ Business context set:', { businessId, country, industry });
+      console.log('â Business context set:', { businessId, country, industry });
     }
   } catch (error: any) {
     // Gracefully handle errors - business context is not critical for app functionality
-    console.warn('⚠️ Could not set business context (non-critical):', error?.message || 'Unknown error');
+    console.warn('â ï¸ Could not set business context (non-critical):', error?.message || 'Unknown error');
   }
 }
 

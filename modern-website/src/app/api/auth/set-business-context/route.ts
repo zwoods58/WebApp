@@ -3,44 +3,21 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   try {
-    // Get the user's JWT from the Authorization header or cookie
+    // 1. Read the token from the Authorization header (client now sends this)
     const authHeader = req.headers.get('authorization');
-    const cookieHeader = req.headers.get('cookie') ?? '';
-    
-    // Extract token from Authorization header
-    let token = authHeader?.replace('Bearer ', '');
-    
-    // If no auth header, try to get from Supabase cookie
-    if (!token) {
-      // Supabase stores token in cookie named sb-{project-ref}-auth-token
-      const cookies = Object.fromEntries(
-        cookieHeader.split(';').map(c => {
-          const [k, ...v] = c.trim().split('=');
-          return [k, v.join('=')];
-        })
-      );
-      
-      // Find the supabase auth cookie (dynamic name)
-      const authCookieKey = Object.keys(cookies).find(k => 
-        k.includes('auth-token') || k.includes('sb-') 
-      );
-      
-      if (authCookieKey) {
-        try {
-          const cookieValue = decodeURIComponent(cookies[authCookieKey]);
-          const parsed = JSON.parse(cookieValue);
-          token = Array.isArray(parsed) ? parsed[0] : parsed?.access_token;
-        } catch {
-          token = cookies[authCookieKey];
-        }
-      }
-    }
+    const token = authHeader?.replace('Bearer ', '');
 
     if (!token) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized â no token provided' },
+        { status: 401 }
+      );
     }
 
-    // Use anon key + user token to get the actual user
+    // 2. Read the body the client actually sends
+    const { businessId, country, industry } = await req.json();
+
+    // 3. Verify the JWT and get the user
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -49,10 +26,13 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized â invalid token' },
+        { status: 401 }
+      );
     }
 
-    // Use service role to query businesses (bypasses RLS)
+    // 4. Use service role to query businesses
     const adminClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -65,9 +45,19 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (bizError || !business) {
-      console.error('Business query error:', bizError);
-      console.error('User ID:', user.id);
-      return NextResponse.json({ success: false, message: 'Business not found', error: bizError?.message }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: 'Business not found', error: bizError?.message },
+        { status: 404 }
+      );
+    }
+
+    // 5. Verify the businessId the client sent matches what the JWT resolves to
+    //    This prevents one user from setting context for another user's business
+    if (business.id !== businessId) {
+      return NextResponse.json(
+        { success: false, message: 'Forbidden â businessId mismatch' },
+        { status: 403 }
+      );
     }
 
     const now = new Date();
@@ -83,6 +73,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       businessId: business.id,
+      country,
+      industry,
       subscriptionActive: isActive,
       subscriptionExpiresAt: business.subscription_expires_at ?? null,
       daysRemaining: expiresAt
@@ -92,6 +84,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('set-business-context error:', error);
-    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
