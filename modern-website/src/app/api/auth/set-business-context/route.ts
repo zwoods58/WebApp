@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient, getSupabaseAdminClient } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
   try {
     console.log('set-business-context: Request received');
+    console.log('set-business-context: Environment check:', {
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasSupabaseAnon: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    });
     
     // 1. Read the token from the Authorization header (client now sends this)
     const authHeader = req.headers.get('authorization');
@@ -35,11 +40,8 @@ export async function POST(req: NextRequest) {
     const { businessId, country, industry } = body;
 
     // 3. Verify the JWT and get the user
-    console.log('set-business-context: Creating Supabase client...');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    console.log('set-business-context: Getting Supabase client...');
+    const supabase = getSupabaseClient();
 
     console.log('set-business-context: Verifying JWT token...');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
@@ -55,11 +57,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Use service role to query businesses
-    console.log('set-business-context: Creating admin client...');
-    const adminClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    console.log('set-business-context: Getting admin client...');
+    const adminClient = getSupabaseAdminClient();
 
     console.log('set-business-context: Looking up business for user:', user.id);
     const { data: business, error: bizError } = await adminClient
