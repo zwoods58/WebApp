@@ -182,7 +182,7 @@ const GlobalPulseCTA = () => {
                                                 <motion.div
                                                     animate={isHovered ? { scale: 1.8 } : { scale: 1 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors duration-300 ${isHovered ? 'bg-system-blue shadow-[0_0_12px_4px_rgba(0,102,255,0.5)]' : 'bg-system-blue/60'}`}
+                                                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors duration-300 ${isHovered ? 'bg-system-blue shadow-[0_0_12px_4px_rgba(0,102,255,0.5)]' : 'bg-obsidian'}`}
                                                 />
 
                                                 {/* Hover card */}
