@@ -164,7 +164,7 @@ const GlobalPulseCTA = () => {
 
                                                 {/* Outer pulse ring — always visible */}
                                                 <motion.div
-                                                    className="absolute rounded-full bg-system-blue/20"
+                                                    className="absolute rounded-full bg-black/30"
                                                     animate={{ scale: [1, 3], opacity: [0.6, 0] }}
                                                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut' }}
                                                     style={{ width: 12, height: 12, top: 0, left: 0 }}
@@ -172,7 +172,7 @@ const GlobalPulseCTA = () => {
 
                                                 {/* Second pulse ring offset for depth */}
                                                 <motion.div
-                                                    className="absolute rounded-full bg-system-blue/10"
+                                                    className="absolute rounded-full bg-black/20"
                                                     animate={{ scale: [1, 2.2], opacity: [0.4, 0] }}
                                                     transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay: 0.6 }}
                                                     style={{ width: 12, height: 12, top: 0, left: 0 }}
@@ -182,7 +182,7 @@ const GlobalPulseCTA = () => {
                                                 <motion.div
                                                     animate={isHovered ? { scale: 1.8 } : { scale: 1 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors duration-300 ${isHovered ? 'bg-system-blue shadow-[0_0_12px_4px_rgba(0,102,255,0.5)]' : 'bg-obsidian'}`}
+                                                    className={`w-3 h-3 rounded-full border-2 border-white transition-colors duration-300 ${isHovered ? 'bg-system-blue shadow-[0_0_12px_4px_rgba(0,102,255,0.5)]' : 'bg-black'}`}
                                                 />
 
                                                 {/* Hover card */}
