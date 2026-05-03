@@ -93,7 +93,7 @@ function getRateLimiter(config: RateLimitConfig): Ratelimit | InMemoryRateLimite
         redis,
         limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs} ms`),
         analytics: true,
-        prefix: '@beezee/ratelimit',
+        prefix: '@app/ratelimit',
       });
     }
     return rateLimiter;

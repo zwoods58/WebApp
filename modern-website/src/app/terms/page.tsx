@@ -1,8 +1,5 @@
 "use client";
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 import LegalLayout from "@/components/ui/LegalLayout";
 import { QueryProvider } from "@/providers/QueryProvider";
 

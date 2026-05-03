@@ -208,73 +208,17 @@ const nextConfig: NextConfig = {
 
 export default withPWA({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  disable: true,
   skipWaiting: true,
   clientsClaim: true,
   register: true,
   scope: '/',
   sw: 'sw.js',
-  // Disable build-time precaching to prevent bad-precaching-response errors
   buildExcludes: [
     /chunks\/.*\.js$/i,
     /pages\/.*\.js$/i,
     /api\/.*$/i,
     /.*\.map$/i,
     /.*\.json$/i
-  ],
-  // Add explicit runtime caching for API routes to ensure they're NOT cached
-  runtimeCaching: [
-    // IMPORTANT: Never cache API routes - always network first
-    {
-      urlPattern: /^https:\/\/www\.atarwebb\.com\/api\/.*/i,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'api-cache',
-        networkTimeoutSeconds: 3,
-        cacheableResponse: {
-          statuses: [0, 200]
-        },
-        expiration: {
-          maxEntries: 50,
-          maxAgeSeconds: 60 * 5 // 5 minutes
-        }
-      }
-    },
-    // Cache Google Fonts
-    {
-      urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'google-fonts-cache',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 365 * 24 * 60 * 60 // 365 days
-        }
-      }
-    },
-    // Cache static resources but be more conservative
-    {
-      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|css|js)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-resources-cache',
-        expiration: {
-          maxEntries: 60,
-          maxAgeSeconds: 24 * 60 * 60 // 24 hours
-        }
-      }
-    },
-    // Handle images
-    {
-      urlPattern: /\.(?:png|jpg|jpeg|gif|webp|svg)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'image-cache',
-        expiration: {
-          maxEntries: 100,
-          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
-        }
-      }
-    }
   ]
 })(nextConfig as any);

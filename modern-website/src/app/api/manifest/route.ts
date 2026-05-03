@@ -81,13 +81,13 @@ function getVersion() {
 // Country-specific PWA configurations
 const COUNTRY_CONFIGS = {
   ke: {
-    name: 'BeeZee Finance Kenya',
-    short_name: 'BeeZee KE',
-    description: 'Financial management for Kenyan informal businesses',
+    name: 'Finance Kenya',
+    short_name: 'Finance KE',
+    description: 'Financial management for Kenyan businesses',
     theme_color: '#006600',
     background_color: '#ffffff',
-    start_url: '/Beezee-App/auth/get-started',
-    scope: '/Beezee-App/',
+    start_url: '/',
+    scope: '/',
     icons: [
       {
         src: '/icons/ke-icon-192.png',
@@ -109,13 +109,13 @@ const COUNTRY_CONFIGS = {
     orientation: 'portrait'
   },
   za: {
-    name: 'BeeZee Finance South Africa',
-    short_name: 'BeeZee ZA',
-    description: 'Financial management for South African informal businesses',
+    name: 'Finance South Africa',
+    short_name: 'Finance ZA',
+    description: 'Financial management for South African businesses',
     theme_color: '#F59E0B',
     background_color: '#ffffff',
-    start_url: '/Beezee-App/auth/get-started',
-    scope: '/Beezee-App/',
+    start_url: '/',
+    scope: '/',
     icons: [
       {
         src: '/icons/za-icon-192.png',
@@ -137,13 +137,13 @@ const COUNTRY_CONFIGS = {
     orientation: 'portrait'
   },
   ng: {
-    name: 'BeeZee Finance Nigeria',
-    short_name: 'BeeZee NG',
-    description: 'Financial management for Nigerian informal businesses',
+    name: 'Finance Nigeria',
+    short_name: 'Finance NG',
+    description: 'Financial management for Nigerian businesses',
     theme_color: '#008751',
     background_color: '#ffffff',
-    start_url: '/Beezee-App/auth/get-started',
-    scope: '/Beezee-App/',
+    start_url: '/',
+    scope: '/',
     icons: [
       {
         src: '/icons/ng-icon-192.png',

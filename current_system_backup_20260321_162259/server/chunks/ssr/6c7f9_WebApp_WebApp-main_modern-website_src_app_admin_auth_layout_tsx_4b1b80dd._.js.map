@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../../../../Downloads/WebApp/WebApp-main/modern-website/src/app/admin/auth/layout.tsx"],"sourcesContent":["export default function AuthLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {\n  return children;\n}\n"],"names":[],"mappings":"oCAAe,SAAS,EAAW,UACjC,CAAQ,CAGT,EACC,OAAO,CACT"}

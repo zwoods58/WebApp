@@ -1,8 +1,5 @@
 'use client';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 import { useState } from 'react';
 import { QueryProvider } from "@/providers/QueryProvider";
 

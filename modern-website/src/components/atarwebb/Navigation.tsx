@@ -219,14 +219,11 @@ export default function Navigation() {
                     <div className="flex flex-col gap-8">
                         {/* Beezee Link */}
                         <Link
-                            href="/beezee"
+                            href="/beezee-landing"
                             className="text-3xl font-heading font-bold text-black hover:text-gray-600 transition-colors flex items-center gap-4"
                             onClick={() => setIsMenuOpen(false)}
                         >
-                            <div className="flex items-center gap-3">
-                                <img src="/beezee.png" alt="Beezee Logo" width={32} height={32} className="rounded" />
-                                Beezee
-                            </div>
+                            Beezee
                             <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-black">APP</span>
                         </Link>
                     </div>

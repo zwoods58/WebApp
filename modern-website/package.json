@@ -15,7 +15,6 @@
     "test:run": "vitest run",
     "generate:logos": "node scripts/generate-logo-sizes.js",
     "generate-version": "node scripts/generate-version.js",
-    "seed:beezee-plans": "npx ts-node scripts/seed-beezee-plans.ts",
     "check:database": "node scripts/check-database-connection.js",
     "test:expense-api": "node scripts/test-expense-api.js",
     "test:transaction-api": "node scripts/test-transaction-api.js"
@@ -45,7 +44,7 @@
     "jspdf": "^4.2.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
-    "next": "15.5.15",
+    "next": "^15.5.15",
     "next-pwa": "^5.6.0",
     "next-pwa-pack": "^2.0.0",
     "node-domexception": "^1.0.0",
