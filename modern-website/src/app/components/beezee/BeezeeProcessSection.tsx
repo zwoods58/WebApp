@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, TrendingUp, Package, CreditCard, Globe2, Wrench, Store, Utensils, Car, Scissors, Ruler, Laptop, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
@@ -19,14 +19,27 @@ interface FeatureContent {
 
 // Country data structure with flag image paths
 const countryData = [
+    { code: 'ZM', name: 'Zambia', currency: 'ZMW', languages: 'English, Bemba, Nyanja', flagEmoji: '🇿🇲', flagImage: '/flags/ZM.png' },
+    { code: 'ZA', name: 'South Africa', currency: 'ZAR', languages: 'English, Afrikaans, Zulu, Xhosa', flagEmoji: '🇿🇦', flagImage: '/flags/ZA.png' },
     { code: 'KE', name: 'Kenya', currency: 'KES', languages: 'English, Swahili', flagEmoji: '🇰🇪', flagImage: '/flags/KE.png' },
     { code: 'NG', name: 'Nigeria', currency: 'NGN', languages: 'English, Yoruba, Igbo, Hausa', flagEmoji: '🇳🇬', flagImage: '/flags/NG.png' },
-    { code: 'ZA', name: 'South Africa', currency: 'ZAR', languages: 'English, Afrikaans, Zulu, Xhosa', flagEmoji: '🇿🇦', flagImage: '/flags/ZA.png' },
+    { code: 'CI', name: "Côte d'Ivoire", currency: 'XOF', languages: 'French, Dioula', flagEmoji: '🇨🇮', flagImage: '/flags/CI.png' },
     { code: 'GH', name: 'Ghana', currency: 'GHS', languages: 'English, Twi', flagEmoji: '🇬🇭', flagImage: '/flags/GH.png' },
+    { code: 'TZ', name: 'Tanzania', currency: 'TZS', languages: 'English, Swahili', flagEmoji: '🇹🇿', flagImage: '/flags/TZ.png' },
     { code: 'UG', name: 'Uganda', currency: 'UGX', languages: 'English, Luganda', flagEmoji: '🇺🇬', flagImage: '/flags/UG.png' },
     { code: 'RW', name: 'Rwanda', currency: 'RWF', languages: 'English, Kinyarwanda', flagEmoji: '🇷🇼', flagImage: '/flags/RW.png' },
-    { code: 'TZ', name: 'Tanzania', currency: 'TZS', languages: 'English, Swahili', flagEmoji: '🇹🇿', flagImage: '/flags/TZ.png' },
-    { code: 'CI', name: "Côte d'Ivoire", currency: 'XOF', languages: 'French, Dioula', flagEmoji: '🇨🇮', flagImage: '/flags/CI.png' }
+    // DEACTIVATED COUNTRIES — uncomment to enable
+    // { code: 'EG', name: 'Egypt', currency: 'EGP', languages: 'Arabic, English', flagEmoji: '🇪🇬', flagImage: '/flags/EG.png' },
+    // { code: 'CM', name: 'Cameroon', currency: 'XAF', languages: 'French, English', flagEmoji: '🇨🇲', flagImage: '/flags/CM.png' },
+    // { code: 'ET', name: 'Ethiopia', currency: 'ETB', languages: 'Amharic, English', flagEmoji: '🇪🇹', flagImage: '/flags/ET.png' },
+    // { code: 'CD', name: 'DRC', currency: 'CDF', languages: 'French, Lingala, Swahili', flagEmoji: '🇨🇩', flagImage: '/flags/CD.png' },
+    // { code: 'SN', name: 'Senegal', currency: 'XOF', languages: 'French, Wolof', flagEmoji: '🇸🇳', flagImage: '/flags/SN.png' },
+    // { code: 'MZ', name: 'Mozambique', currency: 'MZN', languages: 'Portuguese', flagEmoji: '🇲🇿', flagImage: '/flags/MZ.png' },
+    // { code: 'MW', name: 'Malawi', currency: 'MWK', languages: 'English, Chichewa', flagEmoji: '🇲🇼', flagImage: '/flags/MW.png' },
+    // { code: 'BJ', name: 'Benin', currency: 'XOF', languages: 'French', flagEmoji: '🇧🇯', flagImage: '/flags/BJ.png' },
+    // { code: 'BF', name: 'Burkina Faso', currency: 'XOF', languages: 'French', flagEmoji: '🇧🇫', flagImage: '/flags/BF.png' },
+    // { code: 'SL', name: 'Sierra Leone', currency: 'SLL', languages: 'English, Krio', flagEmoji: '🇸🇱', flagImage: '/flags/SL.png' },
+    // { code: 'GA', name: 'Gabon', currency: 'XAF', languages: 'French', flagEmoji: '🇬🇦', flagImage: '/flags/GA.png' },
 ];
 
 const features: FeatureContent[] = [
@@ -116,8 +129,8 @@ const features: FeatureContent[] = [
         benefitHeadline: 'Your language, your money, your business',
         description: 'BeeZee works your way. From your local language to your country money, from shop to street business. Get business tools that understand you and your world.',
         highlights: [
-            'Many languages (English, Swahili, Yoruba, Igbo, Hausa, Afrikaans, Zulu, Xhosa, Twi, Luganda, Kinyarwanda, French, Dioula)',
-            'Local money (KES, NGN, ZAR, GHS, UGX, RWF, TZS, XOF)',
+            'Many languages (English, Swahili, Yoruba, Igbo, Hausa, Afrikaans, Zulu, Xhosa, Twi, Luganda, Kinyarwanda, French, Dioula, Bemba, Nyanja)',
+            'Local money (KES, NGN, ZAR, GHS, UGX, RWF, TZS, XOF, ZMW)',
             'African business terms',
             'Features for African markets'
         ],
@@ -188,23 +201,14 @@ const BeezeeProcessSection = () => {
                                     {/* Condensed Country & Language Support */}
                                     <div className="mt-12">
                                         <div className="text-center mb-8">
-                                            <div className="font-mono text-sm md:text-base text-system-blue font-black mb-8 tracking-widest uppercase">
-                                                8 COUNTRIES • 12+ LANGUAGES • 7 INDUSTRIES
-                                            </div>
+                                             <div className="font-mono text-sm md:text-base text-system-blue font-black mb-8 tracking-widest uppercase">
+                                                 9 COUNTRIES • 12+ LANGUAGES • 7 INDUSTRIES
+                                             </div>
                                         </div>
                                         
-                                        {/* Countries Grid */}
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                            {countryData.map((country) => (
-                                                <CountryCard 
-                                                    key={country.code}
-                                                    flagEmoji={country.flagEmoji}
-                                                    flagImage={country.flagImage}
-                                                    name={country.name}
-                                                    currency={country.currency}
-                                                    languages={country.languages}
-                                                />
-                                            ))}
+                                        {/* Countries Carousel */}
+                                        <div className="mb-8">
+                                            <CountryCarousel countries={countryData} />
                                         </div>
 
                                         
@@ -428,6 +432,86 @@ const LanguageFlag = ({ flag, language }: { flag: string; language: string }) =>
             <span className="text-lg">{flag}</span>
             <span className="text-sm font-medium text-obsidian">{language}</span>
         </motion.div>
+    );
+};
+
+const CountryCarousel = ({ countries }: { countries: typeof countryData }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const itemsToShow = 3;
+
+    // Duplicate first few items at the end for seamless infinite loop
+    const extendedItems = [...countries, ...countries.slice(0, itemsToShow)];
+    const totalSlides = countries.length;
+
+    const nextSlide = useCallback(() => {
+        setIsAnimating(true);
+        setCurrentIndex((prev) => prev + 1);
+    }, []);
+
+    useEffect(() => {
+        const timer = setInterval(nextSlide, 3500);
+        return () => clearInterval(timer);
+    }, [nextSlide]);
+
+    const handleAnimationComplete = useCallback(() => {
+        setIsAnimating(false);
+        // If we slid into the duplicate section, instantly reset to the real start
+        if (currentIndex >= totalSlides) {
+            setCurrentIndex(0);
+        }
+    }, [currentIndex, totalSlides]);
+
+    const slideWidth = 100 / itemsToShow;
+
+    // Compute displayed index for dots
+    const displayedIndex = currentIndex % totalSlides;
+    const dotCount = totalSlides;
+
+    return (
+        <div className="flex flex-col items-center">
+            <div className="relative w-full max-w-3xl overflow-hidden mx-auto">
+                <motion.div
+                    className="flex"
+                    animate={{ x: `-${currentIndex * slideWidth}%` }}
+                    transition={{ duration: isAnimating ? 0.6 : 0, ease: [0.25, 1, 0.5, 1] }}
+                    onAnimationComplete={handleAnimationComplete}
+                >
+                    {extendedItems.map((country, index) => (
+                        <div
+                            key={`${country.code}-${index}`}
+                            className="flex-shrink-0 px-2"
+                            style={{ width: `${slideWidth}%` }}
+                        >
+                            <div className="flex flex-col items-center gap-3 p-5 bg-white/60 backdrop-blur-sm border border-glass-border rounded-xl hover:border-system-blue transition-colors">
+                                <div className="w-16 h-10 flex items-center justify-center">
+                                    <FlagDisplay flagEmoji={country.flagEmoji} flagImage={country.flagImage} countryName={country.name} />
+                                </div>
+                                <div className="text-sm font-bold text-obsidian">{country.name}</div>
+                                <div className="text-xs font-mono text-system-blue font-semibold">{country.currency}</div>
+                                <div className="text-[10px] text-obsidian/60 text-center leading-tight">{country.languages}</div>
+                            </div>
+                        </div>
+                    ))}
+                </motion.div>
+            </div>
+
+            {/* Dots indicator */}
+            <div className="flex items-center gap-2 mt-6">
+                {Array.from({ length: dotCount }).map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            index === displayedIndex
+                                ? 'bg-system-blue w-4'
+                                : 'bg-obsidian/20 hover:bg-obsidian/40'
+                        }`}
+                        aria-label={`Slide ${index + 1}`}
+                    />
+                ))}
+            </div>
+        </div>
     );
 };
 
